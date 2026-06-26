@@ -1,0 +1,186 @@
+'use client'
+
+import { useState } from 'react'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, BarChart, Bar,
+} from 'recharts'
+import { DollarSign, Briefcase, Users, Clock, ArrowUpRight } from 'lucide-react'
+
+const revenueData = [
+  { month: 'Jan', v: 4200 }, { month: 'Feb', v: 5100 }, { month: 'Mar', v: 4800 },
+  { month: 'Apr', v: 5900 }, { month: 'May', v: 5400 }, { month: 'Jun', v: 6800 },
+  { month: 'Jul', v: 7200 }, { month: 'Aug', v: 6900 }, { month: 'Sep', v: 8100 },
+  { month: 'Oct', v: 9200 }, { month: 'Nov', v: 8800 }, { month: 'Dec', v: 9600 },
+]
+
+const projectsData = [
+  { month: 'Jan', v: 3 }, { month: 'Feb', v: 5 }, { month: 'Mar', v: 4 },
+  { month: 'Apr', v: 7 }, { month: 'May', v: 6 }, { month: 'Jun', v: 8 },
+  { month: 'Jul', v: 9 }, { month: 'Aug', v: 7 }, { month: 'Sep', v: 11 },
+  { month: 'Oct', v: 10 }, { month: 'Nov', v: 13 }, { month: 'Dec', v: 12 },
+]
+
+const categoryData = [
+  { name: 'Web Development', value: 35, color: '#7c3aed' },
+  { name: 'Design', value: 28, color: '#ec4899' },
+  { name: 'Consulting', value: 18, color: '#f59e0b' },
+  { name: 'Mobile', value: 12, color: '#10b981' },
+  { name: 'Other', value: 7, color: '#06b6d4' },
+]
+
+const topClients = [
+  { name: 'Tech Trophey', revenue: 24500, projects: 5, color: '#7c3aed' },
+  { name: 'Hencewood Digital', revenue: 18200, projects: 3, color: '#ec4899' },
+  { name: 'Margono Studio', revenue: 15800, projects: 4, color: '#f59e0b' },
+  { name: 'DataSync Corp', revenue: 12400, projects: 2, color: '#10b981' },
+]
+
+const metrics = [
+  { label: 'Revenue This Month', value: '$9,200', change: '+18%', icon: DollarSign, color: '#7c3aed', bg: '#ede9fe' },
+  { label: 'Active Projects', value: '26', change: '+5', icon: Briefcase, color: '#10b981', bg: '#d1fae5' },
+  { label: 'Total Clients', value: '42', change: '+5', icon: Users, color: '#f59e0b', bg: '#fef9c3' },
+  { label: 'Hours Worked', value: '156h', change: '+12%', icon: Clock, color: '#ec4899', bg: '#fce7f3' },
+]
+
+const tabs = ['Revenue', 'Projects', 'Clients']
+
+export default function InsightsPage() {
+  const [activeTab, setActiveTab] = useState('Revenue')
+  const [range, setRange] = useState('Last 7 months')
+
+  const chartData = activeTab === 'Projects' ? projectsData : revenueData
+
+  return (
+    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Insights</h1>
+        <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
+      </div>
+
+      {/* Metric cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+        {metrics.map(({ label, value, change, icon: Icon, color, bg }) => (
+          <div key={label} className="card card-hover" style={{ padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size={18} color={color} />
+              </div>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12, fontWeight: 600, color: '#10b981', background: '#d1fae5', padding: '2px 8px', borderRadius: 20 }}>
+                <ArrowUpRight size={11} /> {change}
+              </span>
+            </div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>{value}</div>
+            <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 3 }}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart + Category */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div className="card" style={{ padding: 24 }}>
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 0, marginBottom: 20, borderBottom: '1px solid #f3f4f6', paddingBottom: 0 }}>
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  padding: '8px 16px',
+                  border: 'none',
+                  background: 'none',
+                  fontSize: 14,
+                  fontWeight: activeTab === tab ? 600 : 400,
+                  color: activeTab === tab ? '#111827' : '#9ca3af',
+                  borderBottom: activeTab === tab ? '2px solid #7c3aed' : '2px solid transparent',
+                  cursor: 'pointer',
+                  marginBottom: -1,
+                  transition: 'all 0.15s',
+                }}
+              >
+                {tab}
+              </button>
+            ))}
+            <select
+              value={range}
+              onChange={e => setRange(e.target.value)}
+              style={{ marginLeft: 'auto', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', background: '#fff', cursor: 'pointer' }}
+            >
+              {['Last 7 months', 'Last 3 months', 'Last year'].map(r => (
+                <option key={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+
+          {activeTab !== 'Clients' ? (
+            <>
+              <div style={{ fontWeight: 600, fontSize: 16, color: '#111827', marginBottom: 16 }}>
+                {activeTab === 'Revenue' ? 'Revenue Trend' : 'Projects Over Time'}
+              </div>
+              <ResponsiveContainer width="100%" height={240}>
+                <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
+                  <Area type="monotone" dataKey="v" stroke="#7c3aed" strokeWidth={2.5} fill="url(#purpleGrad)" dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {topClients.map((c, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{c.name}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>${c.revenue.toLocaleString()}</span>
+                    </div>
+                    <div style={{ height: 5, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${(c.revenue / 25000) * 100}%`, background: c.color, borderRadius: 4 }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* By Category */}
+        <div className="card" style={{ padding: 24 }}>
+          <div style={{ fontWeight: 600, fontSize: 16, color: '#111827', marginBottom: 16 }}>By Category</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <ResponsiveContainer width={180} height={180}>
+              <PieChart>
+                <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value">
+                  {categoryData.map((entry, idx) => (
+                    <Cell key={idx} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(v) => [`${v}%`, '']} contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+            {categoryData.map(item => (
+              <div key={item.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
+                  <span style={{ fontSize: 13, color: '#374151' }}>{item.name}</span>
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.value}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
