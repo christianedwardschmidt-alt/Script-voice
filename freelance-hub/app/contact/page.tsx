@@ -1,8 +1,8 @@
 export default function ContactPage() {
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
-      <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 6 }}>Contact Info</h1>
-      <p style={{ color: '#9ca3af', fontSize: 14, marginBottom: 24 }}>Your public freelancer profile information</p>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Contact Info</h1>
+      <p style={{ color: 'var(--text-2)', fontSize: 14, marginBottom: 24 }}>Your public freelancer profile information</p>
       <div className="card" style={{ padding: 28, maxWidth: 600 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
           {[
@@ -14,14 +14,14 @@ export default function ContactPage() {
             { label: 'Timezone', placeholder: 'PST (UTC-8)', type: 'text' },
           ].map(({ label, placeholder, type }) => (
             <div key={label}>
-              <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 6 }}>{label}</label>
+              <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', display: 'block', marginBottom: 6 }}>{label}</label>
               <input type={type} placeholder={placeholder} className="search-input" style={{ paddingLeft: 12 }} />
             </div>
           ))}
         </div>
         <div style={{ marginTop: 18 }}>
-          <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 6 }}>Bio</label>
-          <textarea placeholder="Tell clients about yourself..." style={{ width: '100%', padding: '10px 12px', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 14, color: '#111827', resize: 'none', outline: 'none', minHeight: 80, fontFamily: 'inherit', background: '#fff' }} />
+          <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', display: 'block', marginBottom: 6 }}>Bio</label>
+          <textarea placeholder="Tell clients about yourself..." style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 10, fontSize: 14, color: 'var(--text)', resize: 'none', outline: 'none', minHeight: 80, fontFamily: 'inherit', background: 'var(--card)' }} />
         </div>
         <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
           <button className="btn-primary">Save Changes</button>

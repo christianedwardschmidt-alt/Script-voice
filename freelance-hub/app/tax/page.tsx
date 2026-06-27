@@ -30,7 +30,7 @@ const deductions = [
   { category: 'Health Insurance', amount: 5400, icon: '🏥', max: 5400, color: '#10b981' },
   { category: 'Equipment', amount: 4100, icon: '🖥', max: 5400, color: '#f59e0b' },
   { category: 'Education', amount: 1200, icon: '📚', max: 5400, color: '#06b6d4' },
-  { category: 'Internet & Phone', amount: 960, icon: '📡', max: 5400, color: '#6b7280' },
+  { category: 'Internet & Phone', amount: 960, icon: '📡', max: 5400, color: 'var(--text-2)' },
 ]
 
 const deductionPie = deductions.map(d => ({ name: d.category, value: d.amount, color: d.color }))
@@ -67,15 +67,15 @@ export default function TaxPage() {
   const seRate = (totalIncome * 0.1413).toFixed(0)
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Tax Report</h1>
-          <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Maximize deductions · minimize surprises</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Tax Report</h1>
+          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Maximize deductions · minimize surprises</p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          <div style={{ display: 'flex', border: '1px solid #e5e7eb', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
             {['2022', '2023', '2024'].map(y => (
               <button key={y} onClick={() => setActiveYear(y)} style={{ padding: '8px 16px', border: 'none', background: activeYear === y ? '#7c3aed' : '#fff', color: activeYear === y ? '#fff' : '#6b7280', fontSize: 13, fontWeight: activeYear === y ? 700 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
                 {y}
@@ -93,7 +93,7 @@ export default function TaxPage() {
           <div style={{ fontSize: 14, color: '#92400e', fontWeight: 600 }}>Q4 Estimated Tax due January 15 — $7,290</div>
           <div style={{ fontSize: 12, color: '#a16207', marginTop: 2 }}>Make your quarterly payment to avoid a 6% underpayment penalty</div>
         </div>
-        <a href="#" style={{ fontSize: 13, color: '#7c3aed', fontWeight: 700, textDecoration: 'none', marginLeft: 'auto', whiteSpace: 'nowrap', background: '#fff', padding: '7px 14px', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+        <a href="#" style={{ fontSize: 13, color: '#7c3aed', fontWeight: 700, textDecoration: 'none', marginLeft: 'auto', whiteSpace: 'nowrap', background: 'var(--card)', padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)' }}>
           Pay Now →
         </a>
       </div>
@@ -113,8 +113,8 @@ export default function TaxPage() {
                 <Icon size={16} color={color} />
               </div>
             </div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.5px' }}>{value}</div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 3 }}>{label}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>{value}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 3 }}>{label}</div>
           </div>
         ))}
       </div>
@@ -123,11 +123,11 @@ export default function TaxPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* Quarterly bar chart */}
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Quarterly Breakdown</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 6 }}>Income · Deductions · Tax Owed</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 4 }}>Quarterly Breakdown</div>
+          <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 6 }}>Income · Deductions · Tax Owed</div>
           <div style={{ display: 'flex', gap: 16, fontSize: 12, marginBottom: 20 }}>
             {[{ color: '#7c3aed', label: 'Income' }, { color: '#10b981', label: 'Deductions' }, { color: '#f59e0b', label: 'Tax Owed' }].map(({ color, label }) => (
-              <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#6b7280' }}>
+              <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-2)' }}>
                 <span style={{ width: 10, height: 10, borderRadius: 2, background: color, display: 'inline-block' }} /> {label}
               </span>
             ))}
@@ -137,7 +137,7 @@ export default function TaxPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
               <XAxis dataKey="quarter" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
+              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
               <Bar dataKey="income" fill="#7c3aed" radius={[4, 4, 0, 0]} name="Income" />
               <Bar dataKey="deductions" fill="#10b981" radius={[4, 4, 0, 0]} name="Deductions" />
               <Bar dataKey="taxOwed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Tax Owed" />
@@ -147,15 +147,15 @@ export default function TaxPage() {
 
         {/* Deductions pie */}
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Deduction Mix</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 12 }}>Where your deductions come from</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 4 }}>Deduction Mix</div>
+          <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 12 }}>Where your deductions come from</div>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
             <ResponsiveContainer width={160} height={160}>
               <PieChart>
                 <Pie data={deductionPie} cx="50%" cy="50%" innerRadius={42} outerRadius={72} paddingAngle={3} dataKey="value">
                   {deductionPie.map((entry, idx) => <Cell key={idx} fill={entry.color} />)}
                 </Pie>
-                <Tooltip formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
+                <Tooltip formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -164,7 +164,7 @@ export default function TaxPage() {
               <div key={d.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <span style={{ fontSize: 13 }}>{d.icon}</span>
-                  <span style={{ fontSize: 12, color: '#374151' }}>{d.category}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text)' }}>{d.category}</span>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: d.color }}>${d.amount.toLocaleString()}</span>
               </div>
@@ -177,8 +177,8 @@ export default function TaxPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* Monthly income trend */}
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Monthly Income</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 16 }}>Taxable income over the year</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 4 }}>Monthly Income</div>
+          <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 16 }}>Taxable income over the year</div>
           <ResponsiveContainer width="100%" height={160}>
             <AreaChart data={monthlyIncome} margin={{ top: 0, right: 0, left: -30, bottom: 0 }}>
               <defs>
@@ -190,7 +190,7 @@ export default function TaxPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
               <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, 'Income']} />
+              <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, 'Income']} />
               <Area type="monotone" dataKey="v" stroke="#7c3aed" strokeWidth={2.5} fill="url(#taxGrad)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -198,8 +198,8 @@ export default function TaxPage() {
 
         {/* Tax bracket breakdown */}
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Tax Brackets</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 16 }}>Federal income tax (2024)</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 4 }}>Tax Brackets</div>
+          <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 16 }}>Federal income tax (2024)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {taxBrackets.map((b, i) => (
               <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: b.filled ? '#f5f3ff' : '#f9fafb', border: `1px solid ${b.filled ? '#ddd6fe' : '#f3f4f6'}` }}>
@@ -221,8 +221,8 @@ export default function TaxPage() {
         <div className="card" style={{ padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Deductions</div>
-              <div style={{ fontSize: 13, color: '#9ca3af' }}>Total: ${totalDeductions.toLocaleString()}</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>Deductions</div>
+              <div style={{ fontSize: 13, color: 'var(--text-2)' }}>Total: ${totalDeductions.toLocaleString()}</div>
             </div>
             <button className="btn-outline" style={{ padding: '5px 10px', fontSize: 12 }}><Plus size={11} /> Add</button>
           </div>
@@ -232,10 +232,10 @@ export default function TaxPage() {
                 <span style={{ fontSize: 16, flexShrink: 0 }}>{d.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: '#374151', fontWeight: 500 }}>{d.category}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 500 }}>{d.category}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: d.color }}>${d.amount.toLocaleString()}</span>
                   </div>
-                  <div style={{ height: 5, background: '#f3f4f6', borderRadius: 3 }}>
+                  <div style={{ height: 5, background: 'rgba(255,255,255,0.05)', borderRadius: 3 }}>
                     <div style={{ height: '100%', width: `${(d.amount / d.max) * 100}%`, background: d.color, borderRadius: 3, transition: 'width 0.5s ease' }} />
                   </div>
                 </div>
@@ -253,19 +253,19 @@ export default function TaxPage() {
       <div className="card" style={{ padding: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Tax Documents</div>
-            <div style={{ fontSize: 13, color: '#9ca3af' }}>{docs.filter(d => d.status === 'Filed').length} of {docs.length} filed</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)' }}>Tax Documents</div>
+            <div style={{ fontSize: 13, color: 'var(--text-2)' }}>{docs.filter(d => d.status === 'Filed').length} of {docs.length} filed</div>
           </div>
           <button className="btn-outline" style={{ padding: '7px 14px', fontSize: 13 }}><Upload size={13} /> Upload Document</button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
           {docs.map((doc, i) => (
-            <div key={i} style={{ padding: '14px 16px', background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={i} style={{ padding: '14px 16px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 20 }}>{docStatus[doc.status].icon}</span>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 2 }}>{doc.name}</div>
-                  <div style={{ fontSize: 11, color: '#9ca3af' }}>{doc.date} {doc.size !== '—' ? `· ${doc.size}` : ''}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{doc.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{doc.date} {doc.size !== '—' ? `· ${doc.size}` : ''}</div>
                 </div>
               </div>
               <span className={`badge ${docStatus[doc.status].cls}`}>{doc.status}</span>

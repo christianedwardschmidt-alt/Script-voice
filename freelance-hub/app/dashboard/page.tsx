@@ -1,230 +1,210 @@
 'use client'
 
+import { useState } from 'react'
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  BarChart, Bar, PieChart, Pie, Cell,
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis,
+  CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts'
-import { Download, Flag, Clock, Play, Pause, TrendingUp, TrendingDown, ArrowUpRight, DollarSign, Briefcase, Users, Star } from 'lucide-react'
+import { TrendingUp, ArrowUpRight, Plus, Clock, CheckCircle, DollarSign } from 'lucide-react'
 
 const revenueData = [
-  { month: 'Jan', income: 6200, expenses: 1800 },
-  { month: 'Feb', income: 7400, expenses: 2100 },
-  { month: 'Mar', income: 6800, expenses: 1900 },
-  { month: 'Apr', income: 8900, expenses: 2400 },
-  { month: 'May', income: 7600, expenses: 2000 },
-  { month: 'Jun', income: 9800, expenses: 2600 },
-  { month: 'Jul', income: 8400, expenses: 2200 },
-  { month: 'Aug', income: 11200, expenses: 3100 },
-  { month: 'Sep', income: 10600, expenses: 2800 },
-  { month: 'Oct', income: 12800, expenses: 3400 },
-  { month: 'Nov', income: 11400, expenses: 3000 },
-  { month: 'Dec', income: 14200, expenses: 3800 },
+  { month: 'Jan', income: 7200,  expenses: 2100 },
+  { month: 'Feb', income: 9400,  expenses: 2800 },
+  { month: 'Mar', income: 8100,  expenses: 1900 },
+  { month: 'Apr', income: 11200, expenses: 3100 },
+  { month: 'May', income: 10800, expenses: 2600 },
+  { month: 'Jun', income: 13500, expenses: 3400 },
+  { month: 'Jul', income: 12200, expenses: 2900 },
+  { month: 'Aug', income: 14800, expenses: 3800 },
+  { month: 'Sep', income: 13100, expenses: 3200 },
+  { month: 'Oct', income: 16400, expenses: 4100 },
+  { month: 'Nov', income: 15200, expenses: 3600 },
+  { month: 'Dec', income: 17400, expenses: 4500 },
 ]
 
-const clientRevenue = [
-  { name: 'Tech Trophey', revenue: 24500, color: '#7c3aed' },
-  { name: 'Hencewood', revenue: 18200, color: '#ec4899' },
-  { name: 'Margono Studio', revenue: 15800, color: '#f59e0b' },
-  { name: 'NovaBuild', revenue: 12400, color: '#10b981' },
-  { name: 'DataSync', revenue: 8900, color: '#06b6d4' },
+const projectMix = [
+  { name: 'Web Design',   value: 38, color: '#8b5cf6' },
+  { name: 'Development',  value: 29, color: '#22d3ee' },
+  { name: 'Branding',     value: 18, color: '#f472b6' },
+  { name: 'Consulting',   value: 15, color: '#34d399' },
 ]
 
-const projectBreakdown = [
-  { name: 'Web Dev', value: 35, color: '#7c3aed' },
-  { name: 'UI Design', value: 28, color: '#ec4899' },
-  { name: 'Consulting', value: 18, color: '#f59e0b' },
-  { name: 'Mobile', value: 12, color: '#10b981' },
-  { name: 'Other', value: 7, color: '#06b6d4' },
-]
-
-const tasks = [
-  { title: 'Complete website redesign mockups', priority: 'high', client: 'Tech Trophey' },
-  { title: 'Review frontend code PR', priority: 'medium', client: 'Hencewood' },
-  { title: 'Client meeting — Project kickoff', priority: 'high', client: 'Margono Studio' },
-  { title: 'Update portfolio website', priority: 'low', client: 'Personal' },
-]
-
-const timeEntries = [
-  { project: 'Tech Trophey Website', task: 'UI Design', time: '2:34:12', running: true },
-  { project: 'Hencewood Digital', task: 'Code Review', time: '1:15:00', running: false },
+const topClients = [
+  { name: 'Acme Corp',     revenue: 28400, pct: 100, avatar: 'AC', color: '#8b5cf6' },
+  { name: 'Bloom Digital', revenue: 21200, pct: 75,  avatar: 'BD', color: '#22d3ee' },
+  { name: 'Nova Studio',   revenue: 17800, pct: 63,  avatar: 'NS', color: '#f472b6' },
+  { name: 'Peak Systems',  revenue: 14100, pct: 50,  avatar: 'PS', color: '#34d399' },
+  { name: 'Grid & Co',     revenue: 9400,  pct: 33,  avatar: 'GC', color: '#fbbf24' },
 ]
 
 const activity = [
-  { icon: '💳', text: 'Invoice #INV-090 paid', sub: 'Hencewood Digital', amount: '+$3,200', color: '#10b981', time: '2h ago' },
-  { icon: '📋', text: 'New project proposal sent', sub: 'NovaBuild Inc.', amount: '$5,400', color: '#7c3aed', time: '5h ago' },
-  { icon: '⚠️', text: 'Invoice #INV-088 overdue', sub: 'Margono Studio', amount: '$8,400', color: '#ef4444', time: '1d ago' },
-  { icon: '✅', text: 'Task completed', sub: 'Brand Redesign Q4', amount: null, color: '#10b981', time: '2d ago' },
+  { text: 'Invoice #1042 paid — Acme Corp',      sub: '$4,200',     time: '2m ago', dot: 'dot-green'  },
+  { text: 'Homepage redesign delivered',           sub: 'Nova Studio', time: '1h ago', dot: 'dot-purple' },
+  { text: 'New message from Bloom Digital',        sub: 'Project brief', time: '3h ago', dot: 'dot-cyan'   },
+  { text: 'Invoice #1041 paid — Grid & Co',        sub: '$1,800',     time: '6h ago', dot: 'dot-green'  },
+  { text: 'Brand kit assets exported',             sub: 'Peak Systems', time: '1d ago', dot: 'dot-pink'   },
 ]
 
-const priorityBadge = (p: string) => {
-  const map: Record<string, string> = { high: 'badge badge-high', medium: 'badge badge-medium', low: 'badge badge-low' }
-  return map[p] || 'badge'
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null
+  return (
+    <div style={{ background: '#0d0d1c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px' }}>
+      <div style={{ fontSize: 11, color: '#8892b0', marginBottom: 6 }}>{label}</div>
+      {payload.map((p: any) => (
+        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 600, color: p.color, marginBottom: 2 }}>
+          <span>${Number(p.value).toLocaleString()}</span>
+          <span style={{ color: '#3d4a6b', fontWeight: 400 }}>{p.name}</span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
-const totalRevenue = revenueData.reduce((a, c) => a + c.income, 0)
-const totalExpenses = revenueData.reduce((a, c) => a + c.expenses, 0)
-const netProfit = totalRevenue - totalExpenses
+const quickStats = [
+  { label: 'Active Clients', value: '12',   delta: '+3',   color: '#8b5cf6' },
+  { label: 'Tasks Done',     value: '89%',  delta: '+6%',  color: '#22d3ee' },
+  { label: 'Hours Billed',   value: '124h', delta: '+12h', color: '#f472b6' },
+  { label: 'Avg Rate',       value: '$85',  delta: '+$5',  color: '#34d399' },
+]
 
 export default function DashboardPage() {
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  const [chartPeriod, setChartPeriod] = useState('12M')
+  const totalRevenue  = revenueData.reduce((s, d) => s + d.income, 0)
+  const totalExpenses = revenueData.reduce((s, d) => s + d.expenses, 0)
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
+
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>
-            Welcome back, Christian 👋
+          <h1 style={{ fontSize: 23, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+            Good morning, Christian 👋
           </h1>
-          <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>{today}</p>
+          <p style={{ color: 'var(--text-3)', fontSize: 12.5, marginTop: 3 }}>
+            Here's what's happening with your business today.
+          </p>
         </div>
-        <button className="btn-primary"><Download size={15} /> Download report</button>
+        <button className="btn-primary"><Plus size={14} /> New Project</button>
       </div>
 
-      {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
-        {[
-          { label: 'Total Revenue', value: `$${(totalRevenue / 1000).toFixed(1)}k`, change: '+18.2%', up: true, icon: DollarSign, color: '#7c3aed', bg: '#ede9fe' },
-          { label: 'Net Profit', value: `$${(netProfit / 1000).toFixed(1)}k`, change: '+12.4%', up: true, icon: TrendingUp, color: '#10b981', bg: '#d1fae5' },
-          { label: 'Active Projects', value: '26', change: '+3', up: true, icon: Briefcase, color: '#f59e0b', bg: '#fef9c3' },
-          { label: 'Active Clients', value: '14', change: '-1', up: false, icon: Users, color: '#ec4899', bg: '#fce7f3' },
-        ].map(({ label, value, change, up, icon: Icon, color, bg }) => (
-          <div key={label} className="card card-hover" style={{ padding: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size={18} color={color} />
+      {/* ── BENTO GRID ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+
+        {/* ① Revenue hero — col 1-2 */}
+        <div className="card-glow" style={{ gridColumn: '1 / 3', padding: 28, position: 'relative', overflow: 'hidden', minHeight: 200 }}>
+          <div style={{ position: 'absolute', top: -60, right: -40, width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div className="section-label" style={{ marginBottom: 10 }}>TOTAL REVENUE · 2024</div>
+              <div className="gradient-text" style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-3px', lineHeight: 1 }}>
+                ${(totalRevenue / 1000).toFixed(1)}k
               </div>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: 12, fontWeight: 600, color: up ? '#059669' : '#ef4444', background: up ? '#d1fae5' : '#fee2e2', padding: '2px 8px', borderRadius: 20 }}>
-                {up ? <ArrowUpRight size={11} /> : <TrendingDown size={11} />} {change}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: '#34d399' }}>
+                  <TrendingUp size={13} /> +18.2%
+                </span>
+                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>vs last year</span>
+              </div>
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: '#111827', letterSpacing: '-0.5px' }}>{value}</div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 3 }}>{label}</div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4 }}>Net Profit</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+                ${((totalRevenue - totalExpenses) / 1000).toFixed(1)}k
+              </div>
+              <div style={{ fontSize: 11, color: '#34d399', fontWeight: 700, marginTop: 3 }}>72% margin</div>
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* Revenue chart + Pie */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div className="card" style={{ padding: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 16, color: '#111827' }}>Revenue Overview</div>
-              <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>Income vs. expenses — 2024</div>
+          {/* Sparkline bars */}
+          <div style={{ marginTop: 24, height: 44 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={revenueData} barSize={12} barGap={3} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                <defs>
+                  <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"   stopColor="#a78bfa" />
+                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.4} />
+                  </linearGradient>
+                </defs>
+                <Bar dataKey="income" fill="url(#sparkGrad)" radius={[3,3,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* ② Quick stats 2×2 — col 3 */}
+        <div style={{ gridColumn: '3 / 4', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          {quickStats.map(stat => (
+            <div key={stat.label} className="card" style={{ padding: '16px 14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: `${stat.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: stat.color, boxShadow: `0 0 8px ${stat.color}` }} />
+                </div>
+                <span style={{ fontSize: 10, fontWeight: 700, color: stat.color }}>{stat.delta}</span>
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 5 }}>{stat.label}</div>
             </div>
-            <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#6b7280' }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, background: '#7c3aed', display: 'inline-block' }} /> Income
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#6b7280' }}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, background: '#fca5a5', display: 'inline-block' }} /> Expenses
-              </span>
+          ))}
+        </div>
+
+        {/* ③ Income chart — col 1-2 */}
+        <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Income vs Expenses</div>
+              <div style={{ fontSize: 11.5, color: 'var(--text-3)', marginTop: 2 }}>Full year overview</div>
+            </div>
+            <div style={{ display: 'flex', gap: 5 }}>
+              {['3M','6M','12M'].map(p => (
+                <button key={p} onClick={() => setChartPeriod(p)} style={{
+                  padding: '4px 11px', borderRadius: 7, fontSize: 11.5, fontWeight: 600,
+                  cursor: 'pointer', border: '1px solid', transition: 'all 0.13s', fontFamily: 'inherit',
+                  background:   chartPeriod === p ? 'rgba(139,92,246,0.18)' : 'transparent',
+                  color:        chartPeriod === p ? '#a78bfa' : '#3d4a6b',
+                  borderColor:  chartPeriod === p ? 'rgba(139,92,246,0.3)' : 'transparent',
+                }}>{p}</button>
+              ))}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 24, marginBottom: 20, marginTop: 12 }}>
-            <div>
-              <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total income</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#111827' }}>${(totalRevenue / 1000).toFixed(1)}k</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Net profit</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#10b981' }}>${(netProfit / 1000).toFixed(1)}k</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Margin</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#7c3aed' }}>{Math.round((netProfit / totalRevenue) * 100)}%</div>
-            </div>
-          </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={revenueData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+          <ResponsiveContainer width="100%" height={190}>
+            <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -22 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                <linearGradient id="expenseGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor="#22d3ee" stopOpacity={0.22} />
+                  <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Tooltip
-                contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 12 }}
-                formatter={(v) => [`$${Number(v).toLocaleString()}`, '']}
-              />
-              <Area type="monotone" dataKey="income" stroke="#7c3aed" strokeWidth={2.5} fill="url(#incomeGrad)" dot={false} name="Income" />
-              <Area type="monotone" dataKey="expenses" stroke="#ef4444" strokeWidth={2} fill="url(#expGrad)" dot={false} name="Expenses" />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" tick={{ fill: '#3d4a6b', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#3d4a6b', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area type="monotone" dataKey="income"   name="Income"   stroke="#8b5cf6" strokeWidth={2} fill="url(#incomeGrad)"  />
+              <Area type="monotone" dataKey="expenses" name="Expenses" stroke="#22d3ee" strokeWidth={2} fill="url(#expenseGrad)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontWeight: 700, fontSize: 16, color: '#111827', marginBottom: 4 }}>Project Mix</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 16 }}>Revenue by category</div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <ResponsiveContainer width={170} height={170}>
-              <PieChart>
-                <Pie data={projectBreakdown} cx="50%" cy="50%" innerRadius={46} outerRadius={78} paddingAngle={3} dataKey="value" startAngle={90} endAngle={-270}>
-                  {projectBreakdown.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => [`${v}%`, '']} contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
+        {/* ④ Activity feed — col 3 */}
+        <div className="card" style={{ gridColumn: '3 / 4', padding: 22 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Live Activity</div>
+            <button style={{ fontSize: 11, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>See all</button>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
-            {projectBreakdown.map(item => (
-              <div key={item.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
-                  <span style={{ fontSize: 13, color: '#374151' }}>{item.name}</span>
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.value}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Client revenue bar + Tasks + Activity */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
-        {/* Revenue by client */}
-        <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Top Clients</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 20 }}>Revenue by client</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {clientRevenue.map((c, i) => (
-              <div key={c.name}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{c.name}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>${(c.revenue / 1000).toFixed(1)}k</span>
-                </div>
-                <div style={{ height: 6, background: '#f3f4f6', borderRadius: 3 }}>
-                  <div style={{ height: '100%', width: `${(c.revenue / 25000) * 100}%`, background: c.color, borderRadius: 3, transition: 'width 0.5s ease' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Tasks */}
-        <div className="card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <span style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>My Tasks</span>
-            <a href="/tasks" style={{ fontSize: 13, color: '#7c3aed', fontWeight: 500, textDecoration: 'none' }}>View all →</a>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {tasks.map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: i < tasks.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                <input type="checkbox" style={{ width: 15, height: 15, accentColor: '#7c3aed', cursor: 'pointer', marginTop: 3, flexShrink: 0 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {activity.map((a, i) => (
+              <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+                <div className={a.dot} style={{ marginTop: 5, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#111827', lineHeight: 1.4 }}>{t.title}</div>
-                  <div style={{ display: 'flex', gap: 6, marginTop: 5, flexWrap: 'wrap' }}>
-                    <span className={priorityBadge(t.priority)}><Flag size={9} /> {t.priority}</span>
-                    <span style={{ fontSize: 11, color: '#9ca3af' }}>{t.client}</span>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>{a.text}</div>
+                  <div style={{ display: 'flex', gap: 6, marginTop: 3 }}>
+                    <span style={{ fontSize: 11, color: '#8892b0' }}>{a.sub}</span>
+                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>· {a.time}</span>
                   </div>
                 </div>
               </div>
@@ -232,73 +212,56 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Activity feed */}
-        <div className="card" style={{ padding: 20 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 16 }}>Recent Activity</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {activity.map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, paddingBottom: 14, paddingTop: i > 0 ? 14 : 0, borderBottom: i < activity.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: item.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>
-                  {item.icon}
-                </div>
+        {/* ⑤ Top clients — col 1-2 */}
+        <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Top Clients</div>
+            <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+              View CRM <ArrowUpRight size={12} />
+            </button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
+            {topClients.map((c, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 13 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, background: `${c.color}18`, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: c.color, flexShrink: 0 }}>{c.avatar}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{item.text}</div>
-                  <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{item.sub}</div>
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  {item.amount && <div style={{ fontSize: 13, fontWeight: 700, color: item.color }}>{item.amount}</div>}
-                  <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>{item.time}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)' }}>{c.name}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: c.color }}>${c.revenue.toLocaleString()}</span>
+                  </div>
+                  <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)' }}>
+                    <div style={{ height: '100%', borderRadius: 99, width: `${c.pct}%`, background: `linear-gradient(90deg, ${c.color}, ${c.color}66)`, transition: 'width 0.6s ease' }} />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Monthly bar chart + Time tracker */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-        <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#111827', marginBottom: 4 }}>Monthly Earnings Breakdown</div>
-          <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 20 }}>Income vs. Expenses per month</div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={revenueData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barSize={14} barGap={4}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
-              <Bar dataKey="income" fill="#7c3aed" radius={[4, 4, 0, 0]} name="Income" />
-              <Bar dataKey="expenses" fill="#fca5a5" radius={[4, 4, 0, 0]} name="Expenses" />
-            </BarChart>
+        {/* ⑥ Project mix donut — col 3 */}
+        <div className="card" style={{ gridColumn: '3 / 4', padding: 24 }}>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Project Mix</div>
+          <ResponsiveContainer width="100%" height={130}>
+            <PieChart>
+              <Pie data={projectMix} cx="50%" cy="50%" innerRadius={38} outerRadius={56} paddingAngle={3} dataKey="value">
+                {projectMix.map((e, i) => <Cell key={i} fill={e.color} />)}
+              </Pie>
+              <Tooltip formatter={(v) => [`${v}%`, '']} contentStyle={{ background: '#0d0d1c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontSize: 12 }} />
+            </PieChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className="card" style={{ padding: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Clock size={16} color="#f59e0b" />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: 15, color: '#111827' }}>Time Tracker</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-            {timeEntries.map((entry, i) => (
-              <div key={i} style={{ padding: '14px 14px', background: '#f9fafb', borderRadius: 10, border: '1px solid #f3f4f6' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{entry.project}</div>
-                  <button style={{ width: 30, height: 30, borderRadius: '50%', background: entry.running ? '#7c3aed' : '#fff', border: `2px solid ${entry.running ? '#7c3aed' : '#e5e7eb'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                    {entry.running ? <Pause size={12} color="#fff" /> : <Play size={12} color="#6b7280" />}
-                  </button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 8 }}>
+            {projectMix.map((p, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, boxShadow: `0 0 6px ${p.color}` }} />
+                  <span style={{ fontSize: 11.5, color: 'var(--text-2)' }}>{p.name}</span>
                 </div>
-                <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>{entry.task}</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: entry.running ? '#7c3aed' : '#111827', fontFamily: 'monospace' }}>{entry.time}</div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: p.color }}>{p.value}%</span>
               </div>
             ))}
           </div>
-          <div style={{ padding: '12px 14px', background: '#ede9fe', borderRadius: 10 }}>
-            <div style={{ fontSize: 11, color: '#7c3aed', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Today Total</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: '#7c3aed' }}>3:49:12</div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>~$576 earned today</div>
-          </div>
         </div>
+
       </div>
     </div>
   )

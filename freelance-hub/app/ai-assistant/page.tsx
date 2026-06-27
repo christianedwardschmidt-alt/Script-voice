@@ -59,54 +59,54 @@ export default function AIAssistantPage() {
 
   const formatContent = (content: string) =>
     content.split('\n').map((line, i) => {
-      if (line.startsWith('**') && line.endsWith('**')) return <strong key={i} style={{ color: '#111827', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
-      if (line.startsWith('• ')) return <div key={i} style={{ paddingLeft: 16, color: '#374151', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#7c3aed' }}>•</span>{line.replace('• ', '')}</div>
+      if (line.startsWith('**') && line.endsWith('**')) return <strong key={i} style={{ color: 'var(--text)', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
+      if (line.startsWith('• ')) return <div key={i} style={{ paddingLeft: 16, color: 'var(--text)', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#7c3aed' }}>•</span>{line.replace('• ', '')}</div>
       if (line === '') return <div key={i} style={{ height: 5 }} />
-      return <span key={i} style={{ color: '#374151', lineHeight: 1.7, display: 'block' }}>{line}</span>
+      return <span key={i} style={{ color: 'var(--text)', lineHeight: 1.7, display: 'block' }}>{line}</span>
     })
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 56px)', background: '#f8f7fc', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: 'calc(100vh - 56px)', background: 'var(--bg)', overflow: 'hidden' }}>
       {/* Left capabilities panel */}
-      <div style={{ width: 240, background: '#fff', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', padding: '20px 12px', flexShrink: 0 }}>
+      <div style={{ width: 240, background: 'var(--card)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', padding: '20px 12px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '0 4px' }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bot size={16} color="#fff" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>LanceFlo AI</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>LanceFlo AI</div>
             <div style={{ fontSize: 11, color: '#7c3aed' }}>Powered by Claude</div>
           </div>
         </div>
 
-        <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9ca3af', marginBottom: 8, padding: '0 4px' }}>Capabilities</div>
+        <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-2)', marginBottom: 8, padding: '0 4px' }}>Capabilities</div>
         {[
           { icon: PenTool, label: 'Proposals & Contracts', color: '#7c3aed' },
           { icon: DollarSign, label: 'Financial Analysis', color: '#10b981' },
           { icon: Users, label: 'Client Emails', color: '#f59e0b' },
           { icon: Calculator, label: 'Tax Planning', color: '#ec4899' },
           { icon: Code, label: 'Tech Consulting', color: '#06b6d4' },
-          { icon: Globe, label: 'Market Research', color: '#6b7280' },
+          { icon: Globe, label: 'Market Research', color: 'var(--text-2)' },
         ].map(({ icon: Icon, label, color }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, marginBottom: 2, cursor: 'pointer', color: '#6b7280', fontSize: 13, transition: 'all 0.15s' }} className="card-hover">
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, marginBottom: 2, cursor: 'pointer', color: 'var(--text-2)', fontSize: 13, transition: 'all 0.15s' }} className="card-hover">
             <Icon size={14} color={color} />
             {label}
           </div>
         ))}
 
-        <div style={{ marginTop: 20, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#9ca3af', marginBottom: 8, padding: '0 4px' }}>Recent</div>
+        <div style={{ marginTop: 20, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-2)', marginBottom: 8, padding: '0 4px' }}>Recent</div>
         {['Tax optimization 2024', 'NovaBuild proposal', 'Contract template'].map(c => (
-          <div key={c} style={{ fontSize: 12, color: '#6b7280', padding: '5px 8px', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', borderRadius: 6 }} className="card-hover">{c}</div>
+          <div key={c} style={{ fontSize: 12, color: 'var(--text-2)', padding: '5px 8px', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', borderRadius: 6 }} className="card-hover">{c}</div>
         ))}
       </div>
 
       {/* Chat */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {/* Chat header */}
-        <div style={{ padding: '14px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', flexShrink: 0 }}>
+        <div style={{ padding: '14px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--card)', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>General Assistant</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>General Assistant</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#7c3aed', fontWeight: 500 }}>
             <Sparkles size={13} /> AI-powered
@@ -122,10 +122,10 @@ export default function AIAssistantPage() {
                   key={label}
                   onClick={() => send(prompt)}
                   className="card card-hover"
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', textAlign: 'left' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', border: '1px solid var(--border)', background: 'var(--card)', cursor: 'pointer', textAlign: 'left' }}
                 >
                   <Icon size={15} color="#7c3aed" style={{ flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{label}</span>
+                  <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{label}</span>
                   <ChevronRight size={12} color="#9ca3af" style={{ marginLeft: 'auto' }} />
                 </button>
               ))}
@@ -142,7 +142,7 @@ export default function AIAssistantPage() {
                   padding: '12px 16px',
                   borderRadius: msg.role === 'user' ? '14px 4px 14px 14px' : '4px 14px 14px 14px',
                   background: msg.role === 'user' ? '#7c3aed' : '#fff',
-                  border: msg.role === 'user' ? 'none' : '1px solid #e5e7eb',
+                  border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
                   fontSize: 14, lineHeight: 1.6,
                 }}>
                   {msg.role === 'user'
@@ -151,11 +151,11 @@ export default function AIAssistantPage() {
                   }
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 5 }}>
-                  <span style={{ fontSize: 11, color: '#9ca3af' }}>{msg.timestamp}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-2)' }}>{msg.timestamp}</span>
                   {msg.role === 'assistant' && (
                     <>
                       {[{ icon: Copy, label: 'Copy' }, { icon: ThumbsUp, label: 'Good' }, { icon: ThumbsDown, label: 'Bad' }].map(({ icon: Icon, label }) => (
-                        <button key={label} title={label} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: 2 }}>
+                        <button key={label} title={label} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', padding: 2 }}>
                           <Icon size={11} />
                         </button>
                       ))}
@@ -171,7 +171,7 @@ export default function AIAssistantPage() {
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Bot size={15} color="#fff" />
               </div>
-              <div style={{ padding: '14px 18px', borderRadius: '4px 14px 14px 14px', background: '#fff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ padding: '14px 18px', borderRadius: '4px 14px 14px 14px', background: 'var(--card)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 5 }}>
                 {[0, 1, 2].map(i => (
                   <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#7c3aed' }} className={`dot-${i + 1}`} />
                 ))}
@@ -182,19 +182,19 @@ export default function AIAssistantPage() {
         </div>
 
         {/* Input */}
-        <div style={{ padding: '12px 24px', borderTop: '1px solid #e5e7eb', background: '#fff', flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: '10px 12px' }}>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', marginBottom: 2 }}><Paperclip size={16} /></button>
+        <div style={{ padding: '12px 24px', borderTop: '1px solid var(--border)', background: 'var(--card)', flexShrink: 0 }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 12px' }}>
+            <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', marginBottom: 2 }}><Paperclip size={16} /></button>
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
               placeholder="Ask anything about your freelance business..."
               rows={1}
-              style={{ flex: 1, background: 'none', border: 'none', color: '#111827', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
+              style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text)', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
             />
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}><Mic size={16} /></button>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}><Mic size={16} /></button>
               <button
                 onClick={() => send()}
                 disabled={!input.trim() || thinking}
@@ -204,7 +204,7 @@ export default function AIAssistantPage() {
               </button>
             </div>
           </div>
-          <div style={{ textAlign: 'center', marginTop: 6, fontSize: 11, color: '#9ca3af' }}>
+          <div style={{ textAlign: 'center', marginTop: 6, fontSize: 11, color: 'var(--text-2)' }}>
             AI can make mistakes. Verify important financial and legal information.
           </div>
         </div>

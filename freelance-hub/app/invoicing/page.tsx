@@ -35,11 +35,11 @@ export default function BillingPage() {
   const filtered = activeStatus === 'All' ? invoices : invoices.filter(i => i.status === activeStatus)
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Billing</h1>
-          <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Create, send and track invoices</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Billing</h1>
+          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Create, send and track invoices</p>
         </div>
         <button className="btn-primary" onClick={() => setShowNew(true)}><Plus size={14} /> New Invoice</button>
       </div>
@@ -54,8 +54,8 @@ export default function BillingPage() {
           <div key={label} className="card card-hover" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontSize: 11, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>{label}</div>
-                <div style={{ fontSize: 26, fontWeight: 700, color: '#111827' }}>{value}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>{label}</div>
+                <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)' }}>{value}</div>
               </div>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={17} color={color} />
@@ -78,9 +78,9 @@ export default function BillingPage() {
       <div className="card" style={{ overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
+            <tr style={{ borderBottom: '1px solid var(--border)' }}>
               {['Invoice', 'Client', 'Project', 'Amount', 'Status', 'Issued', 'Due', ''].map(h => (
-                <th key={h} style={{ textAlign: 'left', fontSize: 11, color: '#9ca3af', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', padding: '13px 18px' }}>{h}</th>
+                <th key={h} style={{ textAlign: 'left', fontSize: 11, color: 'var(--text-2)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', padding: '13px 18px' }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -91,21 +91,21 @@ export default function BillingPage() {
                 <td style={{ padding: '14px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: inv.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{inv.avatar}</div>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{inv.client}</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{inv.client}</span>
                   </div>
                 </td>
-                <td style={{ padding: '14px 18px', fontSize: 13, color: '#6b7280' }}>{inv.project}</td>
+                <td style={{ padding: '14px 18px', fontSize: 13, color: 'var(--text-2)' }}>{inv.project}</td>
                 <td style={{ padding: '14px 18px', fontSize: 13, fontWeight: 700, color: inv.status === 'Overdue' ? '#ef4444' : '#111827' }}>${inv.amount.toLocaleString()}</td>
                 <td style={{ padding: '14px 18px' }}><span className={statusClass[inv.status]}>{inv.status}</span></td>
-                <td style={{ padding: '14px 18px', fontSize: 13, color: '#6b7280' }}>{inv.issued}</td>
+                <td style={{ padding: '14px 18px', fontSize: 13, color: 'var(--text-2)' }}>{inv.issued}</td>
                 <td style={{ padding: '14px 18px', fontSize: 13, color: inv.status === 'Overdue' ? '#ef4444' : '#6b7280', fontWeight: inv.status === 'Overdue' ? 600 : 400 }}>{inv.due}</td>
                 <td style={{ padding: '14px 18px' }}>
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <button style={{ width: 28, height: 28, borderRadius: 7, background: '#f9fafb', border: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280' }}><Eye size={13} /></button>
+                    <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-2)' }}><Eye size={13} /></button>
                     {inv.status !== 'Paid' && (
                       <button style={{ width: 28, height: 28, borderRadius: 7, background: '#ede9fe', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#7c3aed' }}><Send size={13} /></button>
                     )}
-                    <button style={{ width: 28, height: 28, borderRadius: 7, background: '#f9fafb', border: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280' }}><Download size={13} /></button>
+                    <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-2)' }}><Download size={13} /></button>
                   </div>
                 </td>
               </tr>
@@ -117,35 +117,35 @@ export default function BillingPage() {
       {/* New Invoice Modal */}
       {showNew && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 16, width: '90%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, width: '90%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--border)' }}>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>New Invoice</div>
-                <div style={{ fontSize: 12, color: '#9ca3af' }}>INV-2026-092</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>New Invoice</div>
+                <div style={{ fontSize: 12, color: 'var(--text-2)' }}>INV-2026-092</div>
               </div>
-              <button onClick={() => setShowNew(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af' }}><X size={18} /></button>
+              <button onClick={() => setShowNew(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}><X size={18} /></button>
             </div>
             <div style={{ padding: 24 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
                 {['Client Name', 'Client Email', 'Project Name', 'Due Date'].map(label => (
                   <div key={label}>
-                    <label style={{ fontSize: 13, fontWeight: 500, color: '#374151', display: 'block', marginBottom: 5 }}>{label}</label>
+                    <label style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', display: 'block', marginBottom: 5 }}>{label}</label>
                     <input className="search-input" style={{ paddingLeft: 12 }} placeholder={`Enter ${label.toLowerCase()}...`} />
                   </div>
                 ))}
               </div>
               {/* Line Items */}
-              <div style={{ fontWeight: 600, fontSize: 14, color: '#111827', marginBottom: 12 }}>Line Items</div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 12 }}>Line Items</div>
               {lineItems.map((item, i) => (
                 <div key={i} style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1fr 1fr', gap: 8, marginBottom: 8 }}>
                   {[item.description, item.qty, `$${item.rate}`, `$${item.total}`].map((val, j) => (
-                    <div key={j} style={{ padding: '9px 12px', background: '#f9fafb', border: '1px solid #f3f4f6', borderRadius: 8, fontSize: 13, color: j === 3 ? '#10b981' : '#374151', fontWeight: j === 3 ? 600 : 400 }}>
+                    <div key={j} style={{ padding: '9px 12px', background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: j === 3 ? '#10b981' : '#374151', fontWeight: j === 3 ? 600 : 400 }}>
                       {val}
                     </div>
                   ))}
                 </div>
               ))}
-              <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 14, marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
                 <div style={{ width: 240 }}>
                   {[['Subtotal', '$4,800'], ['Tax (0%)', '$0'], ['Total', '$4,800']].map(([l, v], i) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>

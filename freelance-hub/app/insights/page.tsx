@@ -52,10 +52,10 @@ export default function InsightsPage() {
   const chartData = activeTab === 'Projects' ? projectsData : revenueData
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Insights</h1>
-        <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Insights</h1>
+        <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
       </div>
 
       {/* Metric cards */}
@@ -70,8 +70,8 @@ export default function InsightsPage() {
                 <ArrowUpRight size={11} /> {change}
               </span>
             </div>
-            <div style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.5px' }}>{value}</div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 3 }}>{label}</div>
+            <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px' }}>{value}</div>
+            <div style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 3 }}>{label}</div>
           </div>
         ))}
       </div>
@@ -80,7 +80,7 @@ export default function InsightsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
         <div className="card" style={{ padding: 24 }}>
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 0, marginBottom: 20, borderBottom: '1px solid #f3f4f6', paddingBottom: 0 }}>
+          <div style={{ display: 'flex', gap: 0, marginBottom: 20, borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
             {tabs.map(tab => (
               <button
                 key={tab}
@@ -104,7 +104,7 @@ export default function InsightsPage() {
             <select
               value={range}
               onChange={e => setRange(e.target.value)}
-              style={{ marginLeft: 'auto', padding: '6px 10px', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 13, color: '#374151', background: '#fff', cursor: 'pointer' }}
+              style={{ marginLeft: 'auto', padding: '6px 10px', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: 'var(--text)', background: 'var(--card)', cursor: 'pointer' }}
             >
               {['Last 7 months', 'Last 3 months', 'Last year'].map(r => (
                 <option key={r}>{r}</option>
@@ -114,7 +114,7 @@ export default function InsightsPage() {
 
           {activeTab !== 'Clients' ? (
             <>
-              <div style={{ fontWeight: 600, fontSize: 16, color: '#111827', marginBottom: 16 }}>
+              <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)', marginBottom: 16 }}>
                 {activeTab === 'Revenue' ? 'Revenue Trend' : 'Projects Over Time'}
               </div>
               <ResponsiveContainer width="100%" height={240}>
@@ -128,7 +128,7 @@ export default function InsightsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
                   <Area type="monotone" dataKey="v" stroke="#7c3aed" strokeWidth={2.5} fill="url(#purpleGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -140,10 +140,10 @@ export default function InsightsPage() {
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{c.name}</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>${c.revenue.toLocaleString()}</span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{c.name}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>${c.revenue.toLocaleString()}</span>
                     </div>
-                    <div style={{ height: 5, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: 5, background: 'rgba(255,255,255,0.05)', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(c.revenue / 25000) * 100}%`, background: c.color, borderRadius: 4 }} />
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export default function InsightsPage() {
 
         {/* By Category */}
         <div className="card" style={{ padding: 24 }}>
-          <div style={{ fontWeight: 600, fontSize: 16, color: '#111827', marginBottom: 16 }}>By Category</div>
+          <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)', marginBottom: 16 }}>By Category</div>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
             <ResponsiveContainer width={180} height={180}>
               <PieChart>
@@ -164,7 +164,7 @@ export default function InsightsPage() {
                     <Cell key={idx} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v) => [`${v}%`, '']} contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, fontSize: 12 }} />
+                <Tooltip formatter={(v) => [`${v}%`, '']} contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -173,9 +173,9 @@ export default function InsightsPage() {
               <div key={item.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
-                  <span style={{ fontSize: 13, color: '#374151' }}>{item.name}</span>
+                  <span style={{ fontSize: 13, color: 'var(--text)' }}>{item.name}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.value}%</span>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{item.value}%</span>
               </div>
             ))}
           </div>

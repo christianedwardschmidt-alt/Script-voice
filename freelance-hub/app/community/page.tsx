@@ -160,10 +160,10 @@ export default function CommunityPage() {
   const fmtNum = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Community</h1>
-        <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Connect, share, and grow with fellow freelancers</p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Community</h1>
+        <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Connect, share, and grow with fellow freelancers</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 260px', gap: 20 }}>
@@ -171,16 +171,16 @@ export default function CommunityPage() {
         {/* ── Left panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="card" style={{ padding: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: '#111827' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
               <TrendingUp size={15} color="#7c3aed" /> Trending Topics
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {trending.map((t, i) => (
                 <div key={t.tag} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div style={{ fontSize: 11, color: '#9ca3af' }}>#{i + 1} freelance</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-2)' }}>#{i + 1} freelance</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#7c3aed' }}>{t.tag}</div>
-                    <div style={{ fontSize: 11, color: '#9ca3af' }}>{t.posts}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{t.posts}</div>
                   </div>
                   <MoreHorizontal size={14} color="#d1d5db" style={{ cursor: 'pointer' }} />
                 </div>
@@ -189,7 +189,7 @@ export default function CommunityPage() {
           </div>
 
           <div className="card" style={{ padding: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: '#111827' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
               <Users size={15} color="#7c3aed" /> Who to Follow
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -199,11 +199,11 @@ export default function CommunityPage() {
                     {s.avatar}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
                     <div style={{ fontSize: 11, color: '#7c3aed' }}>{s.handle}</div>
-                    <div style={{ fontSize: 11, color: '#9ca3af' }}>{s.followers} followers</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{s.followers} followers</div>
                   </div>
-                  <button style={{ padding: '5px 10px', border: '1px solid #7c3aed', borderRadius: 20, background: '#fff', fontSize: 11, fontWeight: 700, color: '#7c3aed', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <button style={{ padding: '5px 10px', border: '1px solid #7c3aed', borderRadius: 20, background: 'var(--card)', fontSize: 11, fontWeight: 700, color: '#7c3aed', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
                     Follow
                   </button>
                 </div>
@@ -231,7 +231,7 @@ export default function CommunityPage() {
           </div>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e5e7eb', marginBottom: 14 }}>
+          <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: 14 }}>
             {tabs.map(tab => (
               <button
                 key={tab}
@@ -258,9 +258,9 @@ export default function CommunityPage() {
                   value={newPost}
                   onChange={e => setNewPost(e.target.value)}
                   placeholder="What's on your mind?"
-                  style={{ width: '100%', background: 'none', border: 'none', fontSize: 15, color: '#111827', resize: 'none', outline: 'none', minHeight: 56, fontFamily: 'inherit', lineHeight: 1.5 }}
+                  style={{ width: '100%', background: 'none', border: 'none', fontSize: 15, color: 'var(--text)', resize: 'none', outline: 'none', minHeight: 56, fontFamily: 'inherit', lineHeight: 1.5 }}
                 />
-                <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
                   {[{ icon: Image, color: '#7c3aed' }, { icon: Smile, color: '#f59e0b' }, { icon: Link2, color: '#10b981' }].map(({ icon: Icon, color }, i) => (
                     <button key={i} style={{ background: 'none', border: 'none', cursor: 'pointer', color, padding: '4px 6px', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Icon size={17} />
@@ -295,12 +295,12 @@ export default function CommunityPage() {
                       </div>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>{post.author}</span>
+                          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{post.author}</span>
                           <span style={{ width: 16, height: 16, borderRadius: '50%', background: post.color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                             <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </span>
                         </div>
-                        <div style={{ fontSize: 12, color: '#9ca3af' }}>{post.handle} · {post.role} · {post.time} ago</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-2)' }}>{post.handle} · {post.role} · {post.time} ago</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -317,16 +317,16 @@ export default function CommunityPage() {
                   </div>
 
                   {/* Content */}
-                  <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, whiteSpace: 'pre-line', marginBottom: post.image ? 14 : 0 }}>
+                  <p style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.7, whiteSpace: 'pre-line', marginBottom: post.image ? 14 : 0 }}>
                     {post.content}
                   </p>
 
                   {/* Image */}
                   {post.image && (
-                    <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb', marginBottom: 0 }}>
+                    <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)', marginBottom: 0 }}>
                       <div style={{ height: 220, background: post.image.grad, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'relative' }}>
                         <div style={{ fontSize: 52 }}>{post.image.emoji}</div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', background: 'rgba(255,255,255,0.85)', padding: '4px 14px', borderRadius: 20, backdropFilter: 'blur(4px)' }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', background: 'rgba(255,255,255,0.85)', padding: '4px 14px', borderRadius: 20, backdropFilter: 'blur(4px)' }}>
                           {post.image.label}
                         </div>
                         {post.image.type === 'design' && (
@@ -338,15 +338,15 @@ export default function CommunityPage() {
 
                   {/* Stats row */}
                   <div style={{ display: 'flex', gap: 14, marginTop: 12, marginBottom: 10 }}>
-                    <span style={{ fontSize: 12, color: '#9ca3af', display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <span style={{ fontSize: 12, color: 'var(--text-2)', display: 'flex', alignItems: 'center', gap: 3 }}>
                       <Eye size={12} /> {fmtNum(post.views)} views
                     </span>
-                    <span style={{ fontSize: 12, color: '#9ca3af' }}>{post.comments} comments</span>
-                    <span style={{ fontSize: 12, color: '#9ca3af' }}>{post.shares} reposts</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-2)' }}>{post.comments} comments</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-2)' }}>{post.shares} reposts</span>
                   </div>
 
                   {/* Action bar */}
-                  <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 10, display: 'flex', gap: 4, justifyContent: 'space-between' }}>
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: 10, display: 'flex', gap: 4, justifyContent: 'space-between' }}>
                     <button
                       onClick={() => toggleLike(post.id)}
                       style={{ display: 'flex', alignItems: 'center', gap: 5, background: post.liked ? '#fce7f3' : 'none', border: 'none', cursor: 'pointer', color: post.liked ? '#db2777' : '#9ca3af', fontSize: 13, fontWeight: post.liked ? 700 : 400, padding: '7px 14px', borderRadius: 8, transition: 'all 0.15s' }}
@@ -354,7 +354,7 @@ export default function CommunityPage() {
                       <Heart size={15} fill={post.liked ? '#db2777' : 'none'} strokeWidth={post.liked ? 0 : 2} />
                       {fmtNum(post.likes)}
                     </button>
-                    <button style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 13, padding: '7px 14px', borderRadius: 8 }}>
+                    <button style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', fontSize: 13, padding: '7px 14px', borderRadius: 8 }}>
                       <MessageCircle size={15} /> {post.comments}
                     </button>
                     <button
@@ -363,7 +363,7 @@ export default function CommunityPage() {
                     >
                       <Repeat2 size={15} /> {post.shares}
                     </button>
-                    <button style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 13, padding: '7px 14px', borderRadius: 8 }}>
+                    <button style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', fontSize: 13, padding: '7px 14px', borderRadius: 8 }}>
                       <Share2 size={15} /> Share
                     </button>
                   </div>
@@ -408,19 +408,19 @@ export default function CommunityPage() {
 
           {/* Upcoming Events */}
           <div className="card" style={{ padding: 18 }}>
-            <div style={{ fontWeight: 600, fontSize: 14, color: '#111827', marginBottom: 14 }}>Upcoming Events</div>
+            <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>Upcoming Events</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
                 { name: 'Freelance Meetup NYC', date: 'Tomorrow, 6:00 PM', type: 'In-person', color: '#7c3aed', bg: '#ede9fe' },
                 { name: 'AI Tools Workshop', date: 'Jan 15, 2:00 PM', type: 'Virtual', color: '#10b981', bg: '#d1fae5' },
                 { name: 'Design Sprint', date: 'Jan 18, 10:00 AM', type: 'Virtual', color: '#f59e0b', bg: '#fef9c3' },
               ].map((event, i) => (
-                <div key={i} style={{ paddingBottom: i < 2 ? 12 : 0, borderBottom: i < 2 ? '1px solid #f3f4f6' : 'none' }}>
+                <div key={i} style={{ paddingBottom: i < 2 ? 12 : 0, borderBottom: i < 2 ? '1px solid var(--border)' : 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', marginBottom: 3 }}>{event.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>{event.name}</div>
                     <span style={{ fontSize: 10, fontWeight: 600, color: event.color, background: event.bg, padding: '2px 8px', borderRadius: 10, flexShrink: 0, marginLeft: 8 }}>{event.type}</span>
                   </div>
-                  <div style={{ fontSize: 12, color: '#9ca3af' }}>{event.date}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-2)' }}>{event.date}</div>
                 </div>
               ))}
             </div>
@@ -428,7 +428,7 @@ export default function CommunityPage() {
 
           {/* Hashtag suggest */}
           <div className="card" style={{ padding: 18 }}>
-            <div style={{ fontWeight: 600, fontSize: 14, color: '#111827', marginBottom: 12 }}>Your Top Tags</div>
+            <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 12 }}>Your Top Tags</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {['#Figma', '#NextJS', '#UIDesign', '#Freelance', '#Remote', '#SaaS', '#Branding'].map(tag => (
                 <span key={tag} className="badge badge-purple" style={{ cursor: 'pointer' }}>{tag}</span>

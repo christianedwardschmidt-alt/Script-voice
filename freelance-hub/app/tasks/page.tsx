@@ -81,7 +81,7 @@ const IntegrationIcon = ({ name }: { name: string }) => {
     github: '⚫',
   }
   return (
-    <div title={name} style={{ width: 24, height: 24, borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
+    <div title={name} style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>
       {icons[name] || '🔗'}
     </div>
   )
@@ -108,11 +108,11 @@ export default function TasksPage() {
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: '#f8f7fc', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.4px' }}>Tasks</h1>
-          <p style={{ color: '#9ca3af', fontSize: 14, marginTop: 2 }}>Manage your work and stay organized</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Tasks</h1>
+          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Manage your work and stay organized</p>
         </div>
         <button className="btn-primary">
           <Plus size={15} />
@@ -121,8 +121,8 @@ export default function TasksPage() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: '#111827' }}>{tasks.length}</span>
-        <span style={{ fontSize: 14, color: '#9ca3af', marginLeft: 6 }}>Total Tasks</span>
+        <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{tasks.length}</span>
+        <span style={{ fontSize: 14, color: 'var(--text-2)', marginLeft: 6 }}>Total Tasks</span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
@@ -131,7 +131,7 @@ export default function TasksPage() {
           {/* Search + Filter */}
           <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
             <div style={{ flex: 1, position: 'relative' }}>
-              <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#9ca3af' }} />
+              <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-2)' }} />
               <input
                 className="search-input"
                 placeholder="Search tasks..."
@@ -168,7 +168,7 @@ export default function TasksPage() {
                   alignItems: 'flex-start',
                   gap: 12,
                   padding: '16px 20px',
-                  borderBottom: i < filtered.length - 1 ? '1px solid #f3f4f6' : 'none',
+                  borderBottom: i < filtered.length - 1 ? '1px solid var(--border)' : 'none',
                   background: task.checked ? '#fafafa' : '#fff',
                 }}
               >
@@ -185,16 +185,16 @@ export default function TasksPage() {
                   }}>
                     {task.title}
                   </div>
-                  <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 10 }}>{task.description}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-2)', marginBottom: 10 }}>{task.description}</div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                     <span className={priorityClass[task.priority]}>
                       <Flag size={9} /> {task.priority}
                     </span>
                     <span className={statusClass[task.status]}>{task.status}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6b7280' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--text-2)' }}>
                       <Calendar size={11} /> {task.dueDate}
                     </span>
-                    <span style={{ fontSize: 12, color: '#6b7280' }}>{task.project}</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-2)' }}>{task.project}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
@@ -202,9 +202,9 @@ export default function TasksPage() {
                     <IntegrationIcon key={integ} name={integ} />
                   ))}
                   {task.integrations.length < 3 && (
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed #d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#9ca3af', fontSize: 14 }}>+</div>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed #d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-2)', fontSize: 14 }}>+</div>
                   )}
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', marginLeft: 4, padding: 4 }}>
+                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', marginLeft: 4, padding: 4 }}>
                     <MoreHorizontal size={16} />
                   </button>
                 </div>
@@ -219,14 +219,14 @@ export default function TasksPage() {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Calendar size={16} color="#6b7280" />
-              <span style={{ fontWeight: 600, fontSize: 14, color: '#111827' }}>Upcoming Deadlines</span>
+              <span style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>Upcoming Deadlines</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {upcomingDeadlines.map((d, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < upcomingDeadlines.length - 1 ? 12 : 0, borderBottom: i < upcomingDeadlines.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < upcomingDeadlines.length - 1 ? 12 : 0, borderBottom: i < upcomingDeadlines.length - 1 ? '1px solid var(--border)' : 'none' }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: '#111827', marginBottom: 3 }}>{d.title}</div>
-                    <div style={{ fontSize: 12, color: '#9ca3af' }}>{d.date}</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 3 }}>{d.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-2)' }}>{d.date}</div>
                   </div>
                   <span className={priorityDeadlineClass[d.priority]}>{d.priority}</span>
                 </div>
@@ -236,13 +236,13 @@ export default function TasksPage() {
 
           {/* Active Projects */}
           <div className="card" style={{ padding: 20 }}>
-            <div style={{ fontWeight: 600, fontSize: 14, color: '#111827', marginBottom: 14 }}>Active Projects</div>
+            <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)', marginBottom: 14 }}>Active Projects</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {activeProjects.map((p, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < activeProjects.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < activeProjects.length - 1 ? '1px solid var(--border)' : 'none' }}>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: '#111827' }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{p.tasks} active task{p.tasks > 1 ? 's' : ''}</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 2 }}>{p.tasks} active task{p.tasks > 1 ? 's' : ''}</div>
                   </div>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
                 </div>
