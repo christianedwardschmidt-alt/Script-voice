@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Search, Play, Star, Clock, BookOpen, Award, CheckCircle, Plus } from 'lucide-react'
 
 const courses = [
-  { id: 1, title: 'Advanced Figma for Freelancers', instructor: 'Sarah Chen', category: 'Design', duration: '8h 30m', lessons: 42, rating: 4.9, progress: 65, enrolled: true, price: 0, color: '#7c3aed', badge: 'Free' },
+  { id: 1, title: 'Advanced Figma for Freelancers', instructor: 'Sarah Chen', category: 'Design', duration: '8h 30m', lessons: 42, rating: 4.9, progress: 65, enrolled: true, price: 0, color: '#16a34a', badge: 'Free' },
   { id: 2, title: 'Full-Stack Next.js', instructor: 'Marcus Williams', category: 'Development', duration: '22h', lessons: 95, rating: 4.8, progress: 30, enrolled: true, price: 79, color: '#10b981', badge: 'Bestseller' },
   { id: 3, title: 'AI Tools for Freelancers', instructor: 'Priya Sharma', category: 'AI & ML', duration: '6h 45m', lessons: 28, rating: 4.9, progress: 0, enrolled: false, price: 49, color: '#f59e0b', badge: 'New' },
   { id: 4, title: 'Freelance Business Mastery', instructor: 'James Rodriguez', category: 'Business', duration: '11h', lessons: 56, rating: 4.7, progress: 100, enrolled: true, price: 89, color: '#ec4899', badge: null },
@@ -40,7 +40,7 @@ export default function EducationPage() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
         {[
-          { label: 'Enrolled', value: enrolled.length, icon: BookOpen, color: '#7c3aed', bg: '#ede9fe' },
+          { label: 'Enrolled', value: enrolled.length, icon: BookOpen, color: '#16a34a', bg: '#dcfce7' },
           { label: 'Completed', value: completed.length, icon: CheckCircle, color: '#10b981', bg: '#d1fae5' },
           { label: 'In Progress', value: enrolled.filter(c => c.progress > 0 && c.progress < 100).length, icon: Clock, color: '#f59e0b', bg: '#fef9c3' },
           { label: 'Certificates', value: completed.length, icon: Award, color: '#ec4899', bg: '#fce7f3' },
@@ -71,7 +71,7 @@ export default function EducationPage() {
             onClick={() => setActiveCategory(cat)}
             style={{
               padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: activeCategory === cat ? 600 : 400,
-              background: activeCategory === cat ? '#7c3aed' : '#fff',
+              background: activeCategory === cat ? '#16a34a' : '#fff',
               color: activeCategory === cat ? '#fff' : '#6b7280',
               border: activeCategory === cat ? 'none' : '1px solid rgba(0,0,0,0.06)',
               cursor: 'pointer', transition: 'all 0.15s',
@@ -116,10 +116,10 @@ export default function EducationPage() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                     <span style={{ fontSize: 11, color: '#78716c' }}>Progress</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: course.progress === 100 ? '#10b981' : '#7c3aed' }}>{course.progress}%</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: course.progress === 100 ? '#10b981' : '#16a34a' }}>{course.progress}%</span>
                   </div>
                   <div style={{ height: 5, background: '#f7f6f3', borderRadius: 3 }}>
-                    <div style={{ height: '100%', width: `${course.progress}%`, background: course.progress === 100 ? '#10b981' : '#7c3aed', borderRadius: 3 }} />
+                    <div style={{ height: '100%', width: `${course.progress}%`, background: course.progress === 100 ? '#10b981' : '#16a34a', borderRadius: 3 }} />
                   </div>
                 </div>
               ) : (

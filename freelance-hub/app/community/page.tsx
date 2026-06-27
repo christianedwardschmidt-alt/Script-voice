@@ -16,7 +16,7 @@ const trending = [
 ]
 
 const suggested = [
-  { name: 'Alex Thompson', handle: '@alex_design', role: 'Brand Designer', mutual: 12, avatar: '👨🏼‍🎨', color: '#7c3aed', followers: '4.2k' },
+  { name: 'Alex Thompson', handle: '@alex_design', role: 'Brand Designer', mutual: 12, avatar: '👨🏼‍🎨', color: '#16a34a', followers: '4.2k' },
   { name: 'Jessica Wu', handle: '@jess_markets', role: 'Marketing Expert', mutual: 8, avatar: '👩🏻‍💼', color: '#ec4899', followers: '8.1k' },
   { name: 'David Park', handle: '@dpark_video', role: 'Video Creator', mutual: 5, avatar: '👨🏻‍💻', color: '#f59e0b', followers: '11.5k' },
 ]
@@ -48,11 +48,11 @@ const posts: Post[] = [
     handle: '@sarahj_ux',
     role: 'Senior UI/UX Designer',
     avatar: '👩🏻‍🎨',
-    color: '#7c3aed',
+    color: '#16a34a',
     time: '2h',
     trending: true,
     content: 'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜',
-    image: { type: 'design', label: 'Dashboard Redesign Preview', emoji: '🖥', grad: 'linear-gradient(135deg, #ede9fe 0%, #c4b5fd 50%, #a78bfa 100%)' },
+    image: { type: 'design', label: 'Dashboard Redesign Preview', emoji: '🖥', grad: 'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)' },
     likes: 142,
     comments: 38,
     shares: 21,
@@ -121,8 +121,8 @@ const posts: Post[] = [
 ]
 
 const stories = [
-  { name: 'You', avatar: '⚡', color: '#7c3aed', isOwn: true },
-  { name: 'Sarah J.', avatar: '👩🏻‍🎨', color: '#7c3aed', isOwn: false },
+  { name: 'You', avatar: '⚡', color: '#16a34a', isOwn: true },
+  { name: 'Sarah J.', avatar: '👩🏻‍🎨', color: '#16a34a', isOwn: false },
   { name: 'Marcus', avatar: '👨🏾‍💻', color: '#10b981', isOwn: false },
   { name: 'Priya', avatar: '👩🏽‍💻', color: '#f59e0b', isOwn: false },
   { name: 'David', avatar: '👨🏻‍💻', color: '#ec4899', isOwn: false },
@@ -172,14 +172,14 @@ export default function CommunityPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="card" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: '#1c1917' }}>
-              <TrendingUp size={15} color="#7c3aed" /> Trending Topics
+              <TrendingUp size={15} color="#16a34a" /> Trending Topics
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {trending.map((t, i) => (
                 <div key={t.tag} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
                     <div style={{ fontSize: 11, color: '#78716c' }}>#{i + 1} freelance</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#7c3aed' }}>{t.tag}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#16a34a' }}>{t.tag}</div>
                     <div style={{ fontSize: 11, color: '#78716c' }}>{t.posts}</div>
                   </div>
                   <MoreHorizontal size={14} color="#d1d5db" style={{ cursor: 'pointer' }} />
@@ -190,7 +190,7 @@ export default function CommunityPage() {
 
           <div className="card" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: '#1c1917' }}>
-              <Users size={15} color="#7c3aed" /> Who to Follow
+              <Users size={15} color="#16a34a" /> Who to Follow
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {suggested.map(s => (
@@ -200,10 +200,10 @@ export default function CommunityPage() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1917', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
-                    <div style={{ fontSize: 11, color: '#7c3aed' }}>{s.handle}</div>
+                    <div style={{ fontSize: 11, color: '#16a34a' }}>{s.handle}</div>
                     <div style={{ fontSize: 11, color: '#78716c' }}>{s.followers} followers</div>
                   </div>
-                  <button style={{ padding: '5px 10px', border: '1px solid #7c3aed', borderRadius: 20, background: 'var(--card)', fontSize: 11, fontWeight: 700, color: '#7c3aed', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  <button style={{ padding: '5px 10px', border: '1px solid #16a34a', borderRadius: 20, background: 'var(--card)', fontSize: 11, fontWeight: 700, color: '#16a34a', cursor: 'pointer', flexShrink: 0, whiteSpace: 'nowrap' }}>
                     Follow
                   </button>
                 </div>
@@ -221,7 +221,7 @@ export default function CommunityPage() {
                 <div key={s.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer', flexShrink: 0 }}>
                   <div style={{ width: 52, height: 52, borderRadius: '50%', background: s.isOwn ? '#f3f4f6' : 'none', border: s.isOwn ? '2px dashed #d1d5db' : `2px solid ${s.color}`, padding: s.isOwn ? 0 : 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ width: s.isOwn ? 48 : 44, height: s.isOwn ? 48 : 44, borderRadius: '50%', background: s.isOwn ? '#f9fafb' : s.color + '20', border: s.isOwn ? 'none' : '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: s.isOwn ? 20 : 18 }}>
-                      {s.isOwn ? <span style={{ fontSize: 18, color: '#7c3aed' }}>+</span> : s.avatar}
+                      {s.isOwn ? <span style={{ fontSize: 18, color: '#16a34a' }}>+</span> : s.avatar}
                     </div>
                   </div>
                   <span style={{ fontSize: 11, color: s.isOwn ? '#6b7280' : '#111827', fontWeight: s.isOwn ? 400 : 500 }}>{s.name}</span>
@@ -240,7 +240,7 @@ export default function CommunityPage() {
                   padding: '10px 20px', border: 'none', background: 'none', fontSize: 14,
                   fontWeight: activeTab === tab ? 700 : 400,
                   color: activeTab === tab ? '#111827' : '#9ca3af',
-                  borderBottom: activeTab === tab ? '2px solid #7c3aed' : '2px solid transparent',
+                  borderBottom: activeTab === tab ? '2px solid #16a34a' : '2px solid transparent',
                   cursor: 'pointer', marginBottom: -1, transition: 'all 0.15s',
                 }}
               >
@@ -252,7 +252,7 @@ export default function CommunityPage() {
           {/* Compose box */}
           <div className="card" style={{ padding: 16, marginBottom: 14 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>⚡</div>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>⚡</div>
               <div style={{ flex: 1 }}>
                 <textarea
                   value={newPost}
@@ -261,7 +261,7 @@ export default function CommunityPage() {
                   style={{ width: '100%', background: 'none', border: 'none', fontSize: 15, color: '#1c1917', resize: 'none', outline: 'none', minHeight: 56, fontFamily: 'inherit', lineHeight: 1.5 }}
                 />
                 <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {[{ icon: Image, color: '#7c3aed' }, { icon: Smile, color: '#f59e0b' }, { icon: Link2, color: '#10b981' }].map(({ icon: Icon, color }, i) => (
+                  {[{ icon: Image, color: '#16a34a' }, { icon: Smile, color: '#f59e0b' }, { icon: Link2, color: '#10b981' }].map(({ icon: Icon, color }, i) => (
                     <button key={i} style={{ background: 'none', border: 'none', cursor: 'pointer', color, padding: '4px 6px', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Icon size={17} />
                     </button>
@@ -376,7 +376,7 @@ export default function CommunityPage() {
         {/* ── Right panel ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Top Contributor */}
-          <div style={{ background: 'linear-gradient(135deg, #7c3aed, #9f67f8)', borderRadius: 16, padding: 20, color: '#fff' }}>
+          <div style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', borderRadius: 16, padding: 20, color: '#fff' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <div style={{ width: 42, height: 42, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Award size={20} color="#fff" />
@@ -411,7 +411,7 @@ export default function CommunityPage() {
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Upcoming Events</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[
-                { name: 'Freelance Meetup NYC', date: 'Tomorrow, 6:00 PM', type: 'In-person', color: '#7c3aed', bg: '#ede9fe' },
+                { name: 'Freelance Meetup NYC', date: 'Tomorrow, 6:00 PM', type: 'In-person', color: '#16a34a', bg: '#dcfce7' },
                 { name: 'AI Tools Workshop', date: 'Jan 15, 2:00 PM', type: 'Virtual', color: '#10b981', bg: '#d1fae5' },
                 { name: 'Design Sprint', date: 'Jan 18, 10:00 AM', type: 'Virtual', color: '#f59e0b', bg: '#fef9c3' },
               ].map((event, i) => (
@@ -431,7 +431,7 @@ export default function CommunityPage() {
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 12 }}>Your Top Tags</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {['#Figma', '#NextJS', '#UIDesign', '#Freelance', '#Remote', '#SaaS', '#Branding'].map(tag => (
-                <span key={tag} className="badge badge-purple" style={{ cursor: 'pointer' }}>{tag}</span>
+                <span key={tag} className="badge badge-inprogress" style={{ cursor: 'pointer' }}>{tag}</span>
               ))}
             </div>
           </div>

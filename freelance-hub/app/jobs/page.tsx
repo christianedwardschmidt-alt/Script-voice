@@ -31,12 +31,12 @@ const jobs = [
 ]
 
 const typeColor: Record<string, string> = {
-  Contract: '#ede9fe',
+  Contract: '#dcfce7',
   Project: '#d1fae5',
   Retainer: '#fce7f3',
 }
 const typeText: Record<string, string> = {
-  Contract: '#7c3aed',
+  Contract: '#16a34a',
   Project: '#059669',
   Retainer: '#db2777',
 }
@@ -75,7 +75,7 @@ export default function JobsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f7f6f3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Briefcase size={20} color="#7c3aed" />
+                  <Briefcase size={20} color="#16a34a" />
                 </div>
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: '#1c1917' }}>{job.title}</div>
@@ -94,7 +94,7 @@ export default function JobsPage() {
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
               {job.tags.map(tag => (
-                <span key={tag} className="badge badge-purple">{tag}</span>
+                <span key={tag} className="badge badge-inprogress">{tag}</span>
               ))}
             </div>
 

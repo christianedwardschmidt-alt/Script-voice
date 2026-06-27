@@ -25,7 +25,7 @@ const monthlyIncome = [
 ]
 
 const deductions = [
-  { category: 'Home Office', amount: 3600, icon: '🏠', max: 5400, color: '#7c3aed' },
+  { category: 'Home Office', amount: 3600, icon: '🏠', max: 5400, color: '#16a34a' },
   { category: 'Software & Tools', amount: 2840, icon: '💻', max: 5400, color: '#ec4899' },
   { category: 'Health Insurance', amount: 5400, icon: '🏥', max: 5400, color: '#10b981' },
   { category: 'Equipment', amount: 4100, icon: '🖥', max: 5400, color: '#f59e0b' },
@@ -45,7 +45,7 @@ const docs = [
 ]
 
 const docStatus: Record<string, { cls: string; icon: string }> = {
-  Received: { cls: 'badge-purple', icon: '📥' },
+  Received: { cls: 'badge-inprogress', icon: '📥' },
   'In Progress': { cls: 'badge-medium', icon: '⏳' },
   Filed: { cls: 'badge-completed', icon: '✅' },
 }
@@ -77,7 +77,7 @@ export default function TaxPage() {
         <div style={{ display: 'flex', gap: 10 }}>
           <div style={{ display: 'flex', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 10, overflow: 'hidden' }}>
             {['2022', '2023', '2024'].map(y => (
-              <button key={y} onClick={() => setActiveYear(y)} style={{ padding: '8px 16px', border: 'none', background: activeYear === y ? '#7c3aed' : '#fff', color: activeYear === y ? '#fff' : '#6b7280', fontSize: 13, fontWeight: activeYear === y ? 700 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
+              <button key={y} onClick={() => setActiveYear(y)} style={{ padding: '8px 16px', border: 'none', background: activeYear === y ? '#16a34a' : '#fff', color: activeYear === y ? '#fff' : '#6b7280', fontSize: 13, fontWeight: activeYear === y ? 700 : 400, cursor: 'pointer', transition: 'all 0.15s' }}>
                 {y}
               </button>
             ))}
@@ -93,7 +93,7 @@ export default function TaxPage() {
           <div style={{ fontSize: 14, color: '#92400e', fontWeight: 600 }}>Q4 Estimated Tax due January 15 — $7,290</div>
           <div style={{ fontSize: 12, color: '#a16207', marginTop: 2 }}>Make your quarterly payment to avoid a 6% underpayment penalty</div>
         </div>
-        <a href="#" style={{ fontSize: 13, color: '#7c3aed', fontWeight: 700, textDecoration: 'none', marginLeft: 'auto', whiteSpace: 'nowrap', background: 'var(--card)', padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
+        <a href="#" style={{ fontSize: 13, color: '#16a34a', fontWeight: 700, textDecoration: 'none', marginLeft: 'auto', whiteSpace: 'nowrap', background: 'var(--card)', padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(0,0,0,0.06)' }}>
           Pay Now →
         </a>
       </div>
@@ -101,7 +101,7 @@ export default function TaxPage() {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
-          { label: 'Gross Income', value: `$${totalIncome.toLocaleString()}`, icon: DollarSign, color: '#7c3aed', bg: '#ede9fe' },
+          { label: 'Gross Income', value: `$${totalIncome.toLocaleString()}`, icon: DollarSign, color: '#16a34a', bg: '#dcfce7' },
           { label: 'Deductions', value: `$${totalDeductions.toLocaleString()}`, icon: TrendingDown, color: '#10b981', bg: '#d1fae5' },
           { label: 'Taxable Income', value: `$${taxableIncome.toLocaleString()}`, icon: Calculator, color: '#f59e0b', bg: '#fef9c3' },
           { label: 'Tax Owed', value: `$${totalTax.toLocaleString()}`, icon: FileText, color: '#ef4444', bg: '#fee2e2' },
@@ -126,7 +126,7 @@ export default function TaxPage() {
           <div style={{ fontWeight: 700, fontSize: 15, color: '#1c1917', marginBottom: 4 }}>Quarterly Breakdown</div>
           <div style={{ fontSize: 13, color: '#78716c', marginBottom: 6 }}>Income · Deductions · Tax Owed</div>
           <div style={{ display: 'flex', gap: 16, fontSize: 12, marginBottom: 20 }}>
-            {[{ color: '#7c3aed', label: 'Income' }, { color: '#10b981', label: 'Deductions' }, { color: '#f59e0b', label: 'Tax Owed' }].map(({ color, label }) => (
+            {[{ color: '#16a34a', label: 'Income' }, { color: '#10b981', label: 'Deductions' }, { color: '#f59e0b', label: 'Tax Owed' }].map(({ color, label }) => (
               <span key={label} style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#78716c' }}>
                 <span style={{ width: 10, height: 10, borderRadius: 2, background: color, display: 'inline-block' }} /> {label}
               </span>
@@ -138,7 +138,7 @@ export default function TaxPage() {
               <XAxis dataKey="quarter" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 10, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
-              <Bar dataKey="income" fill="#7c3aed" radius={[4, 4, 0, 0]} name="Income" />
+              <Bar dataKey="income" fill="#16a34a" radius={[4, 4, 0, 0]} name="Income" />
               <Bar dataKey="deductions" fill="#10b981" radius={[4, 4, 0, 0]} name="Deductions" />
               <Bar dataKey="taxOwed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Tax Owed" />
             </BarChart>
@@ -183,15 +183,15 @@ export default function TaxPage() {
             <AreaChart data={monthlyIncome} margin={{ top: 0, right: 0, left: -30, bottom: 0 }}>
               <defs>
                 <linearGradient id="taxGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
               <XAxis dataKey="month" tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 9, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 12 }} formatter={(v) => [`$${Number(v).toLocaleString()}`, 'Income']} />
-              <Area type="monotone" dataKey="v" stroke="#7c3aed" strokeWidth={2.5} fill="url(#taxGrad)" dot={false} />
+              <Area type="monotone" dataKey="v" stroke="#16a34a" strokeWidth={2.5} fill="url(#taxGrad)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -202,9 +202,9 @@ export default function TaxPage() {
           <div style={{ fontSize: 13, color: '#78716c', marginBottom: 16 }}>Federal income tax (2024)</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {taxBrackets.map((b, i) => (
-              <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: b.filled ? '#f7f6f3' : '#f9fafb', border: `1px solid ${b.filled ? '#ddd6fe' : '#f3f4f6'}` }}>
+              <div key={i} style={{ padding: '10px 12px', borderRadius: 10, background: b.filled ? '#f7f6f3' : '#f9fafb', border: `1px solid ${b.filled ? '#bbf7d0' : '#f3f4f6'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: b.filled ? '#7c3aed' : '#d1d5db' }}>{b.bracket}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: b.filled ? '#16a34a' : '#d1d5db' }}>{b.bracket}</span>
                   <span style={{ fontSize: 12, fontWeight: 600, color: b.filled ? '#111827' : '#9ca3af' }}>{b.filled ? `$${b.amount.toLocaleString()}` : '—'}</span>
                 </div>
                 <div style={{ fontSize: 11, color: b.filled ? '#6b7280' : '#d1d5db' }}>{b.range}</div>

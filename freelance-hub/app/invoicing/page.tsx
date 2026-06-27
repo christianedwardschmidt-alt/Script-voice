@@ -6,13 +6,13 @@ import { Plus, Download, Send, Eye, CheckCircle, Clock, AlertCircle, FileText, X
 type Status = 'Paid' | 'Pending' | 'Overdue' | 'Draft'
 const statusClass: Record<Status, string> = {
   Paid: 'badge badge-completed',
-  Pending: 'badge badge-purple',
+  Pending: 'badge badge-inprogress',
   Overdue: 'badge badge-high',
   Draft: 'badge badge-todo',
 }
 
 const invoices = [
-  { id: 'INV-089', client: 'Tech Trophey', project: 'Brand Redesign Q4', amount: 4800, status: 'Paid' as Status, issued: 'Nov 15', due: 'Dec 15', avatar: '👩🏻‍💼', color: '#7c3aed' },
+  { id: 'INV-089', client: 'Tech Trophey', project: 'Brand Redesign Q4', amount: 4800, status: 'Paid' as Status, issued: 'Nov 15', due: 'Dec 15', avatar: '👩🏻‍💼', color: '#16a34a' },
   { id: 'INV-090', client: 'Hencewood Digital', project: 'API Integration', amount: 3200, status: 'Pending' as Status, issued: 'Dec 1', due: 'Jan 1', avatar: '👨🏻‍💻', color: '#ec4899' },
   { id: 'INV-088', client: 'Margono Studio', project: 'Dashboard UI', amount: 8400, status: 'Overdue' as Status, issued: 'Oct 20', due: 'Nov 20', avatar: '👩🏿‍💼', color: '#f59e0b' },
   { id: 'INV-091', client: 'NovaBuild', project: 'Mobile App', amount: 2100, status: 'Draft' as Status, issued: 'Dec 20', due: 'Jan 20', avatar: '👨🏽‍💼', color: '#10b981' },
@@ -48,7 +48,7 @@ export default function BillingPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
           { label: 'Total Paid', value: `$${paid.toLocaleString()}`, icon: CheckCircle, color: '#10b981', bg: '#d1fae5' },
-          { label: 'Pending', value: `$${pending.toLocaleString()}`, icon: Clock, color: '#7c3aed', bg: '#ede9fe' },
+          { label: 'Pending', value: `$${pending.toLocaleString()}`, icon: Clock, color: '#16a34a', bg: '#dcfce7' },
           { label: 'Overdue', value: `$${overdue.toLocaleString()}`, icon: AlertCircle, color: '#ef4444', bg: '#fee2e2' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="card card-hover" style={{ padding: 20 }}>
@@ -87,7 +87,7 @@ export default function BillingPage() {
           <tbody>
             {filtered.map((inv, i) => (
               <tr key={inv.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid #f9fafb' : 'none' }}>
-                <td style={{ padding: '14px 18px', fontSize: 12, fontWeight: 700, color: '#7c3aed', fontFamily: 'monospace' }}>{inv.id}</td>
+                <td style={{ padding: '14px 18px', fontSize: 12, fontWeight: 700, color: '#16a34a', fontFamily: 'monospace' }}>{inv.id}</td>
                 <td style={{ padding: '14px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: inv.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{inv.avatar}</div>
@@ -103,7 +103,7 @@ export default function BillingPage() {
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c' }}><Eye size={13} /></button>
                     {inv.status !== 'Paid' && (
-                      <button style={{ width: 28, height: 28, borderRadius: 7, background: '#ede9fe', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#7c3aed' }}><Send size={13} /></button>
+                      <button style={{ width: 28, height: 28, borderRadius: 7, background: '#dcfce7', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#16a34a' }}><Send size={13} /></button>
                     )}
                     <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c' }}><Download size={13} /></button>
                   </div>
@@ -150,7 +150,7 @@ export default function BillingPage() {
                   {[['Subtotal', '$4,800'], ['Tax (0%)', '$0'], ['Total', '$4,800']].map(([l, v], i) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                       <span style={{ fontSize: 13, color: i === 2 ? '#111827' : '#6b7280', fontWeight: i === 2 ? 700 : 400 }}>{l}</span>
-                      <span style={{ fontSize: 13, color: i === 2 ? '#7c3aed' : '#111827', fontWeight: i === 2 ? 700 : 600 }}>{v}</span>
+                      <span style={{ fontSize: 13, color: i === 2 ? '#16a34a' : '#111827', fontWeight: i === 2 ? 700 : 600 }}>{v}</span>
                     </div>
                   ))}
                 </div>

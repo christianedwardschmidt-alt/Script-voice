@@ -6,7 +6,7 @@ import { Plus, Search, Building2, Mail, Phone, Globe, MoreHorizontal } from 'luc
 const clients = [
   {
     id: 1, name: 'Emma Thompson', company: 'Tech Trophey', email: 'emma@techtrophey.com',
-    phone: '+1 (555) 234-5678', website: 'techtrophey.com', avatar: '👩🏻‍💼', color: '#7c3aed',
+    phone: '+1 (555) 234-5678', website: 'techtrophey.com', avatar: '👩🏻‍💼', color: '#16a34a',
     status: 'active', revenue: 24500, projects: 5,
   },
   {

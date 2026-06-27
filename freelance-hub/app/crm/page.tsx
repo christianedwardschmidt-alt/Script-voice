@@ -28,7 +28,7 @@ const pipelineStages: PipelineStage[] = ['Lead', 'Proposal', 'Negotiation', 'Act
 
 const stageColors: Record<PipelineStage, string> = {
   Lead: '#64748b',
-  Proposal: '#6366f1',
+  Proposal: '#16a34a',
   Negotiation: '#f59e0b',
   Active: '#10b981',
   Completed: '#22d3ee',
@@ -56,13 +56,13 @@ const clients: Client[] = [
   {
     id: 1, name: 'Emma Thompson', company: 'Acme Corp', email: 'emma@acmecorp.com',
     phone: '+1 (555) 234-5678', website: 'acmecorp.com', stage: 'Active', value: 18500,
-    avatar: '👩🏻‍💼', avatarBg: '#6366f1', tags: ['Design', 'Retainer'], lastContact: '1h ago',
+    avatar: '👩🏻‍💼', avatarBg: '#16a34a', tags: ['Design', 'Retainer'], lastContact: '1h ago',
     starred: true, rating: 5, notes: 'Long-term client. Pays on time. Expanding to mobile app.',
   },
   {
     id: 2, name: 'James Park', company: 'TechFlow Inc', email: 'jpark@techflow.io',
     phone: '+1 (555) 345-6789', website: 'techflow.io', stage: 'Proposal', value: 12000,
-    avatar: '👨🏻‍💻', avatarBg: '#8b5cf6', tags: ['Development', 'API'], lastContact: '3h ago',
+    avatar: '👨🏻‍💻', avatarBg: '#22c55e', tags: ['Development', 'API'], lastContact: '3h ago',
     starred: false, rating: 4, notes: 'Needs detailed scope. Budget is flexible if scope is clear.',
   },
   {
@@ -92,8 +92,8 @@ const clients: Client[] = [
 ]
 
 const tagColors: Record<string, string> = {
-  Design: '#6366f1',
-  Development: '#8b5cf6',
+  Design: '#16a34a',
+  Development: '#22c55e',
   Marketing: '#ec4899',
   Content: '#f97316',
   API: '#06b6d4',
@@ -141,7 +141,7 @@ export default function CRMPage() {
           <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px' }}>CRM</h1>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Manage client relationships & pipeline</p>
         </div>
-        <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: '#6366f1', color: '#fff', fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 0 12px rgba(99,102,241,0.3)' }}>
+        <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: '#16a34a', color: '#fff', fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 0 12px rgba(22,163,74,0.3)' }}>
           <Plus size={14} />
           Add Client
         </button>
@@ -150,9 +150,9 @@ export default function CRMPage() {
       {/* Metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
-          { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#6366f1' },
+          { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#16a34a' },
           { label: 'Active Clients', value: activeCount, icon: Users, color: '#10b981' },
-          { label: 'Avg Deal Size', value: `$${avgValue.toLocaleString()}`, icon: TrendingUp, color: '#8b5cf6' },
+          { label: 'Avg Deal Size', value: `$${avgValue.toLocaleString()}`, icon: TrendingUp, color: '#22c55e' },
           { label: 'Avg Response', value: '2.4h', icon: Clock, color: '#f59e0b' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card-hover" style={card}>
@@ -225,7 +225,7 @@ export default function CRMPage() {
               onClick={() => setActiveView(v)}
               style={{
                 padding: '8px 14px',
-                background: activeView === v ? '#6366f1' : 'none',
+                background: activeView === v ? '#16a34a' : 'none',
                 border: 'none',
                 color: activeView === v ? '#fff' : '#64748b',
                 fontSize: 12,
@@ -261,7 +261,7 @@ export default function CRMPage() {
                   style={{
                     borderBottom: '1px solid #111120',
                     cursor: 'pointer',
-                    background: selectedClient?.id === client.id ? '#6366f108' : 'transparent',
+                    background: selectedClient?.id === client.id ? '#16a34a08' : 'transparent',
                     transition: 'background 0.15s',
                   }}
                   className="card-hover"
@@ -288,7 +288,7 @@ export default function CRMPage() {
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {client.tags.slice(0, 2).map((tag) => (
-                        <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#6366f1', background: `${tagColors[tag] || '#6366f1'}18`, padding: '2px 7px', borderRadius: 10 }}>
+                        <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#16a34a', background: `${tagColors[tag] || '#16a34a'}18`, padding: '2px 7px', borderRadius: 10 }}>
                           {tag}
                         </span>
                       ))}
@@ -332,7 +332,7 @@ export default function CRMPage() {
 
             <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
               {selectedClient.tags.map((tag) => (
-                <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#6366f1', background: `${tagColors[tag] || '#6366f1'}18`, padding: '3px 9px', borderRadius: 10, fontWeight: 500 }}>
+                <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#16a34a', background: `${tagColors[tag] || '#16a34a'}18`, padding: '3px 9px', borderRadius: 10, fontWeight: 500 }}>
                   {tag}
                 </span>
               ))}
@@ -372,7 +372,7 @@ export default function CRMPage() {
               <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>{selectedClient.notes}</div>
             </div>
 
-            <button style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: '#6366f1', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <button style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: '#16a34a', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
               View Full Profile
               <ArrowRight size={14} />
             </button>

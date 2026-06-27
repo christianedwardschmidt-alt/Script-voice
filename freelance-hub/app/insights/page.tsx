@@ -22,7 +22,7 @@ const projectsData = [
 ]
 
 const categoryData = [
-  { name: 'Web Development', value: 35, color: '#7c3aed' },
+  { name: 'Web Development', value: 35, color: '#16a34a' },
   { name: 'Design', value: 28, color: '#ec4899' },
   { name: 'Consulting', value: 18, color: '#f59e0b' },
   { name: 'Mobile', value: 12, color: '#10b981' },
@@ -30,14 +30,14 @@ const categoryData = [
 ]
 
 const topClients = [
-  { name: 'Tech Trophey', revenue: 24500, projects: 5, color: '#7c3aed' },
+  { name: 'Tech Trophey', revenue: 24500, projects: 5, color: '#16a34a' },
   { name: 'Hencewood Digital', revenue: 18200, projects: 3, color: '#ec4899' },
   { name: 'Margono Studio', revenue: 15800, projects: 4, color: '#f59e0b' },
   { name: 'DataSync Corp', revenue: 12400, projects: 2, color: '#10b981' },
 ]
 
 const metrics = [
-  { label: 'Revenue This Month', value: '$9,200', change: '+18%', icon: DollarSign, color: '#7c3aed', bg: '#ede9fe' },
+  { label: 'Revenue This Month', value: '$9,200', change: '+18%', icon: DollarSign, color: '#16a34a', bg: '#dcfce7' },
   { label: 'Active Projects', value: '26', change: '+5', icon: Briefcase, color: '#10b981', bg: '#d1fae5' },
   { label: 'Total Clients', value: '42', change: '+5', icon: Users, color: '#f59e0b', bg: '#fef9c3' },
   { label: 'Hours Worked', value: '156h', change: '+12%', icon: Clock, color: '#ec4899', bg: '#fce7f3' },
@@ -92,7 +92,7 @@ export default function InsightsPage() {
                   fontSize: 14,
                   fontWeight: activeTab === tab ? 600 : 400,
                   color: activeTab === tab ? '#111827' : '#9ca3af',
-                  borderBottom: activeTab === tab ? '2px solid #7c3aed' : '2px solid transparent',
+                  borderBottom: activeTab === tab ? '2px solid #16a34a' : '2px solid transparent',
                   cursor: 'pointer',
                   marginBottom: -1,
                   transition: 'all 0.15s',
@@ -120,16 +120,16 @@ export default function InsightsPage() {
               <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="purpleGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                    <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#16a34a" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="v" stroke="#7c3aed" strokeWidth={2.5} fill="url(#purpleGrad)" dot={false} />
+                  <Area type="monotone" dataKey="v" stroke="#16a34a" strokeWidth={2.5} fill="url(#greenGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </>
