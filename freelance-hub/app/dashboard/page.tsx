@@ -78,10 +78,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 23, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: 23, fontWeight: 800, color: '#1a1535', letterSpacing: '-0.5px' }}>
             Good morning, Christian 👋
           </h1>
-          <p style={{ color: 'var(--text-3)', fontSize: 12.5, marginTop: 3 }}>
+          <p style={{ color: '#aba8cc', fontSize: 12.5, marginTop: 3 }}>
             Here's what's happening with your business today.
           </p>
         </div>
@@ -105,12 +105,12 @@ export default function DashboardPage() {
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: '#34d399' }}>
                   <TrendingUp size={13} /> +18.2%
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--text-3)' }}>vs last year</span>
+                <span style={{ fontSize: 12, color: '#aba8cc' }}>vs last year</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'var(--text-3)', marginBottom: 4 }}>Net Profit</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+              <div style={{ fontSize: 11, color: '#aba8cc', marginBottom: 4 }}>Net Profit</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#1a1535', letterSpacing: '-0.5px' }}>
                 ${((totalRevenue - totalExpenses) / 1000).toFixed(1)}k
               </div>
               <div style={{ fontSize: 11, color: '#34d399', fontWeight: 700, marginTop: 3 }}>72% margin</div>
@@ -143,8 +143,8 @@ export default function DashboardPage() {
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, color: stat.color }}>{stat.delta}</span>
               </div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1 }}>{stat.value}</div>
-              <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 5 }}>{stat.label}</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#1a1535', letterSpacing: '-0.5px', lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontSize: 10.5, color: '#aba8cc', marginTop: 5 }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -153,8 +153,8 @@ export default function DashboardPage() {
         <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Income vs Expenses</div>
-              <div style={{ fontSize: 11.5, color: 'var(--text-3)', marginTop: 2 }}>Full year overview</div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Income vs Expenses</div>
+              <div style={{ fontSize: 11.5, color: '#aba8cc', marginTop: 2 }}>Full year overview</div>
             </div>
             <div style={{ display: 'flex', gap: 5 }}>
               {['3M','6M','12M'].map(p => (
@@ -193,7 +193,7 @@ export default function DashboardPage() {
         {/* ④ Activity feed — col 3 */}
         <div className="card" style={{ gridColumn: '3 / 4', padding: 22 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Live Activity</div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Live Activity</div>
             <button style={{ fontSize: 11, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>See all</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -201,10 +201,10 @@ export default function DashboardPage() {
               <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
                 <div className={a.dot} style={{ marginTop: 5, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>{a.text}</div>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#1a1535', lineHeight: 1.35 }}>{a.text}</div>
                   <div style={{ display: 'flex', gap: 6, marginTop: 3 }}>
                     <span style={{ fontSize: 11, color: '#8892b0' }}>{a.sub}</span>
-                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>· {a.time}</span>
+                    <span style={{ fontSize: 10, color: '#aba8cc' }}>· {a.time}</span>
                   </div>
                 </div>
               </div>
@@ -215,7 +215,7 @@ export default function DashboardPage() {
         {/* ⑤ Top clients — col 1-2 */}
         <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)' }}>Top Clients</div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Top Clients</div>
             <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
               View CRM <ArrowUpRight size={12} />
             </button>
@@ -226,7 +226,7 @@ export default function DashboardPage() {
                 <div style={{ width: 30, height: 30, borderRadius: 9, background: `${c.color}18`, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: c.color, flexShrink: 0 }}>{c.avatar}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)' }}>{c.name}</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#1a1535' }}>{c.name}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: c.color }}>${c.revenue.toLocaleString()}</span>
                   </div>
                   <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)' }}>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
 
         {/* ⑥ Project mix donut — col 3 */}
         <div className="card" style={{ gridColumn: '3 / 4', padding: 24 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Project Mix</div>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535', marginBottom: 16 }}>Project Mix</div>
           <ResponsiveContainer width="100%" height={130}>
             <PieChart>
               <Pie data={projectMix} cx="50%" cy="50%" innerRadius={38} outerRadius={56} paddingAngle={3} dataKey="value">
@@ -254,7 +254,7 @@ export default function DashboardPage() {
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, boxShadow: `0 0 6px ${p.color}` }} />
-                  <span style={{ fontSize: 11.5, color: 'var(--text-2)' }}>{p.name}</span>
+                  <span style={{ fontSize: 11.5, color: '#6b6899' }}>{p.name}</span>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: p.color }}>{p.value}%</span>
               </div>

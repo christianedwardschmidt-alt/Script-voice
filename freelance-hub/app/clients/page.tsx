@@ -33,8 +33,8 @@ export default function ClientsPage() {
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Clients</h1>
-          <p style={{ color: 'var(--text-2)', fontSize: 14, marginTop: 2 }}>Manage your client relationships</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1a1535', letterSpacing: '-0.4px' }}>Clients</h1>
+          <p style={{ color: '#6b6899', fontSize: 14, marginTop: 2 }}>Manage your client relationships</p>
         </div>
         <button className="btn-primary">
           <Plus size={15} />
@@ -44,7 +44,7 @@ export default function ClientsPage() {
 
       {/* Search */}
       <div style={{ position: 'relative', maxWidth: 400, marginBottom: 20 }}>
-        <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-2)' }} />
+        <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#6b6899' }} />
         <input
           className="search-input"
           placeholder="Search clients..."
@@ -56,7 +56,7 @@ export default function ClientsPage() {
       {filtered.length === 0 ? (
         <div className="card" style={{ padding: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <Building2 size={48} color="#d1d5db" />
-          <p style={{ color: 'var(--text-2)', fontSize: 15 }}>No clients found</p>
+          <p style={{ color: '#6b6899', fontSize: 15 }}>No clients found</p>
           <button className="btn-primary">
             <Plus size={14} /> Add your first client
           </button>
@@ -71,11 +71,11 @@ export default function ClientsPage() {
                     {client.avatar}
                   </div>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{client.name}</div>
-                    <div style={{ fontSize: 13, color: 'var(--text-2)' }}>{client.company}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: '#1a1535' }}>{client.name}</div>
+                    <div style={{ fontSize: 13, color: '#6b6899' }}>{client.company}</div>
                   </div>
                 </div>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', padding: 4 }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b6899', padding: 4 }}>
                   <MoreHorizontal size={16} />
                 </button>
               </div>
@@ -87,18 +87,18 @@ export default function ClientsPage() {
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Icon size={13} color="#9ca3af" />
-                    <span style={{ fontSize: 12, color: 'var(--text-2)' }}>{text}</span>
+                    <span style={{ fontSize: 12, color: '#6b6899' }}>{text}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ borderTop: '1px solid rgba(120,100,200,0.1)', paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>${client.revenue.toLocaleString()}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-2)' }}>Total revenue</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1a1535' }}>${client.revenue.toLocaleString()}</div>
+                  <div style={{ fontSize: 11, color: '#6b6899' }}>Total revenue</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{client.projects}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-2)' }}>Projects</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1a1535' }}>{client.projects}</div>
+                  <div style={{ fontSize: 11, color: '#6b6899' }}>Projects</div>
                 </div>
                 <span className="badge badge-completed">{client.status}</span>
               </div>

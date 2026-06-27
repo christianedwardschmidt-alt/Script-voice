@@ -18,13 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
 
-          {/* Glass header */}
+          {/* Header */}
           <header style={{
             height: 56,
-            background: "rgba(6,6,15,0.82)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.055)",
+            background: "#ffffff",
+            borderBottom: "1px solid rgba(120,100,200,0.1)",
             display: "flex",
             alignItems: "center",
             padding: "0 24px",
@@ -45,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
               {/* Notification bell */}
-              <button style={{ background: "none", border: "none", color: "#3d4a6b", cursor: "pointer", display: "flex", alignItems: "center", padding: 6, borderRadius: 8 }}>
+              <button style={{ background: "none", border: "none", color: "#aba8cc", cursor: "pointer", display: "flex", alignItems: "center", padding: 6, borderRadius: 8 }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
@@ -55,8 +53,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{
                 display: "flex", alignItems: "center", gap: 8,
                 padding: "6px 12px",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "#f5f3ff",
+                border: "1px solid #e0d9ff",
                 borderRadius: 9, cursor: "pointer",
               }}>
                 <div style={{
@@ -65,8 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 10, fontWeight: 800, color: "#fff",
                 }}>A</div>
-                <span style={{ fontSize: 12.5, color: "#8892b0", fontWeight: 500 }}>Acme Studio</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3d4a6b" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                <span style={{ fontSize: 12.5, color: "#6b6899", fontWeight: 500 }}>Acme Studio</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#aba8cc" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
               </div>
 
               {/* Avatar */}
