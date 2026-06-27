@@ -37,7 +37,7 @@ export default function Sidebar() {
     <aside style={{
       width: 218,
       minHeight: '100vh',
-      background: '#111110',
+      background: '#1e1b4b',
       borderRight: '1px solid rgba(255,255,255,0.07)',
       display: 'flex',
       flexDirection: 'column',

@@ -3,18 +3,18 @@
    ============================================= */
 
 :root {
-  --bg:          #f7f6f3;
-  --bg-2:        #f0efe9;
-  --bg-3:        #e7e5e0;
+  --bg:          #f4f3ff;
+  --bg-2:        #ece9fe;
+  --bg-3:        #ddd6fe;
   --card:        #ffffff;
-  --card-hover:  #fafaf8;
-  --border:      #e5e4df;
-  --border-hi:   #cccbc5;
-  --text:        #1c1917;
-  --text-2:      #78716c;
-  --text-3:      #a8a29e;
-  --purple:      #7c3aed;
-  --purple-2:    #8b5cf6;
+  --card-hover:  #faf9ff;
+  --border:      #e0dafa;
+  --border-hi:   #c4b5fd;
+  --text:        #1e1b4b;
+  --text-2:      #5b5894;
+  --text-3:      #9b98c0;
+  --purple:      #4f46e5;
+  --purple-2:    #6366f1;
   --cyan:        #0891b2;
   --pink:        #db2777;
   --green:       #16a34a;
@@ -51,10 +51,10 @@ a { text-decoration: none; color: inherit; }
 }
 
 .card-glow {
-  background: linear-gradient(145deg, #7c3aed 0%, #a855f7 100%);
+  background: linear-gradient(145deg, #4338ca 0%, #6366f1 100%);
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(124,58,237,0.35), 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(79,70,229,0.38), 0 2px 8px rgba(0,0,0,0.1);
   color: #ffffff;
 }
 
@@ -111,19 +111,19 @@ a { text-decoration: none; color: inherit; }
   gap: 7px;
   padding: 9px 18px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  background: linear-gradient(135deg, var(--purple), var(--purple-2));
   color: #fff;
   font-size: 13px;
   font-weight: 600;
   border: none;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 4px 18px rgba(124,58,237,0.38);
+  box-shadow: 0 4px 18px rgba(79,70,229,0.35);
   white-space: nowrap;
   font-family: inherit;
 }
 .btn-primary:hover {
-  box-shadow: 0 6px 26px rgba(124,58,237,0.58);
+  box-shadow: 0 6px 26px rgba(79,70,229,0.55);
   transform: translateY(-1px);
 }
 
@@ -163,8 +163,8 @@ a { text-decoration: none; color: inherit; }
 }
 .search-input:focus {
   background: var(--card);
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
 }
 .search-input::placeholder { color: var(--text-3); }
 
