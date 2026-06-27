@@ -52,9 +52,9 @@ export default function Sidebar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
             width: 36, height: 36, borderRadius: 11,
-            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+            background: 'linear-gradient(135deg, #9333ea, #d946ef)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 16px rgba(124,58,237,0.45)',
+            boxShadow: '0 4px 16px rgba(168,85,247,0.55)',
             flexShrink: 0,
           }}>
             <span style={{ color: '#fff', fontWeight: 900, fontSize: 13, letterSpacing: '-0.5px' }}>LF</span>

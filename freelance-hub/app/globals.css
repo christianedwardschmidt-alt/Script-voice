@@ -201,7 +201,7 @@ a { text-decoration: none; color: inherit; }
 
 /* ─── GRADIENT UTILITIES ────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
+  background: linear-gradient(135deg, #c084fc 0%, #e879f9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
