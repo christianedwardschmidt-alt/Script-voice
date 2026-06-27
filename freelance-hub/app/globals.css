@@ -3,21 +3,21 @@
    ============================================= */
 
 :root {
-  --bg:          #f3f0ff;
-  --bg-2:        #ebe6ff;
-  --bg-3:        #e0d9ff;
+  --bg:          #f7f6f3;
+  --bg-2:        #f0efe9;
+  --bg-3:        #e7e5e0;
   --card:        #ffffff;
-  --card-hover:  #faf8ff;
-  --border:      rgba(120, 100, 200, 0.12);
-  --border-hi:   rgba(120, 100, 200, 0.22);
-  --text:        #1a1535;
-  --text-2:      #6b6899;
-  --text-3:      #aba8cc;
+  --card-hover:  #fafaf8;
+  --border:      #e5e4df;
+  --border-hi:   #cccbc5;
+  --text:        #1c1917;
+  --text-2:      #78716c;
+  --text-3:      #a8a29e;
   --purple:      #7c3aed;
   --purple-2:    #8b5cf6;
   --cyan:        #0891b2;
   --pink:        #db2777;
-  --green:       #059669;
+  --green:       #16a34a;
   --amber:       #d97706;
   --red:         #dc2626;
 }
@@ -39,22 +39,23 @@ a { text-decoration: none; color: inherit; }
 /* ─── SCROLLBAR ─────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.2); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.35); }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
 
 /* ─── CARD ──────────────────────────────────── */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(100, 80, 200, 0.07), 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
 }
 
 .card-glow {
-  background: linear-gradient(135deg, rgba(124,58,237,0.06) 0%, rgba(219,39,119,0.03) 100%), #ffffff;
-  border: 1px solid rgba(124,58,237,0.18);
+  background: linear-gradient(145deg, #7c3aed 0%, #a855f7 100%);
+  border: none;
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(124,58,237,0.1), 0 1px 4px rgba(0,0,0,0.04);
+  box-shadow: 0 8px 32px rgba(124,58,237,0.35), 0 2px 8px rgba(0,0,0,0.1);
+  color: #ffffff;
 }
 
 /* ─── NAV ───────────────────────────────────── */
@@ -152,8 +153,8 @@ a { text-decoration: none; color: inherit; }
   width: 100%;
   padding: 9px 12px 9px 36px;
   border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #e0d9ff;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
   color: var(--text);
   font-size: 13px;
   outline: none;
@@ -161,8 +162,9 @@ a { text-decoration: none; color: inherit; }
   font-family: inherit;
 }
 .search-input:focus {
+  background: var(--card);
   border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
 }
 .search-input::placeholder { color: var(--text-3); }
 
@@ -179,11 +181,13 @@ a { text-decoration: none; color: inherit; }
   transition: all 0.13s;
   font-family: inherit;
 }
-.tab-btn:hover { color: var(--text); background: #ebe6ff; }
+.tab-btn:hover { color: var(--text); background: var(--bg-2); }
 .tab-btn.active {
-  background: #ede9ff;
-  color: #7c3aed;
-  border-color: #ddd6fe;
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  font-weight: 600;
 }
 
 /* ─── SECTION LABELS ────────────────────────── */

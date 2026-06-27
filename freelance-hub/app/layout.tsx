@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <header style={{
             height: 56,
             background: "#ffffff",
-            borderBottom: "1px solid rgba(120,100,200,0.1)",
+            borderBottom: "1px solid #e5e4df",
             display: "flex",
             alignItems: "center",
             padding: "0 24px",
@@ -53,8 +53,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div style={{
                 display: "flex", alignItems: "center", gap: 8,
                 padding: "6px 12px",
-                background: "#f5f3ff",
-                border: "1px solid #e0d9ff",
+                background: "#f7f6f3",
+                border: "1px solid #e5e4df",
                 borderRadius: 9, cursor: "pointer",
               }}>
                 <div style={{
@@ -63,8 +63,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 10, fontWeight: 800, color: "#fff",
                 }}>A</div>
-                <span style={{ fontSize: 12.5, color: "#6b6899", fontWeight: 500 }}>Acme Studio</span>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#aba8cc" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
+                <span style={{ fontSize: 12.5, color: "#78716c", fontWeight: 500 }}>Acme Studio</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>
               </div>
 
               {/* Avatar */}

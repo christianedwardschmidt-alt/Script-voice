@@ -57,13 +57,13 @@ export default function JobsPage() {
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1a1535', letterSpacing: '-0.4px' }}>Browse Jobs</h1>
-        <p style={{ color: '#6b6899', fontSize: 14, marginTop: 2 }}>Discover top freelance opportunities</p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Browse Jobs</h1>
+        <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Discover top freelance opportunities</p>
       </div>
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
         <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#6b6899' }} />
+          <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#78716c' }} />
           <input className="search-input" placeholder="Search jobs, companies, skills..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <button className="btn-outline"><Filter size={14} /> Filter</button>
@@ -74,12 +74,12 @@ export default function JobsPage() {
           <div key={job.id} className="card card-hover" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f5f3ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f7f6f3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Briefcase size={20} color="#7c3aed" />
                 </div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#1a1535' }}>{job.title}</div>
-                  <div style={{ fontSize: 13, color: '#6b6899', marginTop: 2 }}>{job.company}</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: '#1c1917' }}>{job.title}</div>
+                  <div style={{ fontSize: 13, color: '#78716c', marginTop: 2 }}>{job.company}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -90,7 +90,7 @@ export default function JobsPage() {
               </div>
             </div>
 
-            <p style={{ fontSize: 13, color: '#6b6899', lineHeight: 1.5, marginBottom: 12 }}>{job.description}</p>
+            <p style={{ fontSize: 13, color: '#78716c', lineHeight: 1.5, marginBottom: 12 }}>{job.description}</p>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
               {job.tags.map(tag => (
@@ -99,13 +99,13 @@ export default function JobsPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6b6899' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#78716c' }}>
                 <DollarSign size={12} /> {job.budget}
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6b6899' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#78716c' }}>
                 <MapPin size={12} /> {job.location}
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#6b6899' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#78716c' }}>
                 <Clock size={12} /> {job.posted}
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#f59e0b' }}>

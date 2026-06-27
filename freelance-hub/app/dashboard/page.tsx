@@ -48,12 +48,12 @@ const activity = [
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: '#0d0d1c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px' }}>
-      <div style={{ fontSize: 11, color: '#8892b0', marginBottom: 6 }}>{label}</div>
+    <div style={{ background: '#fff', border: '1px solid #e5e4df', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+      <div style={{ fontSize: 11, color: '#a8a29e', marginBottom: 6, fontWeight: 600 }}>{label}</div>
       {payload.map((p: any) => (
         <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 600, color: p.color, marginBottom: 2 }}>
           <span>${Number(p.value).toLocaleString()}</span>
-          <span style={{ color: '#3d4a6b', fontWeight: 400 }}>{p.name}</span>
+          <span style={{ color: '#78716c', fontWeight: 400 }}>{p.name}</span>
         </div>
       ))}
     </div>
@@ -78,10 +78,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 23, fontWeight: 800, color: '#1a1535', letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontSize: 23, fontWeight: 800, color: '#1c1917', letterSpacing: '-0.5px' }}>
             Good morning, Christian 👋
           </h1>
-          <p style={{ color: '#aba8cc', fontSize: 12.5, marginTop: 3 }}>
+          <p style={{ color: '#a8a29e', fontSize: 12.5, marginTop: 3 }}>
             Here's what's happening with your business today.
           </p>
         </div>
@@ -91,29 +91,30 @@ export default function DashboardPage() {
       {/* ── BENTO GRID ── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
 
-        {/* ① Revenue hero — col 1-2 */}
+        {/* ① Revenue hero — col 1-2, full purple */}
         <div className="card-glow" style={{ gridColumn: '1 / 3', padding: 28, position: 'relative', overflow: 'hidden', minHeight: 200 }}>
-          <div style={{ position: 'absolute', top: -60, right: -40, width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', top: -40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: -30, left: '40%', width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <div className="section-label" style={{ marginBottom: 10 }}>TOTAL REVENUE · 2024</div>
-              <div className="gradient-text" style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-3px', lineHeight: 1 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 10 }}>TOTAL REVENUE · 2024</div>
+              <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-3px', lineHeight: 1, color: '#fff' }}>
                 ${(totalRevenue / 1000).toFixed(1)}k
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: '#34d399' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 700, color: '#a7f3d0' }}>
                   <TrendingUp size={13} /> +18.2%
                 </span>
-                <span style={{ fontSize: 12, color: '#aba8cc' }}>vs last year</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>vs last year</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: '#aba8cc', marginBottom: 4 }}>Net Profit</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#1a1535', letterSpacing: '-0.5px' }}>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>Net Profit</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>
                 ${((totalRevenue - totalExpenses) / 1000).toFixed(1)}k
               </div>
-              <div style={{ fontSize: 11, color: '#34d399', fontWeight: 700, marginTop: 3 }}>72% margin</div>
+              <div style={{ fontSize: 11, color: '#a7f3d0', fontWeight: 700, marginTop: 3 }}>72% margin</div>
             </div>
           </div>
 
@@ -121,13 +122,7 @@ export default function DashboardPage() {
           <div style={{ marginTop: 24, height: 44 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData} barSize={12} barGap={3} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <defs>
-                  <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%"   stopColor="#a78bfa" />
-                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.4} />
-                  </linearGradient>
-                </defs>
-                <Bar dataKey="income" fill="url(#sparkGrad)" radius={[3,3,0,0]} />
+                <Bar dataKey="income" fill="rgba(255,255,255,0.35)" radius={[3,3,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -143,8 +138,8 @@ export default function DashboardPage() {
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, color: stat.color }}>{stat.delta}</span>
               </div>
-              <div style={{ fontSize: 20, fontWeight: 900, color: '#1a1535', letterSpacing: '-0.5px', lineHeight: 1 }}>{stat.value}</div>
-              <div style={{ fontSize: 10.5, color: '#aba8cc', marginTop: 5 }}>{stat.label}</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: '#1c1917', letterSpacing: '-0.5px', lineHeight: 1 }}>{stat.value}</div>
+              <div style={{ fontSize: 10.5, color: '#a8a29e', marginTop: 5 }}>{stat.label}</div>
             </div>
           ))}
         </div>
@@ -153,8 +148,8 @@ export default function DashboardPage() {
         <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Income vs Expenses</div>
-              <div style={{ fontSize: 11.5, color: '#aba8cc', marginTop: 2 }}>Full year overview</div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1c1917' }}>Income vs Expenses</div>
+              <div style={{ fontSize: 11.5, color: '#a8a29e', marginTop: 2 }}>Full year overview</div>
             </div>
             <div style={{ display: 'flex', gap: 5 }}>
               {['3M','6M','12M'].map(p => (
@@ -193,7 +188,7 @@ export default function DashboardPage() {
         {/* ④ Activity feed — col 3 */}
         <div className="card" style={{ gridColumn: '3 / 4', padding: 22 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Live Activity</div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1c1917' }}>Live Activity</div>
             <button style={{ fontSize: 11, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>See all</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -201,10 +196,10 @@ export default function DashboardPage() {
               <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
                 <div className={a.dot} style={{ marginTop: 5, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#1a1535', lineHeight: 1.35 }}>{a.text}</div>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: '#1c1917', lineHeight: 1.35 }}>{a.text}</div>
                   <div style={{ display: 'flex', gap: 6, marginTop: 3 }}>
                     <span style={{ fontSize: 11, color: '#8892b0' }}>{a.sub}</span>
-                    <span style={{ fontSize: 10, color: '#aba8cc' }}>· {a.time}</span>
+                    <span style={{ fontSize: 10, color: '#a8a29e' }}>· {a.time}</span>
                   </div>
                 </div>
               </div>
@@ -215,7 +210,7 @@ export default function DashboardPage() {
         {/* ⑤ Top clients — col 1-2 */}
         <div className="card" style={{ gridColumn: '1 / 3', padding: 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535' }}>Top Clients</div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1c1917' }}>Top Clients</div>
             <button style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, color: '#8b5cf6', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
               View CRM <ArrowUpRight size={12} />
             </button>
@@ -226,7 +221,7 @@ export default function DashboardPage() {
                 <div style={{ width: 30, height: 30, borderRadius: 9, background: `${c.color}18`, border: `1px solid ${c.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 800, color: c.color, flexShrink: 0 }}>{c.avatar}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#1a1535' }}>{c.name}</span>
+                    <span style={{ fontSize: 12.5, fontWeight: 600, color: '#1c1917' }}>{c.name}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: c.color }}>${c.revenue.toLocaleString()}</span>
                   </div>
                   <div style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)' }}>
@@ -240,7 +235,7 @@ export default function DashboardPage() {
 
         {/* ⑥ Project mix donut — col 3 */}
         <div className="card" style={{ gridColumn: '3 / 4', padding: 24 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1a1535', marginBottom: 16 }}>Project Mix</div>
+          <div style={{ fontSize: 13.5, fontWeight: 700, color: '#1c1917', marginBottom: 16 }}>Project Mix</div>
           <ResponsiveContainer width="100%" height={130}>
             <PieChart>
               <Pie data={projectMix} cx="50%" cy="50%" innerRadius={38} outerRadius={56} paddingAngle={3} dataKey="value">
@@ -254,7 +249,7 @@ export default function DashboardPage() {
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: p.color, boxShadow: `0 0 6px ${p.color}` }} />
-                  <span style={{ fontSize: 11.5, color: '#6b6899' }}>{p.name}</span>
+                  <span style={{ fontSize: 11.5, color: '#78716c' }}>{p.name}</span>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 700, color: p.color }}>{p.value}%</span>
               </div>
