@@ -3,18 +3,18 @@
    ============================================= */
 
 :root {
-  --bg:          #f4f3ff;
-  --bg-2:        #ece9fe;
-  --bg-3:        #ddd6fe;
+  --bg:          #f0fdf4;
+  --bg-2:        #dcfce7;
+  --bg-3:        #bbf7d0;
   --card:        #ffffff;
-  --card-hover:  #faf9ff;
-  --border:      #e0dafa;
-  --border-hi:   #c4b5fd;
-  --text:        #1e1b4b;
-  --text-2:      #5b5894;
-  --text-3:      #9b98c0;
-  --purple:      #4f46e5;
-  --purple-2:    #6366f1;
+  --card-hover:  #f0fdf4;
+  --border:      #d1fae5;
+  --border-hi:   #6ee7b7;
+  --text:        #14532d;
+  --text-2:      #166534;
+  --text-3:      #6b9c7e;
+  --purple:      #16a34a;
+  --purple-2:    #22c55e;
   --cyan:        #0891b2;
   --pink:        #db2777;
   --green:       #16a34a;
@@ -51,10 +51,10 @@ a { text-decoration: none; color: inherit; }
 }
 
 .card-glow {
-  background: linear-gradient(145deg, #4338ca 0%, #6366f1 100%);
+  background: linear-gradient(145deg, #15803d 0%, #16a34a 100%);
   border: none;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(79,70,229,0.38), 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(22,163,74,0.38), 0 2px 8px rgba(0,0,0,0.1);
   color: #ffffff;
 }
 
@@ -81,9 +81,9 @@ a { text-decoration: none; color: inherit; }
   color: #ede9ff;
 }
 .nav-item.active {
-  background: rgba(139,92,246,0.25);
-  border-color: rgba(139,92,246,0.3);
-  color: #c4b5fd;
+  background: rgba(34,197,94,0.2);
+  border-color: rgba(34,197,94,0.3);
+  color: #86efac;
 }
 
 /* ─── BADGES ────────────────────────────────── */
@@ -100,7 +100,7 @@ a { text-decoration: none; color: inherit; }
 .badge-high       { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 .badge-medium     { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
 .badge-low        { background: #f0fdf4; color: #059669; border: 1px solid #a7f3d0; }
-.badge-inprogress { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+.badge-inprogress { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
 .badge-todo       { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
 .badge-completed  { background: #f0fdf4; color: #059669; border: 1px solid #a7f3d0; }
 
@@ -118,12 +118,12 @@ a { text-decoration: none; color: inherit; }
   border: none;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 4px 18px rgba(79,70,229,0.35);
+  box-shadow: 0 4px 18px rgba(22,163,74,0.35);
   white-space: nowrap;
   font-family: inherit;
 }
 .btn-primary:hover {
-  box-shadow: 0 6px 26px rgba(79,70,229,0.55);
+  box-shadow: 0 6px 26px rgba(22,163,74,0.55);
   transform: translateY(-1px);
 }
 
@@ -164,7 +164,7 @@ a { text-decoration: none; color: inherit; }
 .search-input:focus {
   background: var(--card);
   border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
 }
 .search-input::placeholder { color: var(--text-3); }
 

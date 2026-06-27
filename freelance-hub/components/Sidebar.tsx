@@ -37,7 +37,7 @@ export default function Sidebar() {
     <aside style={{
       width: 218,
       minHeight: '100vh',
-      background: '#1e1b4b',
+      background: '#052e16',
       borderRight: '1px solid rgba(255,255,255,0.07)',
       display: 'flex',
       flexDirection: 'column',
@@ -63,7 +63,7 @@ export default function Sidebar() {
             <div className="gradient-text" style={{ fontWeight: 800, fontSize: 15.5, letterSpacing: '-0.4px', lineHeight: 1.1 }}>
               LanceFlo
             </div>
-            <div style={{ fontSize: 9.5, color: '#2e3a55', fontWeight: 700, letterSpacing: '1px', marginTop: 1 }}>
+            <div style={{ fontSize: 9.5, color: '#166534', fontWeight: 700, letterSpacing: '1px', marginTop: 1 }}>
               FREELANCE OS
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function Sidebar() {
         }}>
           <div style={{
             width: 30, height: 30, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #7c3aed, #f472b6)',
+            background: 'linear-gradient(135deg, #16a34a, #22c55e)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 12, fontWeight: 800, color: '#fff', flexShrink: 0,
           }}>C</div>
@@ -115,7 +115,7 @@ export default function Sidebar() {
             <div style={{ fontSize: 12.5, fontWeight: 600, color: '#eef2ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               Christian S.
             </div>
-            <div style={{ fontSize: 10.5, color: '#3d4a6b', fontWeight: 500 }}>Pro Plan</div>
+            <div style={{ fontSize: 10.5, color: '#4ade80', fontWeight: 500 }}>Pro Plan</div>
           </div>
           <div className="dot-green" style={{ marginLeft: 'auto' }} />
         </div>

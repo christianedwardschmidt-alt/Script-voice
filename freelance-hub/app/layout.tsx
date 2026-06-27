@@ -59,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               }}>
                 <div style={{
                   width: 20, height: 20, borderRadius: 6,
-                  background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                  background: "linear-gradient(135deg, #16a34a, #22c55e)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 10, fontWeight: 800, color: "#fff",
                 }}>A</div>
@@ -70,10 +70,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* Avatar */}
               <div style={{
                 width: 32, height: 32, borderRadius: "50%",
-                background: "linear-gradient(135deg, #7c3aed, #f472b6)",
+                background: "linear-gradient(135deg, #16a34a, #22c55e)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 13, fontWeight: 800, color: "#fff", cursor: "pointer",
-                boxShadow: "0 2px 10px rgba(124,58,237,0.35)",
+                boxShadow: "0 2px 10px rgba(22,163,74,0.35)",
               }}>C</div>
             </div>
           </header>
