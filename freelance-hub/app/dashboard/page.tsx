@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
@@ -29,28 +29,20 @@ const projectMix = [
   { name: 'Consulting',   value: 15, color: '#86efac' },
 ]
 
-const topClients = [
-  { name: 'Acme Corp',     revenue: 28400, pct: 100, avatar: 'AC', color: '#16a34a' },
-  { name: 'Bloom Digital', revenue: 21200, pct: 75,  avatar: 'BD', color: '#14b8a6' },
-  { name: 'Nova Studio',   revenue: 17800, pct: 63,  avatar: 'NS', color: '#4ade80' },
-  { name: 'Peak Systems',  revenue: 14100, pct: 50,  avatar: 'PS', color: '#34d399' },
-  { name: 'Grid & Co',     revenue: 9400,  pct: 33,  avatar: 'GC', color: '#fbbf24' },
-]
+interface Client { id: number; name: string; company: string; status: string; revenue: number }
+interface Task { id: number; checked: boolean }
+interface Invoice { id: string; amount: number; status: string }
+interface ActivityRow { id: number; message: string; createdAt: string }
 
-const activity = [
-  { text: 'Invoice #1042 paid — Acme Corp',   sub: '$4,200',      time: '2m ago',  dot: 'dot-green'  },
-  { text: 'Homepage redesign delivered',        sub: 'Nova Studio', time: '1h ago',  dot: 'dot-cyan'   },
-  { text: 'New message from Bloom Digital',     sub: 'Project brief', time: '3h ago', dot: 'dot-green' },
-  { text: 'Invoice #1041 paid — Grid & Co',     sub: '$1,800',      time: '6h ago',  dot: 'dot-green'  },
-  { text: 'Brand kit assets exported',          sub: 'Peak Systems', time: '1d ago',  dot: 'dot-amber'  },
-]
-
-const quickStats = [
-  { label: 'Active Clients', value: '12',   delta: '+3',   color: '#16a34a' },
-  { label: 'Tasks Done',     value: '89%',  delta: '+6%',  color: '#14b8a6' },
-  { label: 'Hours Billed',   value: '124h', delta: '+12h', color: '#22c55e' },
-  { label: 'Avg Rate',       value: '$85',  delta: '+$5',  color: '#34d399' },
-]
+function timeAgo(iso: string) {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  return `${Math.floor(hrs / 24)}d ago`
+}
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
@@ -69,8 +61,44 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function DashboardPage() {
   const [chartPeriod, setChartPeriod] = useState('12M')
+  const [clients, setClients] = useState<Client[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [activity, setActivity] = useState<ActivityRow[]>([])
+
+  useEffect(() => {
+    fetch('/api/clients').then(res => res.json()).then(setClients)
+    fetch('/api/tasks').then(res => res.json()).then(setTasks)
+    fetch('/api/invoices').then(res => res.json()).then(setInvoices)
+    fetch('/api/activity?limit=5').then(res => res.json()).then(setActivity)
+  }, [])
+
   const totalRevenue  = revenueData.reduce((s, d) => s + d.income, 0)
   const totalExpenses = revenueData.reduce((s, d) => s + d.expenses, 0)
+
+  const activeClients = clients.filter(c => c.status === 'active').length
+  const tasksDonePct = tasks.length ? Math.round((tasks.filter(t => t.checked).length / tasks.length) * 100) : 0
+  const collected = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + i.amount, 0)
+  const outstanding = invoices.filter(i => i.status === 'Pending' || i.status === 'Overdue').reduce((s, i) => s + i.amount, 0)
+
+  const quickStats = [
+    { label: 'Active Clients', value: String(activeClients),         delta: '',  color: '#16a34a' },
+    { label: 'Tasks Done',     value: `${tasksDonePct}%`,             delta: '',  color: '#14b8a6' },
+    { label: 'Collected',      value: `$${collected.toLocaleString()}`,  delta: '', color: '#22c55e' },
+    { label: 'Outstanding',    value: `$${outstanding.toLocaleString()}`, delta: '', color: '#34d399' },
+  ]
+
+  const clientColors = ['#16a34a', '#14b8a6', '#4ade80', '#34d399', '#fbbf24']
+  const topClients = [...clients]
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 5)
+    .map((c, i) => ({
+      name: c.company || c.name,
+      revenue: c.revenue,
+      pct: Math.round((c.revenue / Math.max(...clients.map(cl => cl.revenue), 1)) * 100),
+      avatar: (c.company || c.name).slice(0, 2).toUpperCase(),
+      color: clientColors[i % clientColors.length],
+    }))
 
   return (
     <div style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -110,11 +138,11 @@ export default function DashboardPage() {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>Net Profit</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 4 }}>Collected</div>
               <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>
-                ${((totalRevenue - totalExpenses) / 1000).toFixed(1)}k
+                ${collected.toLocaleString()}
               </div>
-              <div style={{ fontSize: 11, color: '#a7f3d0', fontWeight: 700, marginTop: 3 }}>72% margin</div>
+              <div style={{ fontSize: 11, color: '#a7f3d0', fontWeight: 700, marginTop: 3 }}>${outstanding.toLocaleString()} outstanding</div>
             </div>
           </div>
 
@@ -191,15 +219,13 @@ export default function DashboardPage() {
             <button style={{ fontSize: 11, color: '#16a34a', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>See all</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {activity.map((a, i) => (
-              <div key={i} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
-                <div className={a.dot} style={{ marginTop: 5, flexShrink: 0 }} />
+            {activity.length === 0 && <div style={{ fontSize: 12, color: 'var(--text-3)' }}>No activity yet</div>}
+            {activity.map(a => (
+              <div key={a.id} style={{ display: 'flex', gap: 11, alignItems: 'flex-start' }}>
+                <div className="dot-green" style={{ marginTop: 5, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>{a.text}</div>
-                  <div style={{ display: 'flex', gap: 6, marginTop: 3 }}>
-                    <span style={{ fontSize: 11, color: '#166534' }}>{a.sub}</span>
-                    <span style={{ fontSize: 10, color: 'var(--text-3)' }}>· {a.time}</span>
-                  </div>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>{a.message}</div>
+                  <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{timeAgo(a.createdAt)}</span>
                 </div>
               </div>
             ))}

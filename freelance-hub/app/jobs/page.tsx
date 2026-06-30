@@ -1,34 +1,23 @@
 'use client'
 
-import { Search, Filter, Briefcase, MapPin, Clock, DollarSign, Star, BookmarkPlus } from 'lucide-react'
-import { useState } from 'react'
+import { Search, Filter, Briefcase, MapPin, Clock, DollarSign, Star, BookmarkPlus, Check } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-const jobs = [
-  {
-    id: 1, title: 'Senior UI/UX Designer', company: 'Stripe', location: 'Remote', type: 'Contract',
-    budget: '$120–160/hr', posted: '2h ago', tags: ['Figma', 'Design Systems', 'React'],
-    description: 'Looking for an experienced designer to lead our dashboard redesign. 3-month engagement.',
-    rating: 4.9, reviews: 24, saved: false,
-  },
-  {
-    id: 2, title: 'Full Stack Next.js Developer', company: 'Vercel', location: 'Remote', type: 'Project',
-    budget: '$18,000 fixed', posted: '5h ago', tags: ['Next.js', 'TypeScript', 'PostgreSQL'],
-    description: 'Build a SaaS analytics platform from scratch. Solo project, 2 months timeline.',
-    rating: 4.7, reviews: 18, saved: true,
-  },
-  {
-    id: 3, title: 'Brand Identity Designer', company: 'Linear', location: 'Hybrid', type: 'Contract',
-    budget: '$90–110/hr', posted: '1d ago', tags: ['Branding', 'Illustration', 'Motion'],
-    description: 'Refreshing our brand identity. Need a creative who understands B2B SaaS.',
-    rating: 4.8, reviews: 31, saved: false,
-  },
-  {
-    id: 4, title: 'React Native Developer', company: 'Notion', location: 'Remote', type: 'Retainer',
-    budget: '$8,500/mo', posted: '2d ago', tags: ['React Native', 'iOS', 'Android'],
-    description: 'Ongoing mobile app development. 20 hrs/week retainer arrangement.',
-    rating: 5.0, reviews: 12, saved: false,
-  },
-]
+interface Job {
+  id: number
+  title: string
+  company: string
+  location: string
+  type: string
+  budget: string
+  posted: string
+  tags: string[]
+  description: string
+  rating: number
+  reviews: number
+  saved: boolean
+  applied: boolean
+}
 
 const typeColor: Record<string, string> = {
   Contract: '#dcfce7',
@@ -42,16 +31,40 @@ const typeText: Record<string, string> = {
 }
 
 export default function JobsPage() {
-  const [data, setData] = useState(jobs)
+  const [data, setData] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    fetch('/api/jobs')
+      .then(res => res.json())
+      .then(rows => { setData(rows); setLoading(false) })
+  }, [])
 
   const filtered = data.filter(j =>
     j.title.toLowerCase().includes(search.toLowerCase()) ||
     j.company.toLowerCase().includes(search.toLowerCase())
   )
 
-  const toggleSave = (id: number) => {
-    setData(prev => prev.map(j => j.id === id ? { ...j, saved: !j.saved } : j))
+  const toggleSave = async (id: number) => {
+    const job = data.find(j => j.id === id)
+    if (!job) return
+    const saved = !job.saved
+    setData(prev => prev.map(j => j.id === id ? { ...j, saved } : j))
+    await fetch(`/api/jobs/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ saved }),
+    })
+  }
+
+  const apply = async (id: number) => {
+    setData(prev => prev.map(j => j.id === id ? { ...j, applied: true } : j))
+    await fetch(`/api/jobs/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applied: true }),
+    })
   }
 
   return (
@@ -70,7 +83,8 @@ export default function JobsPage() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {filtered.map(job => (
+        {loading && <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading jobs...</div>}
+        {!loading && filtered.map(job => (
           <div key={job.id} className="card card-hover" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 12 }}>
@@ -86,7 +100,14 @@ export default function JobsPage() {
                 <button onClick={() => toggleSave(job.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: job.saved ? '#f59e0b' : '#9ca3af' }}>
                   <BookmarkPlus size={18} fill={job.saved ? '#f59e0b' : 'none'} />
                 </button>
-                <button className="btn-primary" style={{ padding: '7px 16px', fontSize: 13 }}>Apply</button>
+                <button
+                  className="btn-primary"
+                  style={{ padding: '7px 16px', fontSize: 13, opacity: job.applied ? 0.6 : 1, cursor: job.applied ? 'default' : 'pointer' }}
+                  onClick={() => !job.applied && apply(job.id)}
+                  disabled={job.applied}
+                >
+                  {job.applied ? <><Check size={13} /> Applied</> : 'Apply'}
+                </button>
               </div>
             </div>
 

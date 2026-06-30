@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar,
 } from 'recharts'
 import { DollarSign, Briefcase, Users, Clock, ArrowUpRight } from 'lucide-react'
+
+interface Client { id: number; name: string; company: string; revenue: number }
+interface Task { id: number; project: string; status: string }
+interface Invoice { id: string; amount: number; status: string; issued: string }
 
 const revenueData = [
   { month: 'Jan', v: 4200 }, { month: 'Feb', v: 5100 }, { month: 'Mar', v: 4800 },
@@ -29,27 +33,48 @@ const categoryData = [
   { name: 'Other', value: 7, color: '#06b6d4' },
 ]
 
-const topClients = [
-  { name: 'Tech Trophey', revenue: 24500, projects: 5, color: '#16a34a' },
-  { name: 'Hencewood Digital', revenue: 18200, projects: 3, color: '#ec4899' },
-  { name: 'Margono Studio', revenue: 15800, projects: 4, color: '#f59e0b' },
-  { name: 'DataSync Corp', revenue: 12400, projects: 2, color: '#10b981' },
-]
-
-const metrics = [
-  { label: 'Revenue This Month', value: '$9,200', change: '+18%', icon: DollarSign, color: '#16a34a', bg: '#dcfce7' },
-  { label: 'Active Projects', value: '26', change: '+5', icon: Briefcase, color: '#10b981', bg: '#d1fae5' },
-  { label: 'Total Clients', value: '42', change: '+5', icon: Users, color: '#f59e0b', bg: '#fef9c3' },
-  { label: 'Hours Worked', value: '156h', change: '+12%', icon: Clock, color: '#ec4899', bg: '#fce7f3' },
-]
+const clientColors = ['#16a34a', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
 
 const tabs = ['Revenue', 'Projects', 'Clients']
+
+const monthAbbr = () => new Date().toLocaleDateString('en-US', { month: 'short' })
 
 export default function InsightsPage() {
   const [activeTab, setActiveTab] = useState('Revenue')
   const [range, setRange] = useState('Last 7 months')
+  const [clients, setClients] = useState<Client[]>([])
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+
+  useEffect(() => {
+    fetch('/api/clients').then(res => res.json()).then(setClients)
+    fetch('/api/tasks').then(res => res.json()).then(setTasks)
+    fetch('/api/invoices').then(res => res.json()).then(setInvoices)
+  }, [])
 
   const chartData = activeTab === 'Projects' ? projectsData : revenueData
+
+  const revenueThisMonth = invoices
+    .filter(i => i.status === 'Paid' && i.issued.startsWith(monthAbbr()))
+    .reduce((s, i) => s + i.amount, 0)
+
+  const activeProjects = new Set(
+    tasks.filter(t => t.status !== 'completed' && t.project).map(t => t.project)
+  ).size
+
+  const topClients = [...clients]
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 4)
+    .map((c, i) => ({ name: c.company || c.name, revenue: c.revenue, color: clientColors[i % clientColors.length] }))
+
+  const maxClientRevenue = Math.max(...topClients.map(c => c.revenue), 1)
+
+  const metrics = [
+    { label: 'Revenue This Month', value: `$${revenueThisMonth.toLocaleString()}`, change: '', icon: DollarSign, color: '#16a34a', bg: '#dcfce7' },
+    { label: 'Active Projects', value: String(activeProjects), change: '', icon: Briefcase, color: '#10b981', bg: '#d1fae5' },
+    { label: 'Total Clients', value: String(clients.length), change: '', icon: Users, color: '#f59e0b', bg: '#fef9c3' },
+    { label: 'Hours Worked', value: '156h', change: '', icon: Clock, color: '#ec4899', bg: '#fce7f3' },
+  ]
 
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -144,7 +169,7 @@ export default function InsightsPage() {
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#1c1917' }}>${c.revenue.toLocaleString()}</span>
                     </div>
                     <div style={{ height: 5, background: '#f7f6f3', borderRadius: 4, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${(c.revenue / 25000) * 100}%`, background: c.color, borderRadius: 4 }} />
+                      <div style={{ height: '100%', width: `${(c.revenue / maxClientRevenue) * 100}%`, background: c.color, borderRadius: 4 }} />
                     </div>
                   </div>
                 </div>

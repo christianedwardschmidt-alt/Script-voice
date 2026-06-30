@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Download, Send, Eye, CheckCircle, Clock, AlertCircle, FileText, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, Download, Send, Eye, CheckCircle, Clock, AlertCircle, X } from 'lucide-react'
 
 type Status = 'Paid' | 'Pending' | 'Overdue' | 'Draft'
 const statusClass: Record<Status, string> = {
@@ -11,28 +11,82 @@ const statusClass: Record<Status, string> = {
   Draft: 'badge badge-todo',
 }
 
-const invoices = [
-  { id: 'INV-089', client: 'Tech Trophey', project: 'Brand Redesign Q4', amount: 4800, status: 'Paid' as Status, issued: 'Nov 15', due: 'Dec 15', avatar: '👩🏻‍💼', color: '#16a34a' },
-  { id: 'INV-090', client: 'Hencewood Digital', project: 'API Integration', amount: 3200, status: 'Pending' as Status, issued: 'Dec 1', due: 'Jan 1', avatar: '👨🏻‍💻', color: '#ec4899' },
-  { id: 'INV-088', client: 'Margono Studio', project: 'Dashboard UI', amount: 8400, status: 'Overdue' as Status, issued: 'Oct 20', due: 'Nov 20', avatar: '👩🏿‍💼', color: '#f59e0b' },
-  { id: 'INV-091', client: 'NovaBuild', project: 'Mobile App', amount: 2100, status: 'Draft' as Status, issued: 'Dec 20', due: 'Jan 20', avatar: '👨🏽‍💼', color: '#10b981' },
-]
+interface Invoice {
+  id: string
+  client: string
+  project: string
+  amount: number
+  status: Status
+  issued: string
+  due: string
+  avatar: string
+  color: string
+}
 
-const lineItems = [
-  { description: 'UI Design — Homepage & Landing', qty: 1, rate: 2400, total: 2400 },
-  { description: 'Component Library (40 components)', qty: 1, rate: 1800, total: 1800 },
-  { description: 'Prototype & Interactions', qty: 1, rate: 600, total: 600 },
-]
+const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
+const colors = ['#16a34a', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
+
+const today = () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
+const emptyForm = { client: '', project: '', amount: '', due: '' }
 
 export default function BillingPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [loading, setLoading] = useState(true)
   const [showNew, setShowNew] = useState(false)
   const [activeStatus, setActiveStatus] = useState('All')
+  const [form, setForm] = useState(emptyForm)
+
+  useEffect(() => {
+    fetch('/api/invoices')
+      .then(res => res.json())
+      .then(rows => { setInvoices(rows); setLoading(false) })
+  }, [])
 
   const paid = invoices.filter(i => i.status === 'Paid').reduce((a, c) => a + c.amount, 0)
   const pending = invoices.filter(i => i.status === 'Pending').reduce((a, c) => a + c.amount, 0)
   const overdue = invoices.filter(i => i.status === 'Overdue').reduce((a, c) => a + c.amount, 0)
 
   const filtered = activeStatus === 'All' ? invoices : invoices.filter(i => i.status === activeStatus)
+
+  const subtotal = Number(form.amount) || 0
+
+  const createInvoice = async (status: Status) => {
+    if (!form.client.trim() || !subtotal) return
+    const avatar = avatars[invoices.length % avatars.length]
+    const color = colors[invoices.length % colors.length]
+    const res = await fetch('/api/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client: form.client,
+        project: form.project,
+        amount: subtotal,
+        status,
+        issued: today(),
+        due: form.due || today(),
+        avatar,
+        color,
+      }),
+    })
+    const created = await res.json()
+    setInvoices(prev => [created, ...prev])
+    setForm(emptyForm)
+    setShowNew(false)
+  }
+
+  const advanceStatus = async (inv: Invoice) => {
+    const next: Status = inv.status === 'Draft' ? 'Pending' : inv.status === 'Pending' ? 'Paid' : inv.status
+    if (next === inv.status) return
+    setInvoices(prev => prev.map(i => i.id === inv.id ? { ...i, status: next } : i))
+    const res = await fetch(`/api/invoices/${inv.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: next }),
+    })
+    const updated = await res.json()
+    setInvoices(prev => prev.map(i => i.id === inv.id ? updated : i))
+  }
 
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -76,6 +130,9 @@ export default function BillingPage() {
 
       {/* Table */}
       <div className="card" style={{ overflow: 'hidden' }}>
+        {loading ? (
+          <div style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading invoices...</div>
+        ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
@@ -103,7 +160,11 @@ export default function BillingPage() {
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c' }}><Eye size={13} /></button>
                     {inv.status !== 'Paid' && (
-                      <button style={{ width: 28, height: 28, borderRadius: 7, background: '#dcfce7', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#16a34a' }}><Send size={13} /></button>
+                      <button
+                        onClick={() => advanceStatus(inv)}
+                        title={inv.status === 'Draft' ? 'Send invoice' : 'Mark as paid'}
+                        style={{ width: 28, height: 28, borderRadius: 7, background: '#dcfce7', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#16a34a' }}
+                      ><Send size={13} /></button>
                     )}
                     <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c' }}><Download size={13} /></button>
                   </div>
@@ -112,52 +173,50 @@ export default function BillingPage() {
             ))}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* New Invoice Modal */}
       {showNew && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 16, width: '90%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setShowNew(false)}>
+          <div style={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 16, width: '90%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
               <div>
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>New Invoice</div>
-                <div style={{ fontSize: 12, color: '#78716c' }}>INV-2026-092</div>
+                <div style={{ fontSize: 12, color: '#78716c' }}>Drafts and sends save instantly to your invoice list</div>
               </div>
               <button onClick={() => setShowNew(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}><X size={18} /></button>
             </div>
             <div style={{ padding: 24 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
-                {['Client Name', 'Client Email', 'Project Name', 'Due Date'].map(label => (
-                  <div key={label}>
-                    <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 5 }}>{label}</label>
-                    <input className="search-input" style={{ paddingLeft: 12 }} placeholder={`Enter ${label.toLowerCase()}...`} />
-                  </div>
-                ))}
-              </div>
-              {/* Line Items */}
-              <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 12 }}>Line Items</div>
-              {lineItems.map((item, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '3fr 1fr 1fr 1fr', gap: 8, marginBottom: 8 }}>
-                  {[item.description, item.qty, `$${item.rate}`, `$${item.total}`].map((val, j) => (
-                    <div key={j} style={{ padding: '9px 12px', background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 13, color: j === 3 ? '#10b981' : '#374151', fontWeight: j === 3 ? 600 : 400 }}>
-                      {val}
-                    </div>
-                  ))}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 5 }}>Client Name</label>
+                  <input className="search-input" style={{ paddingLeft: 12 }} placeholder="Enter client name..." value={form.client} onChange={e => setForm({ ...form, client: e.target.value })} />
                 </div>
-              ))}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 5 }}>Project Name</label>
+                  <input className="search-input" style={{ paddingLeft: 12 }} placeholder="Enter project name..." value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 5 }}>Amount</label>
+                  <input className="search-input" type="number" style={{ paddingLeft: 12 }} placeholder="0.00" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 5 }}>Due Date</label>
+                  <input className="search-input" style={{ paddingLeft: 12 }} placeholder="e.g. Jan 20" value={form.due} onChange={e => setForm({ ...form, due: e.target.value })} />
+                </div>
+              </div>
               <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 14, marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
                 <div style={{ width: 240 }}>
-                  {[['Subtotal', '$4,800'], ['Tax (0%)', '$0'], ['Total', '$4,800']].map(([l, v], i) => (
-                    <div key={l} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                      <span style={{ fontSize: 13, color: i === 2 ? '#111827' : '#6b7280', fontWeight: i === 2 ? 700 : 400 }}>{l}</span>
-                      <span style={{ fontSize: 13, color: i === 2 ? '#16a34a' : '#111827', fontWeight: i === 2 ? 700 : 600 }}>{v}</span>
-                    </div>
-                  ))}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Total</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#16a34a' }}>${subtotal.toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
-                <button className="btn-outline" onClick={() => setShowNew(false)}>Save Draft</button>
-                <button className="btn-primary"><Send size={13} /> Send Invoice</button>
+                <button className="btn-outline" onClick={() => createInvoice('Draft')}>Save Draft</button>
+                <button className="btn-primary" onClick={() => createInvoice('Pending')}><Send size={13} /> Send Invoice</button>
               </div>
             </div>
           </div>

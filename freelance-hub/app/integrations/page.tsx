@@ -1,31 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Check, Plus, RefreshCw, Settings, ExternalLink, Puzzle } from 'lucide-react'
 
-const integrations = [
-  { id: 'ms365', name: 'Microsoft 365', desc: 'Word, Excel, PowerPoint, Outlook & Teams', icon: '🪟', connected: true, lastSync: '2 min ago', category: 'Productivity', color: '#0078d4' },
-  { id: 'notion', name: 'Notion', desc: 'All-in-one workspace for notes and docs', icon: '◼', connected: true, lastSync: '5 min ago', category: 'Productivity', color: '#1c1917' },
-  { id: 'slack', name: 'Slack', desc: 'Team communication and collaboration', icon: '💬', connected: true, lastSync: '1 min ago', category: 'Productivity', color: '#4a154b' },
-  { id: 'figma', name: 'Figma', desc: 'Collaborative design and prototyping', icon: '🎨', connected: true, lastSync: '10 min ago', category: 'Design', color: '#f24e1e' },
-  { id: 'adobe', name: 'Adobe Creative Cloud', desc: 'Photoshop, Illustrator, XD & more', icon: '🔴', connected: false, lastSync: null, category: 'Design', color: '#ff0000' },
-  { id: 'github', name: 'GitHub', desc: 'Version control and code collaboration', icon: '🐙', connected: true, lastSync: '3 min ago', category: 'Development', color: '#1c1917' },
-  { id: 'vscode', name: 'VS Code', desc: 'Code editor with extensions and sync', icon: '💙', connected: true, lastSync: '15 min ago', category: 'Development', color: '#007acc' },
-  { id: 'vercel', name: 'Vercel', desc: 'Frontend deployment and edge network', icon: '▲', connected: false, lastSync: null, category: 'Development', color: '#1c1917' },
-  { id: 'stripe', name: 'Stripe', desc: 'Payment processing and subscriptions', icon: '💳', connected: true, lastSync: '1 min ago', category: 'Finance', color: '#6772e5' },
-  { id: 'wise', name: 'Wise', desc: 'International transfers and multi-currency', icon: '🌍', connected: true, lastSync: '20 min ago', category: 'Finance', color: '#9fe870' },
-  { id: 'quickbooks', name: 'QuickBooks', desc: 'Accounting software for freelancers', icon: '📊', connected: false, lastSync: null, category: 'Finance', color: '#2ca01c' },
-  { id: 'canva', name: 'Canva', desc: 'Quick design tool for social media', icon: '🖼', connected: false, lastSync: null, category: 'Design', color: '#00c4cc' },
-]
+interface Integration {
+  id: string
+  name: string
+  desc: string
+  icon: string
+  connected: boolean
+  lastSync: string | null
+  category: string
+  color: string
+}
 
 const categories = ['All', 'Productivity', 'Design', 'Development', 'Finance']
 
 export default function IntegrationsPage() {
-  const [data, setData] = useState(integrations)
+  const [data, setData] = useState<Integration[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
 
-  const toggle = (id: string) => {
-    setData(prev => prev.map(i => i.id === id ? { ...i, connected: !i.connected, lastSync: !i.connected ? 'just now' : null } : i))
+  useEffect(() => {
+    fetch('/api/integrations')
+      .then(res => res.json())
+      .then(rows => { setData(rows); setLoading(false) })
+  }, [])
+
+  const toggle = async (id: string) => {
+    const integ = data.find(i => i.id === id)
+    if (!integ) return
+    const connected = !integ.connected
+    setData(prev => prev.map(i => i.id === id ? { ...i, connected, lastSync: connected ? 'just now' : null } : i))
+    await fetch(`/api/integrations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ connected }),
+    })
   }
 
   const filtered = activeCategory === 'All' ? data : data.filter(i => i.category === activeCategory)
@@ -63,8 +74,9 @@ export default function IntegrationsPage() {
       </div>
 
       {/* Integration Grid */}
+      {loading && <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading integrations...</div>}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
-        {filtered.map(integ => (
+        {!loading && filtered.map(integ => (
           <div key={integ.id} className="card" style={{ padding: 18 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>

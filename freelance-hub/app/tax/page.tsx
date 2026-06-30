@@ -1,14 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts'
 import {
   Download, AlertCircle, Calculator, FileText, CheckCircle, TrendingDown,
-  Plus, Upload, ChevronDown, DollarSign, Percent, Home,
+  Plus, Upload, ChevronDown, DollarSign, Percent, Home, X, Trash2,
 } from 'lucide-react'
+
+interface Deduction { id: number; category: string; amount: number; icon: string; max: number; color: string }
+interface TaxDocument { id: number; name: string; status: string; date: string; size: string }
+interface Invoice { id: string; amount: number; status: string }
 
 const quarterlyData = [
   { quarter: 'Q1', income: 24500, deductions: 6800, taxOwed: 4370 },
@@ -24,26 +28,6 @@ const monthlyIncome = [
   { month: 'Oct', v: 11400 }, { month: 'Nov', v: 10200 }, { month: 'Dec', v: 16600 },
 ]
 
-const deductions = [
-  { category: 'Home Office', amount: 3600, icon: '🏠', max: 5400, color: '#16a34a' },
-  { category: 'Software & Tools', amount: 2840, icon: '💻', max: 5400, color: '#ec4899' },
-  { category: 'Health Insurance', amount: 5400, icon: '🏥', max: 5400, color: '#10b981' },
-  { category: 'Equipment', amount: 4100, icon: '🖥', max: 5400, color: '#f59e0b' },
-  { category: 'Education', amount: 1200, icon: '📚', max: 5400, color: '#06b6d4' },
-  { category: 'Internet & Phone', amount: 960, icon: '📡', max: 5400, color: '#78716c' },
-]
-
-const deductionPie = deductions.map(d => ({ name: d.category, value: d.amount, color: d.color }))
-
-const docs = [
-  { name: '1099-NEC (Tech Trophey)', status: 'Received', date: 'Jan 5', size: '48 KB' },
-  { name: '1099-NEC (Hencewood)', status: 'Received', date: 'Jan 8', size: '52 KB' },
-  { name: 'Schedule C Draft', status: 'In Progress', date: 'Jan 12', size: '—' },
-  { name: '2023 Tax Return', status: 'Filed', date: 'Apr 12', size: '210 KB' },
-  { name: 'W-9 Form', status: 'Filed', date: 'Mar 1', size: '28 KB' },
-  { name: 'Estimated Payments', status: 'In Progress', date: 'Jan 14', size: '—' },
-]
-
 const docStatus: Record<string, { cls: string; icon: string }> = {
   Received: { cls: 'badge-inprogress', icon: '📥' },
   'In Progress': { cls: 'badge-medium', icon: '⏳' },
@@ -57,14 +41,69 @@ const taxBrackets = [
   { bracket: '24%', range: '$100,526 – $191,950', amount: 0, filled: false },
 ]
 
+const emptyDeductionForm = { category: '', amount: '' }
+const emptyDocForm = { name: '' }
+
 export default function TaxPage() {
   const [activeYear, setActiveYear] = useState('2024')
-  const totalIncome = quarterlyData.reduce((a, c) => a + c.income, 0)
+  const [deductions, setDeductions] = useState<Deduction[]>([])
+  const [docs, setDocs] = useState<TaxDocument[]>([])
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [showDeductionModal, setShowDeductionModal] = useState(false)
+  const [showDocModal, setShowDocModal] = useState(false)
+  const [deductionForm, setDeductionForm] = useState(emptyDeductionForm)
+  const [docForm, setDocForm] = useState(emptyDocForm)
+
+  useEffect(() => {
+    fetch('/api/tax/deductions').then(res => res.json()).then(setDeductions)
+    fetch('/api/tax/documents').then(res => res.json()).then(setDocs)
+    fetch('/api/invoices').then(res => res.json()).then(setInvoices)
+  }, [])
+
+  const deductionPie = deductions.map(d => ({ name: d.category, value: d.amount, color: d.color }))
+
+  const totalIncome = invoices.filter(i => i.status === 'Paid').reduce((a, c) => a + c.amount, 0)
   const totalDeductions = deductions.reduce((a, c) => a + c.amount, 0)
-  const totalTax = quarterlyData.reduce((a, c) => a + c.taxOwed, 0)
-  const taxableIncome = totalIncome - totalDeductions
-  const effectiveRate = ((totalTax / totalIncome) * 100).toFixed(1)
+  const taxableIncome = Math.max(totalIncome - totalDeductions, 0)
+  const totalTax = Math.round(taxableIncome * 0.24)
+  const effectiveRate = totalIncome ? ((totalTax / totalIncome) * 100).toFixed(1) : '0.0'
   const seRate = (totalIncome * 0.1413).toFixed(0)
+
+  const addDeduction = async () => {
+    if (!deductionForm.category.trim() || !Number(deductionForm.amount)) return
+    const res = await fetch('/api/tax/deductions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category: deductionForm.category, amount: Number(deductionForm.amount) }),
+    })
+    const created = await res.json()
+    setDeductions(prev => [...prev, created])
+    setDeductionForm(emptyDeductionForm)
+    setShowDeductionModal(false)
+  }
+
+  const deleteDeduction = async (id: number) => {
+    setDeductions(prev => prev.filter(d => d.id !== id))
+    await fetch(`/api/tax/deductions/${id}`, { method: 'DELETE' })
+  }
+
+  const addDocument = async () => {
+    if (!docForm.name.trim()) return
+    const res = await fetch('/api/tax/documents', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: docForm.name }),
+    })
+    const created = await res.json()
+    setDocs(prev => [created, ...prev])
+    setDocForm(emptyDocForm)
+    setShowDocModal(false)
+  }
+
+  const deleteDocument = async (id: number) => {
+    setDocs(prev => prev.filter(d => d.id !== id))
+    await fetch(`/api/tax/documents/${id}`, { method: 'DELETE' })
+  }
 
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -161,7 +200,7 @@ export default function TaxPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             {deductions.map(d => (
-              <div key={d.category} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div key={d.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                   <span style={{ fontSize: 13 }}>{d.icon}</span>
                   <span style={{ fontSize: 12, color: '#1c1917' }}>{d.category}</span>
@@ -224,11 +263,11 @@ export default function TaxPage() {
               <div style={{ fontWeight: 700, fontSize: 15, color: '#1c1917' }}>Deductions</div>
               <div style={{ fontSize: 13, color: '#78716c' }}>Total: ${totalDeductions.toLocaleString()}</div>
             </div>
-            <button className="btn-outline" style={{ padding: '5px 10px', fontSize: 12 }}><Plus size={11} /> Add</button>
+            <button className="btn-outline" style={{ padding: '5px 10px', fontSize: 12 }} onClick={() => setShowDeductionModal(true)}><Plus size={11} /> Add</button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {deductions.map(d => (
-              <div key={d.category} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 16, flexShrink: 0 }}>{d.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -239,6 +278,9 @@ export default function TaxPage() {
                     <div style={{ height: '100%', width: `${(d.amount / d.max) * 100}%`, background: d.color, borderRadius: 3, transition: 'width 0.5s ease' }} />
                   </div>
                 </div>
+                <button onClick={() => deleteDeduction(d.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d1d5db', padding: 2, flexShrink: 0 }}>
+                  <Trash2 size={13} />
+                </button>
               </div>
             ))}
           </div>
@@ -256,11 +298,11 @@ export default function TaxPage() {
             <div style={{ fontWeight: 700, fontSize: 15, color: '#1c1917' }}>Tax Documents</div>
             <div style={{ fontSize: 13, color: '#78716c' }}>{docs.filter(d => d.status === 'Filed').length} of {docs.length} filed</div>
           </div>
-          <button className="btn-outline" style={{ padding: '7px 14px', fontSize: 13 }}><Upload size={13} /> Upload Document</button>
+          <button className="btn-outline" style={{ padding: '7px 14px', fontSize: 13 }} onClick={() => setShowDocModal(true)}><Upload size={13} /> Upload Document</button>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
-          {docs.map((doc, i) => (
-            <div key={i} style={{ padding: '14px 16px', background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {docs.map(doc => (
+            <div key={doc.id} style={{ padding: '14px 16px', background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 20 }}>{docStatus[doc.status].icon}</span>
                 <div>
@@ -268,11 +310,87 @@ export default function TaxPage() {
                   <div style={{ fontSize: 11, color: '#78716c' }}>{doc.date} {doc.size !== '—' ? `· ${doc.size}` : ''}</div>
                 </div>
               </div>
-              <span className={`badge ${docStatus[doc.status].cls}`}>{doc.status}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span className={`badge ${docStatus[doc.status].cls}`}>{doc.status}</span>
+                <button onClick={() => deleteDocument(doc.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d1d5db', padding: 2 }}>
+                  <Trash2 size={13} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Add Deduction modal */}
+      {showDeductionModal && (
+        <div onClick={() => setShowDeductionModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div onClick={e => e.stopPropagation()} className="card" style={{ padding: 24, width: 380 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#1c1917' }}>Add Deduction</div>
+              <button onClick={() => setShowDeductionModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 6 }}>Category</label>
+                <input
+                  type="text"
+                  className="search-input"
+                  style={{ paddingLeft: 12 }}
+                  placeholder="e.g. Software & Tools"
+                  value={deductionForm.category}
+                  onChange={e => setDeductionForm({ ...deductionForm, category: e.target.value })}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 6 }}>Amount</label>
+                <input
+                  type="number"
+                  className="search-input"
+                  style={{ paddingLeft: 12 }}
+                  placeholder="0"
+                  value={deductionForm.amount}
+                  onChange={e => setDeductionForm({ ...deductionForm, amount: e.target.value })}
+                />
+              </div>
+            </div>
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn-outline" onClick={() => setShowDeductionModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={addDeduction}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Document modal */}
+      {showDocModal && (
+        <div onClick={() => setShowDocModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
+          <div onClick={e => e.stopPropagation()} className="card" style={{ padding: 24, width: 380 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <div style={{ fontWeight: 700, fontSize: 16, color: '#1c1917' }}>Upload Document</div>
+              <button onClick={() => setShowDocModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div>
+              <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 6 }}>Document Name</label>
+              <input
+                type="text"
+                className="search-input"
+                style={{ paddingLeft: 12 }}
+                placeholder="e.g. 1099-NEC Form"
+                value={docForm.name}
+                onChange={e => setDocForm({ ...docForm, name: e.target.value })}
+              />
+            </div>
+            <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn-outline" onClick={() => setShowDocModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={addDocument}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

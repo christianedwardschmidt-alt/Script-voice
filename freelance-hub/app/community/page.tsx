@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Bookmark, Heart, MessageCircle, Share2, MoreHorizontal,
   TrendingUp, Users, Award, Image, Smile, Link2, Send,
@@ -41,85 +41,6 @@ interface Post {
   reposted: boolean
 }
 
-const posts: Post[] = [
-  {
-    id: 1,
-    author: 'Sarah Johnson',
-    handle: '@sarahj_ux',
-    role: 'Senior UI/UX Designer',
-    avatar: '👩🏻‍🎨',
-    color: '#16a34a',
-    time: '2h',
-    trending: true,
-    content: 'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜',
-    image: { type: 'design', label: 'Dashboard Redesign Preview', emoji: '🖥', grad: 'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)' },
-    likes: 142,
-    comments: 38,
-    shares: 21,
-    views: 8400,
-    liked: false,
-    saved: false,
-    reposted: false,
-  },
-  {
-    id: 2,
-    author: 'Marcus Williams',
-    handle: '@marcusdev',
-    role: 'Full Stack Developer',
-    avatar: '👨🏾‍💻',
-    color: '#10b981',
-    time: '5h',
-    trending: false,
-    content: 'Hot take: The single best thing I did for my freelance career was raising my rates.\n\nWent from $85/hr → $150/hr and actually got MORE serious clients.\n\nPrice is a signal. Premium pricing filters out problem clients automatically. Don\'t under-price to win — it signals risk.',
-    image: { type: 'chart', label: 'Revenue Growth 2025→2026', emoji: '📈', grad: 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 50%, #34d399 100%)' },
-    likes: 287,
-    comments: 64,
-    shares: 89,
-    views: 21300,
-    liked: true,
-    saved: false,
-    reposted: false,
-  },
-  {
-    id: 3,
-    author: 'Priya Sharma',
-    handle: '@priya_uxr',
-    role: 'UX Researcher',
-    avatar: '👩🏽‍💻',
-    color: '#f59e0b',
-    time: '1d',
-    trending: false,
-    content: 'Sharing my freelance contract template — took me 2 years and one bad client experience to get right.\n\nIncludes:\n✅ Scope of work clauses\n✅ Revision limits\n✅ Kill fee (25% if client cancels)\n✅ IP ownership on final payment\n\nDM me for the full version. No strings.',
-    image: null,
-    likes: 512,
-    comments: 97,
-    shares: 203,
-    views: 34100,
-    liked: false,
-    saved: true,
-    reposted: false,
-  },
-  {
-    id: 4,
-    author: 'Tom Blake',
-    handle: '@tomblake_brand',
-    role: 'Brand Strategist',
-    avatar: '👨🏼‍💼',
-    color: '#06b6d4',
-    time: '2d',
-    trending: false,
-    content: 'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + LanceFlo for project tracking\n\nWhat\'s your must-have setup piece?',
-    image: { type: 'photo', label: 'Home Office Setup', emoji: '🖥', grad: 'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)' },
-    likes: 94,
-    comments: 41,
-    shares: 7,
-    views: 5200,
-    liked: false,
-    saved: false,
-    reposted: true,
-  },
-]
-
 const stories = [
   { name: 'You', avatar: '⚡', color: '#16a34a', isOwn: true },
   { name: 'Sarah J.', avatar: '👩🏻‍🎨', color: '#16a34a', isOwn: false },
@@ -131,24 +52,67 @@ const stories = [
 const tabs = ['Feed', 'Trending', 'Saved']
 
 export default function CommunityPage() {
-  const [postData, setPostData] = useState<Post[]>(posts)
+  const [postData, setPostData] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('Feed')
   const [newPost, setNewPost] = useState('')
 
-  const toggleLike = (id: number) => {
+  useEffect(() => {
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(rows => { setPostData(rows); setLoading(false) })
+  }, [])
+
+  const toggleLike = async (id: number) => {
+    const post = postData.find(p => p.id === id)
+    if (!post) return
+    const liked = !post.liked
     setPostData(p => p.map(post => post.id === id
-      ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 }
+      ? { ...post, liked, likes: liked ? post.likes + 1 : post.likes - 1 }
       : post
     ))
+    await fetch(`/api/posts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ liked }),
+    })
   }
-  const toggleSave = (id: number) => {
-    setPostData(p => p.map(post => post.id === id ? { ...post, saved: !post.saved } : post))
+  const toggleSave = async (id: number) => {
+    const post = postData.find(p => p.id === id)
+    if (!post) return
+    const saved = !post.saved
+    setPostData(p => p.map(post => post.id === id ? { ...post, saved } : post))
+    await fetch(`/api/posts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ saved }),
+    })
   }
-  const toggleRepost = (id: number) => {
+  const toggleRepost = async (id: number) => {
+    const post = postData.find(p => p.id === id)
+    if (!post) return
+    const reposted = !post.reposted
     setPostData(p => p.map(post => post.id === id
-      ? { ...post, reposted: !post.reposted, shares: post.reposted ? post.shares - 1 : post.shares + 1 }
+      ? { ...post, reposted, shares: reposted ? post.shares + 1 : post.shares - 1 }
       : post
     ))
+    await fetch(`/api/posts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reposted }),
+    })
+  }
+
+  const createPost = async () => {
+    if (!newPost.trim()) return
+    const res = await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: newPost }),
+    })
+    const created = await res.json()
+    setPostData(prev => [created, ...prev])
+    setNewPost('')
   }
 
   const displayed = activeTab === 'Saved'
@@ -269,6 +233,7 @@ export default function CommunityPage() {
                   <button
                     className="btn-primary"
                     style={{ marginLeft: 'auto', padding: '7px 20px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}
+                    onClick={createPost}
                   >
                     <Send size={13} /> Post
                   </button>
@@ -278,8 +243,9 @@ export default function CommunityPage() {
           </div>
 
           {/* Posts */}
+          {loading && <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading posts...</div>}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {displayed.map(post => (
+            {!loading && displayed.map(post => (
               <div key={post.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 {post.trending && (
                   <div style={{ padding: '6px 18px', background: '#fef9c3', borderBottom: '1px solid #fde68a', fontSize: 12, fontWeight: 600, color: '#92400e', display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -300,7 +266,7 @@ export default function CommunityPage() {
                             <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           </span>
                         </div>
-                        <div style={{ fontSize: 12, color: '#78716c' }}>{post.handle} · {post.role} · {post.time} ago</div>
+                        <div style={{ fontSize: 12, color: '#78716c' }}>{post.handle} · {post.role} · {post.time === 'now' ? 'just now' : `${post.time} ago`}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>

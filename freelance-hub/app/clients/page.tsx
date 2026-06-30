@@ -1,33 +1,66 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Search, Building2, Mail, Phone, Globe, MoreHorizontal } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, Search, Building2, Mail, Phone, Globe, MoreHorizontal, X, Trash2 } from 'lucide-react'
 
-const clients = [
-  {
-    id: 1, name: 'Emma Thompson', company: 'Tech Trophey', email: 'emma@techtrophey.com',
-    phone: '+1 (555) 234-5678', website: 'techtrophey.com', avatar: '👩🏻‍💼', color: '#16a34a',
-    status: 'active', revenue: 24500, projects: 5,
-  },
-  {
-    id: 2, name: 'James Park', company: 'Hencewood Digital', email: 'james@hencewood.io',
-    phone: '+1 (555) 345-6789', website: 'hencewood.io', avatar: '👨🏻‍💻', color: '#ec4899',
-    status: 'active', revenue: 18200, projects: 3,
-  },
-  {
-    id: 3, name: 'Aisha Williams', company: 'Margono Studio', email: 'aisha@margono.co',
-    phone: '+1 (555) 456-7890', website: 'margono.co', avatar: '👩🏿‍💼', color: '#f59e0b',
-    status: 'active', revenue: 15800, projects: 4,
-  },
-]
+interface Client {
+  id: number
+  name: string
+  company: string
+  email: string
+  phone: string
+  website: string
+  avatar: string
+  color: string
+  status: string
+  revenue: number
+  projects: number
+}
+
+const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
+const colors = ['#16a34a', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
+
+const emptyForm = { name: '', company: '', email: '', phone: '', website: '' }
 
 export default function ClientsPage() {
+  const [clients, setClients] = useState<Client[]>([])
+  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('/api/clients')
+      .then(res => res.json())
+      .then(data => { setClients(data); setLoading(false) })
+  }, [])
 
   const filtered = clients.filter(c =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.company.toLowerCase().includes(search.toLowerCase())
   )
+
+  const createClient = async () => {
+    if (!form.name.trim() || !form.company.trim()) return
+    const avatar = avatars[clients.length % avatars.length]
+    const color = colors[clients.length % colors.length]
+    const res = await fetch('/api/clients', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, avatar, color, status: 'active', revenue: 0, projects: 0 }),
+    })
+    const created = await res.json()
+    setClients(prev => [created, ...prev])
+    setForm(emptyForm)
+    setShowModal(false)
+  }
+
+  const deleteClient = async (id: number) => {
+    setOpenMenuId(null)
+    setClients(prev => prev.filter(c => c.id !== id))
+    await fetch(`/api/clients/${id}`, { method: 'DELETE' })
+  }
 
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -36,7 +69,7 @@ export default function ClientsPage() {
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Clients</h1>
           <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Manage your client relationships</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowModal(true)}>
           <Plus size={15} />
           Add Client
         </button>
@@ -53,11 +86,13 @@ export default function ClientsPage() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading clients...</div>
+      ) : filtered.length === 0 ? (
         <div className="card" style={{ padding: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <Building2 size={48} color="#d1d5db" />
           <p style={{ color: '#78716c', fontSize: 15 }}>No clients found</p>
-          <button className="btn-primary">
+          <button className="btn-primary" onClick={() => setShowModal(true)}>
             <Plus size={14} /> Add your first client
           </button>
         </div>
@@ -75,9 +110,28 @@ export default function ClientsPage() {
                     <div style={{ fontSize: 13, color: '#78716c' }}>{client.company}</div>
                   </div>
                 </div>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c', padding: 4 }}>
-                  <MoreHorizontal size={16} />
-                </button>
+                <div style={{ position: 'relative' }}>
+                  <button
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c', padding: 4 }}
+                    onClick={() => setOpenMenuId(openMenuId === client.id ? null : client.id)}
+                  >
+                    <MoreHorizontal size={16} />
+                  </button>
+                  {openMenuId === client.id && (
+                    <div style={{
+                      position: 'absolute', right: 0, top: 28, background: 'var(--card)',
+                      border: '1px solid rgba(0,0,0,0.08)', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                      zIndex: 10, minWidth: 130,
+                    }}>
+                      <button
+                        onClick={() => deleteClient(client.id)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontSize: 13 }}
+                      >
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 14 }}>
                 {[
@@ -104,6 +158,29 @@ export default function ClientsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
+          <div className="card" style={{ width: 420, padding: 24 }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>Add Client</span>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input className="search-input" placeholder="Full name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+              <input className="search-input" placeholder="Company" value={form.company} onChange={e => setForm({ ...form, company: e.target.value })} />
+              <input className="search-input" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+              <input className="search-input" placeholder="Phone" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+              <input className="search-input" placeholder="Website" value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} />
+              <button className="btn-primary" style={{ justifyContent: 'center', marginTop: 4 }} onClick={createClient}>
+                Add Client
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

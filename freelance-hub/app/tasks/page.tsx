@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Plus, Search, Filter, MoreHorizontal, Calendar, Flag, Code, MessageSquare } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Plus, Search, Filter, MoreHorizontal, Calendar, Flag, X, Trash2 } from 'lucide-react'
 
 type Priority = 'high' | 'medium' | 'low'
 type Status = 'todo' | 'in progress' | 'completed'
@@ -18,51 +18,7 @@ interface Task {
   checked: boolean
 }
 
-const initialTasks: Task[] = [
-  {
-    id: 1, title: 'Complete website redesign mockups',
-    description: 'Create high-fidelity mockups for the client homepage and product pages',
-    priority: 'high', status: 'in progress', dueDate: 'Jan 14', project: 'Tech Trophey Website',
-    integrations: ['figma', 'slack', 'google'], checked: false,
-  },
-  {
-    id: 2, title: 'Review frontend code pull request',
-    description: 'Check the new React components for best practices',
-    priority: 'medium', status: 'todo', dueDate: 'Jan 12', project: 'Hencewood Digital',
-    integrations: ['github', 'slack'], checked: false,
-  },
-  {
-    id: 3, title: 'Client meeting - Project kickoff',
-    description: 'Discuss project scope and timeline with new client',
-    priority: 'high', status: 'todo', dueDate: 'Jan 11', project: 'Margono Studio',
-    integrations: ['slack'], checked: false,
-  },
-  {
-    id: 4, title: 'Update portfolio website',
-    description: 'Add recent case studies and update project showcase',
-    priority: 'low', status: 'todo', dueDate: 'Jan 20', project: 'Personal',
-    integrations: [], checked: false,
-  },
-]
-
-const upcomingDeadlines = [
-  { title: 'Complete website redesign mockups', date: 'Jan 14', priority: 'high' as Priority },
-  { title: 'Review frontend code pull request', date: 'Jan 12', priority: 'medium' as Priority },
-  { title: 'Client meeting - Project kickoff', date: 'Jan 11', priority: 'high' as Priority },
-]
-
-const activeProjects = [
-  { name: 'Tech Trophey Website', tasks: 1 },
-  { name: 'Hencewood Digital', tasks: 1 },
-  { name: 'Margono Studio', tasks: 1 },
-]
-
 const priorityClass: Record<Priority, string> = {
-  high: 'badge badge-high',
-  medium: 'badge badge-medium',
-  low: 'badge badge-low',
-}
-const priorityDeadlineClass: Record<Priority, string> = {
   high: 'badge badge-high',
   medium: 'badge badge-medium',
   low: 'badge badge-low',
@@ -89,10 +45,22 @@ const IntegrationIcon = ({ name }: { name: string }) => {
 
 const tabs = ['All', 'To Do', 'In Progress', 'Completed']
 
+const emptyForm = { title: '', description: '', priority: 'medium' as Priority, status: 'todo' as Status, dueDate: '', project: '' }
+
 export default function TasksPage() {
-  const [tasks, setTasks] = useState(initialTasks)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('/api/tasks')
+      .then(res => res.json())
+      .then(data => { setTasks(data); setLoading(false) })
+  }, [])
 
   const filtered = tasks.filter(t => {
     const matchSearch = t.title.toLowerCase().includes(search.toLowerCase())
@@ -103,9 +71,49 @@ export default function TasksPage() {
     return matchSearch
   })
 
-  const toggle = (id: number) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, checked: !t.checked } : t))
+  const toggle = async (id: number) => {
+    const task = tasks.find(t => t.id === id)
+    if (!task) return
+    const checked = !task.checked
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, checked, status: checked ? 'completed' : 'todo' } : t))
+    const res = await fetch(`/api/tasks/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ checked, status: checked ? 'completed' : 'todo' }),
+    })
+    const updated = await res.json()
+    setTasks(prev => prev.map(t => t.id === id ? updated : t))
   }
+
+  const deleteTask = async (id: number) => {
+    setOpenMenuId(null)
+    setTasks(prev => prev.filter(t => t.id !== id))
+    await fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+  }
+
+  const createTask = async () => {
+    if (!form.title.trim()) return
+    const res = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, integrations: [], checked: false }),
+    })
+    const created = await res.json()
+    setTasks(prev => [created, ...prev])
+    setForm(emptyForm)
+    setShowModal(false)
+  }
+
+  const activeTasks = tasks.filter(t => !t.checked)
+  const upcomingDeadlines = activeTasks.slice(0, 3)
+  const activeProjects = Object.values(
+    activeTasks.reduce((acc, t) => {
+      if (!t.project) return acc
+      acc[t.project] = acc[t.project] || { name: t.project, tasks: 0 }
+      acc[t.project].tasks += 1
+      return acc
+    }, {} as Record<string, { name: string; tasks: number }>)
+  )
 
   return (
     <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
@@ -114,7 +122,7 @@ export default function TasksPage() {
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Tasks</h1>
           <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Manage your work and stay organized</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowModal(true)}>
           <Plus size={15} />
           New Task
         </button>
@@ -160,6 +168,12 @@ export default function TasksPage() {
 
           {/* Tasks */}
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            {loading && (
+              <div style={{ padding: 24, fontSize: 13, color: '#78716c' }}>Loading tasks...</div>
+            )}
+            {!loading && filtered.length === 0 && (
+              <div style={{ padding: 24, fontSize: 13, color: '#78716c' }}>No tasks found.</div>
+            )}
             {filtered.map((task, i) => (
               <div
                 key={task.id}
@@ -170,6 +184,7 @@ export default function TasksPage() {
                   padding: '16px 20px',
                   borderBottom: i < filtered.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                   background: task.checked ? '#fafafa' : '#fff',
+                  position: 'relative',
                 }}
               >
                 <input
@@ -201,12 +216,28 @@ export default function TasksPage() {
                   {task.integrations.map(integ => (
                     <IntegrationIcon key={integ} name={integ} />
                   ))}
-                  {task.integrations.length < 3 && (
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed #d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c', fontSize: 14 }}>+</div>
-                  )}
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c', marginLeft: 4, padding: 4 }}>
-                    <MoreHorizontal size={16} />
-                  </button>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c', marginLeft: 4, padding: 4 }}
+                      onClick={() => setOpenMenuId(openMenuId === task.id ? null : task.id)}
+                    >
+                      <MoreHorizontal size={16} />
+                    </button>
+                    {openMenuId === task.id && (
+                      <div style={{
+                        position: 'absolute', right: 0, top: 28, background: 'var(--card)',
+                        border: '1px solid rgba(0,0,0,0.08)', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                        zIndex: 10, minWidth: 130,
+                      }}>
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontSize: 13 }}
+                        >
+                          <Trash2 size={13} /> Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -222,13 +253,16 @@ export default function TasksPage() {
               <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {upcomingDeadlines.length === 0 && (
+                <div style={{ fontSize: 13, color: '#78716c' }}>No upcoming deadlines.</div>
+              )}
               {upcomingDeadlines.map((d, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < upcomingDeadlines.length - 1 ? 12 : 0, borderBottom: i < upcomingDeadlines.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < upcomingDeadlines.length - 1 ? 12 : 0, borderBottom: i < upcomingDeadlines.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', marginBottom: 3 }}>{d.title}</div>
-                    <div style={{ fontSize: 12, color: '#78716c' }}>{d.date}</div>
+                    <div style={{ fontSize: 12, color: '#78716c' }}>{d.dueDate}</div>
                   </div>
-                  <span className={priorityDeadlineClass[d.priority]}>{d.priority}</span>
+                  <span className={priorityClass[d.priority]}>{d.priority}</span>
                 </div>
               ))}
             </div>
@@ -238,8 +272,11 @@ export default function TasksPage() {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {activeProjects.length === 0 && (
+                <div style={{ fontSize: 13, color: '#78716c' }}>No active projects.</div>
+              )}
               {activeProjects.map((p, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < activeProjects.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < activeProjects.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: '#1c1917' }}>{p.name}</div>
                     <div style={{ fontSize: 12, color: '#78716c', marginTop: 2 }}>{p.tasks} active task{p.tasks > 1 ? 's' : ''}</div>
@@ -251,6 +288,65 @@ export default function TasksPage() {
           </div>
         </div>
       </div>
+
+      {/* New Task Modal */}
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
+          <div className="card" style={{ width: 440, padding: 24 }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+              <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>New Task</span>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input
+                className="search-input"
+                placeholder="Task title"
+                value={form.title}
+                onChange={e => setForm({ ...form, title: e.target.value })}
+              />
+              <textarea
+                className="search-input"
+                placeholder="Description"
+                rows={3}
+                value={form.description}
+                onChange={e => setForm({ ...form, description: e.target.value })}
+                style={{ resize: 'vertical', fontFamily: 'inherit' }}
+              />
+              <div style={{ display: 'flex', gap: 10 }}>
+                <select className="search-input" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value as Priority })}>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+                <select className="search-input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as Status })}>
+                  <option value="todo">To Do</option>
+                  <option value="in progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <input
+                  className="search-input"
+                  placeholder="Due date (e.g. Jan 14)"
+                  value={form.dueDate}
+                  onChange={e => setForm({ ...form, dueDate: e.target.value })}
+                />
+                <input
+                  className="search-input"
+                  placeholder="Project"
+                  value={form.project}
+                  onChange={e => setForm({ ...form, project: e.target.value })}
+                />
+              </div>
+              <button className="btn-primary" style={{ justifyContent: 'center', marginTop: 4 }} onClick={createTask}>
+                Create Task
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

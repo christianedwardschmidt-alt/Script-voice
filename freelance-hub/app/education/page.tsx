@@ -1,22 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Search, Play, Star, Clock, BookOpen, Award, CheckCircle, Plus } from 'lucide-react'
 
-const courses = [
-  { id: 1, title: 'Advanced Figma for Freelancers', instructor: 'Sarah Chen', category: 'Design', duration: '8h 30m', lessons: 42, rating: 4.9, progress: 65, enrolled: true, price: 0, color: '#16a34a', badge: 'Free' },
-  { id: 2, title: 'Full-Stack Next.js', instructor: 'Marcus Williams', category: 'Development', duration: '22h', lessons: 95, rating: 4.8, progress: 30, enrolled: true, price: 79, color: '#10b981', badge: 'Bestseller' },
-  { id: 3, title: 'AI Tools for Freelancers', instructor: 'Priya Sharma', category: 'AI & ML', duration: '6h 45m', lessons: 28, rating: 4.9, progress: 0, enrolled: false, price: 49, color: '#f59e0b', badge: 'New' },
-  { id: 4, title: 'Freelance Business Mastery', instructor: 'James Rodriguez', category: 'Business', duration: '11h', lessons: 56, rating: 4.7, progress: 100, enrolled: true, price: 89, color: '#ec4899', badge: null },
-  { id: 5, title: 'UX Research & Testing', instructor: 'Aisha Johnson', category: 'Design', duration: '9h', lessons: 38, rating: 4.8, progress: 0, enrolled: false, price: 59, color: '#06b6d4', badge: 'Popular' },
-  { id: 6, title: 'Content Marketing', instructor: 'Tom Blake', category: 'Marketing', duration: '7h 50m', lessons: 33, rating: 4.6, progress: 0, enrolled: false, price: 39, color: '#78716c', badge: null },
-]
+interface Course {
+  id: number
+  title: string
+  instructor: string
+  category: string
+  duration: string
+  lessons: number
+  rating: number
+  progress: number
+  enrolled: boolean
+  price: number
+  color: string
+  badge: string | null
+}
 
 const categories = ['All', 'Design', 'Development', 'Business', 'Marketing', 'AI & ML']
 
 export default function EducationPage() {
+  const [courses, setCourses] = useState<Course[]>([])
+  const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All')
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    fetch('/api/courses')
+      .then(res => res.json())
+      .then(rows => { setCourses(rows); setLoading(false) })
+  }, [])
+
+  const enroll = async (id: number) => {
+    setCourses(prev => prev.map(c => c.id === id ? { ...c, enrolled: true, progress: 0 } : c))
+    await fetch(`/api/courses/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ enrolled: true, progress: 0 }),
+    })
+  }
 
   const filtered = courses.filter(c => {
     const matchCat = activeCategory === 'All' || c.category === activeCategory
@@ -83,8 +106,9 @@ export default function EducationPage() {
       </div>
 
       {/* Course Grid */}
+      {loading && <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading courses...</div>}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-        {filtered.map(course => (
+        {!loading && filtered.map(course => (
           <div key={course.id} className="card card-hover" style={{ overflow: 'hidden', padding: 0 }}>
             {/* Thumbnail */}
             <div style={{ height: 110, background: `linear-gradient(135deg, ${course.color}22, ${course.color}08)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
@@ -125,7 +149,7 @@ export default function EducationPage() {
               ) : (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>{course.price === 0 ? 'Free' : `$${course.price}`}</span>
-                  <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 12 }}>Enroll</button>
+                  <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 12 }} onClick={() => enroll(course.id)}>Enroll</button>
                 </div>
               )}
             </div>
