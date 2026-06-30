@@ -11,8 +11,6 @@ import {
   Globe,
   Star,
   StarOff,
-  Tag,
-  ChevronDown,
   TrendingUp,
   Users,
   DollarSign,
@@ -27,11 +25,11 @@ type PipelineStage = 'Lead' | 'Proposal' | 'Negotiation' | 'Active' | 'Completed
 const pipelineStages: PipelineStage[] = ['Lead', 'Proposal', 'Negotiation', 'Active', 'Completed']
 
 const stageColors: Record<PipelineStage, string> = {
-  Lead: '#64748b',
+  Lead: '#78716c',
   Proposal: '#16a34a',
-  Negotiation: '#f59e0b',
-  Active: '#10b981',
-  Completed: '#22d3ee',
+  Negotiation: '#d97706',
+  Active: '#22c55e',
+  Completed: '#14b8a6',
 }
 
 interface Client {
@@ -68,25 +66,25 @@ const clients: Client[] = [
   {
     id: 3, name: 'Aisha Williams', company: 'Bright Ideas Co', email: 'aisha@brightideas.co',
     phone: '+1 (555) 456-7890', website: 'brightideas.co', stage: 'Negotiation', value: 9800,
-    avatar: '👩🏿‍💼', avatarBg: '#ec4899', tags: ['Marketing', 'Content'], lastContact: '1d ago',
+    avatar: '👩🏿‍💼', avatarBg: '#d97706', tags: ['Marketing', 'Content'], lastContact: '1d ago',
     starred: true, rating: 4, notes: 'Negotiating on timeline. They want delivery in 3 weeks.',
   },
   {
     id: 4, name: 'Carlos Mendez', company: 'DataSync', email: 'carlos@datasync.io',
     phone: '+1 (555) 567-8901', website: 'datasync.io', stage: 'Active', value: 24000,
-    avatar: '👨🏽‍💼', avatarBg: '#10b981', tags: ['Development', 'Data', 'Premium'], lastContact: '2d ago',
+    avatar: '👨🏽‍💼', avatarBg: '#14b8a6', tags: ['Development', 'Data', 'Premium'], lastContact: '2d ago',
     starred: false, rating: 5, notes: 'High-value client. Careful with deadlines. C-level contacts.',
   },
   {
     id: 5, name: 'Sophie Laurent', company: 'NovaBuild', email: 'sophie@novabuild.fr',
     phone: '+33 1 23 45 67 89', website: 'novabuild.fr', stage: 'Lead', value: 35000,
-    avatar: '👩🏻‍🎨', avatarBg: '#f97316', tags: ['Design', 'Enterprise', 'New'], lastContact: '3d ago',
+    avatar: '👩🏻‍🎨', avatarBg: '#78716c', tags: ['Design', 'Enterprise', 'New'], lastContact: '3d ago',
     starred: true, rating: 3, notes: 'Warm lead from LinkedIn. Need to schedule discovery call.',
   },
   {
     id: 6, name: 'Raj Patel', company: 'InnovateTech', email: 'raj@innovatetech.in',
     phone: '+91 98765 43210', website: 'innovatetech.in', stage: 'Completed', value: 8200,
-    avatar: '👨🏽‍💻', avatarBg: '#06b6d4', tags: ['Development', 'Completed'], lastContact: '2w ago',
+    avatar: '👨🏽‍💻', avatarBg: '#4ade80', tags: ['Development', 'Completed'], lastContact: '2w ago',
     starred: false, rating: 4, notes: 'Project completed successfully. Ask for referral.',
   },
 ]
@@ -94,22 +92,15 @@ const clients: Client[] = [
 const tagColors: Record<string, string> = {
   Design: '#16a34a',
   Development: '#22c55e',
-  Marketing: '#ec4899',
-  Content: '#f97316',
-  API: '#06b6d4',
-  Data: '#10b981',
-  Retainer: '#f59e0b',
-  Premium: '#f59e0b',
-  Enterprise: '#22d3ee',
-  New: '#10b981',
-  Completed: '#64748b',
-}
-
-const card: React.CSSProperties = {
-  background: '#0e0e1c',
-  border: '1px solid #1a1a30',
-  borderRadius: 14,
-  padding: 20,
+  Marketing: '#d97706',
+  Content: '#d97706',
+  API: '#14b8a6',
+  Data: '#14b8a6',
+  Retainer: '#4ade80',
+  Premium: '#4ade80',
+  Enterprise: '#22c55e',
+  New: '#16a34a',
+  Completed: '#78716c',
 }
 
 export default function CRMPage() {
@@ -135,13 +126,13 @@ export default function CRMPage() {
   }
 
   return (
-    <div style={{ padding: '28px 32px', background: '#07070f', minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+    <div style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px' }}>CRM</h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Manage client relationships & pipeline</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>CRM</h1>
+          <p style={{ fontSize: 14, color: '#78716c', marginTop: 2 }}>Manage client relationships & pipeline</p>
         </div>
-        <button style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', borderRadius: 8, background: '#16a34a', color: '#fff', fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 0 12px rgba(22,163,74,0.3)' }}>
+        <button className="btn-primary">
           <Plus size={14} />
           Add Client
         </button>
@@ -151,15 +142,15 @@ export default function CRMPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
           { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#16a34a' },
-          { label: 'Active Clients', value: activeCount, icon: Users, color: '#10b981' },
-          { label: 'Avg Deal Size', value: `$${avgValue.toLocaleString()}`, icon: TrendingUp, color: '#22c55e' },
-          { label: 'Avg Response', value: '2.4h', icon: Clock, color: '#f59e0b' },
+          { label: 'Active Clients', value: activeCount, icon: Users, color: '#22c55e' },
+          { label: 'Avg Deal Size', value: `$${avgValue.toLocaleString()}`, icon: TrendingUp, color: '#14b8a6' },
+          { label: 'Avg Response', value: '2.4h', icon: Clock, color: '#d97706' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="card-hover" style={card}>
+          <div key={label} className="card card-hover" style={{ padding: 18 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <div style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>{label}</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: '#f1f5f9' }}>{value}</div>
+                <div style={{ fontSize: 11, color: '#78716c', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>{label}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#1c1917' }}>{value}</div>
               </div>
               <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon size={16} color={color} />
@@ -170,8 +161,8 @@ export default function CRMPage() {
       </div>
 
       {/* Pipeline Overview */}
-      <div style={{ ...card, marginBottom: 20 }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#f1f5f9', marginBottom: 16 }}>Pipeline Overview</div>
+      <div className="card" style={{ padding: 20, marginBottom: 20 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#1c1917', marginBottom: 16 }}>Pipeline Overview</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
           {pipelineStages.map((stage) => {
             const stageClients = data.filter(c => c.stage === stage)
@@ -184,19 +175,19 @@ export default function CRMPage() {
                 style={{
                   padding: '14px 16px',
                   borderRadius: 10,
-                  background: selectedStage === stage ? `${color}15` : '#111120',
-                  border: `1px solid ${selectedStage === stage ? color + '40' : '#1a1a30'}`,
+                  background: selectedStage === stage ? `${color}15` : 'var(--bg-2)',
+                  border: `1px solid ${selectedStage === stage ? color + '40' : 'var(--border)'}`,
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color }}>{stage}</span>
-                  <span style={{ fontSize: 12, color: '#475569', background: '#1a1a30', padding: '1px 8px', borderRadius: 10 }}>
+                  <span style={{ fontSize: 12, color: '#78716c', background: 'var(--card)', padding: '1px 8px', borderRadius: 10 }}>
                     {stageClients.length}
                   </span>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9' }}>${stageValue.toLocaleString()}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1c1917' }}>${stageValue.toLocaleString()}</div>
               </div>
             )
           })}
@@ -205,20 +196,21 @@ export default function CRMPage() {
 
       {/* Toolbar */}
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center' }}>
-        <div style={{ flex: 1, position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
+        <div style={{ flex: 1, position: 'relative', maxWidth: 400 }}>
+          <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#78716c' }} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search clients..."
-            style={{ width: '100%', padding: '9px 12px 9px 34px', background: '#0e0e1c', border: '1px solid #1a1a30', borderRadius: 8, color: '#f1f5f9', fontSize: 13, outline: 'none' }}
+            className="search-input"
+            style={{ paddingLeft: 34 }}
           />
         </div>
-        <button style={{ padding: '9px 14px', background: '#0e0e1c', border: '1px solid #1a1a30', borderRadius: 8, color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+        <button className="btn-outline">
           <Filter size={13} />
           Filter
         </button>
-        <div style={{ display: 'flex', background: '#0e0e1c', border: '1px solid #1a1a30', borderRadius: 8, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
           {(['list', 'kanban'] as const).map((v) => (
             <button
               key={v}
@@ -227,7 +219,7 @@ export default function CRMPage() {
                 padding: '8px 14px',
                 background: activeView === v ? '#16a34a' : 'none',
                 border: 'none',
-                color: activeView === v ? '#fff' : '#64748b',
+                color: activeView === v ? '#fff' : '#78716c',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -242,12 +234,12 @@ export default function CRMPage() {
 
       {/* Client List */}
       <div style={{ display: 'grid', gridTemplateColumns: selectedClient ? '1fr 380px' : '1fr', gap: 16 }}>
-        <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid #1a1a30' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 {['Client', 'Stage', 'Value', 'Tags', 'Last Contact', ''].map((h) => (
-                  <th key={h} style={{ textAlign: 'left', fontSize: 11, color: '#475569', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', padding: '14px 16px' }}>
+                  <th key={h} style={{ textAlign: 'left', fontSize: 11, color: '#78716c', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', padding: '14px 16px' }}>
                     {h}
                   </th>
                 ))}
@@ -259,7 +251,7 @@ export default function CRMPage() {
                   key={client.id}
                   onClick={() => setSelectedClient(selectedClient?.id === client.id ? null : client)}
                   style={{
-                    borderBottom: '1px solid #111120',
+                    borderBottom: '1px solid var(--border)',
                     cursor: 'pointer',
                     background: selectedClient?.id === client.id ? '#16a34a08' : 'transparent',
                     transition: 'background 0.15s',
@@ -268,12 +260,12 @@ export default function CRMPage() {
                 >
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: client.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${client.avatarBg}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                         {client.avatar}
                       </div>
                       <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#f1f5f9' }}>{client.name}</div>
-                        <div style={{ fontSize: 11, color: '#64748b' }}>{client.company}</div>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1917' }}>{client.name}</div>
+                        <div style={{ fontSize: 11, color: '#78716c' }}>{client.company}</div>
                       </div>
                     </div>
                   </td>
@@ -282,7 +274,7 @@ export default function CRMPage() {
                       {client.stage}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 700, color: '#10b981' }}>
+                  <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 700, color: '#16a34a' }}>
                     ${client.value.toLocaleString()}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -294,16 +286,16 @@ export default function CRMPage() {
                       ))}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 12, color: '#64748b' }}>{client.lastContact}</td>
+                  <td style={{ padding: '12px 16px', fontSize: 12, color: '#78716c' }}>{client.lastContact}</td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleStar(client.id) }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.starred ? '#f59e0b' : '#475569', padding: 4 }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: client.starred ? '#d97706' : '#a8a29e', padding: 4 }}
                       >
-                        {client.starred ? <Star size={14} fill="#f59e0b" /> : <StarOff size={14} />}
+                        {client.starred ? <Star size={14} fill="#d97706" /> : <StarOff size={14} />}
                       </button>
-                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', padding: 4 }}>
+                      <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#a8a29e', padding: 4 }}>
                         <MoreHorizontal size={14} />
                       </button>
                     </div>
@@ -316,18 +308,18 @@ export default function CRMPage() {
 
         {/* Client Detail Panel */}
         {selectedClient && (
-          <div style={card}>
+          <div className="card" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: selectedClient.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${selectedClient.avatarBg}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
                   {selectedClient.avatar}
                 </div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9' }}>{selectedClient.name}</div>
-                  <div style={{ fontSize: 12, color: '#64748b' }}>{selectedClient.company}</div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>{selectedClient.name}</div>
+                  <div style={{ fontSize: 12, color: '#78716c' }}>{selectedClient.company}</div>
                 </div>
               </div>
-              <button onClick={() => setSelectedClient(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', fontSize: 18 }}>×</button>
+              <button onClick={() => setSelectedClient(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#a8a29e', fontSize: 18 }}>×</button>
             </div>
 
             <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
@@ -345,7 +337,7 @@ export default function CRMPage() {
                 { icon: MessageSquare, label: 'Message' },
                 { icon: Calendar, label: 'Meet' },
               ].map(({ icon: Icon, label }) => (
-                <button key={label} style={{ flex: 1, padding: '8px 0', borderRadius: 8, background: '#141428', border: '1px solid #252545', color: '#94a3b8', fontSize: 11, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                <button key={label} style={{ flex: 1, padding: '8px 0', borderRadius: 8, background: 'var(--bg-2)', border: '1px solid var(--border)', color: '#5b5894', fontSize: 11, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <Icon size={14} />
                   {label}
                 </button>
@@ -360,19 +352,19 @@ export default function CRMPage() {
                 { icon: DollarSign, label: 'Deal Value', value: `$${selectedClient.value.toLocaleString()}` },
               ].map(({ icon: Icon, label, value }) => (
                 <div key={label} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <Icon size={14} color="#475569" />
-                  <span style={{ fontSize: 11, color: '#475569', width: 64 }}>{label}</span>
-                  <span style={{ fontSize: 12, color: '#94a3b8' }}>{value}</span>
+                  <Icon size={14} color="#a8a29e" />
+                  <span style={{ fontSize: 11, color: '#a8a29e', width: 64 }}>{label}</span>
+                  <span style={{ fontSize: 12, color: '#1c1917' }}>{value}</span>
                 </div>
               ))}
             </div>
 
-            <div style={{ padding: '12px 14px', background: '#111120', borderRadius: 8, marginBottom: 14 }}>
-              <div style={{ fontSize: 11, color: '#475569', marginBottom: 6 }}>Notes</div>
-              <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>{selectedClient.notes}</div>
+            <div style={{ padding: '12px 14px', background: 'var(--bg-2)', borderRadius: 8, marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: '#78716c', marginBottom: 6 }}>Notes</div>
+              <div style={{ fontSize: 12, color: '#1c1917', lineHeight: 1.5 }}>{selectedClient.notes}</div>
             </div>
 
-            <button style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: '#16a34a', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <button className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
               View Full Profile
               <ArrowRight size={14} />
             </button>
