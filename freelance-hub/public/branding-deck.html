@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LanceFlo — Brand Deck 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-family: 'Inter', -apple-system, sans-serif; scroll-behavior: smooth; }
+  body { background: #0a0a0a; color: #fff; }
+
+  /* ── SLIDE BASE ─────────────────────────────── */
+  .slide {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide + .slide { border-top: 1px solid rgba(255,255,255,0.05); }
+
+  /* ── SLIDE VARIANTS ────────────────────────── */
+  .slide-dark   { background: #052e16; }
+  .slide-darker { background: #021a0c; }
+  .slide-light  { background: #f0fdf4; color: #052e16; }
+  .slide-white  { background: #ffffff; color: #052e16; }
+  .slide-green  { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
+  .slide-split  { flex-direction: row; gap: 80px; align-items: center; }
+
+  /* ── LABEL ─────────────────────────────────── */
+  .slide-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    opacity: 0.45;
+    margin-bottom: 20px;
+  }
+
+  /* ── HEADINGS ──────────────────────────────── */
+  h1 { font-size: clamp(48px, 6vw, 80px); font-weight: 900; line-height: 1; letter-spacing: -3px; }
+  h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -1.5px; }
+  h3 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 700; line-height: 1.2; letter-spacing: -0.5px; }
+  p  { font-size: 16px; line-height: 1.7; opacity: 0.75; max-width: 640px; }
+
+  /* ── BRAND COLORS ──────────────────────────── */
+  .green   { color: #4ade80; }
+  .white   { color: #ffffff; }
+  .muted   { opacity: 0.5; }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #4ade80 0%, #86efac 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text-lime {
+    background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── LOGO MARK ─────────────────────────────── */
+  .logo-mark {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; color: #fff;
+    letter-spacing: -0.5px;
+    box-shadow: 0 8px 32px rgba(34,197,94,0.5);
+    flex-shrink: 0;
+  }
+  .logo-mark.lg {
+    width: 96px; height: 96px; border-radius: 26px;
+    font-size: 32px;
+    box-shadow: 0 16px 64px rgba(34,197,94,0.6);
+  }
+  .logo-mark.xl {
+    width: 140px; height: 140px; border-radius: 38px;
+    font-size: 48px;
+    box-shadow: 0 24px 80px rgba(34,197,94,0.55);
+  }
+
+  /* ── PILL CHIP ─────────────────────────────── */
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1px solid rgba(74,222,128,0.3);
+    background: rgba(74,222,128,0.08);
+    color: #4ade80;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+
+  /* ── COLOR SWATCHES ────────────────────────── */
+  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 40px; }
+  .swatch {
+    border-radius: 14px; padding: 20px 16px; min-height: 120px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .swatch-name  { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .swatch-hex   { font-size: 11px; opacity: 0.65; font-family: monospace; }
+  .swatch-role  { font-size: 10px; opacity: 0.55; margin-top: 2px; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 600; }
+
+  /* ── TYPE SAMPLES ──────────────────────────── */
+  .type-sample { margin-bottom: 32px; }
+  .type-meta   { font-size: 11px; opacity: 0.45; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+
+  /* ── FEATURE GRID ──────────────────────────── */
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 40px; }
+  .feature-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 24px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .feature-card:hover {
+    border-color: rgba(74,222,128,0.3);
+    background: rgba(74,222,128,0.05);
+  }
+  .feature-icon {
+    width: 40px; height: 40px; border-radius: 11px;
+    background: rgba(22,163,74,0.15);
+    border: 1px solid rgba(74,222,128,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 14px;
+  }
+  .feature-title  { font-size: 14px; font-weight: 700; color: #f0fdf4; margin-bottom: 6px; }
+  .feature-desc   { font-size: 12.5px; opacity: 0.5; line-height: 1.55; }
+
+  /* ── PERSONA CARD ──────────────────────────── */
+  .persona-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 32px;
+    flex: 1;
+  }
+  .persona-avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800; color: #fff;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(34,197,94,0.4);
+  }
+  .persona-name  { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+  .persona-role  { font-size: 13px; color: #4ade80; font-weight: 600; margin-bottom: 16px; }
+  .persona-list  { list-style: none; }
+  .persona-list li { font-size: 13px; opacity: 0.6; line-height: 1.8; padding-left: 16px; position: relative; }
+  .persona-list li::before { content: '→'; position: absolute; left: 0; opacity: 0.4; }
+
+  /* ── TONE GRID ─────────────────────────────── */
+  .tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+  .tone-card {
+    border-radius: 14px; padding: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .tone-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .tone-ex    { font-size: 15px; font-weight: 600; line-height: 1.5; }
+  .tone-good  { background: rgba(22,163,74,0.1); border-color: rgba(74,222,128,0.2); }
+  .tone-bad   { background: rgba(220,38,38,0.07); border-color: rgba(220,38,38,0.2); }
+  .good-label { color: #4ade80; }
+  .bad-label  { color: #f87171; }
+
+  /* ── TAGLINE OPTIONS ───────────────────────── */
+  .tagline-option {
+    padding: 24px 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .tagline-option.primary { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.06); }
+  .tagline-rank { font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.4; text-transform: uppercase; min-width: 60px; }
+  .tagline-text { font-size: 20px; font-weight: 700; }
+  .tagline-note { font-size: 12.5px; opacity: 0.5; margin-left: auto; max-width: 200px; text-align: right; }
+
+  /* ── LOGO VARIANTS ─────────────────────────── */
+  .logo-variants { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+  .logo-box {
+    border-radius: 14px; padding: 40px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    border: 1px solid;
+  }
+  .logo-box-dark  { background: #052e16; border-color: rgba(255,255,255,0.08); }
+  .logo-box-light { background: #f0fdf4; border-color: rgba(22,163,74,0.2); }
+  .logo-box-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.45; }
+
+  .wordmark {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .wordmark-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
+  .wordmark-sub { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5; margin-top: 2px; }
+
+  /* ── BG DECORATIONS ────────────────────────── */
+  .bg-glow {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── PAGE NUMBERS ──────────────────────────── */
+  .slide-num {
+    position: absolute; bottom: 32px; right: 40px;
+    font-size: 11px; font-weight: 600; opacity: 0.2; letter-spacing: 1px;
+  }
+
+  /* ── DECK NAV ──────────────────────────────── */
+  .deck-nav {
+    position: fixed; top: 50%; right: 24px;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 100;
+  }
+  .deck-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer; transition: all 0.2s;
+    text-decoration: none; display: block;
+  }
+  .deck-dot:hover { background: #4ade80; transform: scale(1.4); }
+
+  /* ── CLOSING QUOTE ─────────────────────────── */
+  .big-quote {
+    font-size: clamp(24px, 3.5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    max-width: 760px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 1 · COVER
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s1" style="justify-content: space-between;">
+  <div class="bg-glow" style="width:600px;height:600px;top:-150px;right:-100px;"></div>
+
+  <div class="chip">
+    <span class="chip-dot"></span>
+    Brand Identity · 2026
+  </div>
+
+  <div>
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:40px;">
+      <div class="logo-mark xl">LF</div>
+    </div>
+    <h1>
+      <span class="gradient-text">Lance</span><span style="color:#fff;">Flo</span>
+    </h1>
+    <p style="margin-top:20px;font-size:22px;font-weight:500;opacity:0.6;letter-spacing:-0.3px;max-width:none;">
+      The all-in-one platform for modern freelancers.
+    </p>
+  </div>
+
+  <div style="display:flex;gap:40px;font-size:13px;opacity:0.35;font-weight:500;">
+    <span>Brand Guidelines</span>
+    <span>·</span>
+    <span>Version 1.0</span>
+    <span>·</span>
+    <span>Confidential</span>
+  </div>
+  <div class="slide-num">01</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 2 · MISSION
+═══════════════════════════════════════════════ -->
+<section class="slide slide-dark" id="s2">
+  <div class="bg-glow" style="width:500px;height:500px;bottom:-100px;left:-80px;"></div>
+
+  <div class="slide-label">02 / Mission</div>
+  <h2 style="max-width:700px;margin-bottom:28px;">
+    Freelancers deserve an<br/><span class="gradient-text">operating system</span><br/>for their entire business.
+  </h2>
+  <p style="font-size:18px;opacity:0.6;max-width:580px;line-height:1.8;">
+    LanceFlo is the Freelance OS — a single, beautifully designed workspace that
+    replaces the patchwork of spreadsheets, invoicing tools, tax apps, and CRMs
+    that independent workers juggle every day.
+  </p>
+
+  <div style="display:flex;gap:16px;margin-top:48px;flex-wrap:wrap;">
+    <div class="chip">Revenue visibility</div>
+    <div class="chip">Client relationships</div>
+    <div class="chip">Tax planning</div>
+    <div class="chip">Career growth</div>
+    <div class="chip">AI assistance</div>
+  </div>
+  <div class="slide-num">02</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 3 · THE PROBLEM
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s3">
+  <div class="slide-label">03 / The Problem</div>
+  <h2 style="margin-bottom:32px;">
+    Freelancers are <span style="color:#f87171;">duct-taping</span><br/>their business together.
+  </h2>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px;max-width:900px;">
+    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
+      <div style="font-size:28px;margin-bottom:12px;">📊</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Revenue Blindness</div>
+      <p style="font-size:13px;">No single view of income, expenses, and what's actually owed in taxes.</p>
+    </div>
+    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
+      <div style="font-size:28px;margin-bottom:12px;">🔀</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Tool Fragmentation</div>
+      <p style="font-size:13px;">Invoicing here, client notes there, tasks in another app, taxes on a spreadsheet.</p>
+    </div>
+    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
+      <div style="font-size:28px;margin-bottom:12px;">🕳️</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Career Isolation</div>
+      <p style="font-size:13px;">No community, no job discovery, no structured path to grow skills or income.</p>
+    </div>
+    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
+      <div style="font-size:28px;margin-bottom:12px;">🤯</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Tax Anxiety</div>
+      <p style="font-size:13px;">Estimated taxes, deductions, and quarterly filings are a constant source of stress.</p>
+    </div>
+  </div>
+  <div class="slide-num">03</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 4 · THE SOLUTION
+═══════════════════════════════════════════════ -->
+<section class="slide slide-green" id="s4">
+  <div class="slide-label" style="color:rgba(255,255,255,0.6);">04 / The Solution</div>
+  <h2 style="color:#052e16;max-width:700px;margin-bottom:28px;">
+    One workspace.<br/>Every part of your<br/>freelance business.
+  </h2>
+  <p style="color:#052e16;opacity:0.7;font-size:18px;max-width:560px;line-height:1.8;">
+    LanceFlo brings your finances, clients, tasks, taxes, jobs, learning,
+    and community into a single, fast, beautifully designed platform —
+    with an AI assistant ready to help at every step.
+  </p>
+
+  <div style="display:flex;gap:14px;margin-top:48px;flex-wrap:wrap;">
+    <div style="padding:10px 20px;background:#052e16;color:#4ade80;border-radius:99px;font-size:13px;font-weight:700;opacity:0.9;">
+      Built for solopreneurs
+    </div>
+    <div style="padding:10px 20px;background:rgba(5,46,22,0.15);color:#052e16;border:1px solid rgba(5,46,22,0.25);border-radius:99px;font-size:13px;font-weight:600;">
+      Real data, not mock dashboards
+    </div>
+    <div style="padding:10px 20px;background:rgba(5,46,22,0.15);color:#052e16;border:1px solid rgba(5,46,22,0.25);border-radius:99px;font-size:13px;font-weight:600;">
+      AI-powered workflows
+    </div>
+  </div>
+  <div class="slide-num" style="opacity:0.25;color:#052e16;">04</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 5 · PRODUCT SUITE
+═══════════════════════════════════════════════ -->
+<section class="slide slide-dark" id="s5">
+  <div class="slide-label">05 / Product Suite</div>
+  <h2>Everything in one place.</h2>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <div class="feature-title">Dashboard</div>
+      <div class="feature-desc">Live revenue, expenses, active clients, and task progress at a glance.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✅</div>
+      <div class="feature-title">Tasks</div>
+      <div class="feature-desc">Project task management with priority, due dates, and completion tracking.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <div class="feature-title">Clients + CRM</div>
+      <div class="feature-desc">Client profiles, deal pipeline, and relationship history in one view.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧾</div>
+      <div class="feature-title">Invoicing</div>
+      <div class="feature-desc">Create, send, and track invoices. See outstanding and paid totals instantly.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💸</div>
+      <div class="feature-title">Tax Center</div>
+      <div class="feature-desc">Track deductions, estimate taxes, upload documents. No more surprise bills.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Insights</div>
+      <div class="feature-desc">Revenue trends, client mix, income breakdown, and business health scores.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💼</div>
+      <div class="feature-title">Jobs Board</div>
+      <div class="feature-desc">Discover freelance opportunities. Save, apply, and track from one place.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📚</div>
+      <div class="feature-title">Education</div>
+      <div class="feature-desc">Courses and skills designed for freelancers — grow your rates and expertise.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <div class="feature-title">Community</div>
+      <div class="feature-desc">Connect, share wins, and get advice from fellow freelancers.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔌</div>
+      <div class="feature-title">Integrations</div>
+      <div class="feature-desc">Connect Stripe, Slack, QuickBooks, Notion, and the tools you already use.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">AI Assistant</div>
+      <div class="feature-desc">Draft proposals, plan taxes, write client emails, and price projects with AI.</div>
+    </div>
+  </div>
+  <div class="slide-num">05</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 6 · TARGET AUDIENCE
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s6">
+  <div class="slide-label">06 / Who We Serve</div>
+  <h2 style="margin-bottom:40px;">The modern<br/><span class="gradient-text">independent worker.</span></h2>
+
+  <div style="display:flex;gap:20px;flex-wrap:wrap;">
+    <div class="persona-card">
+      <div class="persona-avatar">C</div>
+      <div class="persona-name">The Creative Pro</div>
+      <div class="persona-role">Designer · Developer · Copywriter</div>
+      <ul class="persona-list">
+        <li>Juggles 3–6 clients simultaneously</li>
+        <li>Struggles with inconsistent cash flow</li>
+        <li>Loses time on admin instead of billable work</li>
+        <li>Wants to grow rates, not just hours</li>
+        <li>Needs tax help at year-end</li>
+      </ul>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar">S</div>
+      <div class="persona-name">The Consultant</div>
+      <div class="persona-role">Strategy · Finance · Ops Freelancer</div>
+      <ul class="persona-list">
+        <li>High-value retainers, fewer clients</li>
+        <li>Needs CRM and proposal tools</li>
+        <li>Tracks complex expenses and deductions</li>
+        <li>Values professional client-facing tools</li>
+        <li>Wants business intelligence, not just invoices</li>
+      </ul>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar">A</div>
+      <div class="persona-name">The Side-Hustler</div>
+      <div class="persona-role">Part-time freelancer going full-time</div>
+      <ul class="persona-list">
+        <li>Transitioning from employment</li>
+        <li>Learning how to price and market</li>
+        <li>Needs community and education</li>
+        <li>Anxious about self-employment taxes</li>
+        <li>Wants simple, fast setup</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-num">06</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 7 · COLOR PALETTE
+═══════════════════════════════════════════════ -->
+<section class="slide slide-white" id="s7">
+  <div class="slide-label" style="color:#052e16;">07 / Color Palette</div>
+  <h2 style="color:#052e16;">Rooted in growth.<br/>Built for trust.</h2>
+  <p style="color:#052e16;">Our greens signal prosperity, clarity, and momentum. Forest anchors authority. Accent colors mark urgency and status.</p>
+
+  <div class="swatch-grid">
+    <div class="swatch" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;">
+      <div class="swatch-name">Brand Green</div>
+      <div class="swatch-hex">#16a34a → #22c55e</div>
+      <div class="swatch-role">Primary · CTAs · Logo</div>
+    </div>
+    <div class="swatch" style="background:#052e16;color:#fff;">
+      <div class="swatch-name">Forest</div>
+      <div class="swatch-hex">#052e16</div>
+      <div class="swatch-role">Sidebar · Dark BG</div>
+    </div>
+    <div class="swatch" style="background:#4ade80;color:#052e16;">
+      <div class="swatch-name">Lime</div>
+      <div class="swatch-hex">#4ade80</div>
+      <div class="swatch-role">Accents · Gradients</div>
+    </div>
+    <div class="swatch" style="background:#86efac;color:#052e16;">
+      <div class="swatch-name">Mint</div>
+      <div class="swatch-hex">#86efac</div>
+      <div class="swatch-role">Hover · Highlights</div>
+    </div>
+    <div class="swatch" style="background:#f0fdf4;color:#052e16;border:1px solid #d1fae5;">
+      <div class="swatch-name">Mint BG</div>
+      <div class="swatch-hex">#f0fdf4</div>
+      <div class="swatch-role">App Background</div>
+    </div>
+    <div class="swatch" style="background:#0891b2;color:#fff;">
+      <div class="swatch-name">Teal</div>
+      <div class="swatch-hex">#0891b2</div>
+      <div class="swatch-role">Info · Links</div>
+    </div>
+    <div class="swatch" style="background:#d97706;color:#fff;">
+      <div class="swatch-name">Amber</div>
+      <div class="swatch-hex">#d97706</div>
+      <div class="swatch-role">Warnings · Medium Priority</div>
+    </div>
+    <div class="swatch" style="background:#dc2626;color:#fff;">
+      <div class="swatch-name">Red</div>
+      <div class="swatch-hex">#dc2626</div>
+      <div class="swatch-role">Errors · High Priority</div>
+    </div>
+  </div>
+  <div class="slide-num" style="color:#052e16;">07</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 8 · TYPOGRAPHY
+═══════════════════════════════════════════════ -->
+<section class="slide slide-light" id="s8">
+  <div class="slide-label" style="color:#14532d;">08 / Typography</div>
+  <h2 style="color:#052e16;margin-bottom:48px;">Clean. Sharp.<br/>Built for scanning.</h2>
+
+  <div style="max-width:760px;">
+    <div class="type-sample">
+      <div class="type-meta" style="color:#166534;">Display · Inter 900 · Letter-spacing −3px</div>
+      <div style="font-size:56px;font-weight:900;letter-spacing:-3px;color:#052e16;line-height:1;">LanceFlo</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta" style="color:#166534;">Heading 1 · Inter 800 · Letter-spacing −1.5px</div>
+      <div style="font-size:36px;font-weight:800;letter-spacing:-1.5px;color:#052e16;line-height:1.1;">Your freelance business, simplified.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta" style="color:#166534;">Heading 2 · Inter 700 · Letter-spacing −0.5px</div>
+      <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#052e16;">Revenue this month: $14,800</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta" style="color:#166534;">Body · Inter 400 · 16px</div>
+      <div style="font-size:16px;font-weight:400;color:#166534;opacity:0.75;line-height:1.7;">Connect, share, and grow with fellow freelancers. Ask anything about your freelance business.</div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-meta" style="color:#166534;">Label · Inter 700 · 10px · ALL CAPS · Tracking 2.5px</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#16a34a;">WORKSPACE · ACCOUNT · FREELANCE OS</div>
+    </div>
+  </div>
+  <div class="slide-num" style="color:#052e16;">08</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 9 · LOGO USAGE
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s9">
+  <div class="slide-label">09 / Logo &amp; Mark</div>
+  <h2 style="margin-bottom:40px;">The <span class="gradient-text">LF</span> mark.</h2>
+
+  <div class="logo-variants">
+    <!-- Dark bg, full wordmark -->
+    <div class="logo-box logo-box-dark">
+      <div class="wordmark">
+        <div class="logo-mark">LF</div>
+        <div>
+          <div class="wordmark-text gradient-text">LanceFlo</div>
+          <div class="wordmark-sub" style="color:#4ade80;">FREELANCE OS</div>
+        </div>
+      </div>
+      <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">Dark · Full Lockup</div>
+    </div>
+
+    <!-- Light bg, full wordmark -->
+    <div class="logo-box logo-box-light">
+      <div class="wordmark">
+        <div class="logo-mark">LF</div>
+        <div>
+          <div class="wordmark-text" style="color:#052e16;">LanceFlo</div>
+          <div class="wordmark-sub" style="color:#16a34a;">FREELANCE OS</div>
+        </div>
+      </div>
+      <div class="logo-box-label" style="color:rgba(5,46,22,0.4);">Light · Full Lockup</div>
+    </div>
+
+    <!-- Mark only -->
+    <div class="logo-box logo-box-dark" style="align-items:flex-start;gap:28px;flex-direction:row;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div class="logo-mark xl">LF</div>
+        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">96px</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div class="logo-mark lg">LF</div>
+        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">64px</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+        <div class="logo-mark">LF</div>
+        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">36px</div>
+      </div>
+      <div class="logo-box-label" style="color:rgba(255,255,255,0.3);align-self:flex-end;">Mark Only · Sizes</div>
+    </div>
+
+    <!-- Don'ts -->
+    <div class="logo-box" style="background:#0f0f0f;border-color:rgba(248,113,113,0.2);gap:16px;">
+      <div style="font-size:11px;font-weight:700;color:#f87171;letter-spacing:1.2px;text-transform:uppercase;align-self:flex-start;">Don'ts</div>
+      <ul style="list-style:none;font-size:12.5px;opacity:0.5;line-height:2;align-self:flex-start;">
+        <li>✗ &nbsp;Recolor the gradient</li>
+        <li>✗ &nbsp;Stretch or distort the mark</li>
+        <li>✗ &nbsp;Use on busy photo backgrounds</li>
+        <li>✗ &nbsp;Separate "Lance" and "Flo"</li>
+        <li>✗ &nbsp;Drop the "LF" for text-only lockup</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-num">09</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 10 · VOICE & TONE
+═══════════════════════════════════════════════ -->
+<section class="slide slide-dark" id="s10">
+  <div class="slide-label">10 / Voice &amp; Tone</div>
+  <h2 style="margin-bottom:12px;">Sound like a <span class="gradient-text">smart colleague,</span><br/>not enterprise software.</h2>
+  <p>We are direct, confident, and human. We respect that freelancers are smart adults running real businesses.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:36px;margin-bottom:36px;">
+    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
+      <div style="font-size:22px;margin-bottom:10px;">💡</div>
+      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Clear</div>
+      <div style="font-size:12px;opacity:0.5;">No jargon. One idea per sentence.</div>
+    </div>
+    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
+      <div style="font-size:22px;margin-bottom:10px;">⚡</div>
+      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Direct</div>
+      <div style="font-size:12px;opacity:0.5;">Say the thing. Skip the preamble.</div>
+    </div>
+    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
+      <div style="font-size:22px;margin-bottom:10px;">🤝</div>
+      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Human</div>
+      <div style="font-size:12px;opacity:0.5;">Warm but not folksy. Real, not robotic.</div>
+    </div>
+    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
+      <div style="font-size:22px;margin-bottom:10px;">🎯</div>
+      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Empowering</div>
+      <div style="font-size:12px;opacity:0.5;">We believe in the user. Never condescending.</div>
+    </div>
+  </div>
+
+  <div class="tone-grid">
+    <div class="tone-card tone-good">
+      <div class="tone-label good-label">Write This</div>
+      <div class="tone-ex">"Your taxes are estimated at $7,200. Here's how to reduce that."</div>
+    </div>
+    <div class="tone-card tone-bad">
+      <div class="tone-label bad-label">Not This</div>
+      <div class="tone-ex">"Our innovative tax optimization module leverages AI-driven deduction algorithms."</div>
+    </div>
+    <div class="tone-card tone-good">
+      <div class="tone-label good-label">Write This</div>
+      <div class="tone-ex">"Invoice sent. You'll get notified when it's opened."</div>
+    </div>
+    <div class="tone-card tone-bad">
+      <div class="tone-label bad-label">Not This</div>
+      <div class="tone-ex">"Your invoice has been successfully dispatched via our secure delivery pipeline."</div>
+    </div>
+  </div>
+  <div class="slide-num">10</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 11 · TAGLINES
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s11">
+  <div class="slide-label">11 / Messaging Hierarchy</div>
+  <h2 style="margin-bottom:40px;">How we talk<br/>about <span class="gradient-text">LanceFlo.</span></h2>
+
+  <div class="tagline-option primary">
+    <div class="tagline-rank">Primary</div>
+    <div class="tagline-text gradient-text-lime">"The all-in-one platform for modern freelancers."</div>
+    <div class="tagline-note" style="color:rgba(255,255,255,0.35);">Hero headline, meta description, primary pitch</div>
+  </div>
+
+  <div class="tagline-option">
+    <div class="tagline-rank">Sub-line</div>
+    <div class="tagline-text">"Your Freelance OS."</div>
+    <div class="tagline-note">Short-form. Cards, ads, email subjects.</div>
+  </div>
+
+  <div class="tagline-option">
+    <div class="tagline-rank">Value</div>
+    <div class="tagline-text">"Run your entire freelance business from one place."</div>
+    <div class="tagline-note">Landing page body, onboarding</div>
+  </div>
+
+  <div class="tagline-option">
+    <div class="tagline-rank">AI angle</div>
+    <div class="tagline-text">"Proposals, taxes, clients — with AI that actually helps."</div>
+    <div class="tagline-note">Feature-specific marketing</div>
+  </div>
+
+  <div class="tagline-option">
+    <div class="tagline-rank">Growth</div>
+    <div class="tagline-text">"Spend less time on admin. More time on work that pays."</div>
+    <div class="tagline-note">Retargeting, upsell moments</div>
+  </div>
+  <div class="slide-num">11</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 12 · PRICING TIERS
+═══════════════════════════════════════════════ -->
+<section class="slide slide-dark" id="s12">
+  <div class="slide-label">12 / Pricing Tiers</div>
+  <h2 style="margin-bottom:40px;">Plans that grow<br/>with your <span class="gradient-text">business.</span></h2>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:900px;">
+    <div style="padding:32px;border:1px solid rgba(255,255,255,0.1);border-radius:18px;background:rgba(255,255,255,0.03);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin-bottom:16px;">Starter</div>
+      <div style="font-size:36px;font-weight:900;margin-bottom:4px;">Free</div>
+      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">Perfect for getting started</div>
+      <ul style="list-style:none;font-size:13px;opacity:0.65;line-height:2.2;">
+        <li>✓ &nbsp;Dashboard &amp; Tasks</li>
+        <li>✓ &nbsp;Up to 3 Clients</li>
+        <li>✓ &nbsp;Basic Invoicing</li>
+        <li>✓ &nbsp;Community Access</li>
+      </ul>
+    </div>
+
+    <div style="padding:32px;border:2px solid rgba(74,222,128,0.4);border-radius:18px;background:rgba(74,222,128,0.06);position:relative;">
+      <div style="position:absolute;top:-12px;left:24px;background:#16a34a;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:99px;">Most Popular</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:16px;">Pro</div>
+      <div style="font-size:36px;font-weight:900;margin-bottom:4px;color:#fff;">$29<span style="font-size:16px;font-weight:500;opacity:0.5;">/mo</span></div>
+      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">For serious freelancers</div>
+      <ul style="list-style:none;font-size:13px;opacity:0.8;line-height:2.2;">
+        <li style="color:#4ade80;">✓ &nbsp;Everything in Starter</li>
+        <li>✓ &nbsp;Unlimited Clients + CRM</li>
+        <li>✓ &nbsp;Tax Center + Deductions</li>
+        <li>✓ &nbsp;AI Assistant</li>
+        <li>✓ &nbsp;Insights &amp; Analytics</li>
+        <li>✓ &nbsp;Jobs Board</li>
+        <li>✓ &nbsp;Education &amp; Courses</li>
+        <li>✓ &nbsp;All Integrations</li>
+      </ul>
+    </div>
+
+    <div style="padding:32px;border:1px solid rgba(255,255,255,0.1);border-radius:18px;background:rgba(255,255,255,0.03);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin-bottom:16px;">Enterprise</div>
+      <div style="font-size:36px;font-weight:900;margin-bottom:4px;">Custom</div>
+      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">Agencies &amp; teams</div>
+      <ul style="list-style:none;font-size:13px;opacity:0.65;line-height:2.2;">
+        <li>✓ &nbsp;Everything in Pro</li>
+        <li>✓ &nbsp;Multi-user workspace</li>
+        <li>✓ &nbsp;SSO + Admin controls</li>
+        <li>✓ &nbsp;Dedicated support</li>
+        <li>✓ &nbsp;Custom integrations</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-num">12</div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     SLIDE 13 · CLOSING
+═══════════════════════════════════════════════ -->
+<section class="slide slide-darker" id="s13" style="justify-content:center;align-items:center;text-align:center;">
+  <div class="bg-glow" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+  <div style="position:relative;z-index:1;">
+    <div style="display:flex;justify-content:center;margin-bottom:40px;">
+      <div class="logo-mark xl">LF</div>
+    </div>
+
+    <div class="big-quote" style="text-align:center;margin:0 auto 32px;">
+      "The best freelancers deserve the<br/>
+      <span class="gradient-text">best tools.</span>"
+    </div>
+
+    <p style="text-align:center;font-size:16px;opacity:0.5;max-width:480px;margin:0 auto 48px;">
+      LanceFlo is built with the conviction that independent work is the future —
+      and that future deserves world-class infrastructure.
+    </p>
+
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <div class="chip">lanceflo.com</div>
+      <div class="chip">hello@lanceflo.com</div>
+      <div class="chip">@lanceflo</div>
+    </div>
+  </div>
+  <div class="slide-num">13</div>
+</section>
+
+<!-- ── DECK NAV DOTS ── -->
+<nav class="deck-nav">
+  <a class="deck-dot" href="#s1" title="Cover"></a>
+  <a class="deck-dot" href="#s2" title="Mission"></a>
+  <a class="deck-dot" href="#s3" title="Problem"></a>
+  <a class="deck-dot" href="#s4" title="Solution"></a>
+  <a class="deck-dot" href="#s5" title="Product"></a>
+  <a class="deck-dot" href="#s6" title="Audience"></a>
+  <a class="deck-dot" href="#s7" title="Colors"></a>
+  <a class="deck-dot" href="#s8" title="Typography"></a>
+  <a class="deck-dot" href="#s9" title="Logo"></a>
+  <a class="deck-dot" href="#s10" title="Voice"></a>
+  <a class="deck-dot" href="#s11" title="Taglines"></a>
+  <a class="deck-dot" href="#s12" title="Pricing"></a>
+  <a class="deck-dot" href="#s13" title="Closing"></a>
+</nav>
+
+</body>
+</html>
