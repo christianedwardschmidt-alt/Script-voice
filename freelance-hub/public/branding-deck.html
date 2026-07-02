@@ -3,821 +3,671 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LanceFlo — Brand Deck 2026</title>
+<title>LanceFlo — Brand Book 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-family: 'Inter', -apple-system, sans-serif; scroll-behavior: smooth; }
-  body { background: #0a0a0a; color: #fff; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif; scroll-behavior: smooth; font-size: 14px; }
+body { background: #07080a; color: #e8e9ea; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-  /* ── SLIDE BASE ─────────────────────────────── */
-  .slide {
-    min-height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 80px 100px;
-    position: relative;
-    overflow: hidden;
-  }
-  .slide + .slide { border-top: 1px solid rgba(255,255,255,0.05); }
+:root {
+  --bg:        #07080a;
+  --bg-2:      #0c0e10;
+  --bg-3:      #101315;
+  --line:      rgba(255,255,255,0.07);
+  --line-hi:   rgba(255,255,255,0.11);
+  --t1:        #f0f1f2;
+  --t2:        rgba(240,241,242,0.52);
+  --t3:        rgba(240,241,242,0.26);
+  --green:     #22c55e;
+  --green-hi:  #4ade80;
+  --green-dk:  #15803d;
+  --green-mu:  rgba(34,197,94,0.12);
+  --mono: 'SF Mono', ui-monospace, 'Cascadia Code', monospace;
+  --r:  8px;
+  --rl: 12px;
+}
 
-  /* ── SLIDE VARIANTS ────────────────────────── */
-  .slide-dark   { background: #052e16; }
-  .slide-darker { background: #021a0c; }
-  .slide-light  { background: #f0fdf4; color: #052e16; }
-  .slide-white  { background: #ffffff; color: #052e16; }
-  .slide-green  { background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%); }
-  .slide-split  { flex-direction: row; gap: 80px; align-items: center; }
+/* ── SLIDE ─────────────────────────────────── */
+.slide {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 72px 96px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
 
-  /* ── LABEL ─────────────────────────────────── */
-  .slide-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    opacity: 0.45;
-    margin-bottom: 20px;
-  }
+/* ── OVERLINE ──────────────────────────────── */
+.ol {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 28px;
+}
+.ol-g { color: rgba(74,222,128,0.55); }
 
-  /* ── HEADINGS ──────────────────────────────── */
-  h1 { font-size: clamp(48px, 6vw, 80px); font-weight: 900; line-height: 1; letter-spacing: -3px; }
-  h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -1.5px; }
-  h3 { font-size: clamp(20px, 2.5vw, 28px); font-weight: 700; line-height: 1.2; letter-spacing: -0.5px; }
-  p  { font-size: 16px; line-height: 1.7; opacity: 0.75; max-width: 640px; }
+/* ── TYPE SCALE ────────────────────────────── */
+.display {
+  font-size: clamp(68px, 8.5vw, 112px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -4.5px;
+  color: var(--t1);
+}
+.h1 {
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -2.5px;
+  color: var(--t1);
+}
+.h2 {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.8px;
+  color: var(--t1);
+}
+.body { font-size: 14.5px; line-height: 1.78; color: var(--t2); }
+.small { font-size: 12px; line-height: 1.65; color: var(--t2); }
+.mono { font-family: var(--mono); font-size: 11px; color: var(--t3); letter-spacing: 0.2px; }
 
-  /* ── BRAND COLORS ──────────────────────────── */
-  .green   { color: #4ade80; }
-  .white   { color: #ffffff; }
-  .muted   { opacity: 0.5; }
+/* ── GRADIENT TEXT ─────────────────────────── */
+.g { background: linear-gradient(130deg, #4ade80, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.g2 { background: linear-gradient(130deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-  .gradient-text {
-    background: linear-gradient(135deg, #4ade80 0%, #86efac 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .gradient-text-lime {
-    background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+/* ── MARK ──────────────────────────────────── */
+.mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--green-dk), var(--green));
+  color: #fff; font-weight: 900; letter-spacing: -0.5px; flex-shrink: 0;
+}
+.mark-xs { width: 24px; height: 24px; border-radius: 6px; font-size: 9.5px; }
+.mark-sm { width: 32px; height: 32px; border-radius: 9px; font-size: 12px; }
+.mark-md { width: 44px; height: 44px; border-radius: 12px; font-size: 17px; box-shadow: 0 0 28px rgba(34,197,94,0.3); }
+.mark-lg { width: 68px; height: 68px; border-radius: 18px; font-size: 26px; box-shadow: 0 0 48px rgba(34,197,94,0.38); }
+.mark-xl { width: 100px; height: 100px; border-radius: 26px; font-size: 38px; box-shadow: 0 0 72px rgba(34,197,94,0.42); }
 
-  /* ── LOGO MARK ─────────────────────────────── */
-  .logo-mark {
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 900; color: #fff;
-    letter-spacing: -0.5px;
-    box-shadow: 0 8px 32px rgba(34,197,94,0.5);
-    flex-shrink: 0;
-  }
-  .logo-mark.lg {
-    width: 96px; height: 96px; border-radius: 26px;
-    font-size: 32px;
-    box-shadow: 0 16px 64px rgba(34,197,94,0.6);
-  }
-  .logo-mark.xl {
-    width: 140px; height: 140px; border-radius: 38px;
-    font-size: 48px;
-    box-shadow: 0 24px 80px rgba(34,197,94,0.55);
-  }
+/* ── CHIP ──────────────────────────────────── */
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  border: 1px solid var(--line-hi);
+  background: rgba(255,255,255,0.025);
+  font-size: 10.5px; font-weight: 500; color: var(--t2); letter-spacing: 0.15px;
+}
+.chip-g { border-color: rgba(74,222,128,0.22); background: rgba(74,222,128,0.05); color: var(--green-hi); }
+.cdot { width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--green-hi); box-shadow: 0 0 5px var(--green-hi); flex-shrink: 0; }
 
-  /* ── PILL CHIP ─────────────────────────────── */
-  .chip {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 6px 14px;
-    border-radius: 99px;
-    border: 1px solid rgba(74,222,128,0.3);
-    background: rgba(74,222,128,0.08);
-    color: #4ade80;
-    font-size: 12px; font-weight: 600;
-    letter-spacing: 0.2px;
-  }
-  .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+/* ── DIVIDER ───────────────────────────────── */
+.div { border: none; border-top: 1px solid var(--line); }
 
-  /* ── COLOR SWATCHES ────────────────────────── */
-  .swatch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 40px; }
-  .swatch {
-    border-radius: 14px; padding: 20px 16px; min-height: 120px;
-    display: flex; flex-direction: column; justify-content: flex-end;
-  }
-  .swatch-name  { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-  .swatch-hex   { font-size: 11px; opacity: 0.65; font-family: monospace; }
-  .swatch-role  { font-size: 10px; opacity: 0.55; margin-top: 2px; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 600; }
+/* ── GRID ──────────────────────────────────── */
+.g2c { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+.g3c { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.g4c { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
-  /* ── TYPE SAMPLES ──────────────────────────── */
-  .type-sample { margin-bottom: 32px; }
-  .type-meta   { font-size: 11px; opacity: 0.45; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+/* ── CARD ──────────────────────────────────── */
+.card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; }
+.card-lg { border-radius: var(--rl); padding: 24px; }
 
-  /* ── FEATURE GRID ──────────────────────────── */
-  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 40px; }
-  .feature-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 24px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .feature-card:hover {
-    border-color: rgba(74,222,128,0.3);
-    background: rgba(74,222,128,0.05);
-  }
-  .feature-icon {
-    width: 40px; height: 40px; border-radius: 11px;
-    background: rgba(22,163,74,0.15);
-    border: 1px solid rgba(74,222,128,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; margin-bottom: 14px;
-  }
-  .feature-title  { font-size: 14px; font-weight: 700; color: #f0fdf4; margin-bottom: 6px; }
-  .feature-desc   { font-size: 12.5px; opacity: 0.5; line-height: 1.55; }
+/* ── ROW LIST (features) ───────────────────── */
+.rlist { list-style: none; }
+.rlist li {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.rlist li:last-child { border-bottom: none; }
+.rico {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--green-mu); border: 1px solid rgba(34,197,94,0.13);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.rname { font-weight: 600; color: var(--t1); min-width: 128px; font-size: 12.5px; }
+.rdesc { color: var(--t2); flex: 1; font-size: 12px; }
 
-  /* ── PERSONA CARD ──────────────────────────── */
-  .persona-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px; padding: 32px;
-    flex: 1;
-  }
-  .persona-avatar {
-    width: 60px; height: 60px; border-radius: 50%;
-    background: linear-gradient(135deg, #16a34a, #22c55e);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: 800; color: #fff;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 16px rgba(34,197,94,0.4);
-  }
-  .persona-name  { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-  .persona-role  { font-size: 13px; color: #4ade80; font-weight: 600; margin-bottom: 16px; }
-  .persona-list  { list-style: none; }
-  .persona-list li { font-size: 13px; opacity: 0.6; line-height: 1.8; padding-left: 16px; position: relative; }
-  .persona-list li::before { content: '→'; position: absolute; left: 0; opacity: 0.4; }
+/* ── COLOR STRIP ───────────────────────────── */
+.crow {
+  display: flex; align-items: center; gap: 14px;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.crow:last-child { border-bottom: none; }
+.cstrip { width: 40px; height: 24px; border-radius: 5px; flex-shrink: 0; }
+.cname { font-size: 12.5px; font-weight: 600; color: var(--t1); min-width: 110px; }
+.chex { font-family: var(--mono); font-size: 10.5px; color: var(--t3); min-width: 110px; }
+.crole { font-size: 11px; color: var(--t3); }
 
-  /* ── TONE GRID ─────────────────────────────── */
-  .tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
-  .tone-card {
-    border-radius: 14px; padding: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .tone-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
-  .tone-ex    { font-size: 15px; font-weight: 600; line-height: 1.5; }
-  .tone-good  { background: rgba(22,163,74,0.1); border-color: rgba(74,222,128,0.2); }
-  .tone-bad   { background: rgba(220,38,38,0.07); border-color: rgba(220,38,38,0.2); }
-  .good-label { color: #4ade80; }
-  .bad-label  { color: #f87171; }
+/* ── TYPE SPECIMEN ─────────────────────────── */
+.tspec { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.tspec:last-child { border-bottom: none; }
+.tmeta { display: flex; gap: 16px; margin-bottom: 8px; }
+.tmi { font-family: var(--mono); font-size: 9.5px; color: var(--t3); }
 
-  /* ── TAGLINE OPTIONS ───────────────────────── */
-  .tagline-option {
-    padding: 24px 28px;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 24px;
-  }
-  .tagline-option.primary { border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.06); }
-  .tagline-rank { font-size: 11px; font-weight: 700; letter-spacing: 1px; opacity: 0.4; text-transform: uppercase; min-width: 60px; }
-  .tagline-text { font-size: 20px; font-weight: 700; }
-  .tagline-note { font-size: 12.5px; opacity: 0.5; margin-left: auto; max-width: 200px; text-align: right; }
+/* ── PERSONA ───────────────────────────────── */
+.persona { border: 1px solid var(--line); border-radius: var(--r); padding: 20px; background: var(--bg-2); }
+.phead { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.pava { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--green-dk), var(--green)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.pname { font-size: 12.5px; font-weight: 700; color: var(--t1); }
+.prole { font-size: 10.5px; color: var(--green-hi); font-weight: 500; margin-top: 1px; }
+.ppts { list-style: none; }
+.ppts li { font-size: 11.5px; color: var(--t2); padding: 3.5px 0; padding-left: 12px; position: relative; line-height: 1.5; }
+.ppts li::before { content: '—'; position: absolute; left: 0; color: var(--t3); font-size: 10px; }
 
-  /* ── LOGO VARIANTS ─────────────────────────── */
-  .logo-variants { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
-  .logo-box {
-    border-radius: 14px; padding: 40px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-    border: 1px solid;
-  }
-  .logo-box-dark  { background: #052e16; border-color: rgba(255,255,255,0.08); }
-  .logo-box-light { background: #f0fdf4; border-color: rgba(22,163,74,0.2); }
-  .logo-box-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.45; }
+/* ── TONE ──────────────────────────────────── */
+.trow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.tbox { padding: 14px 16px; border-radius: var(--r); border: 1px solid; }
+.tgood { background: rgba(22,163,74,0.05); border-color: rgba(74,222,128,0.16); }
+.tbad  { background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.14); }
+.ttag { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+.ttagg { color: var(--green-hi); }
+.ttagb { color: #f87171; }
+.ttxt { font-size: 12.5px; line-height: 1.55; color: var(--t2); }
 
-  .wordmark {
-    display: flex; align-items: center; gap: 12px;
-  }
-  .wordmark-text { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
-  .wordmark-sub { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.5; margin-top: 2px; }
+/* ── TAGLINE ───────────────────────────────── */
+.tlrow { display: flex; align-items: baseline; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.tlrow:last-child { border-bottom: none; }
+.tlnum { font-family: var(--mono); font-size: 10px; color: var(--t3); min-width: 20px; }
+.tlcopy { font-size: 16px; font-weight: 700; color: var(--t1); letter-spacing: -0.3px; flex: 1; }
+.tlcopy.primary { color: var(--green-hi); }
+.tluse { font-size: 11px; color: var(--t3); text-align: right; min-width: 150px; }
 
-  /* ── BG DECORATIONS ────────────────────────── */
-  .bg-glow {
-    position: absolute; border-radius: 50%;
-    background: radial-gradient(circle, rgba(34,197,94,0.18) 0%, transparent 70%);
-    pointer-events: none;
-  }
+/* ── PRICING ───────────────────────────────── */
+.pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 28px; }
+.plan { border: 1px solid var(--line); border-radius: var(--rl); padding: 24px 20px; }
+.plan.featured { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.03); }
+.pln { font-size: 9.5px; font-weight: 700; letter-spacing: 2.2px; text-transform: uppercase; color: var(--t3); margin-bottom: 14px; }
+.plan.featured .pln { color: var(--green-hi); }
+.plp { font-size: 38px; font-weight: 900; letter-spacing: -2px; color: var(--t1); line-height: 1; }
+.plper { font-size: 13px; font-weight: 400; color: var(--t3); }
+.plsub { font-size: 11.5px; color: var(--t3); margin: 6px 0 18px; }
+.plfeats { list-style: none; }
+.plfeats li { font-size: 12px; color: var(--t2); padding: 5px 0; border-bottom: 1px solid var(--line); display: flex; gap: 7px; align-items: flex-start; }
+.plfeats li:last-child { border-bottom: none; }
+.plfeats li::before { content: '✓'; color: var(--green); font-size: 10px; flex-shrink: 0; margin-top: 1px; }
 
-  /* ── PAGE NUMBERS ──────────────────────────── */
-  .slide-num {
-    position: absolute; bottom: 32px; right: 40px;
-    font-size: 11px; font-weight: 600; opacity: 0.2; letter-spacing: 1px;
-  }
+/* ── PAGE NUM ──────────────────────────────── */
+.pg { position: absolute; bottom: 24px; right: 32px; font-family: var(--mono); font-size: 9.5px; color: var(--t3); }
 
-  /* ── DECK NAV ──────────────────────────────── */
-  .deck-nav {
-    position: fixed; top: 50%; right: 24px;
-    transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 8px;
-    z-index: 100;
-  }
-  .deck-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    cursor: pointer; transition: all 0.2s;
-    text-decoration: none; display: block;
-  }
-  .deck-dot:hover { background: #4ade80; transform: scale(1.4); }
+/* ── SIDE NAV ──────────────────────────────── */
+.snav { position: fixed; top: 50%; right: 18px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 5px; z-index: 100; }
+.sdot { width: 3.5px; height: 3.5px; border-radius: 50%; background: rgba(255,255,255,0.18); cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; }
+.sdot:hover { background: var(--green-hi); transform: scale(1.8); }
 
-  /* ── CLOSING QUOTE ─────────────────────────── */
-  .big-quote {
-    font-size: clamp(24px, 3.5vw, 44px);
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -1px;
-    max-width: 760px;
-  }
+/* ── STAT ──────────────────────────────────── */
+.stat { display: flex; flex-direction: column; }
+.statnum { font-size: 64px; font-weight: 900; letter-spacing: -3.5px; color: var(--t1); line-height: 1; }
+.statlabel { font-size: 11px; font-weight: 500; color: var(--t3); margin-top: 4px; letter-spacing: 0.2px; }
+
+/* ── LOGO USAGE TABLE ──────────────────────── */
+.lbx { border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px; display: flex; align-items: center; gap: 14px; }
+.lbx-dark  { background: #020503; }
+.lbx-light { background: #f0fdf4; border-color: #d1fae5; }
+.wm-text { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
+.wm-sub  { font-size: 7.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; margin-top: 1px; }
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 1 · COVER
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s1" style="justify-content: space-between;">
-  <div class="bg-glow" style="width:600px;height:600px;top:-150px;right:-100px;"></div>
-
-  <div class="chip">
-    <span class="chip-dot"></span>
-    Brand Identity · 2026
+<!-- ════════════ 1 · COVER ════════════ -->
+<section class="slide" id="s1" style="justify-content:space-between;min-height:100vh;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark mark-xs">LF</div>
+    <span style="font-size:12px;font-weight:700;color:var(--t2);">LanceFlo</span>
+    <span class="chip" style="margin-left:auto;">Brand Book 2026</span>
   </div>
 
   <div>
-    <div style="display:flex;align-items:center;gap:20px;margin-bottom:40px;">
-      <div class="logo-mark xl">LF</div>
-    </div>
-    <h1>
-      <span class="gradient-text">Lance</span><span style="color:#fff;">Flo</span>
-    </h1>
-    <p style="margin-top:20px;font-size:22px;font-weight:500;opacity:0.6;letter-spacing:-0.3px;max-width:none;">
+    <div class="ol">01 — Brand Identity</div>
+    <div class="display">Lance<span class="g">Flo</span></div>
+    <div style="margin-top:22px;max-width:460px;" class="body">
       The all-in-one platform for modern freelancers.
-    </p>
+      <br/><span style="color:var(--t3);">Brand guidelines · Design system · Voice &amp; tone</span>
+    </div>
   </div>
 
-  <div style="display:flex;gap:40px;font-size:13px;opacity:0.35;font-weight:500;">
-    <span>Brand Guidelines</span>
-    <span>·</span>
-    <span>Version 1.0</span>
-    <span>·</span>
-    <span>Confidential</span>
+  <div style="border-top:1px solid var(--line);padding-top:24px;display:flex;align-items:center;gap:20px;">
+    <span class="mono">Confidential</span>
+    <span class="mono" style="margin-left:auto;">Version 1.0 · July 2026</span>
   </div>
-  <div class="slide-num">01</div>
+  <div class="pg">01</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 2 · MISSION
-═══════════════════════════════════════════════ -->
-<section class="slide slide-dark" id="s2">
-  <div class="bg-glow" style="width:500px;height:500px;bottom:-100px;left:-80px;"></div>
-
-  <div class="slide-label">02 / Mission</div>
-  <h2 style="max-width:700px;margin-bottom:28px;">
-    Freelancers deserve an<br/><span class="gradient-text">operating system</span><br/>for their entire business.
-  </h2>
-  <p style="font-size:18px;opacity:0.6;max-width:580px;line-height:1.8;">
-    LanceFlo is the Freelance OS — a single, beautifully designed workspace that
-    replaces the patchwork of spreadsheets, invoicing tools, tax apps, and CRMs
-    that independent workers juggle every day.
-  </p>
-
-  <div style="display:flex;gap:16px;margin-top:48px;flex-wrap:wrap;">
-    <div class="chip">Revenue visibility</div>
-    <div class="chip">Client relationships</div>
-    <div class="chip">Tax planning</div>
-    <div class="chip">Career growth</div>
-    <div class="chip">AI assistance</div>
-  </div>
-  <div class="slide-num">02</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 3 · THE PROBLEM
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s3">
-  <div class="slide-label">03 / The Problem</div>
-  <h2 style="margin-bottom:32px;">
-    Freelancers are <span style="color:#f87171;">duct-taping</span><br/>their business together.
-  </h2>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px;max-width:900px;">
-    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
-      <div style="font-size:28px;margin-bottom:12px;">📊</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Revenue Blindness</div>
-      <p style="font-size:13px;">No single view of income, expenses, and what's actually owed in taxes.</p>
+<!-- ════════════ 2 · MISSION ════════════ -->
+<section class="slide" id="s2">
+  <div class="ol">02 — Mission</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">The <span class="g">OS</span> for<br/>independent<br/>workers.</div>
+      <div class="body" style="margin-bottom:24px;">
+        LanceFlo replaces the patchwork of spreadsheets, invoicing apps, tax tools,
+        and CRMs that freelancers juggle daily — with one fast, connected workspace.
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="chip chip-g"><span class="cdot"></span>Revenue clarity</span>
+        <span class="chip chip-g"><span class="cdot"></span>Client management</span>
+        <span class="chip chip-g"><span class="cdot"></span>Tax planning</span>
+        <span class="chip chip-g"><span class="cdot"></span>AI assistance</span>
+        <span class="chip chip-g"><span class="cdot"></span>Community</span>
+      </div>
     </div>
-    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
-      <div style="font-size:28px;margin-bottom:12px;">🔀</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Tool Fragmentation</div>
-      <p style="font-size:13px;">Invoicing here, client notes there, tasks in another app, taxes on a spreadsheet.</p>
-    </div>
-    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
-      <div style="font-size:28px;margin-bottom:12px;">🕳️</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Career Isolation</div>
-      <p style="font-size:13px;">No community, no job discovery, no structured path to grow skills or income.</p>
-    </div>
-    <div style="padding:24px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.15);border-radius:14px;">
-      <div style="font-size:28px;margin-bottom:12px;">🤯</div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:#fca5a5;">Tax Anxiety</div>
-      <p style="font-size:13px;">Estimated taxes, deductions, and quarterly filings are a constant source of stress.</p>
+    <div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat" style="margin-bottom:32px;">
+        <div class="statnum">11</div>
+        <div class="statlabel">integrated modules</div>
+      </div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat" style="margin-bottom:32px;">
+        <div class="statnum">1</div>
+        <div class="statlabel">connected workspace</div>
+      </div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat">
+        <div class="statnum g2" style="font-size:64px;">∞</div>
+        <div class="statlabel">freelancers served</div>
+      </div>
+      <hr class="div" style="margin-top:28px;"/>
     </div>
   </div>
-  <div class="slide-num">03</div>
+  <div class="pg">02</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 4 · THE SOLUTION
-═══════════════════════════════════════════════ -->
-<section class="slide slide-green" id="s4">
-  <div class="slide-label" style="color:rgba(255,255,255,0.6);">04 / The Solution</div>
-  <h2 style="color:#052e16;max-width:700px;margin-bottom:28px;">
-    One workspace.<br/>Every part of your<br/>freelance business.
-  </h2>
-  <p style="color:#052e16;opacity:0.7;font-size:18px;max-width:560px;line-height:1.8;">
-    LanceFlo brings your finances, clients, tasks, taxes, jobs, learning,
-    and community into a single, fast, beautifully designed platform —
-    with an AI assistant ready to help at every step.
-  </p>
-
-  <div style="display:flex;gap:14px;margin-top:48px;flex-wrap:wrap;">
-    <div style="padding:10px 20px;background:#052e16;color:#4ade80;border-radius:99px;font-size:13px;font-weight:700;opacity:0.9;">
-      Built for solopreneurs
+<!-- ════════════ 3 · PRODUCT SUITE ════════════ -->
+<section class="slide" id="s3">
+  <div class="ol">03 — Product Suite</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Everything<br/>in one place.</div>
+      <div class="body">Eleven modules. One login.<br/>No tool-switching, no context loss.</div>
     </div>
-    <div style="padding:10px 20px;background:rgba(5,46,22,0.15);color:#052e16;border:1px solid rgba(5,46,22,0.25);border-radius:99px;font-size:13px;font-weight:600;">
-      Real data, not mock dashboards
-    </div>
-    <div style="padding:10px 20px;background:rgba(5,46,22,0.15);color:#052e16;border:1px solid rgba(5,46,22,0.25);border-radius:99px;font-size:13px;font-weight:600;">
-      AI-powered workflows
-    </div>
+    <ul class="rlist">
+      <li><div class="rico">📈</div><span class="rname">Dashboard</span><span class="rdesc">Live revenue, tasks, and client snapshot</span></li>
+      <li><div class="rico">✅</div><span class="rname">Tasks</span><span class="rdesc">Priority-ordered work with deadlines</span></li>
+      <li><div class="rico">👥</div><span class="rname">Clients + CRM</span><span class="rdesc">Relationship history and deal pipeline</span></li>
+      <li><div class="rico">🧾</div><span class="rname">Invoicing</span><span class="rdesc">Create, send, and track payments</span></li>
+      <li><div class="rico">💸</div><span class="rname">Tax Center</span><span class="rdesc">Deductions, estimates, document storage</span></li>
+      <li><div class="rico">📊</div><span class="rname">Insights</span><span class="rdesc">Revenue trends and business analytics</span></li>
+      <li><div class="rico">💼</div><span class="rname">Jobs Board</span><span class="rdesc">Freelance opportunities — save and apply</span></li>
+      <li><div class="rico">📚</div><span class="rname">Education</span><span class="rdesc">Courses built for independent workers</span></li>
+      <li><div class="rico">💬</div><span class="rname">Community</span><span class="rdesc">Connect with fellow freelancers</span></li>
+      <li><div class="rico">🔌</div><span class="rname">Integrations</span><span class="rdesc">Stripe, Slack, QuickBooks, Notion + more</span></li>
+      <li><div class="rico">🤖</div><span class="rname">AI Assistant</span><span class="rdesc">Proposals, pricing, tax — AI that helps</span></li>
+    </ul>
   </div>
-  <div class="slide-num" style="opacity:0.25;color:#052e16;">04</div>
+  <div class="pg">03</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 5 · PRODUCT SUITE
-═══════════════════════════════════════════════ -->
-<section class="slide slide-dark" id="s5">
-  <div class="slide-label">05 / Product Suite</div>
-  <h2>Everything in one place.</h2>
-
-  <div class="feature-grid">
-    <div class="feature-card">
-      <div class="feature-icon">📈</div>
-      <div class="feature-title">Dashboard</div>
-      <div class="feature-desc">Live revenue, expenses, active clients, and task progress at a glance.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">✅</div>
-      <div class="feature-title">Tasks</div>
-      <div class="feature-desc">Project task management with priority, due dates, and completion tracking.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">👥</div>
-      <div class="feature-title">Clients + CRM</div>
-      <div class="feature-desc">Client profiles, deal pipeline, and relationship history in one view.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🧾</div>
-      <div class="feature-title">Invoicing</div>
-      <div class="feature-desc">Create, send, and track invoices. See outstanding and paid totals instantly.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💸</div>
-      <div class="feature-title">Tax Center</div>
-      <div class="feature-desc">Track deductions, estimate taxes, upload documents. No more surprise bills.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <div class="feature-title">Insights</div>
-      <div class="feature-desc">Revenue trends, client mix, income breakdown, and business health scores.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💼</div>
-      <div class="feature-title">Jobs Board</div>
-      <div class="feature-desc">Discover freelance opportunities. Save, apply, and track from one place.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📚</div>
-      <div class="feature-title">Education</div>
-      <div class="feature-desc">Courses and skills designed for freelancers — grow your rates and expertise.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💬</div>
-      <div class="feature-title">Community</div>
-      <div class="feature-desc">Connect, share wins, and get advice from fellow freelancers.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔌</div>
-      <div class="feature-title">Integrations</div>
-      <div class="feature-desc">Connect Stripe, Slack, QuickBooks, Notion, and the tools you already use.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🤖</div>
-      <div class="feature-title">AI Assistant</div>
-      <div class="feature-desc">Draft proposals, plan taxes, write client emails, and price projects with AI.</div>
-    </div>
-  </div>
-  <div class="slide-num">05</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 6 · TARGET AUDIENCE
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s6">
-  <div class="slide-label">06 / Who We Serve</div>
-  <h2 style="margin-bottom:40px;">The modern<br/><span class="gradient-text">independent worker.</span></h2>
-
-  <div style="display:flex;gap:20px;flex-wrap:wrap;">
-    <div class="persona-card">
-      <div class="persona-avatar">C</div>
-      <div class="persona-name">The Creative Pro</div>
-      <div class="persona-role">Designer · Developer · Copywriter</div>
-      <ul class="persona-list">
-        <li>Juggles 3–6 clients simultaneously</li>
-        <li>Struggles with inconsistent cash flow</li>
-        <li>Loses time on admin instead of billable work</li>
-        <li>Wants to grow rates, not just hours</li>
-        <li>Needs tax help at year-end</li>
+<!-- ════════════ 4 · AUDIENCE ════════════ -->
+<section class="slide" id="s4">
+  <div class="ol">04 — Who We Serve</div>
+  <div class="h1" style="margin-bottom:32px;">The modern <span class="g">independent worker.</span></div>
+  <div class="g3c">
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">C</div>
+        <div><div class="pname">The Creative Pro</div><div class="prole">Designer · Developer · Writer</div></div>
+      </div>
+      <ul class="ppts">
+        <li>Juggles 3–6 clients at once</li>
+        <li>Inconsistent cash flow anxiety</li>
+        <li>Loses hours to admin work</li>
+        <li>Wants to grow rates, not hours</li>
+        <li>Needs year-end tax help</li>
       </ul>
     </div>
-    <div class="persona-card">
-      <div class="persona-avatar">S</div>
-      <div class="persona-name">The Consultant</div>
-      <div class="persona-role">Strategy · Finance · Ops Freelancer</div>
-      <ul class="persona-list">
-        <li>High-value retainers, fewer clients</li>
-        <li>Needs CRM and proposal tools</li>
-        <li>Tracks complex expenses and deductions</li>
-        <li>Values professional client-facing tools</li>
-        <li>Wants business intelligence, not just invoices</li>
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">S</div>
+        <div><div class="pname">The Consultant</div><div class="prole">Strategy · Finance · Ops</div></div>
+      </div>
+      <ul class="ppts">
+        <li>High-value retainer clients</li>
+        <li>Needs CRM + proposal tools</li>
+        <li>Tracks complex deductions</li>
+        <li>Wants professional client UX</li>
+        <li>Data-driven business decisions</li>
       </ul>
     </div>
-    <div class="persona-card">
-      <div class="persona-avatar">A</div>
-      <div class="persona-name">The Side-Hustler</div>
-      <div class="persona-role">Part-time freelancer going full-time</div>
-      <ul class="persona-list">
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">A</div>
+        <div><div class="pname">The Side-Hustler</div><div class="prole">Part-time → going full-time</div></div>
+      </div>
+      <ul class="ppts">
         <li>Transitioning from employment</li>
-        <li>Learning how to price and market</li>
-        <li>Needs community and education</li>
-        <li>Anxious about self-employment taxes</li>
-        <li>Wants simple, fast setup</li>
+        <li>Learning to price and market</li>
+        <li>Needs community + education</li>
+        <li>Self-employment tax anxiety</li>
+        <li>Wants fast, simple setup</li>
       </ul>
     </div>
   </div>
-  <div class="slide-num">06</div>
+  <div class="pg">04</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 7 · COLOR PALETTE
-═══════════════════════════════════════════════ -->
-<section class="slide slide-white" id="s7">
-  <div class="slide-label" style="color:#052e16;">07 / Color Palette</div>
-  <h2 style="color:#052e16;">Rooted in growth.<br/>Built for trust.</h2>
-  <p style="color:#052e16;">Our greens signal prosperity, clarity, and momentum. Forest anchors authority. Accent colors mark urgency and status.</p>
-
-  <div class="swatch-grid">
-    <div class="swatch" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;">
-      <div class="swatch-name">Brand Green</div>
-      <div class="swatch-hex">#16a34a → #22c55e</div>
-      <div class="swatch-role">Primary · CTAs · Logo</div>
-    </div>
-    <div class="swatch" style="background:#052e16;color:#fff;">
-      <div class="swatch-name">Forest</div>
-      <div class="swatch-hex">#052e16</div>
-      <div class="swatch-role">Sidebar · Dark BG</div>
-    </div>
-    <div class="swatch" style="background:#4ade80;color:#052e16;">
-      <div class="swatch-name">Lime</div>
-      <div class="swatch-hex">#4ade80</div>
-      <div class="swatch-role">Accents · Gradients</div>
-    </div>
-    <div class="swatch" style="background:#86efac;color:#052e16;">
-      <div class="swatch-name">Mint</div>
-      <div class="swatch-hex">#86efac</div>
-      <div class="swatch-role">Hover · Highlights</div>
-    </div>
-    <div class="swatch" style="background:#f0fdf4;color:#052e16;border:1px solid #d1fae5;">
-      <div class="swatch-name">Mint BG</div>
-      <div class="swatch-hex">#f0fdf4</div>
-      <div class="swatch-role">App Background</div>
-    </div>
-    <div class="swatch" style="background:#0891b2;color:#fff;">
-      <div class="swatch-name">Teal</div>
-      <div class="swatch-hex">#0891b2</div>
-      <div class="swatch-role">Info · Links</div>
-    </div>
-    <div class="swatch" style="background:#d97706;color:#fff;">
-      <div class="swatch-name">Amber</div>
-      <div class="swatch-hex">#d97706</div>
-      <div class="swatch-role">Warnings · Medium Priority</div>
-    </div>
-    <div class="swatch" style="background:#dc2626;color:#fff;">
-      <div class="swatch-name">Red</div>
-      <div class="swatch-hex">#dc2626</div>
-      <div class="swatch-role">Errors · High Priority</div>
-    </div>
-  </div>
-  <div class="slide-num" style="color:#052e16;">07</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 8 · TYPOGRAPHY
-═══════════════════════════════════════════════ -->
-<section class="slide slide-light" id="s8">
-  <div class="slide-label" style="color:#14532d;">08 / Typography</div>
-  <h2 style="color:#052e16;margin-bottom:48px;">Clean. Sharp.<br/>Built for scanning.</h2>
-
-  <div style="max-width:760px;">
-    <div class="type-sample">
-      <div class="type-meta" style="color:#166534;">Display · Inter 900 · Letter-spacing −3px</div>
-      <div style="font-size:56px;font-weight:900;letter-spacing:-3px;color:#052e16;line-height:1;">LanceFlo</div>
-    </div>
-
-    <div class="type-sample">
-      <div class="type-meta" style="color:#166534;">Heading 1 · Inter 800 · Letter-spacing −1.5px</div>
-      <div style="font-size:36px;font-weight:800;letter-spacing:-1.5px;color:#052e16;line-height:1.1;">Your freelance business, simplified.</div>
-    </div>
-
-    <div class="type-sample">
-      <div class="type-meta" style="color:#166534;">Heading 2 · Inter 700 · Letter-spacing −0.5px</div>
-      <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#052e16;">Revenue this month: $14,800</div>
-    </div>
-
-    <div class="type-sample">
-      <div class="type-meta" style="color:#166534;">Body · Inter 400 · 16px</div>
-      <div style="font-size:16px;font-weight:400;color:#166534;opacity:0.75;line-height:1.7;">Connect, share, and grow with fellow freelancers. Ask anything about your freelance business.</div>
-    </div>
-
-    <div class="type-sample">
-      <div class="type-meta" style="color:#166534;">Label · Inter 700 · 10px · ALL CAPS · Tracking 2.5px</div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#16a34a;">WORKSPACE · ACCOUNT · FREELANCE OS</div>
-    </div>
-  </div>
-  <div class="slide-num" style="color:#052e16;">08</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 9 · LOGO USAGE
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s9">
-  <div class="slide-label">09 / Logo &amp; Mark</div>
-  <h2 style="margin-bottom:40px;">The <span class="gradient-text">LF</span> mark.</h2>
-
-  <div class="logo-variants">
-    <!-- Dark bg, full wordmark -->
-    <div class="logo-box logo-box-dark">
-      <div class="wordmark">
-        <div class="logo-mark">LF</div>
+<!-- ════════════ 5 · COLORS ════════════ -->
+<section class="slide" id="s5">
+  <div class="ol">05 — Color System</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:16px;">Rooted<br/>in growth.</div>
+      <div class="body" style="margin-bottom:28px;">
+        Greens signal prosperity and momentum. Forest anchors trust.
+        Accent colors carry strict semantic meaning — not decoration.
+      </div>
+      <div style="height:100px;border-radius:var(--rl);background:linear-gradient(135deg,#15803d,#22c55e);margin-bottom:10px;display:flex;align-items:flex-end;padding:14px;">
         <div>
-          <div class="wordmark-text gradient-text">LanceFlo</div>
-          <div class="wordmark-sub" style="color:#4ade80;">FREELANCE OS</div>
+          <div style="font-size:12.5px;font-weight:700;color:#fff;">Brand Green</div>
+          <div class="mono" style="color:rgba(255,255,255,0.55);margin-top:2px;">#15803d → #22c55e</div>
         </div>
       </div>
-      <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">Dark · Full Lockup</div>
+      <div style="height:52px;border-radius:var(--r);background:#052e16;display:flex;align-items:center;padding:0 14px;gap:12px;">
+        <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);">Forest</span>
+        <span class="mono" style="margin-left:auto;">#052e16 · Sidebar · Dark surface</span>
+      </div>
     </div>
+    <div>
+      <div class="crow">
+        <div class="cstrip" style="background:#4ade80;"></div>
+        <span class="cname">Lime</span><span class="chex">#4ade80</span><span class="crole">Accents &amp; gradients</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#86efac;"></div>
+        <span class="cname">Mint</span><span class="chex">#86efac</span><span class="crole">Hover &amp; highlights</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#f0fdf4;border:1px solid #d1fae5;"></div>
+        <span class="cname">Mint BG</span><span class="chex">#f0fdf4</span><span class="crole">Light app background</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#0891b2;"></div>
+        <span class="cname">Teal</span><span class="chex">#0891b2</span><span class="crole">Info &amp; links</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#d97706;"></div>
+        <span class="cname">Amber</span><span class="chex">#d97706</span><span class="crole">Warnings · medium priority</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#dc2626;"></div>
+        <span class="cname">Red</span><span class="chex">#dc2626</span><span class="crole">Errors · high priority</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#db2777;"></div>
+        <span class="cname">Pink</span><span class="chex">#db2777</span><span class="crole">Rare accent use only</span>
+      </div>
+    </div>
+  </div>
+  <div class="pg">05</div>
+</section>
 
-    <!-- Light bg, full wordmark -->
-    <div class="logo-box logo-box-light">
-      <div class="wordmark">
-        <div class="logo-mark">LF</div>
-        <div>
-          <div class="wordmark-text" style="color:#052e16;">LanceFlo</div>
-          <div class="wordmark-sub" style="color:#16a34a;">FREELANCE OS</div>
+<!-- ════════════ 6 · TYPOGRAPHY ════════════ -->
+<section class="slide" id="s6">
+  <div class="ol">06 — Typography</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Inter.<br/>Nothing else.</div>
+      <div class="body">
+        One typeface. Six weights. Typography carries the hierarchy —
+        color and space complete the system. Monospace is reserved
+        strictly for data, codes, and technical metadata.
+      </div>
+    </div>
+    <div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Display</span><span class="tmi">Inter 900</span><span class="tmi">−4.5px tracking</span></div>
+        <div style="font-size:48px;font-weight:900;letter-spacing:-4px;color:var(--t1);line-height:1;">LanceFlo</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Heading 1</span><span class="tmi">Inter 800</span><span class="tmi">−2.5px tracking</span></div>
+        <div style="font-size:30px;font-weight:800;letter-spacing:-2px;color:var(--t1);line-height:1.1;">Freelance, simplified.</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Heading 2</span><span class="tmi">Inter 700</span><span class="tmi">−1px tracking</span></div>
+        <div style="font-size:20px;font-weight:700;letter-spacing:-0.8px;color:var(--t1);">Revenue this month</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Body</span><span class="tmi">Inter 400</span><span class="tmi">14.5px · 1.78 leading</span></div>
+        <div style="font-size:14.5px;font-weight:400;color:var(--t2);line-height:1.78;">Ask anything about your freelance business.</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Label</span><span class="tmi">Inter 600</span><span class="tmi">9.5px · 2.8px tracking · CAPS</span></div>
+        <div style="font-size:9.5px;font-weight:600;letter-spacing:2.8px;text-transform:uppercase;color:var(--green-hi);">WORKSPACE · FREELANCE OS · ACCOUNT</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Mono</span><span class="tmi">ui-monospace</span><span class="tmi">11px · data &amp; codes only</span></div>
+        <div class="mono">#16a34a · $14,820.00 · v1.0.0 · 2026-07-02</div>
+      </div>
+    </div>
+  </div>
+  <div class="pg">06</div>
+</section>
+
+<!-- ════════════ 7 · LOGO ════════════ -->
+<section class="slide" id="s7">
+  <div class="ol">07 — Logo &amp; Mark</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:28px;">The LF mark.</div>
+      <div style="display:flex;gap:18px;align-items:flex-end;margin-bottom:32px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-xl">LF</div><span class="mono">100px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-lg">LF</div><span class="mono">68px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-md">LF</div><span class="mono">44px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-sm">LF</div><span class="mono">32px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-xs">LF</div><span class="mono">24px</span>
         </div>
       </div>
-      <div class="logo-box-label" style="color:rgba(5,46,22,0.4);">Light · Full Lockup</div>
-    </div>
-
-    <!-- Mark only -->
-    <div class="logo-box logo-box-dark" style="align-items:flex-start;gap:28px;flex-direction:row;flex-wrap:wrap;">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <div class="logo-mark xl">LF</div>
-        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">96px</div>
+      <div class="lbx lbx-dark" style="margin-bottom:8px;">
+        <div class="mark mark-sm">LF</div>
+        <div>
+          <div class="wm-text" style="background:linear-gradient(130deg,#4ade80,#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">LanceFlo</div>
+          <div class="wm-sub" style="color:var(--t3);">FREELANCE OS</div>
+        </div>
+        <span class="mono" style="margin-left:auto;">Dark</span>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <div class="logo-mark lg">LF</div>
-        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">64px</div>
+      <div class="lbx lbx-light">
+        <div class="mark mark-sm">LF</div>
+        <div>
+          <div class="wm-text" style="color:#052e16;">LanceFlo</div>
+          <div class="wm-sub" style="color:#16a34a;">FREELANCE OS</div>
+        </div>
+        <span class="mono" style="margin-left:auto;color:#6b9c7e;">Light</span>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <div class="logo-mark">LF</div>
-        <div class="logo-box-label" style="color:rgba(255,255,255,0.3);">36px</div>
+    </div>
+    <div>
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;">Usage Rules</div>
+      <ul class="rlist">
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Always pair the mark with the wordmark at first use</span></li>
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Gradient mark works on both dark and light backgrounds</span></li>
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Minimum mark size: 24px. Minimum wordmark: 12px</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Recolor or change the gradient</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Stretch, skew, rotate, or add drop shadows</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Separate "Lance" from "Flo" in any form</span></li>
+        <li style="gap:10px;border-bottom:none;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Place on busy photo backgrounds without a scrim</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pg">07</div>
+</section>
+
+<!-- ════════════ 8 · VOICE ════════════ -->
+<section class="slide" id="s8">
+  <div class="ol">08 — Voice &amp; Tone</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Sound like a<br/><span class="g">smart colleague.</span></div>
+      <div class="body" style="margin-bottom:24px;">
+        Not enterprise software. Not a startup trying too hard. Direct,
+        confident, and human — respecting that freelancers run real businesses.
       </div>
-      <div class="logo-box-label" style="color:rgba(255,255,255,0.3);align-self:flex-end;">Mark Only · Sizes</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Clear</span>
+          <span style="font-size:12px;color:var(--t2);">No jargon. One idea per sentence.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Direct</span>
+          <span style="font-size:12px;color:var(--t2);">Say the thing. Skip the preamble.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Human</span>
+          <span style="font-size:12px;color:var(--t2);">Warm but not folksy. Real, not robotic.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Empowering</span>
+          <span style="font-size:12px;color:var(--t2);">We believe in you. Never condescending.</span>
+        </div>
+      </div>
     </div>
+    <div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"Your taxes are estimated at $7,200. Here's how to reduce that."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"Our AI-driven tax optimization module leverages advanced deduction algorithms."</div></div>
+      </div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"Invoice sent. You'll get notified when it's opened."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"Your invoice has been successfully dispatched via our secure delivery pipeline."</div></div>
+      </div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"3 tasks overdue. Start with your highest-value client."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"You currently have 3 tasks that have exceeded their estimated completion date."</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="pg">08</div>
+</section>
 
-    <!-- Don'ts -->
-    <div class="logo-box" style="background:#0f0f0f;border-color:rgba(248,113,113,0.2);gap:16px;">
-      <div style="font-size:11px;font-weight:700;color:#f87171;letter-spacing:1.2px;text-transform:uppercase;align-self:flex-start;">Don'ts</div>
-      <ul style="list-style:none;font-size:12.5px;opacity:0.5;line-height:2;align-self:flex-start;">
-        <li>✗ &nbsp;Recolor the gradient</li>
-        <li>✗ &nbsp;Stretch or distort the mark</li>
-        <li>✗ &nbsp;Use on busy photo backgrounds</li>
-        <li>✗ &nbsp;Separate "Lance" and "Flo"</li>
-        <li>✗ &nbsp;Drop the "LF" for text-only lockup</li>
+<!-- ════════════ 9 · TAGLINES ════════════ -->
+<section class="slide" id="s9">
+  <div class="ol">09 — Messaging Hierarchy</div>
+  <div class="g2c">
+    <div class="h1">How we talk<br/>about<br/>LanceFlo.</div>
+    <div>
+      <div class="tlrow">
+        <span class="tlnum">01</span>
+        <span class="tlcopy primary">"The all-in-one platform for modern freelancers."</span>
+        <span class="tluse">Hero · meta · pitch</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">02</span>
+        <span class="tlcopy">"Your Freelance OS."</span>
+        <span class="tluse">Short-form · cards · ads</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">03</span>
+        <span class="tlcopy">"Run your entire freelance business from one place."</span>
+        <span class="tluse">Landing page · onboarding</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">04</span>
+        <span class="tlcopy">"Proposals, taxes, clients — with AI that actually helps."</span>
+        <span class="tluse">Feature marketing</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">05</span>
+        <span class="tlcopy">"Less admin. More work that pays."</span>
+        <span class="tluse">Retargeting · upsell</span>
+      </div>
+    </div>
+  </div>
+  <div class="pg">09</div>
+</section>
+
+<!-- ════════════ 10 · PRICING ════════════ -->
+<section class="slide" id="s10">
+  <div class="ol">10 — Pricing Tiers</div>
+  <div class="h1" style="margin-bottom:8px;">Plans that grow<br/>with your <span class="g">business.</span></div>
+  <div class="pgrid">
+    <div class="plan">
+      <div class="pln">Starter</div>
+      <div class="plp">Free</div>
+      <div class="plsub">Perfect for getting started</div>
+      <ul class="plfeats">
+        <li>Dashboard &amp; Tasks</li>
+        <li>Up to 3 clients</li>
+        <li>Basic invoicing</li>
+        <li>Community access</li>
+      </ul>
+    </div>
+    <div class="plan featured">
+      <div class="pln">Pro</div>
+      <div class="plp">$29<span class="plper">/mo</span></div>
+      <div class="plsub">For serious freelancers</div>
+      <ul class="plfeats">
+        <li>Everything in Starter</li>
+        <li>Unlimited clients + CRM</li>
+        <li>Tax center + deductions</li>
+        <li>AI assistant</li>
+        <li>Insights &amp; analytics</li>
+        <li>Jobs board</li>
+        <li>Education &amp; courses</li>
+        <li>All integrations</li>
+      </ul>
+    </div>
+    <div class="plan">
+      <div class="pln">Enterprise</div>
+      <div class="plp">Custom</div>
+      <div class="plsub">Agencies &amp; teams</div>
+      <ul class="plfeats">
+        <li>Everything in Pro</li>
+        <li>Multi-user workspace</li>
+        <li>SSO + admin controls</li>
+        <li>Dedicated support</li>
+        <li>Custom integrations</li>
       </ul>
     </div>
   </div>
-  <div class="slide-num">09</div>
+  <div class="pg">10</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 10 · VOICE & TONE
-═══════════════════════════════════════════════ -->
-<section class="slide slide-dark" id="s10">
-  <div class="slide-label">10 / Voice &amp; Tone</div>
-  <h2 style="margin-bottom:12px;">Sound like a <span class="gradient-text">smart colleague,</span><br/>not enterprise software.</h2>
-  <p>We are direct, confident, and human. We respect that freelancers are smart adults running real businesses.</p>
+<!-- ════════════ 11 · CLOSING ════════════ -->
+<section class="slide" id="s11" style="justify-content:space-between;min-height:100vh;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark mark-xs">LF</div>
+    <span style="font-size:12px;font-weight:700;color:var(--t2);">LanceFlo</span>
+  </div>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:36px;margin-bottom:36px;">
-    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
-      <div style="font-size:22px;margin-bottom:10px;">💡</div>
-      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Clear</div>
-      <div style="font-size:12px;opacity:0.5;">No jargon. One idea per sentence.</div>
-    </div>
-    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
-      <div style="font-size:22px;margin-bottom:10px;">⚡</div>
-      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Direct</div>
-      <div style="font-size:12px;opacity:0.5;">Say the thing. Skip the preamble.</div>
-    </div>
-    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
-      <div style="font-size:22px;margin-bottom:10px;">🤝</div>
-      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Human</div>
-      <div style="font-size:12px;opacity:0.5;">Warm but not folksy. Real, not robotic.</div>
-    </div>
-    <div style="padding:20px;border:1px solid rgba(74,222,128,0.2);border-radius:12px;background:rgba(74,222,128,0.05);">
-      <div style="font-size:22px;margin-bottom:10px;">🎯</div>
-      <div style="font-size:13px;font-weight:700;color:#4ade80;margin-bottom:4px;">Empowering</div>
-      <div style="font-size:12px;opacity:0.5;">We believe in the user. Never condescending.</div>
+  <div>
+    <div class="display" style="max-width:900px;line-height:0.94;">
+      "The best freelancers deserve the best <span class="g">tools.</span>"
     </div>
   </div>
 
-  <div class="tone-grid">
-    <div class="tone-card tone-good">
-      <div class="tone-label good-label">Write This</div>
-      <div class="tone-ex">"Your taxes are estimated at $7,200. Here's how to reduce that."</div>
-    </div>
-    <div class="tone-card tone-bad">
-      <div class="tone-label bad-label">Not This</div>
-      <div class="tone-ex">"Our innovative tax optimization module leverages AI-driven deduction algorithms."</div>
-    </div>
-    <div class="tone-card tone-good">
-      <div class="tone-label good-label">Write This</div>
-      <div class="tone-ex">"Invoice sent. You'll get notified when it's opened."</div>
-    </div>
-    <div class="tone-card tone-bad">
-      <div class="tone-label bad-label">Not This</div>
-      <div class="tone-ex">"Your invoice has been successfully dispatched via our secure delivery pipeline."</div>
-    </div>
+  <div style="border-top:1px solid var(--line);padding-top:24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+    <span class="chip chip-g"><span class="cdot"></span>lanceflo.com</span>
+    <span class="chip">hello@lanceflo.com</span>
+    <span class="chip">@lanceflo</span>
+    <span class="mono" style="margin-left:auto;">LanceFlo Brand Book 2026 · Confidential</span>
   </div>
-  <div class="slide-num">10</div>
+  <div class="pg">11</div>
 </section>
 
-<!-- ════════════════════════════════════════════
-     SLIDE 11 · TAGLINES
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s11">
-  <div class="slide-label">11 / Messaging Hierarchy</div>
-  <h2 style="margin-bottom:40px;">How we talk<br/>about <span class="gradient-text">LanceFlo.</span></h2>
-
-  <div class="tagline-option primary">
-    <div class="tagline-rank">Primary</div>
-    <div class="tagline-text gradient-text-lime">"The all-in-one platform for modern freelancers."</div>
-    <div class="tagline-note" style="color:rgba(255,255,255,0.35);">Hero headline, meta description, primary pitch</div>
-  </div>
-
-  <div class="tagline-option">
-    <div class="tagline-rank">Sub-line</div>
-    <div class="tagline-text">"Your Freelance OS."</div>
-    <div class="tagline-note">Short-form. Cards, ads, email subjects.</div>
-  </div>
-
-  <div class="tagline-option">
-    <div class="tagline-rank">Value</div>
-    <div class="tagline-text">"Run your entire freelance business from one place."</div>
-    <div class="tagline-note">Landing page body, onboarding</div>
-  </div>
-
-  <div class="tagline-option">
-    <div class="tagline-rank">AI angle</div>
-    <div class="tagline-text">"Proposals, taxes, clients — with AI that actually helps."</div>
-    <div class="tagline-note">Feature-specific marketing</div>
-  </div>
-
-  <div class="tagline-option">
-    <div class="tagline-rank">Growth</div>
-    <div class="tagline-text">"Spend less time on admin. More time on work that pays."</div>
-    <div class="tagline-note">Retargeting, upsell moments</div>
-  </div>
-  <div class="slide-num">11</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 12 · PRICING TIERS
-═══════════════════════════════════════════════ -->
-<section class="slide slide-dark" id="s12">
-  <div class="slide-label">12 / Pricing Tiers</div>
-  <h2 style="margin-bottom:40px;">Plans that grow<br/>with your <span class="gradient-text">business.</span></h2>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:900px;">
-    <div style="padding:32px;border:1px solid rgba(255,255,255,0.1);border-radius:18px;background:rgba(255,255,255,0.03);">
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin-bottom:16px;">Starter</div>
-      <div style="font-size:36px;font-weight:900;margin-bottom:4px;">Free</div>
-      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">Perfect for getting started</div>
-      <ul style="list-style:none;font-size:13px;opacity:0.65;line-height:2.2;">
-        <li>✓ &nbsp;Dashboard &amp; Tasks</li>
-        <li>✓ &nbsp;Up to 3 Clients</li>
-        <li>✓ &nbsp;Basic Invoicing</li>
-        <li>✓ &nbsp;Community Access</li>
-      </ul>
-    </div>
-
-    <div style="padding:32px;border:2px solid rgba(74,222,128,0.4);border-radius:18px;background:rgba(74,222,128,0.06);position:relative;">
-      <div style="position:absolute;top:-12px;left:24px;background:#16a34a;color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:99px;">Most Popular</div>
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:16px;">Pro</div>
-      <div style="font-size:36px;font-weight:900;margin-bottom:4px;color:#fff;">$29<span style="font-size:16px;font-weight:500;opacity:0.5;">/mo</span></div>
-      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">For serious freelancers</div>
-      <ul style="list-style:none;font-size:13px;opacity:0.8;line-height:2.2;">
-        <li style="color:#4ade80;">✓ &nbsp;Everything in Starter</li>
-        <li>✓ &nbsp;Unlimited Clients + CRM</li>
-        <li>✓ &nbsp;Tax Center + Deductions</li>
-        <li>✓ &nbsp;AI Assistant</li>
-        <li>✓ &nbsp;Insights &amp; Analytics</li>
-        <li>✓ &nbsp;Jobs Board</li>
-        <li>✓ &nbsp;Education &amp; Courses</li>
-        <li>✓ &nbsp;All Integrations</li>
-      </ul>
-    </div>
-
-    <div style="padding:32px;border:1px solid rgba(255,255,255,0.1);border-radius:18px;background:rgba(255,255,255,0.03);">
-      <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.4;margin-bottom:16px;">Enterprise</div>
-      <div style="font-size:36px;font-weight:900;margin-bottom:4px;">Custom</div>
-      <div style="font-size:13px;opacity:0.5;margin-bottom:24px;">Agencies &amp; teams</div>
-      <ul style="list-style:none;font-size:13px;opacity:0.65;line-height:2.2;">
-        <li>✓ &nbsp;Everything in Pro</li>
-        <li>✓ &nbsp;Multi-user workspace</li>
-        <li>✓ &nbsp;SSO + Admin controls</li>
-        <li>✓ &nbsp;Dedicated support</li>
-        <li>✓ &nbsp;Custom integrations</li>
-      </ul>
-    </div>
-  </div>
-  <div class="slide-num">12</div>
-</section>
-
-<!-- ════════════════════════════════════════════
-     SLIDE 13 · CLOSING
-═══════════════════════════════════════════════ -->
-<section class="slide slide-darker" id="s13" style="justify-content:center;align-items:center;text-align:center;">
-  <div class="bg-glow" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
-
-  <div style="position:relative;z-index:1;">
-    <div style="display:flex;justify-content:center;margin-bottom:40px;">
-      <div class="logo-mark xl">LF</div>
-    </div>
-
-    <div class="big-quote" style="text-align:center;margin:0 auto 32px;">
-      "The best freelancers deserve the<br/>
-      <span class="gradient-text">best tools.</span>"
-    </div>
-
-    <p style="text-align:center;font-size:16px;opacity:0.5;max-width:480px;margin:0 auto 48px;">
-      LanceFlo is built with the conviction that independent work is the future —
-      and that future deserves world-class infrastructure.
-    </p>
-
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-      <div class="chip">lanceflo.com</div>
-      <div class="chip">hello@lanceflo.com</div>
-      <div class="chip">@lanceflo</div>
-    </div>
-  </div>
-  <div class="slide-num">13</div>
-</section>
-
-<!-- ── DECK NAV DOTS ── -->
-<nav class="deck-nav">
-  <a class="deck-dot" href="#s1" title="Cover"></a>
-  <a class="deck-dot" href="#s2" title="Mission"></a>
-  <a class="deck-dot" href="#s3" title="Problem"></a>
-  <a class="deck-dot" href="#s4" title="Solution"></a>
-  <a class="deck-dot" href="#s5" title="Product"></a>
-  <a class="deck-dot" href="#s6" title="Audience"></a>
-  <a class="deck-dot" href="#s7" title="Colors"></a>
-  <a class="deck-dot" href="#s8" title="Typography"></a>
-  <a class="deck-dot" href="#s9" title="Logo"></a>
-  <a class="deck-dot" href="#s10" title="Voice"></a>
-  <a class="deck-dot" href="#s11" title="Taglines"></a>
-  <a class="deck-dot" href="#s12" title="Pricing"></a>
-  <a class="deck-dot" href="#s13" title="Closing"></a>
+<!-- ── SIDE NAV ── -->
+<nav class="snav">
+  <a class="sdot" href="#s1"></a><a class="sdot" href="#s2"></a><a class="sdot" href="#s3"></a>
+  <a class="sdot" href="#s4"></a><a class="sdot" href="#s5"></a><a class="sdot" href="#s6"></a>
+  <a class="sdot" href="#s7"></a><a class="sdot" href="#s8"></a><a class="sdot" href="#s9"></a>
+  <a class="sdot" href="#s10"></a><a class="sdot" href="#s11"></a>
 </nav>
 
 </body>
