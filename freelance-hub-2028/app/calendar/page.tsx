@@ -147,7 +147,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Grid */}
-        <div style={{ flex: 1, overflowY: 'auto', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridAutoRows: 'minmax(88px, 1fr)', gap: 2, paddingBottom: 24 }}>
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridAutoRows: '1fr', gap: 2, paddingBottom: 24, minHeight: 0 }}>
           {cells.map((day, i) => {
             if (day === null) {
               return <div key={`blank-${i}`} style={{ background: 'rgba(0,0,0,0.02)', borderRadius: 8 }} />
@@ -164,6 +164,7 @@ export default function CalendarPage() {
                   background: isSelected ? 'rgba(0,184,87,0.06)' : 'var(--card)',
                   border: isSelected ? '1.5px solid rgba(0,184,87,0.3)' : '1px solid var(--border)',
                   borderRadius: 9, padding: '8px 9px', cursor: 'pointer',
+                  overflow: 'hidden',
                   transition: 'background 0.1s, border-color 0.1s',
                 }}
               >
