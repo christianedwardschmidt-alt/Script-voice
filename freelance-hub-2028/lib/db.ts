@@ -189,6 +189,18 @@ db.exec(`
     message TEXT NOT NULL,
     createdAt TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS calendar_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,
+    startTime TEXT,
+    endTime TEXT,
+    type TEXT DEFAULT 'meeting',
+    client TEXT,
+    description TEXT,
+    color TEXT DEFAULT '#5b5fcf'
+  );
 `)
 
 function seedIfEmpty(table: string, seedFn: () => void) {
@@ -338,6 +350,28 @@ seedIfEmpty('tax_documents', () => {
 seedIfEmpty('activity_log', () => {
   const stmt = db.prepare(`INSERT INTO activity_log (message, createdAt) VALUES (?, ?)`)
   stmt.run('Welcome to LanceFlo — your workspace is ready', new Date().toISOString())
+})
+
+seedIfEmpty('calendar_events', () => {
+  const stmt = db.prepare(`INSERT INTO calendar_events (title, date, startTime, endTime, type, client, description, color) VALUES (@title, @date, @startTime, @endTime, @type, @client, @description, @color)`)
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = (n: number) => `${y}-${m}-${String(n).padStart(2, '0')}`
+  const rows = [
+    { title: 'Kick-off Call — Tech Trophey', date: d(3), startTime: '10:00', endTime: '11:00', type: 'meeting', client: 'Tech Trophey', description: 'Discuss brand redesign scope and timeline', color: '#5b5fcf' },
+    { title: 'Invoice INV-090 Due', date: d(5), startTime: null, endTime: null, type: 'deadline', client: 'Hencewood Digital', description: 'Payment deadline for API integration project', color: '#d97706' },
+    { title: 'Design Review — Margono', date: d(7), startTime: '14:00', endTime: '15:30', type: 'meeting', client: 'Margono Studio', description: 'Present dashboard UI mockups for feedback', color: '#5b5fcf' },
+    { title: 'Submit final deliverables', date: d(10), startTime: null, endTime: null, type: 'deadline', client: 'Tech Trophey', description: 'Final brand assets and style guide', color: '#d97706' },
+    { title: 'Weekly sync — James Park', date: d(12), startTime: '09:00', endTime: '09:30', type: 'meeting', client: 'Hencewood Digital', description: 'Regular check-in on project progress', color: '#5b5fcf' },
+    { title: 'Quarterly tax estimate', date: d(15), startTime: null, endTime: null, type: 'deadline', client: null, description: 'Q4 estimated tax payment due', color: '#dc2626' },
+    { title: 'Discovery call — NovaBuild', date: d(17), startTime: '11:00', endTime: '12:00', type: 'meeting', client: 'NovaBuild', description: 'First call with Sophie Laurent re: enterprise project', color: '#5b5fcf' },
+    { title: 'Finish mobile app screens', date: d(18), startTime: null, endTime: null, type: 'task', client: 'NovaBuild', description: 'Complete all 12 remaining mobile UI screens', color: '#00b857' },
+    { title: 'Portfolio update', date: d(20), startTime: null, endTime: null, type: 'task', client: null, description: 'Add 3 new case studies to personal site', color: '#00b857' },
+    { title: 'Proposal deadline — DataSync', date: d(22), startTime: null, endTime: null, type: 'deadline', client: 'DataSync', description: 'Send detailed project proposal to Carlos', color: '#d97706' },
+    { title: 'Year-end review call', date: d(28), startTime: '15:00', endTime: '16:00', type: 'meeting', client: null, description: 'Internal review of 2028 performance and 2029 goals', color: '#5b5fcf' },
+  ]
+  for (const r of rows) stmt.run(r)
 })
 
 export function logActivity(message: string) {

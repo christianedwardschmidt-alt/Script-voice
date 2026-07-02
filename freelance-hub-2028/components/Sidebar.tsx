@@ -6,11 +6,12 @@ import {
   LayoutDashboard, CheckSquare, Users, FileText,
   BookOpen, BarChart2, Bot, Settings,
   MessageSquare, Receipt, Plug, Briefcase, Zap,
-  User, Contact,
+  User, Contact, CalendarDays,
 } from 'lucide-react'
 
 const mainNav = [
   { label: 'Dashboard',    href: '/dashboard',    icon: LayoutDashboard },
+  { label: 'Calendar',     href: '/calendar',     icon: CalendarDays    },
   { label: 'Tasks',        href: '/tasks',        icon: CheckSquare     },
   { label: 'Clients',      href: '/clients',      icon: Users           },
   { label: 'CRM',          href: '/crm',          icon: Briefcase       },
