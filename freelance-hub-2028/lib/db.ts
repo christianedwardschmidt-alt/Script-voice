@@ -2,7 +2,7 @@ import Database from 'better-sqlite3'
 import path from 'path'
 import fs from 'fs'
 
-const dataDir = path.join(process.cwd(), 'data')
+const dataDir = process.env.NODE_ENV === 'production' ? '/tmp' : path.join(process.cwd(), 'data')
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true })
 
 declare global {
