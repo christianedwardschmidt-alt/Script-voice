@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LanceFlo — Brand Book 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif; scroll-behavior: smooth; font-size: 14px; }
+body { background: #07080a; color: #e8e9ea; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+:root {
+  --bg:        #07080a;
+  --bg-2:      #0c0e10;
+  --bg-3:      #101315;
+  --line:      rgba(255,255,255,0.07);
+  --line-hi:   rgba(255,255,255,0.11);
+  --t1:        #f0f1f2;
+  --t2:        rgba(240,241,242,0.52);
+  --t3:        rgba(240,241,242,0.26);
+  --green:     #22c55e;
+  --green-hi:  #4ade80;
+  --green-dk:  #15803d;
+  --green-mu:  rgba(34,197,94,0.12);
+  --mono: 'SF Mono', ui-monospace, 'Cascadia Code', monospace;
+  --r:  8px;
+  --rl: 12px;
+}
+
+/* ── SLIDE ─────────────────────────────────── */
+.slide {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 72px 96px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+/* ── OVERLINE ──────────────────────────────── */
+.ol {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 2.8px;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 28px;
+}
+.ol-g { color: rgba(74,222,128,0.55); }
+
+/* ── TYPE SCALE ────────────────────────────── */
+.display {
+  font-size: clamp(68px, 8.5vw, 112px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -4.5px;
+  color: var(--t1);
+}
+.h1 {
+  font-size: clamp(38px, 5vw, 62px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -2.5px;
+  color: var(--t1);
+}
+.h2 {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.8px;
+  color: var(--t1);
+}
+.body { font-size: 14.5px; line-height: 1.78; color: var(--t2); }
+.small { font-size: 12px; line-height: 1.65; color: var(--t2); }
+.mono { font-family: var(--mono); font-size: 11px; color: var(--t3); letter-spacing: 0.2px; }
+
+/* ── GRADIENT TEXT ─────────────────────────── */
+.g { background: linear-gradient(130deg, #4ade80, #86efac); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.g2 { background: linear-gradient(130deg, #22c55e, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── MARK ──────────────────────────────────── */
+.mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--green-dk), var(--green));
+  color: #fff; font-weight: 900; letter-spacing: -0.5px; flex-shrink: 0;
+}
+.mark-xs { width: 24px; height: 24px; border-radius: 6px; font-size: 9.5px; }
+.mark-sm { width: 32px; height: 32px; border-radius: 9px; font-size: 12px; }
+.mark-md { width: 44px; height: 44px; border-radius: 12px; font-size: 17px; box-shadow: 0 0 28px rgba(34,197,94,0.3); }
+.mark-lg { width: 68px; height: 68px; border-radius: 18px; font-size: 26px; box-shadow: 0 0 48px rgba(34,197,94,0.38); }
+.mark-xl { width: 100px; height: 100px; border-radius: 26px; font-size: 38px; box-shadow: 0 0 72px rgba(34,197,94,0.42); }
+
+/* ── CHIP ──────────────────────────────────── */
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  border: 1px solid var(--line-hi);
+  background: rgba(255,255,255,0.025);
+  font-size: 10.5px; font-weight: 500; color: var(--t2); letter-spacing: 0.15px;
+}
+.chip-g { border-color: rgba(74,222,128,0.22); background: rgba(74,222,128,0.05); color: var(--green-hi); }
+.cdot { width: 4.5px; height: 4.5px; border-radius: 50%; background: var(--green-hi); box-shadow: 0 0 5px var(--green-hi); flex-shrink: 0; }
+
+/* ── DIVIDER ───────────────────────────────── */
+.div { border: none; border-top: 1px solid var(--line); }
+
+/* ── GRID ──────────────────────────────────── */
+.g2c { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+.g3c { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.g4c { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* ── CARD ──────────────────────────────────── */
+.card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; }
+.card-lg { border-radius: var(--rl); padding: 24px; }
+
+/* ── ROW LIST (features) ───────────────────── */
+.rlist { list-style: none; }
+.rlist li {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.rlist li:last-child { border-bottom: none; }
+.rico {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--green-mu); border: 1px solid rgba(34,197,94,0.13);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.rname { font-weight: 600; color: var(--t1); min-width: 128px; font-size: 12.5px; }
+.rdesc { color: var(--t2); flex: 1; font-size: 12px; }
+
+/* ── COLOR STRIP ───────────────────────────── */
+.crow {
+  display: flex; align-items: center; gap: 14px;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.crow:last-child { border-bottom: none; }
+.cstrip { width: 40px; height: 24px; border-radius: 5px; flex-shrink: 0; }
+.cname { font-size: 12.5px; font-weight: 600; color: var(--t1); min-width: 110px; }
+.chex { font-family: var(--mono); font-size: 10.5px; color: var(--t3); min-width: 110px; }
+.crole { font-size: 11px; color: var(--t3); }
+
+/* ── TYPE SPECIMEN ─────────────────────────── */
+.tspec { padding: 16px 0; border-bottom: 1px solid var(--line); }
+.tspec:last-child { border-bottom: none; }
+.tmeta { display: flex; gap: 16px; margin-bottom: 8px; }
+.tmi { font-family: var(--mono); font-size: 9.5px; color: var(--t3); }
+
+/* ── PERSONA ───────────────────────────────── */
+.persona { border: 1px solid var(--line); border-radius: var(--r); padding: 20px; background: var(--bg-2); }
+.phead { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.pava { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--green-dk), var(--green)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.pname { font-size: 12.5px; font-weight: 700; color: var(--t1); }
+.prole { font-size: 10.5px; color: var(--green-hi); font-weight: 500; margin-top: 1px; }
+.ppts { list-style: none; }
+.ppts li { font-size: 11.5px; color: var(--t2); padding: 3.5px 0; padding-left: 12px; position: relative; line-height: 1.5; }
+.ppts li::before { content: '—'; position: absolute; left: 0; color: var(--t3); font-size: 10px; }
+
+/* ── TONE ──────────────────────────────────── */
+.trow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.tbox { padding: 14px 16px; border-radius: var(--r); border: 1px solid; }
+.tgood { background: rgba(22,163,74,0.05); border-color: rgba(74,222,128,0.16); }
+.tbad  { background: rgba(220,38,38,0.04); border-color: rgba(220,38,38,0.14); }
+.ttag { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; }
+.ttagg { color: var(--green-hi); }
+.ttagb { color: #f87171; }
+.ttxt { font-size: 12.5px; line-height: 1.55; color: var(--t2); }
+
+/* ── TAGLINE ───────────────────────────────── */
+.tlrow { display: flex; align-items: baseline; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.tlrow:last-child { border-bottom: none; }
+.tlnum { font-family: var(--mono); font-size: 10px; color: var(--t3); min-width: 20px; }
+.tlcopy { font-size: 16px; font-weight: 700; color: var(--t1); letter-spacing: -0.3px; flex: 1; }
+.tlcopy.primary { color: var(--green-hi); }
+.tluse { font-size: 11px; color: var(--t3); text-align: right; min-width: 150px; }
+
+/* ── PRICING ───────────────────────────────── */
+.pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 28px; }
+.plan { border: 1px solid var(--line); border-radius: var(--rl); padding: 24px 20px; }
+.plan.featured { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.03); }
+.pln { font-size: 9.5px; font-weight: 700; letter-spacing: 2.2px; text-transform: uppercase; color: var(--t3); margin-bottom: 14px; }
+.plan.featured .pln { color: var(--green-hi); }
+.plp { font-size: 38px; font-weight: 900; letter-spacing: -2px; color: var(--t1); line-height: 1; }
+.plper { font-size: 13px; font-weight: 400; color: var(--t3); }
+.plsub { font-size: 11.5px; color: var(--t3); margin: 6px 0 18px; }
+.plfeats { list-style: none; }
+.plfeats li { font-size: 12px; color: var(--t2); padding: 5px 0; border-bottom: 1px solid var(--line); display: flex; gap: 7px; align-items: flex-start; }
+.plfeats li:last-child { border-bottom: none; }
+.plfeats li::before { content: '✓'; color: var(--green); font-size: 10px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── PAGE NUM ──────────────────────────────── */
+.pg { position: absolute; bottom: 24px; right: 32px; font-family: var(--mono); font-size: 9.5px; color: var(--t3); }
+
+/* ── SIDE NAV ──────────────────────────────── */
+.snav { position: fixed; top: 50%; right: 18px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 5px; z-index: 100; }
+.sdot { width: 3.5px; height: 3.5px; border-radius: 50%; background: rgba(255,255,255,0.18); cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; }
+.sdot:hover { background: var(--green-hi); transform: scale(1.8); }
+
+/* ── STAT ──────────────────────────────────── */
+.stat { display: flex; flex-direction: column; }
+.statnum { font-size: 64px; font-weight: 900; letter-spacing: -3.5px; color: var(--t1); line-height: 1; }
+.statlabel { font-size: 11px; font-weight: 500; color: var(--t3); margin-top: 4px; letter-spacing: 0.2px; }
+
+/* ── LOGO USAGE TABLE ──────────────────────── */
+.lbx { border: 1px solid var(--line); border-radius: var(--r); padding: 28px 24px; display: flex; align-items: center; gap: 14px; }
+.lbx-dark  { background: #020503; }
+.lbx-light { background: #f0fdf4; border-color: #d1fae5; }
+.wm-text { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
+.wm-sub  { font-size: 7.5px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ 1 · COVER ════════════ -->
+<section class="slide" id="s1" style="justify-content:space-between;min-height:100vh;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark mark-xs">LF</div>
+    <span style="font-size:12px;font-weight:700;color:var(--t2);">LanceFlo</span>
+    <span class="chip" style="margin-left:auto;">Brand Book 2026</span>
+  </div>
+
+  <div>
+    <div class="ol">01 — Brand Identity</div>
+    <div class="display">Lance<span class="g">Flo</span></div>
+    <div style="margin-top:22px;max-width:460px;" class="body">
+      The all-in-one platform for modern freelancers.
+      <br/><span style="color:var(--t3);">Brand guidelines · Design system · Voice &amp; tone</span>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid var(--line);padding-top:24px;display:flex;align-items:center;gap:20px;">
+    <span class="mono">Confidential</span>
+    <span class="mono" style="margin-left:auto;">Version 1.0 · July 2026</span>
+  </div>
+  <div class="pg">01</div>
+</section>
+
+<!-- ════════════ 2 · MISSION ════════════ -->
+<section class="slide" id="s2">
+  <div class="ol">02 — Mission</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">The <span class="g">OS</span> for<br/>independent<br/>workers.</div>
+      <div class="body" style="margin-bottom:24px;">
+        LanceFlo replaces the patchwork of spreadsheets, invoicing apps, tax tools,
+        and CRMs that freelancers juggle daily — with one fast, connected workspace.
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="chip chip-g"><span class="cdot"></span>Revenue clarity</span>
+        <span class="chip chip-g"><span class="cdot"></span>Client management</span>
+        <span class="chip chip-g"><span class="cdot"></span>Tax planning</span>
+        <span class="chip chip-g"><span class="cdot"></span>AI assistance</span>
+        <span class="chip chip-g"><span class="cdot"></span>Community</span>
+      </div>
+    </div>
+    <div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat" style="margin-bottom:32px;">
+        <div class="statnum">11</div>
+        <div class="statlabel">integrated modules</div>
+      </div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat" style="margin-bottom:32px;">
+        <div class="statnum">1</div>
+        <div class="statlabel">connected workspace</div>
+      </div>
+      <hr class="div" style="margin-bottom:28px;"/>
+      <div class="stat">
+        <div class="statnum g2" style="font-size:64px;">∞</div>
+        <div class="statlabel">freelancers served</div>
+      </div>
+      <hr class="div" style="margin-top:28px;"/>
+    </div>
+  </div>
+  <div class="pg">02</div>
+</section>
+
+<!-- ════════════ 3 · PRODUCT SUITE ════════════ -->
+<section class="slide" id="s3">
+  <div class="ol">03 — Product Suite</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Everything<br/>in one place.</div>
+      <div class="body">Eleven modules. One login.<br/>No tool-switching, no context loss.</div>
+    </div>
+    <ul class="rlist">
+      <li><div class="rico">📈</div><span class="rname">Dashboard</span><span class="rdesc">Live revenue, tasks, and client snapshot</span></li>
+      <li><div class="rico">✅</div><span class="rname">Tasks</span><span class="rdesc">Priority-ordered work with deadlines</span></li>
+      <li><div class="rico">👥</div><span class="rname">Clients + CRM</span><span class="rdesc">Relationship history and deal pipeline</span></li>
+      <li><div class="rico">🧾</div><span class="rname">Invoicing</span><span class="rdesc">Create, send, and track payments</span></li>
+      <li><div class="rico">💸</div><span class="rname">Tax Center</span><span class="rdesc">Deductions, estimates, document storage</span></li>
+      <li><div class="rico">📊</div><span class="rname">Insights</span><span class="rdesc">Revenue trends and business analytics</span></li>
+      <li><div class="rico">💼</div><span class="rname">Jobs Board</span><span class="rdesc">Freelance opportunities — save and apply</span></li>
+      <li><div class="rico">📚</div><span class="rname">Education</span><span class="rdesc">Courses built for independent workers</span></li>
+      <li><div class="rico">💬</div><span class="rname">Community</span><span class="rdesc">Connect with fellow freelancers</span></li>
+      <li><div class="rico">🔌</div><span class="rname">Integrations</span><span class="rdesc">Stripe, Slack, QuickBooks, Notion + more</span></li>
+      <li><div class="rico">🤖</div><span class="rname">AI Assistant</span><span class="rdesc">Proposals, pricing, tax — AI that helps</span></li>
+    </ul>
+  </div>
+  <div class="pg">03</div>
+</section>
+
+<!-- ════════════ 4 · AUDIENCE ════════════ -->
+<section class="slide" id="s4">
+  <div class="ol">04 — Who We Serve</div>
+  <div class="h1" style="margin-bottom:32px;">The modern <span class="g">independent worker.</span></div>
+  <div class="g3c">
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">C</div>
+        <div><div class="pname">The Creative Pro</div><div class="prole">Designer · Developer · Writer</div></div>
+      </div>
+      <ul class="ppts">
+        <li>Juggles 3–6 clients at once</li>
+        <li>Inconsistent cash flow anxiety</li>
+        <li>Loses hours to admin work</li>
+        <li>Wants to grow rates, not hours</li>
+        <li>Needs year-end tax help</li>
+      </ul>
+    </div>
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">S</div>
+        <div><div class="pname">The Consultant</div><div class="prole">Strategy · Finance · Ops</div></div>
+      </div>
+      <ul class="ppts">
+        <li>High-value retainer clients</li>
+        <li>Needs CRM + proposal tools</li>
+        <li>Tracks complex deductions</li>
+        <li>Wants professional client UX</li>
+        <li>Data-driven business decisions</li>
+      </ul>
+    </div>
+    <div class="persona">
+      <div class="phead">
+        <div class="pava">A</div>
+        <div><div class="pname">The Side-Hustler</div><div class="prole">Part-time → going full-time</div></div>
+      </div>
+      <ul class="ppts">
+        <li>Transitioning from employment</li>
+        <li>Learning to price and market</li>
+        <li>Needs community + education</li>
+        <li>Self-employment tax anxiety</li>
+        <li>Wants fast, simple setup</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pg">04</div>
+</section>
+
+<!-- ════════════ 5 · COLORS ════════════ -->
+<section class="slide" id="s5">
+  <div class="ol">05 — Color System</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:16px;">Rooted<br/>in growth.</div>
+      <div class="body" style="margin-bottom:28px;">
+        Greens signal prosperity and momentum. Forest anchors trust.
+        Accent colors carry strict semantic meaning — not decoration.
+      </div>
+      <div style="height:100px;border-radius:var(--rl);background:linear-gradient(135deg,#15803d,#22c55e);margin-bottom:10px;display:flex;align-items:flex-end;padding:14px;">
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:#fff;">Brand Green</div>
+          <div class="mono" style="color:rgba(255,255,255,0.55);margin-top:2px;">#15803d → #22c55e</div>
+        </div>
+      </div>
+      <div style="height:52px;border-radius:var(--r);background:#052e16;display:flex;align-items:center;padding:0 14px;gap:12px;">
+        <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);">Forest</span>
+        <span class="mono" style="margin-left:auto;">#052e16 · Sidebar · Dark surface</span>
+      </div>
+    </div>
+    <div>
+      <div class="crow">
+        <div class="cstrip" style="background:#4ade80;"></div>
+        <span class="cname">Lime</span><span class="chex">#4ade80</span><span class="crole">Accents &amp; gradients</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#86efac;"></div>
+        <span class="cname">Mint</span><span class="chex">#86efac</span><span class="crole">Hover &amp; highlights</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#f0fdf4;border:1px solid #d1fae5;"></div>
+        <span class="cname">Mint BG</span><span class="chex">#f0fdf4</span><span class="crole">Light app background</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#0891b2;"></div>
+        <span class="cname">Teal</span><span class="chex">#0891b2</span><span class="crole">Info &amp; links</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#d97706;"></div>
+        <span class="cname">Amber</span><span class="chex">#d97706</span><span class="crole">Warnings · medium priority</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#dc2626;"></div>
+        <span class="cname">Red</span><span class="chex">#dc2626</span><span class="crole">Errors · high priority</span>
+      </div>
+      <div class="crow">
+        <div class="cstrip" style="background:#db2777;"></div>
+        <span class="cname">Pink</span><span class="chex">#db2777</span><span class="crole">Rare accent use only</span>
+      </div>
+    </div>
+  </div>
+  <div class="pg">05</div>
+</section>
+
+<!-- ════════════ 6 · TYPOGRAPHY ════════════ -->
+<section class="slide" id="s6">
+  <div class="ol">06 — Typography</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Inter.<br/>Nothing else.</div>
+      <div class="body">
+        One typeface. Six weights. Typography carries the hierarchy —
+        color and space complete the system. Monospace is reserved
+        strictly for data, codes, and technical metadata.
+      </div>
+    </div>
+    <div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Display</span><span class="tmi">Inter 900</span><span class="tmi">−4.5px tracking</span></div>
+        <div style="font-size:48px;font-weight:900;letter-spacing:-4px;color:var(--t1);line-height:1;">LanceFlo</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Heading 1</span><span class="tmi">Inter 800</span><span class="tmi">−2.5px tracking</span></div>
+        <div style="font-size:30px;font-weight:800;letter-spacing:-2px;color:var(--t1);line-height:1.1;">Freelance, simplified.</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Heading 2</span><span class="tmi">Inter 700</span><span class="tmi">−1px tracking</span></div>
+        <div style="font-size:20px;font-weight:700;letter-spacing:-0.8px;color:var(--t1);">Revenue this month</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Body</span><span class="tmi">Inter 400</span><span class="tmi">14.5px · 1.78 leading</span></div>
+        <div style="font-size:14.5px;font-weight:400;color:var(--t2);line-height:1.78;">Ask anything about your freelance business.</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Label</span><span class="tmi">Inter 600</span><span class="tmi">9.5px · 2.8px tracking · CAPS</span></div>
+        <div style="font-size:9.5px;font-weight:600;letter-spacing:2.8px;text-transform:uppercase;color:var(--green-hi);">WORKSPACE · FREELANCE OS · ACCOUNT</div>
+      </div>
+      <div class="tspec">
+        <div class="tmeta"><span class="tmi">Mono</span><span class="tmi">ui-monospace</span><span class="tmi">11px · data &amp; codes only</span></div>
+        <div class="mono">#16a34a · $14,820.00 · v1.0.0 · 2026-07-02</div>
+      </div>
+    </div>
+  </div>
+  <div class="pg">06</div>
+</section>
+
+<!-- ════════════ 7 · LOGO ════════════ -->
+<section class="slide" id="s7">
+  <div class="ol">07 — Logo &amp; Mark</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:28px;">The LF mark.</div>
+      <div style="display:flex;gap:18px;align-items:flex-end;margin-bottom:32px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-xl">LF</div><span class="mono">100px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-lg">LF</div><span class="mono">68px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-md">LF</div><span class="mono">44px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-sm">LF</div><span class="mono">32px</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="mark mark-xs">LF</div><span class="mono">24px</span>
+        </div>
+      </div>
+      <div class="lbx lbx-dark" style="margin-bottom:8px;">
+        <div class="mark mark-sm">LF</div>
+        <div>
+          <div class="wm-text" style="background:linear-gradient(130deg,#4ade80,#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">LanceFlo</div>
+          <div class="wm-sub" style="color:var(--t3);">FREELANCE OS</div>
+        </div>
+        <span class="mono" style="margin-left:auto;">Dark</span>
+      </div>
+      <div class="lbx lbx-light">
+        <div class="mark mark-sm">LF</div>
+        <div>
+          <div class="wm-text" style="color:#052e16;">LanceFlo</div>
+          <div class="wm-sub" style="color:#16a34a;">FREELANCE OS</div>
+        </div>
+        <span class="mono" style="margin-left:auto;color:#6b9c7e;">Light</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);margin-bottom:14px;">Usage Rules</div>
+      <ul class="rlist">
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Always pair the mark with the wordmark at first use</span></li>
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Gradient mark works on both dark and light backgrounds</span></li>
+        <li style="gap:10px;"><span style="color:var(--green);font-size:11px;flex-shrink:0;">✓</span><span style="font-size:12px;color:var(--t2);">Minimum mark size: 24px. Minimum wordmark: 12px</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Recolor or change the gradient</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Stretch, skew, rotate, or add drop shadows</span></li>
+        <li style="gap:10px;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Separate "Lance" from "Flo" in any form</span></li>
+        <li style="gap:10px;border-bottom:none;"><span style="color:#f87171;font-size:11px;flex-shrink:0;">✗</span><span style="font-size:12px;color:var(--t2);">Place on busy photo backgrounds without a scrim</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pg">07</div>
+</section>
+
+<!-- ════════════ 8 · VOICE ════════════ -->
+<section class="slide" id="s8">
+  <div class="ol">08 — Voice &amp; Tone</div>
+  <div class="g2c">
+    <div>
+      <div class="h1" style="margin-bottom:20px;">Sound like a<br/><span class="g">smart colleague.</span></div>
+      <div class="body" style="margin-bottom:24px;">
+        Not enterprise software. Not a startup trying too hard. Direct,
+        confident, and human — respecting that freelancers run real businesses.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Clear</span>
+          <span style="font-size:12px;color:var(--t2);">No jargon. One idea per sentence.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Direct</span>
+          <span style="font-size:12px;color:var(--t2);">Say the thing. Skip the preamble.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Human</span>
+          <span style="font-size:12px;color:var(--t2);">Warm but not folksy. Real, not robotic.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="color:var(--green-hi);font-size:13px;flex-shrink:0;">→</span>
+          <span style="font-size:12.5px;font-weight:700;color:var(--t1);min-width:88px;">Empowering</span>
+          <span style="font-size:12px;color:var(--t2);">We believe in you. Never condescending.</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"Your taxes are estimated at $7,200. Here's how to reduce that."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"Our AI-driven tax optimization module leverages advanced deduction algorithms."</div></div>
+      </div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"Invoice sent. You'll get notified when it's opened."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"Your invoice has been successfully dispatched via our secure delivery pipeline."</div></div>
+      </div>
+      <div class="trow">
+        <div class="tbox tgood"><div class="ttag ttagg">Write this</div><div class="ttxt">"3 tasks overdue. Start with your highest-value client."</div></div>
+        <div class="tbox tbad"><div class="ttag ttagb">Not this</div><div class="ttxt">"You currently have 3 tasks that have exceeded their estimated completion date."</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="pg">08</div>
+</section>
+
+<!-- ════════════ 9 · TAGLINES ════════════ -->
+<section class="slide" id="s9">
+  <div class="ol">09 — Messaging Hierarchy</div>
+  <div class="g2c">
+    <div class="h1">How we talk<br/>about<br/>LanceFlo.</div>
+    <div>
+      <div class="tlrow">
+        <span class="tlnum">01</span>
+        <span class="tlcopy primary">"The all-in-one platform for modern freelancers."</span>
+        <span class="tluse">Hero · meta · pitch</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">02</span>
+        <span class="tlcopy">"Your Freelance OS."</span>
+        <span class="tluse">Short-form · cards · ads</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">03</span>
+        <span class="tlcopy">"Run your entire freelance business from one place."</span>
+        <span class="tluse">Landing page · onboarding</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">04</span>
+        <span class="tlcopy">"Proposals, taxes, clients — with AI that actually helps."</span>
+        <span class="tluse">Feature marketing</span>
+      </div>
+      <div class="tlrow">
+        <span class="tlnum">05</span>
+        <span class="tlcopy">"Less admin. More work that pays."</span>
+        <span class="tluse">Retargeting · upsell</span>
+      </div>
+    </div>
+  </div>
+  <div class="pg">09</div>
+</section>
+
+<!-- ════════════ 10 · PRICING ════════════ -->
+<section class="slide" id="s10">
+  <div class="ol">10 — Pricing Tiers</div>
+  <div class="h1" style="margin-bottom:8px;">Plans that grow<br/>with your <span class="g">business.</span></div>
+  <div class="pgrid">
+    <div class="plan">
+      <div class="pln">Starter</div>
+      <div class="plp">Free</div>
+      <div class="plsub">Perfect for getting started</div>
+      <ul class="plfeats">
+        <li>Dashboard &amp; Tasks</li>
+        <li>Up to 3 clients</li>
+        <li>Basic invoicing</li>
+        <li>Community access</li>
+      </ul>
+    </div>
+    <div class="plan featured">
+      <div class="pln">Pro</div>
+      <div class="plp">$29<span class="plper">/mo</span></div>
+      <div class="plsub">For serious freelancers</div>
+      <ul class="plfeats">
+        <li>Everything in Starter</li>
+        <li>Unlimited clients + CRM</li>
+        <li>Tax center + deductions</li>
+        <li>AI assistant</li>
+        <li>Insights &amp; analytics</li>
+        <li>Jobs board</li>
+        <li>Education &amp; courses</li>
+        <li>All integrations</li>
+      </ul>
+    </div>
+    <div class="plan">
+      <div class="pln">Enterprise</div>
+      <div class="plp">Custom</div>
+      <div class="plsub">Agencies &amp; teams</div>
+      <ul class="plfeats">
+        <li>Everything in Pro</li>
+        <li>Multi-user workspace</li>
+        <li>SSO + admin controls</li>
+        <li>Dedicated support</li>
+        <li>Custom integrations</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pg">10</div>
+</section>
+
+<!-- ════════════ 11 · CLOSING ════════════ -->
+<section class="slide" id="s11" style="justify-content:space-between;min-height:100vh;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="mark mark-xs">LF</div>
+    <span style="font-size:12px;font-weight:700;color:var(--t2);">LanceFlo</span>
+  </div>
+
+  <div>
+    <div class="display" style="max-width:900px;line-height:0.94;">
+      "The best freelancers deserve the best <span class="g">tools.</span>"
+    </div>
+  </div>
+
+  <div style="border-top:1px solid var(--line);padding-top:24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+    <span class="chip chip-g"><span class="cdot"></span>lanceflo.com</span>
+    <span class="chip">hello@lanceflo.com</span>
+    <span class="chip">@lanceflo</span>
+    <span class="mono" style="margin-left:auto;">LanceFlo Brand Book 2026 · Confidential</span>
+  </div>
+  <div class="pg">11</div>
+</section>
+
+<!-- ── SIDE NAV ── -->
+<nav class="snav">
+  <a class="sdot" href="#s1"></a><a class="sdot" href="#s2"></a><a class="sdot" href="#s3"></a>
+  <a class="sdot" href="#s4"></a><a class="sdot" href="#s5"></a><a class="sdot" href="#s6"></a>
+  <a class="sdot" href="#s7"></a><a class="sdot" href="#s8"></a><a class="sdot" href="#s9"></a>
+  <a class="sdot" href="#s10"></a><a class="sdot" href="#s11"></a>
+</nav>
+
+</body>
+</html>
