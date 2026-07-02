@@ -37,8 +37,8 @@ export default function Sidebar() {
     <aside style={{
       width: 64,
       minHeight: '100vh',
-      background: 'rgba(6,9,15,0.95)',
-      borderRight: '1px solid rgba(255,255,255,0.055)',
+      background: '#ffffff',
+      borderRight: '1px solid rgba(0,0,0,0.07)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -47,21 +47,19 @@ export default function Sidebar() {
       position: 'sticky',
       top: 0,
       flexShrink: 0,
-      backdropFilter: 'blur(24px)',
-      WebkitBackdropFilter: 'blur(24px)',
       gap: 0,
     }}>
 
       {/* Logo mark */}
-      <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.055)', width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid rgba(0,0,0,0.07)', width: '100%', display: 'flex', justifyContent: 'center' }}>
         <div style={{
           width: 36, height: 36, borderRadius: 10,
-          background: 'linear-gradient(135deg, #00963d, #00e87a)',
+          background: 'linear-gradient(135deg, #007a3a, #00b857)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 0 1px rgba(0,232,122,0.25), 0 4px 20px rgba(0,232,122,0.3)',
+          boxShadow: '0 2px 8px rgba(0,184,87,0.3)',
           flexShrink: 0,
         }}>
-          <span style={{ color: '#020409', fontWeight: 900, fontSize: 12, letterSpacing: '-0.5px' }}>LF</span>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 12, letterSpacing: '-0.5px' }}>LF</span>
         </div>
       </div>
 
@@ -81,7 +79,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom prefs */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '100%', padding: '12px 13px 0', borderTop: '1px solid rgba(255,255,255,0.055)' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '100%', padding: '12px 13px 0', borderTop: '1px solid rgba(0,0,0,0.07)' }}>
         {prefNav.map(({ label, href, icon: Icon }) => (
           <Link
             key={href}
@@ -98,10 +96,10 @@ export default function Sidebar() {
         <div style={{ marginTop: 8 }}>
           <div style={{
             width: 30, height: 30, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #00963d, #00e87a)',
+            background: 'linear-gradient(135deg, #007a3a, #00b857)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 800, color: '#020409',
-            boxShadow: '0 0 0 1px rgba(0,232,122,0.25), 0 0 12px rgba(0,232,122,0.2)',
+            fontSize: 11, fontWeight: 800, color: '#fff',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
             cursor: 'pointer',
           }}>C</div>
         </div>

@@ -21,8 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Header */}
           <header style={{
             height: 52,
-            background: "rgba(6,9,15,0.85)",
-            borderBottom: "1px solid rgba(255,255,255,0.055)",
+            background: "rgba(255,255,255,0.92)",
+            borderBottom: "1px solid rgba(0,0,0,0.07)",
             display: "flex",
             alignItems: "center",
             padding: "0 24px",
@@ -31,8 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position: "sticky",
             top: 0,
             zIndex: 50,
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
           }}>
 
             {/* Command search */}
@@ -43,8 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </svg>
               <input placeholder="Search or ask LanceFlo AI..." className="search-input" />
               <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", display: "flex", gap: 3 }}>
-                <kbd style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>⌘</kbd>
-                <kbd style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>K</kbd>
+                <kbd style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>⌘</kbd>
+                <kbd style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>K</kbd>
               </div>
             </div>
 
@@ -63,22 +63,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                 </svg>
-                <div style={{ position: "absolute", top: 4, right: 4, width: 5, height: 5, borderRadius: "50%", background: "var(--green)", boxShadow: "0 0 6px var(--green)" }} />
+                <div style={{ position: "absolute", top: 4, right: 4, width: 5, height: 5, borderRadius: "50%", background: "var(--green)" }} />
               </button>
 
               {/* Workspace selector */}
               <div style={{
                 display: "flex", alignItems: "center", gap: 7,
                 padding: "5px 10px",
-                background: "var(--glass)",
+                background: "var(--bg-3)",
                 border: "1px solid var(--border)",
                 borderRadius: 8, cursor: "pointer",
               }}>
                 <div style={{
                   width: 18, height: 18, borderRadius: 5,
-                  background: "linear-gradient(135deg, #00963d, #00e87a)",
+                  background: "linear-gradient(135deg, #007a3a, #00b857)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 9, fontWeight: 800, color: "#020409",
+                  fontSize: 9, fontWeight: 800, color: "#fff",
                 }}>A</div>
                 <span style={{ fontSize: 12, color: "var(--text-2)", fontWeight: 500 }}>Acme Studio</span>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-3)" }}><path d="m6 9 6 6 6-6"/></svg>
@@ -87,10 +87,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* Avatar */}
               <div style={{
                 width: 28, height: 28, borderRadius: "50%",
-                background: "linear-gradient(135deg, #00963d, #00e87a)",
+                background: "linear-gradient(135deg, #007a3a, #00b857)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 800, color: "#020409", cursor: "pointer",
-                boxShadow: "0 0 0 1px rgba(0,232,122,0.25), 0 0 12px rgba(0,232,122,0.18)",
+                fontSize: 11, fontWeight: 800, color: "#fff", cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
               }}>C</div>
             </div>
           </header>
