@@ -6,7 +6,6 @@ import SearchBar from "@/components/SearchBar";
 import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -56,9 +55,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </svg>
                 AI active
               </div>
-
-              {/* Theme toggle */}
-              <ThemeToggle />
 
               {/* Bell */}
               <NotificationBell />
