@@ -1,7 +1,7 @@
 import { createClient, type InValue, type Row } from '@libsql/client'
 
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL ?? 'file:local.db',
+  url: process.env.TURSO_DATABASE_URL ?? 'file:/tmp/lanceflo.db',
   authToken: process.env.TURSO_AUTH_TOKEN,
 })
 
