@@ -21,12 +21,23 @@ const items: { key: keyof Omit<Settings, 'id'>; title: string; desc: string }[] 
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings | null>(null)
+  const [clearing, setClearing] = useState(false)
+  const [cleared, setCleared] = useState(false)
+  const [confirm, setConfirm] = useState(false)
 
   useEffect(() => {
     fetch('/api/settings')
       .then(res => res.json())
       .then(setSettings)
   }, [])
+
+  const clearSampleData = async () => {
+    setClearing(true)
+    await fetch('/api/reset', { method: 'POST' })
+    setClearing(false)
+    setCleared(true)
+    setConfirm(false)
+  }
 
   const toggle = async (key: keyof Omit<Settings, 'id'>) => {
     if (!settings) return
@@ -71,7 +82,43 @@ export default function SettingsPage() {
         })}
         <div className="card" style={{ padding: 18 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: '#ef4444', marginBottom: 4 }}>Danger Zone</div>
-          <div style={{ fontSize: 12, color: '#78716c', marginBottom: 12 }}>These actions are irreversible. Please proceed with caution.</div>
+          <div style={{ fontSize: 12, color: '#78716c', marginBottom: 16 }}>These actions are irreversible. Please proceed with caution.</div>
+
+          {/* Clear sample data */}
+          <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Clear all sample data</div>
+            <div style={{ fontSize: 12, color: '#78716c', marginBottom: 10 }}>
+              Removes all clients, tasks, invoices, CRM contacts, posts, calendar events, and tax records. Your profile and settings are kept.
+            </div>
+            {cleared ? (
+              <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500 }}>All sample data cleared. Start adding your own!</div>
+            ) : confirm ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#78716c' }}>Are you sure?</span>
+                <button
+                  onClick={clearSampleData}
+                  disabled={clearing}
+                  style={{ padding: '6px 14px', border: 'none', borderRadius: 7, background: '#ef4444', fontSize: 12, color: '#fff', cursor: clearing ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: clearing ? 0.6 : 1 }}
+                >
+                  {clearing ? 'Clearing…' : 'Yes, clear everything'}
+                </button>
+                <button
+                  onClick={() => setConfirm(false)}
+                  style={{ padding: '6px 14px', border: '1px solid var(--border)', borderRadius: 7, background: 'var(--card)', fontSize: 12, color: 'var(--text-2)', cursor: 'pointer', fontWeight: 500 }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirm(true)}
+                style={{ padding: '7px 16px', border: '1px solid #fecaca', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#ef4444', cursor: 'pointer', fontWeight: 500 }}
+              >
+                Clear all sample data
+              </button>
+            )}
+          </div>
+
           <button style={{ padding: '8px 16px', border: '1px solid #fecaca', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#ef4444', cursor: 'pointer', fontWeight: 500 }}>Delete Account</button>
         </div>
       </div>
