@@ -24,8 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Header */}
           <header style={{
             height: 52,
-            background: "rgba(255,255,255,0.92)",
-            borderBottom: "1px solid rgba(0,0,0,0.07)",
+            background: "rgba(250,251,255,0.94)",
+            borderBottom: "1px solid rgba(0,0,0,0.08)",
             display: "flex",
             alignItems: "center",
             padding: "0 20px",
@@ -34,8 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position: "sticky",
             top: 0,
             zIndex: 50,
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.03)",
           }}>
 
             {/* Command search */}

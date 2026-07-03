@@ -173,7 +173,7 @@ export default function DashboardPage() {
       {/* KPI row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
         {kpi.map(({ label, value, sub, accent }) => (
-          <div key={label} className="card" style={{ padding: '18px 18px 16px', borderTop: `2px solid ${accent}` }}>
+          <div key={label} className="card card-lift" style={{ padding: '18px 18px 16px', borderTop: `2px solid ${accent}` }}>
             <div className="section-label" style={{ marginBottom: 10 }}>{label}</div>
             <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1 }}>{value}</div>
             <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 6 }}>{sub}</div>

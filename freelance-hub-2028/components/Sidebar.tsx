@@ -6,7 +6,7 @@ import {
   LayoutDashboard, CheckSquare, Users, FileText,
   BookOpen, BarChart2, Bot, Settings,
   MessageSquare, Receipt, Plug, Briefcase, Zap,
-  User, Contact, CalendarDays, ChevronRight,
+  User, Contact, CalendarDays,
 } from 'lucide-react'
 
 const NAV_GROUPS = [
@@ -63,20 +63,19 @@ export default function Sidebar() {
         href={href}
         style={{
           display: 'flex', alignItems: 'center', gap: 9,
-          padding: '7px 10px', borderRadius: 8, marginBottom: 1,
-          color: active ? 'var(--green)' : 'rgba(15,17,23,0.55)',
-          background: active ? 'rgba(0,184,87,0.08)' : 'transparent',
+          padding: '7px 10px 7px 13px', borderRadius: 8, marginBottom: 1,
+          color: active ? '#008040' : 'rgba(15,17,23,0.52)',
+          background: active ? 'rgba(0,184,87,0.07)' : 'transparent',
           fontWeight: active ? 600 : 450,
           fontSize: 12.5,
           textDecoration: 'none',
-          transition: 'all 0.12s',
-          border: active ? '1px solid rgba(0,184,87,0.15)' : '1px solid transparent',
+          transition: 'background 0.12s, color 0.12s, box-shadow 0.12s',
+          boxShadow: active ? 'inset 3px 0 0 #00b857' : 'none',
         }}
         className="sidebar-link"
       >
         <Icon size={15} strokeWidth={active ? 2.2 : 1.7} style={{ flexShrink: 0 }} />
         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-        {active && <ChevronRight size={11} style={{ marginLeft: 'auto', flexShrink: 0, opacity: 0.5 }} />}
       </Link>
     )
   }
@@ -85,7 +84,7 @@ export default function Sidebar() {
     <aside style={{
       width: 220,
       minHeight: '100vh',
-      background: '#ffffff',
+      background: 'linear-gradient(180deg, #fafbfd 0%, #f7f9fc 100%)',
       borderRight: '1px solid rgba(0,0,0,0.07)',
       display: 'flex',
       flexDirection: 'column',
@@ -155,12 +154,6 @@ export default function Sidebar() {
         .sidebar-link:hover {
           background: rgba(0,0,0,0.04) !important;
           color: rgba(15,17,23,0.8) !important;
-          border-color: transparent !important;
-        }
-        .sidebar-link.active:hover {
-          background: rgba(0,184,87,0.1) !important;
-          color: var(--green) !important;
-          border-color: rgba(0,184,87,0.2) !important;
         }
       `}</style>
     </aside>
