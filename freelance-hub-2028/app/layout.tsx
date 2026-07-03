@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
 import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
+import NotificationBell from "@/components/NotificationBell";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -56,12 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
 
               {/* Bell */}
-              <button style={{ background: "none", border: "none", color: "var(--text-3)", cursor: "pointer", display: "flex", alignItems: "center", padding: 6, borderRadius: 8, position: "relative" }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                </svg>
-                <div style={{ position: "absolute", top: 4, right: 4, width: 5, height: 5, borderRadius: "50%", background: "var(--green)" }} />
-              </button>
+              <NotificationBell />
 
               {/* Workspace selector */}
               <div style={{

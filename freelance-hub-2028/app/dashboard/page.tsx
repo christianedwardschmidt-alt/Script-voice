@@ -5,7 +5,7 @@ import {
   AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { TrendingUp, Plus, ArrowUpRight, Zap, Brain } from 'lucide-react'
+import { ArrowUpRight, Zap, Brain, Link } from 'lucide-react'
 
 const revenueData = [
   { month: 'Jan', income: 7200,  expenses: 2100 },
@@ -22,28 +22,71 @@ const revenueData = [
   { month: 'Dec', income: 17400, expenses: 4500 },
 ]
 
-interface Client { id: number; name: string; company: string; status: string; revenue: number }
-interface Task   { id: number; checked: boolean; title?: string; priority?: string; project?: string }
-interface Invoice { id: string; amount: number; status: string; client?: string }
+interface Client  { id: number; name: string; company: string; status: string; revenue: number }
+interface Task    { id: number; checked: boolean; title?: string; priority?: string; project?: string }
+interface Invoice { id: string; amount: number; status: string; client?: string; due?: string }
 interface ActivityRow { id: number; message: string; createdAt: string }
 
 function timeAgo(iso: string) {
-  const diffMs = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diffMs / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  return `${Math.floor(hrs / 24)}d ago`
+  const diff = Date.now() - new Date(iso).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
+}
+
+function Sparkline({ values, color, id }: { values: number[]; color: string; id: number }) {
+  const w = 72, h = 26
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = max - min || 1
+  const pts: [number, number][] = values.map((v, i) => [
+    (i / (values.length - 1)) * w,
+    h - ((v - min) / range) * (h - 5) - 2.5,
+  ])
+  const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  const fill = `${line} L${w},${h} L0,${h} Z`
+  const [lx, ly] = pts[pts.length - 1]
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', flexShrink: 0 }}>
+      <defs>
+        <linearGradient id={`sg${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={fill} fill={`url(#sg${id})`} />
+      <path d={line} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={lx.toFixed(1)} cy={ly.toFixed(1)} r={2.5} fill={color} />
+    </svg>
+  )
+}
+
+function TrendBadge({ pct, good = true }: { pct: number; good?: boolean }) {
+  const up = pct >= 0
+  const positive = good ? up : !up
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 2,
+      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 99,
+      background: positive ? 'rgba(0,184,87,0.1)' : 'rgba(220,38,38,0.09)',
+      color: positive ? '#008040' : '#c81e1e',
+      fontVariantNumeric: 'tabular-nums',
+    }}>
+      {up ? '↑' : '↓'} {Math.abs(pct)}%
+    </span>
+  )
 }
 
 const ChartTip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.09)' }}>
-      <div style={{ fontSize: 10, color: 'var(--text-3)', marginBottom: 6, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{label}</div>
+    <div style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.09)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}>
+      <div style={{ fontSize: 9, color: 'var(--text-3)', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>{label}</div>
       {payload.map((p: any) => (
-        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color }}>
+        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color, fontVariantNumeric: 'tabular-nums' }}>
           <span>${Number(p.value).toLocaleString()}</span>
           <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 11 }}>{p.name}</span>
         </div>
@@ -54,8 +97,14 @@ const ChartTip = ({ active, payload, label }: any) => {
 
 const aiInsights = [
   { icon: '⚡', text: 'Stripe payment from Hencewood overdue by 3 days — send a nudge?', action: 'Draft email' },
-  { icon: '📈', text: 'Revenue up 18% vs last quarter. Your best month was October at $16.4k.', action: 'See breakdown' },
+  { icon: '📈', text: 'Revenue up 18% vs last quarter. Best month: October at $16.4k.', action: 'Breakdown' },
   { icon: '🎯', text: '2 tasks due today. Prioritize "API Integration" for TechTrophy first.', action: 'View tasks' },
+]
+
+const PIPELINE = [
+  { label: 'NovaBuild — Mobile App',     amount: 2100, status: 'Draft',   due: 'Jan 20', color: '#64748b' },
+  { label: 'Hencewood — API Integration', amount: 3200, status: 'Pending', due: 'Jan 1',  color: '#d97706' },
+  { label: 'DataSync — Discovery Call',   amount: 9800, status: 'Proposal',due: 'Jan 22', color: '#5b5fcf' },
 ]
 
 export default function DashboardPage() {
@@ -71,140 +120,159 @@ export default function DashboardPage() {
     fetch('/api/activity?limit=6').then(r => r.json()).then(setActivity)
   }, [])
 
-  const activeClients  = clients.filter(c => c.status === 'active').length
-  const tasksDonePct   = tasks.length ? Math.round((tasks.filter(t => t.checked).length / tasks.length) * 100) : 0
-  const outstanding    = invoices.filter(i => i.status === 'Pending' || i.status === 'Overdue').reduce((s, i) => s + i.amount, 0)
-  const totalRevYTD    = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + i.amount, 0)
-  const thisMonthRev   = revenueData[revenueData.length - 1].income
+  const activeClients = clients.filter(c => c.status === 'active').length
+  const tasksDone     = tasks.filter(t => t.checked).length
+  const tasksDonePct  = tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0
+  const outstanding   = invoices.filter(i => i.status === 'Pending' || i.status === 'Overdue').reduce((s, i) => s + i.amount, 0)
+  const totalRevYTD   = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + i.amount, 0)
+  const thisMonthRev  = revenueData[revenueData.length - 1].income
+  const overdueInvoices = invoices.filter(i => i.status === 'Overdue')
+  const urgentTasks     = tasks.filter(t => !t.checked && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority ?? ''))
 
   const kpi = [
-    { label: 'YTD Revenue',    value: `$${(totalRevYTD / 1000).toFixed(1)}k`, sub: '+18% vs last year', accent: '#00b857' },
-    { label: 'This Month',     value: `$${(thisMonthRev / 1000).toFixed(1)}k`, sub: 'December 2028',   accent: '#0ea5e9' },
-    { label: 'Outstanding',    value: `$${(outstanding / 1000).toFixed(1)}k`,  sub: 'across invoices', accent: '#d97706' },
-    { label: 'Active Clients', value: String(activeClients), sub: `of ${clients.length} total`,        accent: '#5b5fcf' },
-    { label: 'Tasks Done',     value: `${tasksDonePct}%`,    sub: `${tasks.filter(t=>t.checked).length}/${tasks.length} complete`, accent: '#00b857' },
+    {
+      label: 'YTD Revenue', value: `$${(totalRevYTD / 1000).toFixed(1)}k`, sub: 'vs $82.1k last year',
+      accent: '#00b857', trend: 18,
+      spark: revenueData.map(d => d.income),
+    },
+    {
+      label: 'Dec Revenue', value: `$${(thisMonthRev / 1000).toFixed(1)}k`, sub: 'vs $15.2k last month',
+      accent: '#0ea5e9', trend: 14,
+      spark: revenueData.slice(-6).map(d => d.income),
+    },
+    {
+      label: 'Outstanding', value: `$${(outstanding / 1000).toFixed(1)}k`, sub: 'across invoices',
+      accent: '#d97706', trend: -8, good: false,
+      spark: [3100, 5200, 2800, 6400, 3200, outstanding > 0 ? outstanding : 1200],
+    },
+    {
+      label: 'Active Clients', value: String(activeClients), sub: `of ${clients.length} total`,
+      accent: '#5b5fcf', trend: 12,
+      spark: [3, 5, 4, 5, 4, Math.max(activeClients, 1)],
+    },
+    {
+      label: 'Tasks Done', value: `${tasksDonePct}%`, sub: `${tasksDone} of ${tasks.length} complete`,
+      accent: '#00b857', trend: 5,
+      spark: [72, 68, 81, 75, 83, Math.max(tasksDonePct, 1)],
+    },
   ]
 
   return (
-    <div style={{ padding: '28px 28px 48px', minHeight: '100vh' }}>
+    <div style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
 
       {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22 }}>
         <div>
-          <div className="section-label" style={{ marginBottom: 6 }}>OVERVIEW</div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1 }}>Dashboard</h1>
-          <div style={{ fontSize: 12, color: 'var(--text-2)', marginTop: 4 }}>Wednesday, December 11 · 2028</div>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 5 }}>OVERVIEW</div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1, textWrap: 'balance' } as any}>Dashboard</h1>
+          <div style={{ fontSize: 11.5, color: 'var(--text-2)', marginTop: 4 }}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · 2028
+          </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-outline" style={{ fontSize: 12 }}>
-            <TrendingUp size={13} /> Reports
-          </button>
-          <button className="btn-primary" style={{ fontSize: 12 }}>
-            <Plus size={13} /> New Invoice
-          </button>
+          <a href="/invoicing" className="btn-outline" style={{ fontSize: 12, textDecoration: 'none' }}>
+            <ArrowUpRight size={13} /> View invoices
+          </a>
+          <a href="/tasks" className="btn-primary" style={{ fontSize: 12, textDecoration: 'none' }}>
+            <Zap size={13} /> My tasks
+          </a>
         </div>
       </div>
 
       {/* Today's Focus */}
-      {(() => {
-        const overdueInvoices = invoices.filter(i => i.status === 'Overdue')
-        const urgentTasks = tasks.filter(t => !t.checked && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority ?? ''))
-        const allFocus = [...overdueInvoices.slice(0, 2).map(i => ({ kind: 'invoice' as const, item: i })), ...urgentTasks.slice(0, 2).map(t => ({ kind: 'task' as const, item: t }))]
-        return (
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b857' }} className="ai-pulse" />
-              <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text-3)' }}>Today's Focus</span>
-              <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
-                {allFocus.length > 0 ? `${allFocus.length} item${allFocus.length > 1 ? 's' : ''} need attention` : 'All clear'}
-              </span>
-            </div>
-            {allFocus.length === 0 ? (
-              <div className="card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 18 }}>✅</span>
-                <span style={{ fontSize: 13, color: 'var(--text-2)' }}>Nothing urgent today — you're on top of everything!</span>
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
-                {overdueInvoices.slice(0, 2).map(inv => (
-                  <div key={inv.id} className="card" style={{ padding: '14px 16px', borderLeft: '3px solid var(--red)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--red)', textTransform: 'uppercase', marginBottom: 2 }}>Overdue Invoice</div>
-                      <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>${inv.amount.toLocaleString()}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{(inv as any).client || `#${inv.id}`}</div>
-                    </div>
-                    <button className="btn-primary" style={{ fontSize: 11, padding: '6px 12px', flexShrink: 0 }}>Send reminder</button>
-                  </div>
-                ))}
-                {urgentTasks.slice(0, 2).map(t => (
-                  <div key={t.id} className="card" style={{ padding: '14px 16px', borderLeft: '3px solid var(--amber)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--amber)', textTransform: 'uppercase', marginBottom: 2 }}>{t.priority?.charAt(0).toUpperCase()}{t.priority?.slice(1)} Priority</div>
-                      <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title || `Task #${t.id}`}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{t.project || 'No project'}</div>
-                    </div>
-                    <button className="btn-outline" style={{ fontSize: 11, padding: '6px 12px', flexShrink: 0 }}>Start</button>
-                  </div>
-                ))}
-              </div>
-            )}
+      {(overdueInvoices.length > 0 || urgentTasks.length > 0) && (
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#dc2626' }} className="ai-pulse" />
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>Today's Focus</span>
+            <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
+              {overdueInvoices.length + urgentTasks.length} item{overdueInvoices.length + urgentTasks.length !== 1 ? 's' : ''} need attention
+            </span>
           </div>
-        )
-      })()}
-
-      {/* AI Insights Bar */}
-      <div className="card-ai" style={{ padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <Brain size={14} style={{ color: 'var(--indigo)' }} />
-          <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
+            {overdueInvoices.slice(0, 2).map(inv => (
+              <div key={inv.id} className="card" style={{ padding: '13px 15px', borderLeft: '3px solid #dc2626', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#dc2626', textTransform: 'uppercase', marginBottom: 2 }}>Overdue · Invoice {inv.id}</div>
+                  <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.6px', fontVariantNumeric: 'tabular-nums' }}>${inv.amount.toLocaleString()}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{(inv as any).client || 'Unknown client'}</div>
+                </div>
+                <button className="btn-primary" style={{ fontSize: 11, padding: '6px 11px', flexShrink: 0 }}>Send reminder</button>
+              </div>
+            ))}
+            {urgentTasks.slice(0, 2).map(t => (
+              <div key={t.id} className="card" style={{ padding: '13px 15px', borderLeft: '3px solid #d97706', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#d97706', textTransform: 'uppercase', marginBottom: 2 }}>{(t.priority ?? 'High').charAt(0).toUpperCase() + (t.priority ?? 'high').slice(1)} priority</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title || `Task #${t.id}`}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{t.project || 'No project'}</div>
+                </div>
+                <button className="btn-outline" style={{ fontSize: 11, padding: '6px 11px', flexShrink: 0 }}>Start</button>
+              </div>
+            ))}
+          </div>
         </div>
-        <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.08)' }} />
+      )}
+
+      {/* AI Insights */}
+      <div className="card-ai" style={{ padding: '13px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
+          <Brain size={13} style={{ color: 'var(--indigo)' }} />
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
+        </div>
+        <div style={{ width: 1, height: 20, background: 'rgba(91,95,207,0.18)', flexShrink: 0 }} />
         {aiInsights.map((ins, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 200 }}>
-            <span style={{ fontSize: 12 }}>{ins.icon}</span>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180 }}>
+            <span style={{ fontSize: 12, flexShrink: 0 }}>{ins.icon}</span>
             <span style={{ fontSize: 11.5, color: 'var(--text-2)', flex: 1, lineHeight: 1.4 }}>{ins.text}</span>
-            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}>
+            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
               {ins.action}
             </button>
           </div>
         ))}
       </div>
 
-      {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
-        {kpi.map(({ label, value, sub, accent }) => (
-          <div key={label} className="card card-lift" style={{ padding: '18px 18px 16px', borderTop: `2px solid ${accent}` }}>
-            <div className="section-label" style={{ marginBottom: 10 }}>{label}</div>
-            <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1 }}>{value}</div>
-            <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 6 }}>{sub}</div>
+      {/* KPI row with sparklines */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 18 }}>
+        {kpi.map(({ label, value, sub, accent, trend, spark, good }, i) => (
+          <div key={label} className="card card-lift" style={{ padding: '16px 16px 14px', borderTop: `2px solid ${accent}` }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>{label}</div>
+              <TrendBadge pct={trend} good={good !== false} />
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>{value}</div>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+              <div style={{ fontSize: 10.5, color: 'var(--text-2)', lineHeight: 1.3 }}>{sub}</div>
+              <Sparkline values={spark} color={accent} id={i} />
+            </div>
           </div>
         ))}
       </div>
 
       {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 16, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16, marginBottom: 16 }}>
 
         {/* Revenue chart */}
         <div className="card" style={{ padding: '20px 20px 12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
-              <div className="section-label" style={{ marginBottom: 4 }}>REVENUE</div>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>REVENUE</div>
               <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)' }}>Annual Overview · 2028</div>
             </div>
-            <div style={{ display: 'flex', gap: 20, fontSize: 11, color: 'var(--text-2)' }}>
+            <div style={{ display: 'flex', gap: 18, fontSize: 11, color: 'var(--text-2)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 20, height: 2, background: '#00b857', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: '#00b857', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 20, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Expenses
+                <span style={{ width: 18, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Expenses
               </span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={196}>
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00b857" stopOpacity={0.15} />
+                  <stop offset="0%" stopColor="#00b857" stopOpacity={0.18} />
                   <stop offset="100%" stopColor="#00b857" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
@@ -212,114 +280,130 @@ export default function DashboardPage() {
                   <stop offset="100%" stopColor="#5b5fcf" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(15,17,23,0.35)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'rgba(15,17,23,0.35)' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(15,17,23,0.3)' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'rgba(15,17,23,0.3)' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="#00b857" strokeWidth={2} fill="url(#incomeGrad)" dot={false} />
-              <Area type="monotone" dataKey="expenses" stroke="#5b5fcf" strokeWidth={1.5} fill="url(#expGrad)" dot={false} />
+              <Area type="monotone" dataKey="income"   stroke="#00b857" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="expenses" stroke="#5b5fcf" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Activity + quick stats */}
+        {/* Right column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-          {/* Quick stats — solid green card */}
-          <div className="card-glow" style={{ padding: '18px 18px 16px' }}>
+          {/* This Week */}
+          <div className="card-glow" style={{ padding: '16px 18px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-              <Zap size={12} style={{ color: 'rgba(255,255,255,0.8)' }} />
-              <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)' }}>THIS WEEK</span>
+              <Zap size={11} style={{ color: 'rgba(255,255,255,0.75)' }} />
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' }}>THIS WEEK</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               {[
-                { label: 'Invoiced', val: '$4,200', color: '#fff' },
-                { label: 'Collected', val: '$3,100', color: 'rgba(255,255,255,0.85)' },
-                { label: 'Hours',    val: '38.5h',  color: '#fff' },
-                { label: 'Rate',     val: '$140/h',  color: 'rgba(255,255,255,0.85)' },
+                { label: 'Invoiced',  val: '$4,200', pct: 87 },
+                { label: 'Collected', val: '$3,100', pct: 64 },
+                { label: 'Hours',     val: '38.5h',  pct: 96 },
+                { label: 'Rate',      val: '$140/h',  pct: null },
               ].map(s => (
                 <div key={s.label}>
-                  <div style={{ fontSize: 9.5, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: 4 }}>{s.label}</div>
-                  <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-1px', color: s.color }}>{s.val}</div>
+                  <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '-0.8px', color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{s.val}</div>
+                  {s.pct !== null && (
+                    <div style={{ marginTop: 5, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ width: `${s.pct}%`, height: '100%', background: 'rgba(255,255,255,0.7)', borderRadius: 99 }} />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Activity feed */}
+          {/* Activity */}
           <div className="card" style={{ padding: '16px', flex: 1 }}>
-            <div className="section-label" style={{ marginBottom: 12 }}>RECENT ACTIVITY</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>RECENT ACTIVITY</div>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {activity.slice(0, 5).map((a, i) => (
-                <div key={a.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: i < 4 ? '1px solid rgba(0,0,0,0.06)' : 'none', alignItems: 'flex-start' }}>
+                <div key={a.id} style={{ display: 'flex', gap: 9, padding: '7px 0', borderBottom: i < 4 ? '1px solid rgba(0,0,0,0.05)' : 'none', alignItems: 'flex-start' }}>
                   <div className="dot-green" style={{ flexShrink: 0, marginTop: 5 }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.45 }}>{a.message}</div>
-                    <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 2 }}>{timeAgo(a.createdAt)}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11.5, color: 'var(--text)', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.message}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>{timeAgo(a.createdAt)}</div>
                   </div>
                 </div>
               ))}
+              {activity.length === 0 && (
+                <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '8px 0' }}>No recent activity</div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom row: clients + tasks */}
+      {/* Bottom row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 
         {/* Top clients */}
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div className="section-label">TOP CLIENTS</div>
-            <button style={{ background: 'none', border: 'none', fontSize: 11, color: 'var(--green)', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'inherit' }}>
+        <div className="card" style={{ padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TOP CLIENTS</div>
+            <a href="/clients" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
               View all <ArrowUpRight size={10} />
-            </button>
+            </a>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {clients.slice(0, 4).map((c, i) => {
-              const colors = ['#00b857','#0ea5e9','#5b5fcf','#d97706']
+              const colors = ['#00b857', '#0ea5e9', '#5b5fcf', '#d97706']
               const col = colors[i % 4]
+              const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
               return (
-                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 8, background: `${col}18`, border: `1px solid ${col}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: col, flexShrink: 0 }}>
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+                  <div style={{ width: 30, height: 30, borderRadius: 8, background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: col, flexShrink: 0 }}>
                     {c.name[0]}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{c.company}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                      <div style={{ flex: 1, height: 3, background: 'rgba(0,0,0,0.06)', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
+                        <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: 99 }} />
+                      </div>
+                      <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{c.status}</span>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--green)' }}>${c.revenue.toLocaleString()}</div>
-                    <div style={{ fontSize: 10.5, color: 'var(--text-3)' }}>{c.status}</div>
-                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: col, fontVariantNumeric: 'tabular-nums' }}>${c.revenue.toLocaleString()}</div>
                 </div>
               )
             })}
           </div>
         </div>
 
-        {/* Tasks */}
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div className="section-label">OPEN TASKS</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ fontSize: 11, color: 'var(--text-2)' }}>{tasksDonePct}% complete</div>
-              <div style={{ width: 60, height: 4, borderRadius: 99, background: 'rgba(0,0,0,0.07)', overflow: 'hidden' }}>
-                <div style={{ width: `${tasksDonePct}%`, height: '100%', background: 'linear-gradient(90deg, #007a3a, #00b857)', borderRadius: 99 }} />
-              </div>
-            </div>
+        {/* Pipeline */}
+        <div className="card" style={{ padding: '18px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>PIPELINE</div>
+            <a href="/crm" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
+              Open CRM <ArrowUpRight size={10} />
+            </a>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {tasks.filter(t => !t.checked).slice(0, 4).map((t: any, i, arr) => (
-              <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-                <div style={{ width: 14, height: 14, borderRadius: 4, border: '1.5px solid rgba(0,184,87,0.35)', flexShrink: 0 }} />
-                <span style={{ fontSize: 12.5, color: 'var(--text-2)', flex: 1 }}>{t.title || `Task #${t.id}`}</span>
-                <span className={`badge badge-${(t.priority||'medium').toLowerCase()}`}>{t.priority || 'Medium'}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 14 }}>
+            {PIPELINE.map((p, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < PIPELINE.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.label}</div>
+                  <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 1 }}>Due {p.due}</div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>${p.amount.toLocaleString()}</div>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25` }}>{p.status}</span>
+                </div>
               </div>
             ))}
-            {tasks.filter(t => !t.checked).length === 0 && (
-              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '12px 0' }}>All tasks complete ✓</div>
-            )}
+          </div>
+          {/* Pipeline total */}
+          <div style={{ padding: '10px 12px', background: 'var(--bg)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 500 }}>Pipeline total</span>
+            <span style={{ fontSize: 14, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
           </div>
         </div>
       </div>
