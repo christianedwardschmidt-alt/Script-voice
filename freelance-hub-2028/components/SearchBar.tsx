@@ -205,36 +205,45 @@ export default function SearchBar() {
 
           {/* AI row */}
           <div style={{ borderTop: (navMatches.length > 0 || results.length > 0) ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-            <div
-              onMouseEnter={() => setActive(allItems.length)}
-              onMouseDown={askAI}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', cursor: 'pointer',
-                background: active === allItems.length ? 'rgba(0,184,87,0.06)' : 'rgba(0,184,87,0.02)',
-              }}
-            >
-              <span style={{ fontSize: 15, width: 20, textAlign: 'center' }}>✨</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)' }}>
-                  {aiLoading ? 'AI is thinking…' : `Ask AI: "${query}"`}
+            {/* Ask AI trigger — only shown when no answer yet */}
+            {!aiAnswer && (
+              <div
+                onMouseEnter={() => setActive(allItems.length)}
+                onMouseDown={askAI}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', cursor: 'pointer',
+                  background: active === allItems.length ? 'rgba(0,184,87,0.06)' : 'rgba(0,184,87,0.02)',
+                }}
+              >
+                <span style={{ fontSize: 15, width: 20, textAlign: 'center' }}>✨</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)' }}>
+                    {aiLoading ? 'AI is thinking…' : `Ask AI: "${query}"`}
+                  </div>
+                  {!aiLoading && <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Get an instant answer</div>}
                 </div>
-                {!aiAnswer && !aiLoading && <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Get an instant answer</div>}
-              </div>
-              {!aiAnswer && !aiLoading && <span style={{ fontSize: 10, fontWeight: 700, color: '#00b857', background: 'rgba(0,184,87,0.12)', borderRadius: 4, padding: '1px 6px' }}>AI</span>}
-            </div>
-
-            {/* Inline AI answer */}
-            {aiLoading && (
-              <div style={{ padding: '8px 12px 12px 42px', display: 'flex', gap: 4, alignItems: 'center' }}>
-                {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b857', opacity: 0.6 }} />)}
+                {!aiLoading && <span style={{ fontSize: 10, fontWeight: 700, color: '#00b857', background: 'rgba(0,184,87,0.12)', borderRadius: 4, padding: '1px 6px' }}>AI</span>}
+                {aiLoading && <div style={{ display: 'flex', gap: 3 }}>{[0,1,2].map(i => <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b857', opacity: 0.7 }} />)}</div>}
               </div>
             )}
+
+            {/* Inline AI answer — separate from the clickable row */}
             {aiAnswer && (
-              <div style={{ padding: '4px 12px 14px 42px' }}>
-                {formatAnswer(aiAnswer)}
+              <div style={{ padding: '12px 14px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 14 }}>✨</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#00b857' }}>AI Answer</span>
+                  </div>
+                  <button
+                    onMouseDown={e => { e.stopPropagation(); setAiAnswer(null) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--text-3)', lineHeight: 1, padding: '0 2px' }}
+                  >×</button>
+                </div>
+                <div style={{ marginBottom: 10 }}>{formatAnswer(aiAnswer)}</div>
                 <button
-                  onMouseDown={() => navigate(`/ai-assistant?q=${encodeURIComponent(query)}`)}
-                  style={{ marginTop: 10, fontSize: 11, color: '#00b857', background: 'rgba(0,184,87,0.08)', border: '1px solid rgba(0,184,87,0.2)', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
+                  onMouseDown={e => { e.stopPropagation(); navigate(`/ai-assistant?q=${encodeURIComponent(query)}`) }}
+                  style={{ fontSize: 11, color: '#00b857', background: 'rgba(0,184,87,0.08)', border: '1px solid rgba(0,184,87,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
                 >
                   Continue in AI Assistant →
                 </button>
