@@ -24,6 +24,9 @@ export default function SettingsPage() {
   const [clearing, setClearing] = useState(false)
   const [cleared, setCleared] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const [restoring, setRestoring] = useState(false)
+  const [restored, setRestored] = useState(false)
+  const [confirmRestore, setConfirmRestore] = useState(false)
 
   useEffect(() => {
     fetch('/api/settings')
@@ -36,7 +39,17 @@ export default function SettingsPage() {
     await fetch('/api/reset', { method: 'POST' })
     setClearing(false)
     setCleared(true)
+    setRestored(false)
     setConfirm(false)
+  }
+
+  const restoreSampleData = async () => {
+    setRestoring(true)
+    await fetch('/api/restore', { method: 'POST' })
+    setRestoring(false)
+    setRestored(true)
+    setCleared(false)
+    setConfirmRestore(false)
   }
 
   const toggle = async (key: keyof Omit<Settings, 'id'>) => {
@@ -115,6 +128,41 @@ export default function SettingsPage() {
                 style={{ padding: '7px 16px', border: '1px solid #fecaca', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#ef4444', cursor: 'pointer', fontWeight: 500 }}
               >
                 Clear all sample data
+              </button>
+            )}
+          </div>
+
+          {/* Restore sample data */}
+          <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>Restore sample data</div>
+            <div style={{ fontSize: 12, color: '#78716c', marginBottom: 10 }}>
+              Brings back all the original sample clients, tasks, invoices, CRM contacts, posts, calendar events, and tax records.
+            </div>
+            {restored ? (
+              <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500 }}>Sample data restored!</div>
+            ) : confirmRestore ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, color: '#78716c' }}>This will overwrite your current data.</span>
+                <button
+                  onClick={restoreSampleData}
+                  disabled={restoring}
+                  style={{ padding: '6px 14px', border: 'none', borderRadius: 7, background: '#16a34a', fontSize: 12, color: '#fff', cursor: restoring ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: restoring ? 0.6 : 1 }}
+                >
+                  {restoring ? 'Restoring…' : 'Yes, restore'}
+                </button>
+                <button
+                  onClick={() => setConfirmRestore(false)}
+                  style={{ padding: '6px 14px', border: '1px solid var(--border)', borderRadius: 7, background: 'var(--card)', fontSize: 12, color: 'var(--text-2)', cursor: 'pointer', fontWeight: 500 }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmRestore(true)}
+                style={{ padding: '7px 16px', border: '1px solid #bbf7d0', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#16a34a', cursor: 'pointer', fontWeight: 500 }}
+              >
+                Restore sample data
               </button>
             )}
           </div>

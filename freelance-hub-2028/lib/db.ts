@@ -51,6 +51,30 @@ export function logActivity(message: string) {
     .catch(console.error)
 }
 
+export async function restoreSeedData(): Promise<void> {
+  await ensureReady()
+  const tables = [
+    'clients', 'crm_clients', 'tasks', 'invoices', 'posts',
+    'calendar_events', 'tax_deductions', 'tax_documents', 'activity_log',
+  ]
+  for (const t of tables) await client.execute(`DELETE FROM ${t}`)
+  await seedClients()
+  await seedCrmClients()
+  await seedTasks()
+  await seedInvoices()
+  await seedJobs()
+  await seedCourses()
+  await seedIntegrations()
+  await seedPosts()
+  await seedTaxDeductions()
+  await seedTaxDocuments()
+  await seedCalendarEvents()
+  await client.execute({
+    sql: 'INSERT INTO activity_log (message, createdAt) VALUES (?, ?)',
+    args: ['Sample data restored', new Date().toISOString()],
+  })
+}
+
 // ── Init singleton ───────────────────────────────────────────────────────────
 
 declare global {
