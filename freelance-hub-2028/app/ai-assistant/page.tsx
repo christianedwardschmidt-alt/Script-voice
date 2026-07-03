@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, PenTool, Globe, Code } from 'lucide-react'
 
@@ -35,7 +35,7 @@ function getResponse(msg: string): string {
   return `Great question! Here's what I'd recommend:\n\n• Start by defining your goals clearly — specificity leads to better outcomes\n• Set a realistic timeline with buffer (multiply estimates by 1.3x)\n• Document everything in writing before starting work\n• Price based on value delivered, not hours spent\n\nWant me to help you draft a specific document, calculate pricing, or prepare for a client call?`
 }
 
-export default function AIAssistantPage() {
+function AIAssistantInner() {
   const searchParams = useSearchParams()
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: 'assistant', content: "Hi! I'm your LanceFlo AI assistant. I can help with proposals, tax planning, client emails, project pricing, and more. What can I help you with today?", timestamp: '12:00 PM' },
@@ -222,5 +222,13 @@ export default function AIAssistantPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AIAssistantPage() {
+  return (
+    <Suspense>
+      <AIAssistantInner />
+    </Suspense>
   )
 }
