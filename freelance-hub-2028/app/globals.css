@@ -222,3 +222,110 @@ a { text-decoration: none; color: inherit; }
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line { stroke: rgba(0,0,0,0.045) !important; }
 .recharts-tooltip-wrapper { outline: none; }
+
+/* ─── LAYOUT TOKENS ─────────────────────────── */
+:root {
+  --header-bg:  rgba(250,251,253,0.94);
+  --sidebar-bg: linear-gradient(180deg, #fafbfd 0%, #f7f9fc 100%);
+}
+
+/* ─── DARK MODE ──────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #0e1017;
+    --bg-2:        #14151f;
+    --bg-3:        #1b1d2d;
+    --glass:       rgba(20,21,31,0.85);
+    --glass-hi:    rgba(20,21,31,0.97);
+    --card:        #161822;
+    --card-hover:  #1e2030;
+    --border:      rgba(255,255,255,0.07);
+    --border-hi:   rgba(255,255,255,0.13);
+    --text:        #e4e8f2;
+    --text-2:      rgba(228,232,242,0.55);
+    --text-3:      rgba(228,232,242,0.3);
+    --green-glow:  rgba(0,184,87,0.22);
+    --green-light: rgba(0,184,87,0.12);
+    --indigo-light:rgba(91,95,207,0.15);
+    --shadow-sm:   0 1px 2px rgba(0,0,0,0.5),  0 2px 4px rgba(0,0,0,0.35);
+    --shadow-md:   0 1px 2px rgba(0,0,0,0.5),  0 4px 8px rgba(0,0,0,0.4),  0 12px 24px rgba(0,0,0,0.3);
+    --shadow-lg:   0 2px 4px rgba(0,0,0,0.5),  0 8px 16px rgba(0,0,0,0.5), 0 24px 48px rgba(0,0,0,0.35);
+    --header-bg:   rgba(14,16,23,0.94);
+    --sidebar-bg:  linear-gradient(180deg, #14151f 0%, #0e1017 100%);
+  }
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line { stroke: rgba(255,255,255,0.05) !important; }
+}
+:root[data-theme="dark"] {
+  --bg:          #0e1017;
+  --bg-2:        #14151f;
+  --bg-3:        #1b1d2d;
+  --glass:       rgba(20,21,31,0.85);
+  --glass-hi:    rgba(20,21,31,0.97);
+  --card:        #161822;
+  --card-hover:  #1e2030;
+  --border:      rgba(255,255,255,0.07);
+  --border-hi:   rgba(255,255,255,0.13);
+  --text:        #e4e8f2;
+  --text-2:      rgba(228,232,242,0.55);
+  --text-3:      rgba(228,232,242,0.3);
+  --green-glow:  rgba(0,184,87,0.22);
+  --green-light: rgba(0,184,87,0.12);
+  --indigo-light:rgba(91,95,207,0.15);
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.5),  0 2px 4px rgba(0,0,0,0.35);
+  --shadow-md:   0 1px 2px rgba(0,0,0,0.5),  0 4px 8px rgba(0,0,0,0.4),  0 12px 24px rgba(0,0,0,0.3);
+  --shadow-lg:   0 2px 4px rgba(0,0,0,0.5),  0 8px 16px rgba(0,0,0,0.5), 0 24px 48px rgba(0,0,0,0.35);
+  --header-bg:   rgba(14,16,23,0.94);
+  --sidebar-bg:  linear-gradient(180deg, #14151f 0%, #0e1017 100%);
+}
+:root[data-theme="dark"] .recharts-cartesian-grid-horizontal line,
+:root[data-theme="dark"] .recharts-cartesian-grid-vertical line { stroke: rgba(255,255,255,0.05) !important; }
+:root[data-theme="light"] {
+  --bg:          #f2f4f8;
+  --bg-2:        #ffffff;
+  --bg-3:        #e9ecf2;
+  --glass:       rgba(255,255,255,0.8);
+  --glass-hi:    rgba(255,255,255,0.96);
+  --card:        #ffffff;
+  --card-hover:  #fafbfc;
+  --border:      rgba(0,0,0,0.065);
+  --border-hi:   rgba(0,0,0,0.11);
+  --text:        #0d1017;
+  --text-2:      rgba(13,16,23,0.5);
+  --text-3:      rgba(13,16,23,0.28);
+  --green-glow:  rgba(0,184,87,0.14);
+  --green-light: rgba(0,184,87,0.08);
+  --indigo-light:rgba(91,95,207,0.07);
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-md:   0 1px 2px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.05), 0 12px 24px rgba(0,0,0,0.04);
+  --shadow-lg:   0 2px 4px rgba(0,0,0,0.05), 0 8px 16px rgba(0,0,0,0.07), 0 24px 48px rgba(0,0,0,0.05);
+  --header-bg:   rgba(250,251,253,0.94);
+  --sidebar-bg:  linear-gradient(180deg, #fafbfd 0%, #f7f9fc 100%);
+}
+
+/* ─── GLASS CARD ─────────────────────────────── */
+.card-glass {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.55);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+}
+@media (prefers-color-scheme: dark) {
+  .card-glass { background: rgba(22,24,36,0.72); border-color: rgba(255,255,255,0.08); }
+}
+:root[data-theme="dark"] .card-glass { background: rgba(22,24,36,0.72); border-color: rgba(255,255,255,0.08); }
+
+/* ─── MICRO-ANIMATIONS ───────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-in { animation: none; opacity: 1; }
+}

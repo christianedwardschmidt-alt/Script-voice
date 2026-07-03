@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Header */}
           <header style={{
             height: 52,
-            background: "rgba(250,251,255,0.94)",
+            background: "var(--header-bg)",
             borderBottom: "1px solid rgba(0,0,0,0.08)",
             display: "flex",
             alignItems: "center",
@@ -55,6 +56,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </svg>
                 AI active
               </div>
+
+              {/* Theme toggle */}
+              <ThemeToggle />
 
               {/* Bell */}
               <NotificationBell />
