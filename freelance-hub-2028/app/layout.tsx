@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
+import WorkspaceSelector from "@/components/WorkspaceSelector";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -60,22 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <NotificationBell />
 
               {/* Workspace selector */}
-              <div style={{
-                display: "flex", alignItems: "center", gap: 7,
-                padding: "5px 10px",
-                background: "var(--bg-3)",
-                border: "1px solid var(--border)",
-                borderRadius: 8, cursor: "pointer",
-              }}>
-                <div style={{
-                  width: 18, height: 18, borderRadius: 5,
-                  background: "linear-gradient(135deg, #007a3a, #00b857)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 9, fontWeight: 800, color: "#fff",
-                }}>A</div>
-                <span style={{ fontSize: 12, color: "var(--text-2)", fontWeight: 500 }}>Acme Studio</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-3)" }}><path d="m6 9 6 6 6-6"/></svg>
-              </div>
+              <WorkspaceSelector />
             </div>
           </header>
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { queryOne, execute } from '@/lib/db'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -14,7 +14,7 @@ function deserialize(row: Record<string, unknown>) {
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const existing = db.prepare(`SELECT * FROM posts WHERE id = ?`).get(id) as Record<string, unknown> | undefined
+  const existing = await queryOne(`SELECT * FROM posts WHERE id = ?`, [id])
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
@@ -30,10 +30,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     next.shares = (existing.shares as number) + (body.reposted ? 1 : -1)
   }
 
-  db.prepare(`UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=?`).run(
+  await execute(`UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=?`, [
     next.liked, next.likes, next.saved, next.reposted, next.shares, id
-  )
+  ])
 
-  const row = db.prepare(`SELECT * FROM posts WHERE id = ?`).get(id) as Record<string, unknown>
-  return NextResponse.json(deserialize(row))
+  const row = await queryOne(`SELECT * FROM posts WHERE id = ?`, [id])
+  return NextResponse.json(deserialize(row!))
 }

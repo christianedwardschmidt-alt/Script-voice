@@ -1,30 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { queryAll } from '@/lib/db'
 
-export function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim() ?? ''
   if (q.length < 2) return NextResponse.json([])
 
   const like = `%${q}%`
   const results: { type: string; label: string; sub: string; href: string }[] = []
 
-  const clients = db.prepare(`SELECT name, company FROM clients WHERE name LIKE ? OR company LIKE ? LIMIT 3`).all(like, like) as any[]
-  for (const c of clients) results.push({ type: 'Client', label: c.name, sub: c.company, href: '/clients' })
+  const clients = await queryAll(`SELECT name, company FROM clients WHERE name LIKE ? OR company LIKE ? LIMIT 3`, [like, like])
+  for (const c of clients) results.push({ type: 'Client', label: c.name as string, sub: c.company as string, href: '/clients' })
 
-  const tasks = db.prepare(`SELECT title, status FROM tasks WHERE title LIKE ? LIMIT 3`).all(like) as any[]
-  for (const t of tasks) results.push({ type: 'Task', label: t.title, sub: t.status, href: '/tasks' })
+  const tasks = await queryAll(`SELECT title, status FROM tasks WHERE title LIKE ? LIMIT 3`, [like])
+  for (const t of tasks) results.push({ type: 'Task', label: t.title as string, sub: t.status as string, href: '/tasks' })
 
-  const invoices = db.prepare(`SELECT id, client FROM invoices WHERE id LIKE ? OR client LIKE ? LIMIT 3`).all(like, like) as any[]
-  for (const i of invoices) results.push({ type: 'Invoice', label: i.id, sub: i.client, href: '/invoicing' })
+  const invoices = await queryAll(`SELECT id, client FROM invoices WHERE id LIKE ? OR client LIKE ? LIMIT 3`, [like, like])
+  for (const i of invoices) results.push({ type: 'Invoice', label: i.id as string, sub: i.client as string, href: '/invoicing' })
 
-  const crm = db.prepare(`SELECT name, company, stage FROM crm_clients WHERE name LIKE ? OR company LIKE ? LIMIT 3`).all(like, like) as any[]
-  for (const c of crm) results.push({ type: 'CRM', label: c.name, sub: `${c.company} · ${c.stage}`, href: '/crm' })
+  const crm = await queryAll(`SELECT name, company, stage FROM crm_clients WHERE name LIKE ? OR company LIKE ? LIMIT 3`, [like, like])
+  for (const c of crm) results.push({ type: 'CRM', label: c.name as string, sub: `${c.company} · ${c.stage}`, href: '/crm' })
 
-  const events = db.prepare(`SELECT title, date FROM calendar_events WHERE title LIKE ? OR client LIKE ? LIMIT 3`).all(like, like) as any[]
-  for (const e of events) results.push({ type: 'Event', label: e.title, sub: e.date, href: '/calendar' })
+  const events = await queryAll(`SELECT title, date FROM calendar_events WHERE title LIKE ? OR client LIKE ? LIMIT 3`, [like, like])
+  for (const e of events) results.push({ type: 'Event', label: e.title as string, sub: e.date as string, href: '/calendar' })
 
-  const jobs = db.prepare(`SELECT title, company FROM jobs WHERE title LIKE ? OR company LIKE ? LIMIT 3`).all(like, like) as any[]
-  for (const j of jobs) results.push({ type: 'Job', label: j.title, sub: j.company, href: '/jobs' })
+  const jobs = await queryAll(`SELECT title, company FROM jobs WHERE title LIKE ? OR company LIKE ? LIMIT 3`, [like, like])
+  for (const j of jobs) results.push({ type: 'Job', label: j.title as string, sub: j.company as string, href: '/jobs' })
 
   return NextResponse.json(results.slice(0, 10))
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { queryAll } from '@/lib/db'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -11,6 +11,6 @@ function deserialize(row: Record<string, unknown>) {
 }
 
 export async function GET() {
-  const rows = db.prepare(`SELECT * FROM jobs ORDER BY id DESC`).all() as Record<string, unknown>[]
+  const rows = await queryAll(`SELECT * FROM jobs ORDER BY id DESC`)
   return NextResponse.json(rows.map(deserialize))
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard, CheckSquare, Users, FileText,
   BookOpen, BarChart2, Bot, Settings,
@@ -55,6 +55,13 @@ const BOTTOM_NAV = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [displayName, setDisplayName] = useState('Chris Schmidt')
+
+  useEffect(() => {
+    fetch('/api/profile').then(r => r.json()).then(d => {
+      if (d?.displayName) setDisplayName(d.displayName)
+    }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     const allItems = NAV_GROUPS.flatMap(g => g.items)
@@ -147,9 +154,9 @@ export default function Sidebar() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0,
             boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
-          }}>C</div>
+          }}>{displayName.charAt(0).toUpperCase()}</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Chris Schmidt</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b857' }} />
               <span style={{ fontSize: 10, color: 'var(--text-2)' }}>Pro Plan · Active</span>

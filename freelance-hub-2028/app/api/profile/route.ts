@@ -1,22 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { queryOne, execute } from '@/lib/db'
 
 export async function GET() {
-  const row = db.prepare(`SELECT * FROM profile WHERE id = 1`).get()
+  const row = await queryOne(`SELECT * FROM profile WHERE id = 1`)
   return NextResponse.json(row)
 }
 
 export async function PATCH(request: NextRequest) {
-  const existing = db.prepare(`SELECT * FROM profile WHERE id = 1`).get() as Record<string, unknown>
+  const existing = await queryOne(`SELECT * FROM profile WHERE id = 1`)
   const body = await request.json()
   const next: Record<string, unknown> = { ...existing }
   const fields = ['displayName', 'email', 'headline', 'skills']
   for (const f of fields) if (body[f] !== undefined) next[f] = body[f]
 
-  db.prepare(`UPDATE profile SET displayName=?, email=?, headline=?, skills=? WHERE id=1`).run(
+  await execute(`UPDATE profile SET displayName=?, email=?, headline=?, skills=? WHERE id=1`, [
     next.displayName, next.email, next.headline, next.skills
-  )
+  ])
 
-  const row = db.prepare(`SELECT * FROM profile WHERE id = 1`).get()
+  const row = await queryOne(`SELECT * FROM profile WHERE id = 1`)
   return NextResponse.json(row)
 }
