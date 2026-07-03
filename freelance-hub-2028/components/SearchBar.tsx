@@ -69,11 +69,17 @@ export default function SearchBar() {
     setResults([])
   }
 
+  const totalItems = results.length + (query.length >= 2 ? 1 : 0)
+
   function onKeyDown(e: React.KeyboardEvent) {
-    if (!open || results.length === 0) return
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(a => Math.min(a + 1, results.length - 1)) }
+    if (!open || totalItems === 0) return
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(a => Math.min(a + 1, totalItems - 1)) }
     if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(a - 1, 0)) }
-    if (e.key === 'Enter') { e.preventDefault(); navigate(results[active].href) }
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (active === results.length) navigate(`/ai-assistant?q=${encodeURIComponent(query)}`)
+      else if (results[active]) navigate(results[active].href)
+    }
     if (e.key === 'Escape') { setOpen(false); inputRef.current?.blur() }
   }
 
@@ -107,11 +113,12 @@ export default function SearchBar() {
           borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
           zIndex: 200, overflow: 'hidden',
         }}>
-          {results.length === 0 ? (
-            <div style={{ padding: '14px 14px', fontSize: 12.5, color: 'var(--text-3)', textAlign: 'center' }}>
-              No results for &ldquo;{query}&rdquo;
+          {results.length === 0 && (
+            <div style={{ padding: '12px 14px 8px', fontSize: 12, color: 'var(--text-3)', textAlign: 'center' }}>
+              No matches found
             </div>
-          ) : results.map((r, i) => (
+          )}
+          {results.map((r, i) => (
             <div
               key={i}
               onMouseEnter={() => setActive(i)}
@@ -120,7 +127,7 @@ export default function SearchBar() {
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 12px', cursor: 'pointer',
                 background: i === active ? 'var(--bg)' : 'transparent',
-                borderBottom: i < results.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
+                borderBottom: '1px solid rgba(0,0,0,0.05)',
               }}
             >
               <span style={{ fontSize: 14, width: 20, textAlign: 'center', flexShrink: 0 }}>{TYPE_ICON[r.type] ?? '•'}</span>
@@ -133,6 +140,25 @@ export default function SearchBar() {
               </span>
             </div>
           ))}
+          {query.length >= 2 && (
+            <div
+              onMouseEnter={() => setActive(results.length)}
+              onMouseDown={() => navigate(`/ai-assistant?q=${encodeURIComponent(query)}`)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '10px 12px', cursor: 'pointer',
+                background: active === results.length ? 'rgba(0,184,87,0.06)' : 'rgba(0,184,87,0.02)',
+                borderTop: results.length > 0 ? '1px solid rgba(0,0,0,0.05)' : 'none',
+              }}
+            >
+              <span style={{ fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0 }}>✨</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Ask AI: &ldquo;{query}&rdquo;</div>
+                <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Get an AI-powered answer</div>
+              </div>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#00b857', background: 'rgba(0,184,87,0.12)', borderRadius: 4, padding: '1px 6px', flexShrink: 0 }}>AI</span>
+            </div>
+          )}
         </div>
       )}
     </div>

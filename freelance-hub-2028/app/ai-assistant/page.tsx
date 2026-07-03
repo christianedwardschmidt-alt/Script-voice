@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, BookOpen, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, PenTool, Globe, Code } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, PenTool, Globe, Code } from 'lucide-react'
 
 interface Message {
   id: number
@@ -35,14 +36,25 @@ function getResponse(msg: string): string {
 }
 
 export default function AIAssistantPage() {
+  const searchParams = useSearchParams()
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: 'assistant', content: "Hi! I'm your LanceFlo AI assistant. I can help with proposals, tax planning, client emails, project pricing, and more. What can I help you with today?", timestamp: '12:00 PM' },
   ])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const didAutoSend = useRef(false)
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q && !didAutoSend.current) {
+      didAutoSend.current = true
+      setTimeout(() => send(q), 300)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const send = (content?: string) => {
     const text = content || input.trim()
