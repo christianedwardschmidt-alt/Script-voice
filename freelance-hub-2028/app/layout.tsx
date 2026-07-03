@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import SearchBar from "@/components/SearchBar";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -36,17 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}>
 
             {/* Command search */}
-            <div style={{ flex: 1, position: "relative", maxWidth: 340 }}>
-              <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-3)", pointerEvents: "none" }}
-                width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-              </svg>
-              <input placeholder="Search or ask LanceFlo AI..." className="search-input" />
-              <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", display: "flex", gap: 3 }}>
-                <kbd style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>⌘</kbd>
-                <kbd style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.12)", borderRadius: 4, padding: "1px 5px", fontSize: 10, color: "var(--text-3)", fontFamily: "inherit" }}>K</kbd>
-              </div>
-            </div>
+            <SearchBar />
 
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
 
