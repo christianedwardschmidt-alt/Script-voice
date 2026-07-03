@@ -3,6 +3,8 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
+import QuickActions from "@/components/QuickActions";
+import OnboardingModal from "@/components/OnboardingModal";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
@@ -26,8 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             borderBottom: "1px solid rgba(0,0,0,0.07)",
             display: "flex",
             alignItems: "center",
-            padding: "0 24px",
-            gap: 12,
+            padding: "0 20px",
+            gap: 10,
             flexShrink: 0,
             position: "sticky",
             top: 0,
@@ -39,7 +41,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Command search */}
             <SearchBar />
 
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginLeft: "auto" }}>
+            {/* Quick Add */}
+            <QuickActions />
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
 
               {/* AI status */}
               <div className="ai-chip ai-pulse">
@@ -74,20 +79,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span style={{ fontSize: 12, color: "var(--text-2)", fontWeight: 500 }}>Acme Studio</span>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--text-3)" }}><path d="m6 9 6 6 6-6"/></svg>
               </div>
-
-              {/* Avatar */}
-              <div style={{
-                width: 28, height: 28, borderRadius: "50%",
-                background: "linear-gradient(135deg, #007a3a, #00b857)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, fontWeight: 800, color: "#fff", cursor: "pointer",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-              }}>C</div>
             </div>
           </header>
 
           <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
         </div>
+
+        <OnboardingModal />
       </body>
     </html>
   );

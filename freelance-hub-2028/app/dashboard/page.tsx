@@ -23,8 +23,8 @@ const revenueData = [
 ]
 
 interface Client { id: number; name: string; company: string; status: string; revenue: number }
-interface Task   { id: number; checked: boolean }
-interface Invoice { id: string; amount: number; status: string }
+interface Task   { id: number; checked: boolean; title?: string; priority?: string; project?: string }
+interface Invoice { id: string; amount: number; status: string; client?: string }
 interface ActivityRow { id: number; message: string; createdAt: string }
 
 function timeAgo(iso: string) {
@@ -104,6 +104,53 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
+
+      {/* Today's Focus */}
+      {(() => {
+        const overdueInvoices = invoices.filter(i => i.status === 'Overdue')
+        const urgentTasks = tasks.filter(t => !t.checked && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority ?? ''))
+        const allFocus = [...overdueInvoices.slice(0, 2).map(i => ({ kind: 'invoice' as const, item: i })), ...urgentTasks.slice(0, 2).map(t => ({ kind: 'task' as const, item: t }))]
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00b857' }} className="ai-pulse" />
+              <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text-3)' }}>Today's Focus</span>
+              <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
+                {allFocus.length > 0 ? `${allFocus.length} item${allFocus.length > 1 ? 's' : ''} need attention` : 'All clear'}
+              </span>
+            </div>
+            {allFocus.length === 0 ? (
+              <div className="card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 18 }}>✅</span>
+                <span style={{ fontSize: 13, color: 'var(--text-2)' }}>Nothing urgent today — you're on top of everything!</span>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
+                {overdueInvoices.slice(0, 2).map(inv => (
+                  <div key={inv.id} className="card" style={{ padding: '14px 16px', borderLeft: '3px solid var(--red)', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--red)', textTransform: 'uppercase', marginBottom: 2 }}>Overdue Invoice</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>${inv.amount.toLocaleString()}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{(inv as any).client || `#${inv.id}`}</div>
+                    </div>
+                    <button className="btn-primary" style={{ fontSize: 11, padding: '6px 12px', flexShrink: 0 }}>Send reminder</button>
+                  </div>
+                ))}
+                {urgentTasks.slice(0, 2).map(t => (
+                  <div key={t.id} className="card" style={{ padding: '14px 16px', borderLeft: '3px solid var(--amber)', display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '1.5px', color: 'var(--amber)', textTransform: 'uppercase', marginBottom: 2 }}>{t.priority?.charAt(0).toUpperCase()}{t.priority?.slice(1)} Priority</div>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title || `Task #${t.id}`}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{t.project || 'No project'}</div>
+                    </div>
+                    <button className="btn-outline" style={{ fontSize: 11, padding: '6px 12px', flexShrink: 0 }}>Start</button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {/* AI Insights Bar */}
       <div className="card-ai" style={{ padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
