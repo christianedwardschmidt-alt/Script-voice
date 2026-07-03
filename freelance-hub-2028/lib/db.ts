@@ -75,6 +75,7 @@ export async function restoreSeedData(): Promise<void> {
   })
 }
 
+
 // ── Init singleton ───────────────────────────────────────────────────────────
 
 declare global {
@@ -174,28 +175,29 @@ async function runInit() {
     .execute(`ALTER TABLE settings ADD COLUMN workspaceName TEXT DEFAULT 'My Studio'`)
     .catch(() => {})
 
-  // Seed each table if empty
-  await seedIfEmpty('clients', seedClients)
-  await seedIfEmpty('crm_clients', seedCrmClients)
-  await seedIfEmpty('tasks', seedTasks)
-  await seedIfEmpty('invoices', seedInvoices)
-  await seedIfEmpty('jobs', seedJobs)
-  await seedIfEmpty('courses', seedCourses)
-  await seedIfEmpty('integrations', seedIntegrations)
-  await seedIfEmpty('posts', seedPosts)
-  await seedIfEmpty('profile', seedProfile)
-  await seedIfEmpty('settings', seedSettings)
-  await seedIfEmpty('contact_info', seedContactInfo)
-  await seedIfEmpty('tax_deductions', seedTaxDeductions)
-  await seedIfEmpty('tax_documents', seedTaxDocuments)
-  await seedIfEmpty('activity_log', seedActivityLog)
-  await seedIfEmpty('calendar_events', seedCalendarEvents)
+  // Only seed on first-ever run — settings row existing means the user has been here before
+  const hasSettings = await client.execute(`SELECT id FROM settings WHERE id = 1`)
+  if (!hasSettings.rows.length) {
+    await seedAll()
+  }
 }
 
-async function seedIfEmpty(table: string, fn: () => Promise<void>) {
-  const r = await client.execute(`SELECT COUNT(*) AS cnt FROM ${table}`)
-  const cnt = Number(r.rows[0]?.['cnt'] ?? r.rows[0]?.[0] ?? 0)
-  if (cnt === 0) await fn()
+async function seedAll() {
+  await seedClients()
+  await seedCrmClients()
+  await seedTasks()
+  await seedInvoices()
+  await seedJobs()
+  await seedCourses()
+  await seedIntegrations()
+  await seedPosts()
+  await seedProfile()
+  await seedSettings()
+  await seedContactInfo()
+  await seedTaxDeductions()
+  await seedTaxDocuments()
+  await seedActivityLog()
+  await seedCalendarEvents()
 }
 
 // ── Seed functions ───────────────────────────────────────────────────────────
