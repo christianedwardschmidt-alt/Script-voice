@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { ArrowUpRight, Zap, Brain } from 'lucide-react'
+import { ArrowUpRight, Zap, Brain, Mic } from 'lucide-react'
 
 const revenueData = [
   { month: 'Jan', income: 7200,  expenses: 2100 },
@@ -97,6 +97,18 @@ const ChartTip = ({ active, payload, label }: any) => {
   )
 }
 
+const ACTION_ICONS: Record<string, string> = {
+  create_task: '✓', draft_invoice: '🧾', add_client: '👤',
+  schedule_event: '📅', search_jobs: '🔍', add_crm_contact: '📇',
+}
+
+const QUICK_COMMANDS = [
+  { label: '+ Add task', q: 'I need to add a task — what should I create?' },
+  { label: '🧾 Draft invoice', q: 'I need to draft a new invoice for a client.' },
+  { label: '🔍 Find jobs', q: 'Show me available job listings.' },
+  { label: '📅 Schedule meeting', q: 'I need to schedule a client meeting.' },
+]
+
 const aiInsights = [
   { icon: '⚡', text: 'Stripe payment from Hencewood overdue by 3 days — send a nudge?', action: 'Draft email' },
   { icon: '📈', text: 'Revenue up 18% vs last quarter. Best month: October at $16.4k.', action: 'Breakdown' },
@@ -114,6 +126,14 @@ export default function DashboardPage() {
   const [tasks, setTasks]       = useState<Task[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [activity, setActivity] = useState<ActivityRow[]>([])
+
+  const [voiceListening, setVoiceListening] = useState(false)
+  const [voiceInterim, setVoiceInterim] = useState('')
+  const [voiceLoading, setVoiceLoading] = useState(false)
+  const [voiceResult, setVoiceResult] = useState<{ text: string; actions: { name: string; summary: string }[] } | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const voiceRecRef = useRef<any>(null)
+  const voiceTextRef = useRef('')
 
   useEffect(() => {
     fetch('/api/clients').then(r => r.json()).then(setClients)
@@ -158,6 +178,54 @@ export default function DashboardPage() {
       spark: [72, 68, 81, 75, 83, Math.max(tasksDonePct, 1)],
     },
   ]
+
+  const processVoiceCommand = async (text: string) => {
+    setVoiceLoading(true)
+    setVoiceResult(null)
+    try {
+      const res = await fetch('/api/ai/actions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [{ role: 'user', content: text }] }),
+      })
+      const data = await res.json()
+      setVoiceResult(data)
+      if (data.actions?.length) fetch('/api/activity?limit=6').then(r => r.json()).then(setActivity)
+    } catch { setVoiceResult({ text: 'Something went wrong. Check your ANTHROPIC_API_KEY.', actions: [] }) }
+    setVoiceLoading(false)
+  }
+
+  const startDashboardVoice = () => {
+    if (voiceListening) { voiceRecRef.current?.stop(); setVoiceListening(false); setVoiceInterim(''); return }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) { alert('Voice input requires Chrome, Edge, or Safari.'); return }
+    const rec = new SR()
+    rec.continuous = false; rec.interimResults = true; rec.lang = 'en-US'
+    voiceRecRef.current = rec
+    voiceTextRef.current = ''
+    setVoiceListening(true); setVoiceInterim(''); setVoiceResult(null)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rec.onresult = (e: any) => {
+      let interim = '', final = ''
+      for (let i = 0; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript
+        else interim += e.results[i][0].transcript
+      }
+      const t = final || interim
+      voiceTextRef.current = t
+      setVoiceInterim(t)
+    }
+
+    rec.onend = () => {
+      setVoiceListening(false); setVoiceInterim('')
+      const text = voiceTextRef.current; voiceTextRef.current = ''
+      if (text.trim()) processVoiceCommand(text.trim())
+    }
+    rec.onerror = () => { setVoiceListening(false); setVoiceInterim('') }
+    rec.start()
+  }
 
   return (
     <div style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
@@ -232,6 +300,90 @@ export default function DashboardPage() {
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Voice Command Widget */}
+      <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
+        <div className="card" style={{ padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', borderTop: `2px solid ${voiceListening ? '#ef4444' : '#16a34a'}`, transition: 'border-color 0.2s' }}>
+
+          {/* Mic button */}
+          <button
+            onClick={startDashboardVoice}
+            title={voiceListening ? 'Stop listening' : 'Start voice command'}
+            style={{
+              width: 48, height: 48, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
+              background: voiceListening ? '#ef4444' : '#16a34a',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: voiceListening ? '0 0 0 7px rgba(239,68,68,0.15)' : '0 0 0 5px rgba(22,163,74,0.10)',
+              transition: 'all 0.2s',
+            }}
+          >
+            <Mic size={20} color="#fff" />
+          </button>
+
+          {/* Status + chips */}
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
+                {voiceListening ? 'Listening…' : voiceLoading ? 'Processing…' : 'Voice Command'}
+              </span>
+              {!voiceListening && !voiceLoading && (
+                <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>tap mic or click a command</span>
+              )}
+              {voiceListening && (
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
+              )}
+            </div>
+
+            {voiceListening && (
+              <div style={{ fontSize: 12, color: '#78716c', fontStyle: voiceInterim ? 'normal' : 'italic', minHeight: 18 }}>
+                {voiceInterim || 'Speak your command…'}
+              </div>
+            )}
+
+            {voiceLoading && (
+              <div style={{ fontSize: 12, color: '#78716c' }}>Talking to Claude…</div>
+            )}
+
+            {!voiceListening && !voiceLoading && !voiceResult && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {QUICK_COMMANDS.map(({ label, q }) => (
+                  <a
+                    key={label}
+                    href={`/ai-assistant?q=${encodeURIComponent(q)}`}
+                    style={{ fontSize: 11.5, padding: '3px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-2)', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none', fontWeight: 500, transition: 'all 0.12s' }}
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            )}
+
+            {voiceResult && !voiceLoading && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {voiceResult.actions.map((a, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '4px 10px', borderRadius: 7, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 12 }}>
+                    <span>{ACTION_ICONS[a.name] ?? '⚡'}</span>
+                    <span style={{ color: '#15803d', fontWeight: 600 }}>{a.summary}</span>
+                  </div>
+                ))}
+                {voiceResult.text && !voiceResult.actions.length && (
+                  <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{voiceResult.text.slice(0, 120)}{voiceResult.text.length > 120 ? '…' : ''}</div>
+                )}
+                <button
+                  onClick={() => { setVoiceResult(null) }}
+                  style={{ alignSelf: 'flex-start', marginTop: 2, fontSize: 11, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
+                >
+                  Clear ✕
+                </button>
+              </div>
+            )}
+          </div>
+
+          <a href="/ai-assistant" style={{ fontSize: 11.5, color: '#16a34a', fontWeight: 600, textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
+            Full AI assistant <ArrowUpRight size={11} />
+          </a>
+        </div>
       </div>
 
       {/* KPI row with sparklines */}
@@ -405,6 +557,24 @@ export default function DashboardPage() {
         </div>
 
       </div>
+
+      {/* Floating voice button */}
+      <button
+        onClick={startDashboardVoice}
+        title="Voice command"
+        style={{
+          position: 'fixed', bottom: 28, right: 28, zIndex: 50,
+          width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
+          background: voiceListening ? '#ef4444' : '#16a34a',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: voiceListening
+            ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'
+            : '0 4px 20px rgba(22,163,74,0.35)',
+          transition: 'all 0.2s',
+        }}
+      >
+        <Mic size={22} color="#fff" />
+      </button>
     </div>
   )
 }
