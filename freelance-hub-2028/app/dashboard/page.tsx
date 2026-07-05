@@ -53,7 +53,7 @@ function Sparkline({ values, color, id }: { values: number[]; color: string; id:
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', flexShrink: 0 }}>
       <defs>
         <linearGradient id={`sg${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.22} />
+          <stop offset="0%" stopColor={color} stopOpacity={0.18} />
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
       </defs>
@@ -71,8 +71,8 @@ function TrendBadge({ pct, good = true }: { pct: number; good?: boolean }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 2,
       fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 99,
-      background: positive ? 'rgba(0,184,87,0.1)' : 'rgba(220,38,38,0.09)',
-      color: positive ? '#008040' : '#c81e1e',
+      background: positive ? 'rgba(22,163,74,0.09)' : 'rgba(220,38,38,0.09)',
+      color: positive ? '#15803d' : '#c81e1e',
       fontVariantNumeric: 'tabular-nums',
     }}>
       {up ? '↑' : '↓'} {Math.abs(pct)}%
@@ -80,13 +80,15 @@ function TrendBadge({ pct, good = true }: { pct: number; good?: boolean }) {
   )
 }
 
-const TICK_COLOR = 'rgba(120,128,145,0.7)'
+const TICK_COLOR = 'rgba(28,24,20,0.28)'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ChartTip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
+    <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 14px', boxShadow: '0 8px 24px rgba(28,24,20,0.12)' }}>
       <div style={{ fontSize: 9, color: 'var(--text-3)', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>{label}</div>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       {payload.map((p: any) => (
         <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color, fontVariantNumeric: 'tabular-nums' }}>
           <span>${Number(p.value).toLocaleString()}</span>
@@ -131,7 +133,7 @@ export default function DashboardPage() {
   const [voiceListening, setVoiceListening] = useState(false)
   const [voiceInterim, setVoiceInterim] = useState('')
   const [voiceLoading, setVoiceLoading] = useState(false)
-  const [voiceResult, setVoiceResult] = useState<{ text: string; actions: { name: string; summary: string }[] } | null>(null)
+  const [voiceResult, setVoiceResult] = useState<{ text: string; actions: { name: string; summary: string; data?: Record<string, unknown> }[] } | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const voiceRecRef = useRef<any>(null)
   const voiceTextRef = useRef('')
@@ -155,7 +157,7 @@ export default function DashboardPage() {
   const kpi = [
     {
       label: 'YTD Revenue', value: `$${(totalRevYTD / 1000).toFixed(1)}k`, sub: 'vs $82.1k last year',
-      accent: '#00b857', trend: 18,
+      accent: '#16a34a', trend: 18,
       spark: revenueData.map(d => d.income),
     },
     {
@@ -175,7 +177,7 @@ export default function DashboardPage() {
     },
     {
       label: 'Tasks Done', value: `${tasksDonePct}%`, sub: `${tasksDone} of ${tasks.length} complete`,
-      accent: '#00b857', trend: 5,
+      accent: '#16a34a', trend: 5,
       spark: [72, 68, 81, 75, 83, Math.max(tasksDonePct, 1)],
     },
   ]
@@ -233,31 +235,85 @@ export default function DashboardPage() {
     rec.start()
   }
 
-  return (
-    <div style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
+  const greeting = (() => {
+    const h = new Date().getHours()
+    if (h < 12) return 'Good morning'
+    if (h < 17) return 'Good afternoon'
+    return 'Good evening'
+  })()
 
-      {/* Page header */}
-      <div className="animate-in" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, animationDelay: '0s' }}>
-        <div>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 5 }}>OVERVIEW</div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1, textWrap: 'balance' } as any}>Dashboard</h1>
-          <div style={{ fontSize: 11.5, color: 'var(--text-2)', marginTop: 4 }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · 2028
+  return (
+    <div style={{ padding: '24px 28px 52px', minHeight: '100vh' }}>
+
+      {/* ── GildFlo Hero ────────────────────────────── */}
+      <div className="animate-in" style={{
+        background: 'linear-gradient(135deg, #0a1a0f 0%, #0e2116 40%, #14532d 100%)',
+        borderRadius: 20,
+        padding: '32px 36px 28px',
+        marginBottom: 20,
+        position: 'relative',
+        overflow: 'hidden',
+        animationDelay: '0s',
+      }}>
+        {/* Decorative rings — gold, barely visible */}
+        <div style={{ position: 'absolute', right: -60, top: -60, width: 280, height: 280, borderRadius: '50%', border: '1px solid rgba(202,138,4,0.12)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 40, top: 40, width: 120, height: 120, borderRadius: '50%', border: '1px solid rgba(202,138,4,0.07)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', left: '45%', bottom: -80, width: 200, height: 200, borderRadius: '50%', border: '1px solid rgba(74,222,128,0.06)', pointerEvents: 'none' }} />
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', position: 'relative', zIndex: 1, flexWrap: 'wrap', gap: 20 }}>
+          <div>
+            <div style={{ fontSize: 10, letterSpacing: '3px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)', marginBottom: 16, fontWeight: 600 }}>
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · 2028
+            </div>
+            <div style={{ lineHeight: 0.9, marginBottom: 14 }}>
+              <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-2.5px', color: '#ca8a04', fontFamily: 'Georgia, serif' }}>Gild</span>
+              <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-2.5px', color: '#4ade80', fontFamily: 'Georgia, serif' }}>Flo</span>
+            </div>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.52)', fontStyle: 'italic', marginBottom: 3, letterSpacing: '0.1px' }}>
+              Your craft, gilded.
+            </p>
+            <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.24)', letterSpacing: '2.5px', textTransform: 'uppercase' }}>
+              Work Free · Shine Bright
+            </p>
           </div>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <a href="/invoicing" className="btn-outline" style={{ fontSize: 12, textDecoration: 'none' }}>
-            <ArrowUpRight size={13} /> View invoices
-          </a>
-          <a href="/tasks" className="btn-primary" style={{ fontSize: 12, textDecoration: 'none' }}>
-            <Zap size={13} /> My tasks
-          </a>
+
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            {/* Quick greeting + key stat */}
+            <div style={{ textAlign: 'right', marginRight: 12, borderRight: '1px solid rgba(255,255,255,0.08)', paddingRight: 18 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', marginBottom: 4, letterSpacing: '0.5px' }}>{greeting}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: '-0.8px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>
+                ${(totalRevYTD / 1000).toFixed(1)}k
+              </div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.32)', marginTop: 2 }}>YTD revenue</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <a href="/invoicing" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 15px', borderRadius: 9,
+                background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)',
+                color: 'rgba(255,255,255,0.75)', fontSize: 12, fontWeight: 600,
+                textDecoration: 'none', transition: 'all 0.15s', whiteSpace: 'nowrap',
+              }}>
+                <ArrowUpRight size={12} /> View invoices
+              </a>
+              <a href="/tasks" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 15px', borderRadius: 9,
+                background: 'rgba(202,138,4,0.80)', border: '1px solid rgba(202,138,4,0.25)',
+                color: '#fff', fontSize: 12, fontWeight: 700,
+                textDecoration: 'none', transition: 'all 0.15s', whiteSpace: 'nowrap',
+                boxShadow: '0 4px 16px rgba(202,138,4,0.25)',
+              }}>
+                <Zap size={12} /> My tasks
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Today's Focus */}
+      {/* ── Today's Focus ──────────────────────────── */}
       {(overdueInvoices.length > 0 || urgentTasks.length > 0) && (
-        <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.05s' }}>
+        <div className="animate-in" style={{ marginBottom: 16, animationDelay: '0.06s' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#dc2626' }} className="ai-pulse" />
             <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>Today's Focus</span>
@@ -270,7 +326,7 @@ export default function DashboardPage() {
               <div key={inv.id} className="card" style={{ padding: '13px 15px', borderLeft: '3px solid #dc2626', display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#dc2626', textTransform: 'uppercase', marginBottom: 2 }}>Overdue · Invoice {inv.id}</div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.6px', fontVariantNumeric: 'tabular-nums' }}>${inv.amount.toLocaleString()}</div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.8px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>${inv.amount.toLocaleString()}</div>
                   <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{(inv as any).client || 'Unknown client'}</div>
                 </div>
                 <button className="btn-primary" style={{ fontSize: 11, padding: '6px 11px', flexShrink: 0 }}>Send reminder</button>
@@ -290,8 +346,8 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* AI Insights */}
-      <div className="card-ai animate-in" style={{ padding: '13px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', animationDelay: '0.1s' }}>
+      {/* ── AI Insights ────────────────────────────── */}
+      <div className="card-ai animate-in" style={{ padding: '13px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', animationDelay: '0.1s' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
           <Brain size={13} style={{ color: 'var(--indigo)' }} />
           <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
@@ -308,26 +364,23 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Voice Command Widget */}
-      <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
-        <div className="card" style={{ padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', borderTop: `2px solid ${voiceListening ? '#ef4444' : '#16a34a'}`, transition: 'border-color 0.2s' }}>
-
-          {/* Mic button */}
+      {/* ── Voice Command Widget ────────────────────── */}
+      <div className="animate-in" style={{ marginBottom: 16, animationDelay: '0.13s' }}>
+        <div className="card" style={{ padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', borderTop: `2px solid ${voiceListening ? '#ef4444' : '#ca8a04'}`, transition: 'border-color 0.2s' }}>
           <button
             onClick={startDashboardVoice}
             title={voiceListening ? 'Stop listening' : 'Start voice command'}
             style={{
-              width: 48, height: 48, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-              background: voiceListening ? '#ef4444' : '#16a34a',
+              width: 46, height: 46, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
+              background: voiceListening ? '#ef4444' : '#ca8a04',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: voiceListening ? '0 0 0 7px rgba(239,68,68,0.15)' : '0 0 0 5px rgba(22,163,74,0.10)',
+              boxShadow: voiceListening ? '0 0 0 7px rgba(239,68,68,0.12)' : '0 0 0 5px rgba(202,138,4,0.12)',
               transition: 'all 0.2s',
             }}
           >
-            <Mic size={20} color="#fff" />
+            <Mic size={19} color="#fff" />
           </button>
 
-          {/* Status + chips */}
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
@@ -342,13 +395,12 @@ export default function DashboardPage() {
             </div>
 
             {voiceListening && (
-              <div style={{ fontSize: 12, color: '#78716c', fontStyle: voiceInterim ? 'normal' : 'italic', minHeight: 18 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-2)', fontStyle: voiceInterim ? 'normal' : 'italic', minHeight: 18 }}>
                 {voiceInterim || 'Speak your command…'}
               </div>
             )}
-
             {voiceLoading && (
-              <div style={{ fontSize: 12, color: '#78716c' }}>Talking to Claude…</div>
+              <div style={{ fontSize: 12, color: 'var(--text-2)' }}>Talking to GildFlo AI…</div>
             )}
 
             {!voiceListening && !voiceLoading && !voiceResult && (
@@ -376,35 +428,32 @@ export default function DashboardPage() {
                 {voiceResult.text && !voiceResult.actions.length && (
                   <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{voiceResult.text.slice(0, 120)}{voiceResult.text.length > 120 ? '…' : ''}</div>
                 )}
-                <button
-                  onClick={() => { setVoiceResult(null) }}
-                  style={{ alignSelf: 'flex-start', marginTop: 2, fontSize: 11, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
-                >
+                <button onClick={() => setVoiceResult(null)} style={{ alignSelf: 'flex-start', marginTop: 2, fontSize: 11, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
                   Clear ✕
                 </button>
               </div>
             )}
           </div>
 
-          <a href="/ai-assistant" style={{ fontSize: 11.5, color: '#16a34a', fontWeight: 600, textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
+          <a href="/ai-assistant" style={{ fontSize: 11.5, color: 'var(--gold)', fontWeight: 600, textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
             Full AI assistant <ArrowUpRight size={11} />
           </a>
         </div>
       </div>
 
-      {/* KPI row with sparklines */}
+      {/* ── KPI row ────────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 18 }}>
         {kpi.map(({ label, value, sub, accent, trend, spark, good }, i) => (
           <div
             key={label}
             className="card card-lift animate-in"
-            style={{ padding: '16px 16px 14px', borderTop: `2px solid ${accent}`, animationDelay: `${0.15 + i * 0.05}s` }}
+            style={{ padding: '18px 16px 14px', borderTop: `2px solid ${accent}`, animationDelay: `${0.16 + i * 0.05}s` }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>{label}</div>
               <TrendBadge pct={trend} good={good !== false} />
             </div>
-            <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>{value}</div>
+            <div style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 10, fontFamily: 'Georgia, serif' }}>{value}</div>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
               <div style={{ fontSize: 10.5, color: 'var(--text-2)', lineHeight: 1.3 }}>{sub}</div>
               <Sparkline values={spark} color={accent} id={i} />
@@ -413,11 +462,11 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Bento grid: 3 cols × 2 rows */}
+      {/* ── Bento grid ─────────────────────────────── */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }}>
 
-        {/* Revenue chart — col 1-2, row 1 */}
-        <div className="card animate-in" style={{ padding: '20px 20px 12px', gridColumn: '1 / 3', animationDelay: '0.4s' }}>
+        {/* Revenue chart */}
+        <div className="card animate-in" style={{ padding: '20px 20px 12px', gridColumn: '1 / 3', animationDelay: '0.42s' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>REVENUE</div>
@@ -425,7 +474,7 @@ export default function DashboardPage() {
             </div>
             <div style={{ display: 'flex', gap: 18, fontSize: 11, color: 'var(--text-2)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#00b857', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: '#16a34a', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ width: 18, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Expenses
@@ -436,11 +485,11 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00b857" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#00b857" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#16a34a" stopOpacity={0.16} />
+                  <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5b5fcf" stopOpacity={0.1} />
+                  <stop offset="0%" stopColor="#5b5fcf" stopOpacity={0.10} />
                   <stop offset="100%" stopColor="#5b5fcf" stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -448,17 +497,17 @@ export default function DashboardPage() {
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="#00b857" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="income"   stroke="#16a34a" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
               <Area type="monotone" dataKey="expenses" stroke="#5b5fcf" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* This Week — col 3, row 1 */}
-        <div className="card-glow animate-in" style={{ padding: '16px 18px', animationDelay: '0.45s', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 18 }}>
-            <Zap size={11} style={{ color: 'rgba(255,255,255,0.75)' }} />
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' }}>THIS WEEK</span>
+        {/* This Week card */}
+        <div className="card-glow animate-in" style={{ padding: '18px 20px', animationDelay: '0.47s', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 20 }}>
+            <Zap size={11} style={{ color: 'rgba(255,255,255,0.60)' }} />
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)' }}>THIS WEEK</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             {[
@@ -468,11 +517,11 @@ export default function DashboardPage() {
               { label: 'Rate',      val: '$140/h',  pct: null },
             ].map(s => (
               <div key={s.label}>
-                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '-0.8px', color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{s.val}</div>
+                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.8px', color: '#fff', fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>{s.val}</div>
                 {s.pct !== null && (
-                  <div style={{ marginTop: 6, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{ width: `${s.pct}%`, height: '100%', background: 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
+                  <div style={{ marginTop: 6, height: 2, background: 'rgba(255,255,255,0.14)', borderRadius: 99, overflow: 'hidden' }}>
+                    <div style={{ width: `${s.pct}%`, height: '100%', background: 'rgba(202,138,4,0.80)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
                   </div>
                 )}
               </div>
@@ -480,8 +529,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Top clients — col 1, row 2 */}
-        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.5s' }}>
+        {/* Top Clients */}
+        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.52s' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TOP CLIENTS</div>
             <a href="/clients" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
@@ -490,32 +539,32 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {clients.slice(0, 4).map((c, i) => {
-              const colors = ['#00b857', '#0ea5e9', '#5b5fcf', '#d97706']
+              const colors = ['#16a34a', '#0ea5e9', '#5b5fcf', '#d97706']
               const col = colors[i % 4]
               const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
               return (
                 <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? '1px solid var(--border)' : 'none' }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 8, background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: col, flexShrink: 0 }}>
+                  <div style={{ width: 30, height: 30, borderRadius: 8, background: `${col}14`, border: `1px solid ${col}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: col, flexShrink: 0 }}>
                     {c.name[0]}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                      <div style={{ flex: 1, height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
+                      <div style={{ flex: 1, height: 2, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
                         <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: 99 }} />
                       </div>
                       <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{c.status}</span>
                     </div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: col, fontVariantNumeric: 'tabular-nums' }}>${c.revenue.toLocaleString()}</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: col, fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>${c.revenue.toLocaleString()}</div>
                 </div>
               )
             })}
           </div>
         </div>
 
-        {/* Pipeline — col 2, row 2 */}
-        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.55s' }}>
+        {/* Pipeline */}
+        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.57s' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>PIPELINE</div>
             <a href="/crm" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
@@ -531,21 +580,21 @@ export default function DashboardPage() {
                   <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 1 }}>Due {p.due}</div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>${p.amount.toLocaleString()}</div>
-                  <span style={{ fontSize: 9.5, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25` }}>{p.status}</span>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)', fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>${p.amount.toLocaleString()}</div>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}14`, color: p.color, border: `1px solid ${p.color}22` }}>{p.status}</span>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ padding: '10px 12px', background: 'var(--bg)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '10px 12px', background: 'var(--bg)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 500 }}>Pipeline total</span>
-            <span style={{ fontSize: 14, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
+            <span style={{ fontSize: 15, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums', fontFamily: 'Georgia, serif' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Activity — col 3, row 2 */}
-        <div className="card animate-in" style={{ padding: '16px', animationDelay: '0.6s' }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>RECENT ACTIVITY</div>
+        {/* Activity */}
+        <div className="card animate-in" style={{ padding: '18px 16px', animationDelay: '0.62s' }}>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 14 }}>RECENT ACTIVITY</div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {activity.slice(0, 6).map((a, i) => (
               <div key={a.id} style={{ display: 'flex', gap: 9, padding: '7px 0', borderBottom: i < 5 ? '1px solid var(--border)' : 'none', alignItems: 'flex-start' }}>
@@ -564,18 +613,18 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* Floating voice button */}
+      {/* Floating voice button — gold accent */}
       <button
         onClick={startDashboardVoice}
         title="Voice command"
         style={{
           position: 'fixed', bottom: 28, right: 28, zIndex: 50,
           width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-          background: voiceListening ? '#ef4444' : '#16a34a',
+          background: voiceListening ? '#ef4444' : '#ca8a04',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: voiceListening
-            ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'
-            : '0 4px 20px rgba(22,163,74,0.35)',
+            ? '0 0 0 8px rgba(239,68,68,0.12), 0 4px 20px rgba(239,68,68,0.35)'
+            : '0 0 0 5px rgba(202,138,4,0.14), 0 4px 20px rgba(202,138,4,0.35)',
           transition: 'all 0.2s',
         }}
       >

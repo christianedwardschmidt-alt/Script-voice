@@ -39,7 +39,7 @@ function actionIcon(name: string) { return ACTION_ICONS[name] ?? '⚡' }
 function AIAssistantInner() {
   const searchParams = useSearchParams()
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: 'assistant', content: "Hi! I'm your LanceFlo AI assistant. I can answer questions AND take real actions in your workspace — try telling me to add a task, draft an invoice, schedule a meeting, search jobs, or add a client. What would you like to do?", timestamp: '12:00 PM' },
+    { id: 1, role: 'assistant', content: "Hi! I'm your GildFlo AI assistant. I can answer questions AND take real actions in your workspace — try telling me to add a task, draft an invoice, schedule a meeting, search jobs, or add a client. What would you like to do?", timestamp: '12:00 PM' },
   ])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
@@ -188,7 +188,7 @@ function AIAssistantInner() {
             <Bot size={16} color="#fff" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1917' }}>LanceFlo AI</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1917' }}>GildFlo AI</div>
             <div style={{ fontSize: 11, color: '#16a34a' }}>Powered by Claude</div>
           </div>
         </div>

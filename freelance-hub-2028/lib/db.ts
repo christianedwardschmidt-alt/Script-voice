@@ -1,7 +1,7 @@
 import { createClient, type InValue, type Row } from '@libsql/client'
 
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL ?? 'file:/tmp/lanceflo.db',
+  url: process.env.TURSO_DATABASE_URL ?? 'file:/tmp/gildflo.db',
   authToken: process.env.TURSO_AUTH_TOKEN,
 })
 
@@ -81,12 +81,12 @@ export async function restoreSeedData(): Promise<void> {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __lancefloInit: Promise<void> | undefined
+  var __gildfloInit: Promise<void> | undefined
 }
 
 function ensureReady(): Promise<void> {
-  if (!globalThis.__lancefloInit) globalThis.__lancefloInit = runInit()
-  return globalThis.__lancefloInit
+  if (!globalThis.__gildfloInit) globalThis.__gildfloInit = runInit()
+  return globalThis.__gildfloInit
 }
 
 async function runInit() {
@@ -291,7 +291,7 @@ async function seedPosts() {
     { sql, args: ['Sarah Johnson','@sarahj_ux','Senior UI/UX Designer','👩🏻‍🎨','#16a34a','2h',1,'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜',JSON.stringify({type:'design',label:'Dashboard Redesign Preview',emoji:'🖥',grad:'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)'}),142,38,21,8400,0,0,0,new Date(now - 2*3600000).toISOString()] },
     { sql, args: ['Marcus Williams','@marcusdev','Full Stack Developer','👨🏾‍💻','#10b981','5h',0,'Hot take: The single best thing I did for my freelance career was raising my rates.\n\nWent from $85/hr → $150/hr and actually got MORE serious clients.\n\nPrice is a signal. Premium pricing filters out problem clients automatically.',JSON.stringify({type:'chart',label:'Revenue Growth 2025→2026',emoji:'📈',grad:'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 50%, #34d399 100%)'}),287,64,89,21300,1,0,0,new Date(now - 5*3600000).toISOString()] },
     { sql, args: ['Priya Sharma','@priya_uxr','UX Researcher','👩🏽‍💻','#f59e0b','1d',0,'Sharing my freelance contract template — took me 2 years and one bad client experience to get right.\n\nIncludes:\n✅ Scope of work clauses\n✅ Revision limits\n✅ Kill fee (25% if client cancels)\n✅ IP ownership on final payment',null,512,97,203,34100,0,1,0,new Date(now - 24*3600000).toISOString()] },
-    { sql, args: ['Tom Blake','@tomblake_brand','Brand Strategist','👨🏼‍💼','#06b6d4','2d',0,'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + LanceFlo for project tracking',JSON.stringify({type:'photo',label:'Home Office Setup',emoji:'🖥',grad:'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)'}),94,41,7,5200,0,0,1,new Date(now - 48*3600000).toISOString()] },
+    { sql, args: ['Tom Blake','@tomblake_brand','Brand Strategist','👨🏼‍💼','#06b6d4','2d',0,'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + GildFlo for project tracking',JSON.stringify({type:'photo',label:'Home Office Setup',emoji:'🖥',grad:'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)'}),94,41,7,5200,0,0,1,new Date(now - 48*3600000).toISOString()] },
   ], 'write')
 }
 
@@ -343,7 +343,7 @@ async function seedTaxDocuments() {
 async function seedActivityLog() {
   await client.execute({
     sql: `INSERT INTO activity_log (message,createdAt) VALUES (?,?)`,
-    args: ['Welcome to LanceFlo — your workspace is ready', new Date().toISOString()],
+    args: ['Welcome to GildFlo — your workspace is ready', new Date().toISOString()],
   })
 }
 

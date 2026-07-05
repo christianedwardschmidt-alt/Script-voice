@@ -11,8 +11,8 @@ import WorkspaceSelector from "@/components/WorkspaceSelector";
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LanceFlo 2028 — Freelancer Suite",
-  description: "The intelligent platform for modern freelancers",
+  title: "GildFlo 2028 — Your craft, gilded.",
+  description: "Work Free · Shine Bright. The intelligent platform for modern freelancers.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
