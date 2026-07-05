@@ -42,8 +42,12 @@ function AIAssistantInner() {
   ])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
+  const [listening, setListening] = useState(false)
+  const [interimText, setInterimText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const didAutoSend = useRef(false)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null)
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
@@ -56,10 +60,66 @@ function AIAssistantInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const stopListening = () => {
+    recognitionRef.current?.stop()
+    recognitionRef.current = null
+    setListening(false)
+    setInterimText('')
+  }
+
+  const startVoice = () => {
+    if (listening) { stopListening(); return }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) {
+      alert('Voice input requires Chrome, Edge, or Safari.')
+      return
+    }
+    const rec = new SR()
+    rec.continuous = false
+    rec.interimResults = true
+    rec.lang = 'en-US'
+    recognitionRef.current = rec
+    setListening(true)
+    setInterimText('')
+
+    rec.onresult = (e: Event & { results: SpeechRecognitionResultList }) => {
+      let interim = ''
+      let final = ''
+      for (let i = 0; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript
+        if (e.results[i].isFinal) final += t
+        else interim += t
+      }
+      setInterimText(interim)
+      if (final.trim()) {
+        setInput(final.trim())
+        setInterimText('')
+      }
+    }
+
+    rec.onend = () => {
+      setListening(false)
+      setInterimText('')
+      recognitionRef.current = null
+      // Auto-send if we captured something
+      setInput(prev => {
+        if (prev.trim()) {
+          setTimeout(() => send(prev.trim()), 100)
+        }
+        return prev
+      })
+    }
+
+    rec.onerror = () => { setListening(false); setInterimText(''); recognitionRef.current = null }
+    rec.start()
+  }
+
   const send = async (content?: string) => {
     const text = content || input.trim()
     if (!text || thinking) return
 
+    stopListening()
     const userMsg: Message = {
       id: Date.now(),
       role: 'user',
@@ -241,24 +301,39 @@ function AIAssistantInner() {
 
         {/* Input */}
         <div style={{ padding: '12px 24px', borderTop: '1px solid rgba(0,0,0,0.06)', background: 'var(--card)', flexShrink: 0 }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 12, padding: '10px 12px' }}>
+          {listening && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '6px 12px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
+              <span style={{ fontSize: 12, color: '#dc2626', fontWeight: 500 }}>
+                {interimText || 'Listening… speak your command'}
+              </span>
+              <button onClick={stopListening} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: '#dc2626', fontSize: 11, fontWeight: 600 }}>Cancel</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'var(--bg-2)', border: `1px solid ${listening ? '#fca5a5' : 'rgba(0,0,0,0.06)'}`, borderRadius: 12, padding: '10px 12px', transition: 'border-color 0.15s' }}>
             <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c', marginBottom: 2 }}><Paperclip size={16} /></button>
             <textarea
-              value={input}
-              onChange={e => setInput(e.target.value)}
+              value={listening && interimText ? interimText : input}
+              onChange={e => { if (!listening) setInput(e.target.value) }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder="Ask anything or give a command — 'add task', 'draft invoice', 'schedule meeting'..."
+              placeholder="Ask anything or give a voice command — tap 🎤 and speak"
               rows={1}
-              style={{ flex: 1, background: 'none', border: 'none', color: '#1c1917', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
+              style={{ flex: 1, background: 'none', border: 'none', color: listening ? '#78716c' : '#1c1917', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
             />
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}><Mic size={16} /></button>
+              <button
+                onClick={startVoice}
+                title={listening ? 'Stop listening' : 'Voice command'}
+                style={{ width: 30, height: 30, borderRadius: '50%', background: listening ? '#ef4444' : 'none', border: listening ? 'none' : 'none', cursor: 'pointer', color: listening ? '#fff' : '#78716c', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s', boxShadow: listening ? '0 0 0 4px rgba(239,68,68,0.15)' : 'none' }}
+              >
+                <Mic size={16} />
+              </button>
               <button
                 onClick={() => send()}
-                disabled={!input.trim() || thinking}
-                style={{ width: 32, height: 32, borderRadius: 8, background: input.trim() && !thinking ? '#16a34a' : '#e5e7eb', border: 'none', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+                disabled={(!input.trim() && !interimText) || thinking}
+                style={{ width: 32, height: 32, borderRadius: 8, background: (input.trim() || interimText) && !thinking ? '#16a34a' : '#e5e7eb', border: 'none', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
               >
-                <Send size={14} color={input.trim() && !thinking ? '#fff' : '#9ca3af'} />
+                <Send size={14} color={(input.trim() || interimText) && !thinking ? '#fff' : '#9ca3af'} />
               </button>
             </div>
           </div>
