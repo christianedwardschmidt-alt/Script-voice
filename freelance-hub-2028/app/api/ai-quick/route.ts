@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     max_tokens: 512,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     thinking: { type: 'adaptive' } as any,
-    system: `You are LanceFlo AI, a sharp assistant for freelancers. Answer in 2–4 sentences max. Be specific and direct. Use **bold** sparingly for key terms. Today is ${today}.`,
+    system: `You are CenterFlo AI, a sharp assistant for freelancers. Answer in 2–4 sentences max. Be specific and direct. Use **bold** sparingly for key terms. Today is ${today}.`,
     messages: [{ role: 'user', content: q }],
   })
 

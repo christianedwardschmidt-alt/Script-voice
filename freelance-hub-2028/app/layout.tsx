@@ -11,7 +11,7 @@ import WorkspaceSelector from "@/components/WorkspaceSelector";
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LanceFlo 2028 — Freelancer Suite",
+  title: "CenterFlo 2028 — Freelancer Suite",
   description: "The intelligent platform for modern freelancers",
 };
 

@@ -120,10 +120,10 @@ export default function Sidebar() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 2px 8px rgba(0,184,87,0.3)', flexShrink: 0,
         }}>
-          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>LF</span>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>CF</span>
         </div>
         <div>
-          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>LanceFlo</div>
+          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>CenterFlo</div>
           <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Freelancer Suite · 2028</div>
         </div>
       </div>
