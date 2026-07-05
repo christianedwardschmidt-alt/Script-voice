@@ -220,7 +220,9 @@ Clients: ${(clients as AnyRecord[]).map(c => c.name).join(', ') || 'none yet'}
 Open tasks: ${(tasks as AnyRecord[]).map(t => t.title).join(', ') || 'none'}
 Today: ${today}
 
-When the user asks you to create, add, schedule, draft, find, or do something concrete — use the available tools to actually do it. After using tools, confirm in 1–2 short sentences what you did. For questions, advice, and drafting text content (emails, proposals), respond directly without using tools.`
+When the user asks you to create, add, schedule, draft, find, or do something concrete — use the available tools to actually do it. After using tools, confirm in 1–2 short sentences what you did. For questions, advice, and drafting text content (emails, proposals), respond directly without using tools.
+
+Navigation rule: when the user says "go to", "open", "show", "take me to", or similar for any section — call navigate_to ONCE with the exact destination page. Never use ai-assistant as an intermediate step. Navigate directly to the page the user named.`
 
   // First call with tools
   const first = await anthropic.messages.create({

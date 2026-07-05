@@ -152,7 +152,8 @@ function AIAssistantInner() {
         ...p,
         { id: assistantId, role: 'assistant', content: data.text, timestamp: ts, actions: data.actions },
       ])
-      const navAction = data.actions?.find((a: Action) => a.name === 'navigate_to')
+      const allNavActions = data.actions?.filter((a: Action) => a.name === 'navigate_to') ?? []
+      const navAction = allNavActions[allNavActions.length - 1]
       if (navAction?.data?.url) {
         setTimeout(() => { window.location.href = navAction.data!.url as string }, 1500)
       }
