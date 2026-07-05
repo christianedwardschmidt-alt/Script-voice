@@ -4,24 +4,41 @@ import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, PenTool, Globe, Code } from 'lucide-react'
 
+interface Action {
+  name: string
+  summary: string
+  data?: Record<string, unknown>
+}
+
 interface Message {
   id: number
   role: 'user' | 'assistant'
   content: string
   timestamp: string
+  actions?: Action[]
 }
 
 const suggestions = [
-  { icon: FileText, label: 'Draft a proposal', prompt: 'Help me write a project proposal for a SaaS dashboard redesign. Budget is $8,000.' },
-  { icon: DollarSign, label: 'Calculate my taxes', prompt: 'I earned $96,200 this year as a freelancer. What are my estimated taxes and best deductions?' },
-  { icon: Users, label: 'Write a follow-up', prompt: 'Write a professional follow-up email to a client who hasn\'t responded to my proposal in 2 weeks.' },
-  { icon: Calculator, label: 'Price a project', prompt: 'Help me price a mobile app design project with 25 screens, a design system, and Figma handoff.' },
+  { icon: FileText, label: 'Add a task', prompt: 'Add a high-priority task: finish the dashboard mockups by Friday for Tech Trophey.' },
+  { icon: DollarSign, label: 'Draft an invoice', prompt: 'Draft an invoice for Hencewood Digital for $4,500 — API integration project, due in 14 days.' },
+  { icon: Users, label: 'Find a job', prompt: 'Find me React or Next.js contract jobs in my job board.' },
+  { icon: Calculator, label: 'Schedule a meeting', prompt: 'Schedule a kickoff call with NovaBuild for tomorrow at 10am.' },
 ]
+
+const ACTION_ICONS: Record<string, string> = {
+  create_task: '✓',
+  draft_invoice: '🧾',
+  add_client: '👤',
+  schedule_event: '📅',
+  search_jobs: '🔍',
+  add_crm_contact: '📇',
+}
+function actionIcon(name: string) { return ACTION_ICONS[name] ?? '⚡' }
 
 function AIAssistantInner() {
   const searchParams = useSearchParams()
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: 'assistant', content: "Hi! I'm your LanceFlo AI assistant. I can help with proposals, tax planning, client emails, project pricing, and more. What can I help you with today?", timestamp: '12:00 PM' },
+    { id: 1, role: 'assistant', content: "Hi! I'm your LanceFlo AI assistant. I can answer questions AND take real actions in your workspace — try telling me to add a task, draft an invoice, schedule a meeting, search jobs, or add a client. What would you like to do?", timestamp: '12:00 PM' },
   ])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
@@ -58,7 +75,7 @@ function AIAssistantInner() {
     const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 
     try {
-      const res = await fetch('/api/ai/chat', {
+      const res = await fetch('/api/ai/actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -66,21 +83,14 @@ function AIAssistantInner() {
         }),
       })
 
-      if (!res.ok || !res.body) throw new Error('Request failed')
+      if (!res.ok) throw new Error('Request failed')
+      const data = await res.json()
 
       setThinking(false)
-      setMessages(p => [...p, { id: assistantId, role: 'assistant', content: '', timestamp: ts }])
-
-      const reader = res.body.getReader()
-      const decoder = new TextDecoder()
-      let accumulated = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        accumulated += decoder.decode(value, { stream: true })
-        setMessages(p => p.map(m => m.id === assistantId ? { ...m, content: accumulated } : m))
-      }
+      setMessages(p => [
+        ...p,
+        { id: assistantId, role: 'assistant', content: data.text, timestamp: ts, actions: data.actions },
+      ])
     } catch {
       setThinking(false)
       setMessages(p => [
@@ -119,12 +129,12 @@ function AIAssistantInner() {
 
         <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#78716c', marginBottom: 8, padding: '0 4px' }}>Capabilities</div>
         {[
-          { icon: PenTool, label: 'Proposals & Contracts', color: '#16a34a' },
-          { icon: DollarSign, label: 'Financial Analysis', color: '#10b981' },
-          { icon: Users, label: 'Client Emails', color: '#f59e0b' },
-          { icon: Calculator, label: 'Tax Planning', color: '#ec4899' },
-          { icon: Code, label: 'Tech Consulting', color: '#06b6d4' },
-          { icon: Globe, label: 'Market Research', color: '#78716c' },
+          { icon: FileText, label: 'Create tasks', color: '#16a34a' },
+          { icon: DollarSign, label: 'Draft invoices', color: '#10b981' },
+          { icon: Users, label: 'Add clients', color: '#f59e0b' },
+          { icon: Calculator, label: 'Schedule events', color: '#ec4899' },
+          { icon: Code, label: 'Search jobs', color: '#06b6d4' },
+          { icon: Globe, label: 'Add CRM leads', color: '#78716c' },
         ].map(({ icon: Icon, label, color }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, marginBottom: 2, cursor: 'pointer', color: '#78716c', fontSize: 13, transition: 'all 0.15s' }} className="card-hover">
             <Icon size={14} color={color} />
@@ -176,6 +186,16 @@ function AIAssistantInner() {
                 {msg.role === 'assistant' ? <Bot size={15} color="#fff" /> : <User size={14} color="#6b7280" />}
               </div>
               <div>
+                {msg.actions && msg.actions.length > 0 && (
+                  <div style={{ marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {msg.actions.map((a, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 12px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 12 }}>
+                        <span style={{ fontSize: 14 }}>{actionIcon(a.name)}</span>
+                        <span style={{ color: '#15803d', fontWeight: 600 }}>{a.summary}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={{
                   padding: '12px 16px',
                   borderRadius: msg.role === 'user' ? '14px 4px 14px 14px' : '4px 14px 14px 14px',
@@ -227,7 +247,7 @@ function AIAssistantInner() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder="Ask anything about your freelance business..."
+              placeholder="Ask anything or give a command — 'add task', 'draft invoice', 'schedule meeting'..."
               rows={1}
               style={{ flex: 1, background: 'none', border: 'none', color: '#1c1917', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
             />
