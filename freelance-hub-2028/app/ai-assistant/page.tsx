@@ -18,23 +18,6 @@ const suggestions = [
   { icon: Calculator, label: 'Price a project', prompt: 'Help me price a mobile app design project with 25 screens, a design system, and Figma handoff.' },
 ]
 
-function getResponse(msg: string): string {
-  const lower = msg.toLowerCase()
-  if (lower.includes('proposal') || lower.includes('saas')) {
-    return `Here's a professional proposal outline:\n\n**Project Proposal: SaaS Dashboard Redesign**\n\n**Scope of Work**\n• Discovery & Research (Week 1–2)\n• Information Architecture & Wireframes (Week 3)\n• High-Fidelity Design — 15–20 screens (Week 4–6)\n• Prototype, Handoff & Documentation (Week 7–8)\n\n**Investment: $8,000**\n• 50% ($4,000) on kickoff\n• 50% ($4,000) on final delivery\n\n**Timeline: 8 weeks**\n\nWant me to write the full version as a Word doc or PDF?`
-  }
-  if (lower.includes('tax') || lower.includes('deduction')) {
-    return `Based on $96,200 freelance income, here's your estimate:\n\n**Self-Employment Tax: ~$13,600** (15.3%)\n**Federal Income Tax: ~$17,200**\n**Total Estimated: ~$30,800**\n\n**Top Deductions to Take:**\n• Home office — up to $5/sq ft\n• Software & tools — 100% deductible\n• Health insurance — 100% deductible\n• SEP-IRA contributions — up to $23,000\n• Education & courses — deductible\n\nTip: Max your SEP-IRA to cut ~$7,000 from your taxable income.`
-  }
-  if (lower.includes('follow-up') || lower.includes('email')) {
-    return `Here's a follow-up email template:\n\n**Subject:** Following up — [Project Name] Proposal\n\nHi [Name],\n\nI wanted to follow up on the proposal I sent over on [date]. I'm excited about the possibility of working together on [project].\n\nDo you have any questions about the scope or timeline? I'm happy to jump on a quick call to discuss.\n\nLooking forward to hearing from you!\n\nBest,\n[Your name]`
-  }
-  if (lower.includes('price') || lower.includes('mobile') || lower.includes('design')) {
-    return `For a mobile app design project with 25 screens + design system + Figma handoff:\n\n**Recommended Pricing: $12,000–$18,000**\n\nBreakdown:\n• 25 screens × $320–400/screen = $8,000–10,000\n• Design system (components, tokens, docs) = $2,500–4,000\n• Figma handoff + developer guide = $1,500–4,000\n\n**For a Series A startup:** Price at $15,000–18,000. They have budget and value quality. Don't under-price to win — it signals risk.`
-  }
-  return `Great question! Here's what I'd recommend:\n\n• Start by defining your goals clearly — specificity leads to better outcomes\n• Set a realistic timeline with buffer (multiply estimates by 1.3x)\n• Document everything in writing before starting work\n• Price based on value delivered, not hours spent\n\nWant me to help you draft a specific document, calculate pricing, or prepare for a client call?`
-}
-
 function AIAssistantInner() {
   const searchParams = useSearchParams()
   const [messages, setMessages] = useState<Message[]>([
@@ -56,17 +39,60 @@ function AIAssistantInner() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const send = (content?: string) => {
+  const send = async (content?: string) => {
     const text = content || input.trim()
     if (!text || thinking) return
-    const userMsg: Message = { id: Date.now(), role: 'user', content: text, timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) }
-    setMessages(p => [...p, userMsg])
+
+    const userMsg: Message = {
+      id: Date.now(),
+      role: 'user',
+      content: text,
+      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+    }
+    const updatedMessages = [...messages, userMsg]
+    setMessages(updatedMessages)
     setInput('')
     setThinking(true)
-    setTimeout(() => {
-      setMessages(p => [...p, { id: Date.now() + 1, role: 'assistant', content: getResponse(text), timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) }])
+
+    const assistantId = Date.now() + 1
+    const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
+        }),
+      })
+
+      if (!res.ok || !res.body) throw new Error('Request failed')
+
       setThinking(false)
-    }, 1200 + Math.random() * 800)
+      setMessages(p => [...p, { id: assistantId, role: 'assistant', content: '', timestamp: ts }])
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        accumulated += decoder.decode(value, { stream: true })
+        setMessages(p => p.map(m => m.id === assistantId ? { ...m, content: accumulated } : m))
+      }
+    } catch {
+      setThinking(false)
+      setMessages(p => [
+        ...p,
+        {
+          id: assistantId,
+          role: 'assistant',
+          content: 'Sorry, I ran into an issue. Make sure **ANTHROPIC_API_KEY** is set in your Vercel environment variables.',
+          timestamp: ts,
+        },
+      ])
+    }
   }
 
   const formatContent = (content: string) =>
