@@ -95,6 +95,21 @@ const tools: Anthropic.Tool[] = [
       required: ['name', 'company'],
     },
   },
+  {
+    name: 'navigate_to',
+    description: 'Navigate the user to a specific page in the app. Use when the user asks to go to, open, show, or view a section.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        page: {
+          type: 'string',
+          enum: ['dashboard', 'tasks', 'clients', 'crm', 'invoicing', 'calendar', 'ai-assistant', 'settings', 'profile', 'jobs', 'education', 'integrations', 'tax', 'community', 'contact'],
+          description: 'The page to navigate to',
+        },
+      },
+      required: ['page'],
+    },
+  },
 ]
 
 async function executeTool(name: string, input: AnyRecord): Promise<{ summary: string; data?: AnyRecord }> {
@@ -163,6 +178,24 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
       [name, company, email, stage, value, '👤', '#78716c', '[]', 'Just added', 0, 0, notes]
     )
     return { summary: `CRM contact added: ${name} at ${company} (${stage})`, data: { id: r.lastInsertRowid, name, company, stage, value } }
+  }
+
+  if (name === 'navigate_to') {
+    const routes: Record<string, string> = {
+      dashboard: '/dashboard', tasks: '/tasks', clients: '/clients', crm: '/crm',
+      invoicing: '/invoicing', calendar: '/calendar', 'ai-assistant': '/ai-assistant',
+      settings: '/settings', profile: '/profile', jobs: '/jobs', education: '/education',
+      integrations: '/integrations', tax: '/tax', community: '/community', contact: '/contact',
+    }
+    const { page } = input
+    const url = routes[page] ?? '/dashboard'
+    const labels: Record<string, string> = {
+      dashboard: 'Dashboard', tasks: 'Tasks', clients: 'Clients', crm: 'CRM Pipeline',
+      invoicing: 'Invoicing', calendar: 'Calendar', 'ai-assistant': 'AI Assistant',
+      settings: 'Settings', profile: 'Profile', jobs: 'Job Board', education: 'Education',
+      integrations: 'Integrations', tax: 'Tax Center', community: 'Community', contact: 'Contact',
+    }
+    return { summary: `Opening ${labels[page] ?? page}`, data: { url, page } }
   }
 
   return { summary: 'Action completed' }

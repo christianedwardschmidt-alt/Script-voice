@@ -32,6 +32,7 @@ const ACTION_ICONS: Record<string, string> = {
   schedule_event: '📅',
   search_jobs: '🔍',
   add_crm_contact: '📇',
+  navigate_to: '🧭',
 }
 function actionIcon(name: string) { return ACTION_ICONS[name] ?? '⚡' }
 
@@ -151,6 +152,10 @@ function AIAssistantInner() {
         ...p,
         { id: assistantId, role: 'assistant', content: data.text, timestamp: ts, actions: data.actions },
       ])
+      const navAction = data.actions?.find((a: Action) => a.name === 'navigate_to')
+      if (navAction?.data?.url) {
+        setTimeout(() => { window.location.href = navAction.data!.url as string }, 1500)
+      }
     } catch {
       setThinking(false)
       setMessages(p => [

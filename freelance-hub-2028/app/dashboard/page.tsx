@@ -100,6 +100,7 @@ const ChartTip = ({ active, payload, label }: any) => {
 const ACTION_ICONS: Record<string, string> = {
   create_task: '✓', draft_invoice: '🧾', add_client: '👤',
   schedule_event: '📅', search_jobs: '🔍', add_crm_contact: '📇',
+  navigate_to: '🧭',
 }
 
 const QUICK_COMMANDS = [
@@ -191,6 +192,10 @@ export default function DashboardPage() {
       const data = await res.json()
       setVoiceResult(data)
       if (data.actions?.length) fetch('/api/activity?limit=6').then(r => r.json()).then(setActivity)
+      const navAction = data.actions?.find((a: { name: string; data?: Record<string, unknown> }) => a.name === 'navigate_to')
+      if (navAction?.data?.url) {
+        setTimeout(() => { window.location.href = navAction.data!.url as string }, 1500)
+      }
     } catch { setVoiceResult({ text: 'Something went wrong. Check your ANTHROPIC_API_KEY.', actions: [] }) }
     setVoiceLoading(false)
   }
