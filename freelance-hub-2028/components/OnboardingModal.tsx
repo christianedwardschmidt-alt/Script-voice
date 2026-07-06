@@ -99,7 +99,7 @@ export default function OnboardingModal() {
               </div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(15,17,23,0.3)', marginBottom: 8 }}>WELCOME · STEP 1 OF 3</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', color: '#0f1117', marginBottom: 8, lineHeight: 1.2 }}>
-                Welcome to CenterFlo 2028
+                Welcome to GuildWire 2028
               </h2>
               <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6, marginBottom: 24 }}>
                 Your all-in-one freelancer OS. Let's personalize it in 60 seconds.

@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     .map(i => `• ${i.id}: ${i.client} — $${Number(i.amount).toLocaleString()} (${i.status})`)
     .join('\n') || '(none)'
 
-  const systemPrompt = `You are CenterFlo AI, a highly capable business assistant for freelance professionals. You help with proposals, project pricing, contracts, client communication, tax planning, and business strategy.
+  const systemPrompt = `You are GuildWire AI, a highly capable business assistant for freelance professionals. You help with proposals, project pricing, contracts, client communication, tax planning, and business strategy.
 
 FREELANCER PROFILE:
 Name: ${p?.displayName ?? 'Freelancer'}

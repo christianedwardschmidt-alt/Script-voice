@@ -213,7 +213,7 @@ export async function POST(req: Request) {
   const p = profile as AnyRecord | null
   const today = new Date().toISOString().split('T')[0]
 
-  const systemPrompt = `You are CenterFlo AI — an intelligent assistant that both answers questions AND takes real actions inside this freelance workspace.
+  const systemPrompt = `You are GuildWire AI — an intelligent assistant that both answers questions AND takes real actions inside this freelance workspace.
 
 User: ${p?.displayName ?? 'Freelancer'} | Skills: ${p?.skills ?? 'Design, Development'}
 Clients: ${(clients as AnyRecord[]).map(c => c.name).join(', ') || 'none yet'}
