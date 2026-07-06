@@ -12,7 +12,7 @@ const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "GuildWire 2028 — Freelancer Suite",
-  description: "The intelligent platform for modern freelancers",
+  description: "Work free. Stay wired. — The intelligent platform for modern freelancers.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

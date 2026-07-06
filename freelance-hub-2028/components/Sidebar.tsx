@@ -123,8 +123,10 @@ export default function Sidebar() {
           <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>GW</span>
         </div>
         <div>
-          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>GuildWire</div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Freelancer Suite · 2028</div>
+          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', lineHeight: 1.1 }}>
+            <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Work free. Stay wired.</div>
         </div>
       </div>
 

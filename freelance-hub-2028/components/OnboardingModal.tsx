@@ -26,20 +26,27 @@ export default function OnboardingModal() {
   const router = useRouter()
 
   useEffect(() => {
-    const done = localStorage.getItem('lf_onboarded')
+    const done = localStorage.getItem('gw_onboarded')
     if (!done) {
       setTimeout(() => setShow(true), 600)
     }
   }, [])
 
   function dismiss() {
-    localStorage.setItem('lf_onboarded', '1')
+    localStorage.setItem('gw_onboarded', '1')
     setShow(false)
   }
 
-  function finish(href: string) {
-    localStorage.setItem('lf_onboarded', '1')
-    if (name) localStorage.setItem('lf_username', name)
+  async function finish(href: string) {
+    localStorage.setItem('gw_onboarded', '1')
+    if (name) {
+      localStorage.setItem('gw_username', name)
+      fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName: name }),
+      }).catch(() => {})
+    }
     setShow(false)
     router.push(href)
   }
@@ -98,11 +105,15 @@ export default function OnboardingModal() {
                 <Zap size={24} style={{ color: '#fff' }} />
               </div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(15,17,23,0.3)', marginBottom: 8 }}>WELCOME · STEP 1 OF 3</div>
-              <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', color: '#0f1117', marginBottom: 8, lineHeight: 1.2 }}>
-                Welcome to GuildWire 2028
+              <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', marginBottom: 6, lineHeight: 1.2 }}>
+                Welcome to{' '}
+                <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
               </h2>
+              <p style={{ fontSize: 11.5, fontWeight: 600, color: '#16A34A', letterSpacing: '0.01em', marginBottom: 14 }}>
+                Work free. Stay wired.
+              </p>
               <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6, marginBottom: 24 }}>
-                Your all-in-one freelancer OS. Let's personalize it in 60 seconds.
+                Your all-in-one freelancer OS — let's personalize it in 60 seconds.
               </p>
               <label style={{ display: 'block', fontSize: 11.5, fontWeight: 600, color: 'rgba(15,17,23,0.6)', marginBottom: 8 }}>
                 What's your first name?
