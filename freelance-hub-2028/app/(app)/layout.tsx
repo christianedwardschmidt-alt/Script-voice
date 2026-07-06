@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { getUser } from "@/lib/auth";
 import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
 import QuickActions from "@/components/QuickActions";
@@ -5,7 +7,9 @@ import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const user = await getUser();
+  if (!user) redirect("/login");
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: "var(--bg)", color: "var(--text)" }}>
       <Sidebar />
