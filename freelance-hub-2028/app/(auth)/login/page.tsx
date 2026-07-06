@@ -126,6 +126,10 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+        <Link href="/forgot-password" style={{
+          display: 'block', textAlign: 'center', marginTop: 20,
+          fontSize: 13, color: '#16A34A', fontWeight: 600, textDecoration: 'none',
+        }}>Forgot your password?</Link>
       </div>
     </div>
   )

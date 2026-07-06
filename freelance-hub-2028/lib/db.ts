@@ -96,6 +96,11 @@ async function runInit() {
         created_at TEXT NOT NULL,
         expires_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS password_resets (
+        token TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+      )`,
       `CREATE TABLE IF NOT EXISTS clients (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL DEFAULT 0,
