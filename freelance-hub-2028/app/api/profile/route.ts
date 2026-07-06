@@ -1,22 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { queryOne, execute } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 export async function GET() {
-  const row = await queryOne(`SELECT * FROM profile WHERE id = 1`)
-  return NextResponse.json(row)
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const row = await queryOne(`SELECT * FROM profile WHERE user_id = ?`, [user.id])
+  return NextResponse.json(row ?? { displayName: user.name, email: user.email, headline: '', skills: '' })
 }
 
 export async function PATCH(request: NextRequest) {
-  const existing = await queryOne(`SELECT * FROM profile WHERE id = 1`)
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const existing = await queryOne(`SELECT * FROM profile WHERE user_id = ?`, [user.id])
   const body = await request.json()
-  const next: Record<string, unknown> = { ...existing }
+  const next: Record<string, unknown> = { ...(existing ?? { displayName: user.name, email: user.email, headline: '', skills: '' }) }
   const fields = ['displayName', 'email', 'headline', 'skills']
   for (const f of fields) if (body[f] !== undefined) next[f] = body[f]
 
-  await execute(`UPDATE profile SET displayName=?, email=?, headline=?, skills=? WHERE id=1`, [
-    next.displayName, next.email, next.headline, next.skills
-  ])
+  if (existing) {
+    await execute(`UPDATE profile SET displayName=?, email=?, headline=?, skills=? WHERE user_id=?`,
+      [next.displayName, next.email, next.headline, next.skills, user.id])
+  } else {
+    await execute(`INSERT INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
+      [user.id, next.displayName, next.email, next.headline, next.skills])
+  }
 
-  const row = await queryOne(`SELECT * FROM profile WHERE id = 1`)
+  const row = await queryOne(`SELECT * FROM profile WHERE user_id = ?`, [user.id])
   return NextResponse.json(row)
 }
