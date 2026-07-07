@@ -30,6 +30,8 @@ export default function SettingsPage() {
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' })
   const [pwStatus, setPwStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [pwError, setPwError] = useState('')
+  const [resetStatus, setResetStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+  const [resetUrl, setResetUrl] = useState('')
 
   useEffect(() => {
     fetch('/api/settings')
@@ -53,6 +55,22 @@ export default function SettingsPage() {
     setRestored(true)
     setCleared(false)
     setConfirmRestore(false)
+  }
+
+  const sendResetLink = async () => {
+    setResetStatus('sending')
+    setResetUrl('')
+    const profile = await fetch('/api/profile').then(r => r.json())
+    const email = profile?.email
+    if (!email) { setResetStatus('idle'); return }
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+    const data = await res.json()
+    if (data.resetUrl) setResetUrl(data.resetUrl)
+    setResetStatus('sent')
   }
 
   const changePassword = async (e: React.FormEvent) => {
@@ -145,6 +163,28 @@ export default function SettingsPage() {
               </button>
             </div>
           </form>
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+            {resetStatus === 'sent' ? (
+              resetUrl ? (
+                <div>
+                  <div style={{ fontSize: 12, color: '#78716c', marginBottom: 6 }}>No email service configured — use this link:</div>
+                  <a href={resetUrl} style={{ display: 'block', wordBreak: 'break-all', fontSize: 12, background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: '8px 10px', color: '#16a34a', textDecoration: 'none', fontFamily: 'monospace', lineHeight: 1.5 }}>{resetUrl}</a>
+                  <div style={{ fontSize: 11, color: '#78716c', marginTop: 6 }}>Link expires in 1 hour.</div>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: '#16a34a' }}>Reset link sent — check your email.</div>
+              )
+            ) : (
+              <button
+                type="button"
+                onClick={sendResetLink}
+                disabled={resetStatus === 'sending'}
+                style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, color: '#16a34a', cursor: resetStatus === 'sending' ? 'not-allowed' : 'pointer', textDecoration: 'underline', fontFamily: 'inherit', opacity: resetStatus === 'sending' ? 0.6 : 1 }}
+              >
+                {resetStatus === 'sending' ? 'Sending…' : "Don't know your current password? Send a reset link to your email"}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="card" style={{ padding: 18 }}>
