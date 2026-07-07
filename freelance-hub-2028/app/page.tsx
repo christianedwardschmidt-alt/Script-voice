@@ -23,10 +23,9 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
-.lp-logo { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.lp-logo-mark { width: 46px; height: 46px; background: #16A34A; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-family: var(--font-inter); font-weight: 800; font-size: 17px; color: #fff; letter-spacing: -0.03em; flex-shrink: 0; }
+.lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .lp-logo-text { display: flex; flex-direction: column; line-height: 1; }
-.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 21px; letter-spacing: -0.02em; color: #fff; }
+.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 22px; letter-spacing: -0.03em; color: #fff; }
 .lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0; margin-top: 3px; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
@@ -198,7 +197,6 @@ export default async function HomePage() {
         <nav className="lp-nav">
           <div className="lp-container lp-nav-inner">
             <Link href="/" className="lp-logo">
-              <div className="lp-logo-mark">GW</div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
@@ -466,7 +464,6 @@ export default async function HomePage() {
         <footer className="lp-footer">
           <div className="lp-container lp-footer-inner">
             <div className="lp-logo">
-              <div className="lp-logo-mark">GW</div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
