@@ -385,6 +385,7 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
+@media (max-width: 767px) {
   /* ── Page headers: stack title + button on mobile ─ */
   .page-hdr {
     flex-direction: column !important;
@@ -420,7 +421,7 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 767px) {
   .bottom-nav {
-    display: flex;
+    display: flex !important;
     position: fixed;
     bottom: 0;
     left: 0;
