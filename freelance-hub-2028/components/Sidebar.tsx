@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   LayoutDashboard, CheckSquare, Users, FileText,
   BookOpen, BarChart2, Bot, Settings,
   MessageSquare, Receipt, Plug, Briefcase, Zap,
-  User, Contact, CalendarDays,
+  User, Contact, CalendarDays, LogOut, ChevronUp,
 } from 'lucide-react'
 
 const NAV_GROUPS = [
@@ -56,12 +56,29 @@ export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const [displayName, setDisplayName] = useState('Chris Schmidt')
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/api/profile').then(r => r.json()).then(d => {
       if (d?.displayName) setDisplayName(d.displayName)
     }).catch(() => {})
   }, [])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setShowUserMenu(false)
+      }
+    }
+    if (showUserMenu) document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [showUserMenu])
+
+  async function signOut() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }
 
   useEffect(() => {
     const allItems = NAV_GROUPS.flatMap(g => g.items)
@@ -149,21 +166,53 @@ export default function Sidebar() {
         {BOTTOM_NAV.map(({ label, href, icon }) => navItem(href, icon, label))}
 
         {/* User card */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px 12px', marginTop: 4, cursor: 'pointer' }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #007a3a, #00b857)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0,
-            boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
-          }}>{displayName.charAt(0).toUpperCase()}</div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b857' }} />
-              <span style={{ fontSize: 10, color: 'var(--text-2)' }}>Pro Plan · Active</span>
+        <div ref={userMenuRef} style={{ position: 'relative', marginTop: 4 }}>
+          {showUserMenu && (
+            <div style={{
+              position: 'absolute', bottom: '100%', left: 0, right: 0, marginBottom: 6,
+              background: 'var(--card)', border: '1px solid var(--border)',
+              borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+              overflow: 'hidden', zIndex: 100,
+            }}>
+              <Link
+                href="/profile"
+                onClick={() => setShowUserMenu(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 13px', fontSize: 12.5, color: 'var(--text)', fontWeight: 500, textDecoration: 'none' }}
+                className="user-menu-item"
+              >
+                <User size={13} /> View Profile
+              </Link>
+              <div style={{ height: 1, background: 'var(--border)' }} />
+              <button
+                onClick={signOut}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 13px', fontSize: 12.5, color: '#dc2626', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                className="user-menu-item"
+              >
+                <LogOut size={13} /> Sign out
+              </button>
             </div>
-          </div>
+          )}
+          <button
+            onClick={() => setShowUserMenu(v => !v)}
+            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px 12px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+            className="user-card-btn"
+          >
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #007a3a, #00b857)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0,
+              boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+            }}>{displayName.charAt(0).toUpperCase()}</div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b857' }} />
+                <span style={{ fontSize: 10, color: 'var(--text-2)' }}>Pro Plan · Active</span>
+              </div>
+            </div>
+            <ChevronUp size={13} style={{ color: 'var(--text-3)', flexShrink: 0, transform: showUserMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+          </button>
         </div>
 
         {/* Keyboard shortcut hint */}
@@ -182,6 +231,8 @@ export default function Sidebar() {
           flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
         }
         .sidebar-link:hover .nav-shortcut { opacity: 1; }
+        .user-menu-item:hover { background: var(--bg-3) !important; }
+        .user-card-btn:hover { background: var(--bg-3) !important; border-radius: 8px; }
       `}</style>
     </aside>
   )
