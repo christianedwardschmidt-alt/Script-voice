@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd freelance-hub-indigo && npm install",
+  "installCommand": "cd freelance-hub-indigo && npm install && mkdir -p ../node_modules/next && printf '{\"name\":\"next\",\"version\":\"16.2.9\"}' > ../node_modules/next/package.json",
   "buildCommand": "cd freelance-hub-indigo && npm run build",
   "outputDirectory": "freelance-hub-indigo/.next"
 }
