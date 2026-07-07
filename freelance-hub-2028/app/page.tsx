@@ -23,7 +23,11 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
-.lp-logo { font-family: var(--font-inter); font-weight: 800; font-size: 22px; letter-spacing: -0.02em; line-height: 1; flex-shrink: 0; }
+.lp-logo { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.lp-logo-mark { width: 38px; height: 38px; background: #16A34A; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: var(--font-inter); font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.03em; flex-shrink: 0; }
+.lp-logo-text { display: flex; flex-direction: column; line-height: 1; }
+.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 17px; letter-spacing: -0.02em; color: #fff; }
+.lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 0; margin-top: 2px; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
 .lp-nav-links a:hover { color: #86EFAC; }
@@ -194,7 +198,11 @@ export default async function HomePage() {
         <nav className="lp-nav">
           <div className="lp-container lp-nav-inner">
             <Link href="/" className="lp-logo">
-              <span style={{ color: '#fff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+              <div className="lp-logo-mark">GW</div>
+              <div className="lp-logo-text">
+                <span className="lp-logo-name">GuildWire</span>
+                <span className="lp-logo-tag">Work free. Stay wired.</span>
+              </div>
             </Link>
             <div className="lp-nav-links">
               <a href="#features">Features</a>
@@ -459,7 +467,11 @@ export default async function HomePage() {
           <div className="lp-container lp-footer-inner">
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
               <div className="lp-logo">
-                <span style={{ color: '#fff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+                <div className="lp-logo-mark">GW</div>
+                <div className="lp-logo-text">
+                  <span className="lp-logo-name">GuildWire</span>
+                  <span className="lp-logo-tag">Work free. Stay wired.</span>
+                </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Work free. Stay wired.</p>
             </div>
