@@ -23,8 +23,7 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 64px; gap: 0; }
-.lp-logo { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
-.lp-logo-mark { flex-shrink: 0; display: block; }
+.lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .lp-logo-text { display: inline-flex; flex-direction: column; line-height: 1; }
 .lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; color: #fff; }
 .lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; letter-spacing: 0.01em; }
@@ -198,14 +197,7 @@ export default async function HomePage() {
         <nav className="lp-nav">
           <div className="lp-container lp-nav-inner">
             <Link href="/" className="lp-logo">
-              <svg className="lp-logo-mark" width="40" height="48" viewBox="0 0 40 48" fill="none" aria-hidden="true">
-                <path d="M10 3 C3 14 20 24 15 34" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5" strokeLinecap="round"/>
-                <rect x="13" y="27" width="13" height="14" rx="3" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5"/>
-                <line x1="22" y1="28.5" x2="22" y2="39.5" stroke="rgba(10,26,15,0.7)" strokeWidth="2"/>
-                <rect x="26" y="30.5" width="8" height="7" rx="1.5" fill="rgba(255,255,255,0.85)"/>
-                <rect x="34" y="31.5" width="5" height="5" rx="2.5" fill="#16A34A"/>
-              </svg>
-              <div className="lp-logo-text">
+<div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
@@ -472,14 +464,7 @@ export default async function HomePage() {
         <footer className="lp-footer">
           <div className="lp-container lp-footer-inner">
             <div className="lp-logo">
-              <svg className="lp-logo-mark" width="40" height="48" viewBox="0 0 40 48" fill="none" aria-hidden="true">
-                <path d="M10 3 C3 14 20 24 15 34" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5" strokeLinecap="round"/>
-                <rect x="13" y="27" width="13" height="14" rx="3" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5"/>
-                <line x1="22" y1="28.5" x2="22" y2="39.5" stroke="rgba(10,26,15,0.7)" strokeWidth="2"/>
-                <rect x="26" y="30.5" width="8" height="7" rx="1.5" fill="rgba(255,255,255,0.85)"/>
-                <rect x="34" y="31.5" width="5" height="5" rx="2.5" fill="#16A34A"/>
-              </svg>
-              <div className="lp-logo-text">
+<div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
