@@ -57,12 +57,14 @@ export default function Sidebar() {
   const router = useRouter()
   const [displayName, setDisplayName] = useState('Chris Schmidt')
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [isDemo, setIsDemo] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetch('/api/profile').then(r => r.json()).then(d => {
       if (d?.displayName) setDisplayName(d.displayName)
     }).catch(() => {})
+    setIsDemo(document.cookie.includes('gw_demo=1'))
   }, [])
 
   useEffect(() => {
@@ -160,6 +162,17 @@ export default function Sidebar() {
           </div>
         ))}
       </nav>
+
+      {/* Demo banner */}
+      {isDemo && (
+        <div style={{ margin: '0 10px 8px', padding: '10px 12px', background: 'rgba(91,95,207,0.08)', border: '1px solid rgba(91,95,207,0.2)', borderRadius: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--indigo)', marginBottom: 4 }}>Demo mode</div>
+          <div style={{ fontSize: 11, color: 'var(--text-2)', lineHeight: 1.4, marginBottom: 8 }}>You're browsing read-only sample data.</div>
+          <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '6px 10px', background: 'var(--indigo)', color: '#fff', borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none' }}>
+            Create free account
+          </Link>
+        </div>
+      )}
 
       {/* Bottom section */}
       <div style={{ padding: '8px 10px 0', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
