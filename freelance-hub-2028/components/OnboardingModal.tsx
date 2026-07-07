@@ -110,7 +110,7 @@ export default function OnboardingModal() {
                 <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
               </h2>
               <p style={{ fontSize: 11.5, fontWeight: 600, color: '#16A34A', letterSpacing: '0.01em', marginBottom: 14 }}>
-                Work free. Stay wired.
+                Work free. Stay connected.
               </p>
               <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6, marginBottom: 24 }}>
                 Your all-in-one freelancer OS — let's personalize it in 60 seconds.

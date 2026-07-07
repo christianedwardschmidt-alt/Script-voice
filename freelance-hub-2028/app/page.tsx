@@ -201,7 +201,7 @@ export default async function HomePage() {
               <div className="lp-logo-mark">GW</div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
-                <span className="lp-logo-tag">Work free. Stay wired.</span>
+                <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
             </Link>
             <div className="lp-nav-links">
@@ -469,7 +469,7 @@ export default async function HomePage() {
               <div className="lp-logo-mark">GW</div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
-                <span className="lp-logo-tag">Work free. Stay wired.</span>
+                <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
             </div>
             <div className="lp-footer-links">
