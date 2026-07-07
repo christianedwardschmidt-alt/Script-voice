@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const AUTH_PATHS = ['/login', '/signup']
-const PUBLIC_API = ['/api/auth/login', '/api/auth/signup']
+const AUTH_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password']
+const PUBLIC_API = ['/api/auth/login', '/api/auth/signup', '/api/auth/forgot-password', '/api/auth/reset-password']
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
