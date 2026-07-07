@@ -23,7 +23,7 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 60px; gap: 0; }
-.lp-logo { font-family: var(--font-syne); font-weight: 800; font-size: 26px; letter-spacing: -0.03em; flex-shrink: 0; }
+.lp-logo { font-family: var(--font-syne); font-weight: 800; font-size: 26px; letter-spacing: -0.05em; line-height: 1; display: inline-block; transform: scaleX(0.88); transform-origin: left center; flex-shrink: 0; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
 .lp-nav-links a:hover { color: #86EFAC; }
