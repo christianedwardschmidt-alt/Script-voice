@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password', '/api/auth']
+const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password', '/api/auth', '/demo']
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 const DEMO_ALLOW = new Set(['/api/auth/logout', '/api/auth/demo'])
 

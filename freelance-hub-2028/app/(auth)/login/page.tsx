@@ -9,20 +9,6 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [demoLoading, setDemoLoading] = useState(false)
-
-  async function handleDemo() {
-    setDemoLoading(true)
-    try {
-      const res = await fetch('/api/auth/demo', { method: 'POST' })
-      if (res.ok) { router.push('/dashboard'); router.refresh() }
-      else setError('Could not start demo. Please try again.')
-    } catch {
-      setError('Something went wrong.')
-    } finally {
-      setDemoLoading(false)
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -144,32 +130,6 @@ export default function LoginPage() {
           display: 'block', textAlign: 'center', marginTop: 20,
           fontSize: 13, color: '#16A34A', fontWeight: 600, textDecoration: 'none',
         }}>Forgot your password?</Link>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0 0' }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
-          <span style={{ fontSize: 11, color: 'rgba(15,17,23,0.35)', fontWeight: 500 }}>or</span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(0,0,0,0.08)' }} />
-        </div>
-
-        <button
-          type="button"
-          onClick={handleDemo}
-          disabled={demoLoading}
-          style={{
-            marginTop: 14, width: '100%', padding: '11px',
-            background: 'transparent',
-            color: demoLoading ? 'rgba(15,17,23,0.35)' : '#0f1117',
-            border: '1.5px solid rgba(0,0,0,0.14)', borderRadius: 10,
-            fontSize: 13.5, fontWeight: 600, cursor: demoLoading ? 'not-allowed' : 'pointer',
-            fontFamily: 'inherit', transition: 'all 0.15s',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          }}
-          onMouseEnter={e => { if (!demoLoading) { (e.currentTarget as HTMLElement).style.background = '#f7faf9'; (e.currentTarget as HTMLElement).style.borderColor = '#00b857' } }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(0,0,0,0.14)' }}
-        >
-          <span style={{ fontSize: 15 }}>👁</span>
-          {demoLoading ? 'Loading demo…' : 'Explore with demo account'}
-        </button>
       </div>
     </div>
   )
