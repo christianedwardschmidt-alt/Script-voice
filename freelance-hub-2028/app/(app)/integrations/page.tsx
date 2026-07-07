@@ -24,7 +24,7 @@ export default function IntegrationsPage() {
   useEffect(() => {
     fetch('/api/integrations')
       .then(res => res.json())
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const toggle = async (id: string) => {

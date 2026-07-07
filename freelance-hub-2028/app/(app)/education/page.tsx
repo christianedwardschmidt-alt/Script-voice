@@ -29,7 +29,7 @@ export default function EducationPage() {
   useEffect(() => {
     fetch('/api/courses')
       .then(res => res.json())
-      .then(rows => { setCourses(rows); setLoading(false) })
+      .then(rows => { setCourses(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const enroll = async (id: number) => {

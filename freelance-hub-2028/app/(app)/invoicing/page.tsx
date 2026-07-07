@@ -40,7 +40,7 @@ export default function BillingPage() {
   useEffect(() => {
     fetch('/api/invoices')
       .then(res => res.json())
-      .then(rows => { setInvoices(rows); setLoading(false) })
+      .then(rows => { setInvoices(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const paid = invoices.filter(i => i.status === 'Paid').reduce((a, c) => a + c.amount, 0)

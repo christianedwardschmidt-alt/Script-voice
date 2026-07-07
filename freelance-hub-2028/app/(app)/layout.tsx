@@ -6,6 +6,7 @@ import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
+import ClientAuthGuard from "@/components/ClientAuthGuard";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
@@ -49,6 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </div>
 
       <OnboardingModal />
+      <ClientAuthGuard />
     </div>
   );
 }

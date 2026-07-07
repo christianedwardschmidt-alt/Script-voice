@@ -137,10 +137,10 @@ export default function DashboardPage() {
   const voiceTextRef = useRef('')
 
   useEffect(() => {
-    fetch('/api/clients').then(r => r.json()).then(setClients)
-    fetch('/api/tasks').then(r => r.json()).then(setTasks)
-    fetch('/api/invoices').then(r => r.json()).then(setInvoices)
-    fetch('/api/activity?limit=6').then(r => r.json()).then(setActivity)
+    fetch('/api/clients').then(r => r.json()).then(d => setClients(Array.isArray(d) ? d : []))
+    fetch('/api/tasks').then(r => r.json()).then(d => setTasks(Array.isArray(d) ? d : []))
+    fetch('/api/invoices').then(r => r.json()).then(d => setInvoices(Array.isArray(d) ? d : []))
+    fetch('/api/activity?limit=6').then(r => r.json()).then(d => setActivity(Array.isArray(d) ? d : []))
   }, [])
 
   const activeClients   = clients.filter(c => c.status === 'active').length
@@ -191,7 +191,7 @@ export default function DashboardPage() {
       })
       const data = await res.json()
       setVoiceResult(data)
-      if (data.actions?.length) fetch('/api/activity?limit=6').then(r => r.json()).then(setActivity)
+      if (data.actions?.length) fetch('/api/activity?limit=6').then(r => r.json()).then(d => setActivity(Array.isArray(d) ? d : []))
       const allNavActions = data.actions?.filter((a: { name: string; data?: Record<string, unknown> }) => a.name === 'navigate_to') ?? []
       const navAction = allNavActions[allNavActions.length - 1]
       if (navAction?.data?.url) {
@@ -367,13 +367,13 @@ export default function DashboardPage() {
 
             {voiceResult && !voiceLoading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {voiceResult.actions.map((a, i) => (
+                {(voiceResult.actions ?? []).map((a, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '4px 10px', borderRadius: 7, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 12 }}>
                     <span>{ACTION_ICONS[a.name] ?? '⚡'}</span>
                     <span style={{ color: '#15803d', fontWeight: 600 }}>{a.summary}</span>
                   </div>
                 ))}
-                {voiceResult.text && !voiceResult.actions.length && (
+                {voiceResult.text && !(voiceResult.actions ?? []).length && (
                   <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{voiceResult.text.slice(0, 120)}{voiceResult.text.length > 120 ? '…' : ''}</div>
                 )}
                 <button

@@ -60,7 +60,7 @@ export default function CommunityPage() {
   useEffect(() => {
     fetch('/api/posts')
       .then(res => res.json())
-      .then(rows => { setPostData(rows); setLoading(false) })
+      .then(rows => { setPostData(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const toggleLike = async (id: number) => {

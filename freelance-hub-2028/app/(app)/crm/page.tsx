@@ -85,7 +85,7 @@ export default function CRMPage() {
   useEffect(() => {
     fetch('/api/crm-clients')
       .then(res => res.json())
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const filtered = data.filter((c) => {

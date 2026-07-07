@@ -38,7 +38,7 @@ export default function JobsPage() {
   useEffect(() => {
     fetch('/api/jobs')
       .then(res => res.json())
-      .then(rows => { setData(rows); setLoading(false) })
+      .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false) })
   }, [])
 
   const filtered = data.filter(j =>

@@ -59,7 +59,7 @@ export default function TasksPage() {
   useEffect(() => {
     fetch('/api/tasks')
       .then(res => res.json())
-      .then(data => { setTasks(data); setLoading(false) })
+      .then(data => { setTasks(Array.isArray(data) ? data : []); setLoading(false) })
   }, [])
 
   const filtered = tasks.filter(t => {

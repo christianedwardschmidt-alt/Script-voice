@@ -48,7 +48,7 @@ export default function ProfilePage() {
       <div className="card" style={{ padding: 28, maxWidth: 560 }}>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 28 }}>
           <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, color: '#fff', fontWeight: 700 }}>
-            {profile.displayName.charAt(0)}
+            {profile.displayName?.charAt(0) ?? '?'}
           </div>
           <div>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#1c1917' }}>{profile.displayName}</div>

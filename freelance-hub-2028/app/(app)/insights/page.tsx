@@ -47,9 +47,9 @@ export default function InsightsPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
 
   useEffect(() => {
-    fetch('/api/clients').then(res => res.json()).then(setClients)
-    fetch('/api/tasks').then(res => res.json()).then(setTasks)
-    fetch('/api/invoices').then(res => res.json()).then(setInvoices)
+    fetch('/api/clients').then(res => res.json()).then(d => setClients(Array.isArray(d) ? d : []))
+    fetch('/api/tasks').then(res => res.json()).then(d => setTasks(Array.isArray(d) ? d : []))
+    fetch('/api/invoices').then(res => res.json()).then(d => setInvoices(Array.isArray(d) ? d : []))
   }, [])
 
   const chartData = activeTab === 'Projects' ? projectsData : revenueData

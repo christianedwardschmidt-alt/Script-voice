@@ -33,7 +33,7 @@ export default function ClientsPage() {
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
-      .then(data => { setClients(data); setLoading(false) })
+      .then(data => { setClients(Array.isArray(data) ? data : []); setLoading(false) })
   }, [])
 
   const filtered = clients.filter(c =>

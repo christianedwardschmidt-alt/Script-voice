@@ -47,7 +47,7 @@ export default function CalendarPage() {
   const mk = monthKey(view)
 
   useEffect(() => {
-    fetch(`/api/events?month=${mk}`).then(r => r.json()).then(setEvents)
+    fetch(`/api/events?month=${mk}`).then(r => r.json()).then(d => setEvents(Array.isArray(d) ? d : []))
   }, [mk])
 
   const eventsByDate = useMemo(() => {
