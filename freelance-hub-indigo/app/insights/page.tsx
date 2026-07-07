@@ -26,14 +26,14 @@ const projectsData = [
 ]
 
 const categoryData = [
-  { name: 'Web Development', value: 35, color: '#4347a8' },
+  { name: 'Web Development', value: 35, color: '#15803d' },
   { name: 'Design', value: 28, color: '#ec4899' },
   { name: 'Consulting', value: 18, color: '#f59e0b' },
   { name: 'Mobile', value: 12, color: '#10b981' },
   { name: 'Other', value: 7, color: '#06b6d4' },
 ]
 
-const clientColors = ['#4347a8', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
+const clientColors = ['#15803d', '#ec4899', '#f59e0b', '#10b981', '#06b6d4']
 
 const tabs = ['Revenue', 'Projects', 'Clients']
 
@@ -70,7 +70,7 @@ export default function InsightsPage() {
   const maxClientRevenue = Math.max(...topClients.map(c => c.revenue), 1)
 
   const metrics = [
-    { label: 'Revenue This Month', value: `$${revenueThisMonth.toLocaleString()}`, change: '', icon: DollarSign, color: '#4347a8', bg: '#dcfce7' },
+    { label: 'Revenue This Month', value: `$${revenueThisMonth.toLocaleString()}`, change: '', icon: DollarSign, color: '#15803d', bg: '#dcfce7' },
     { label: 'Active Projects', value: String(activeProjects), change: '', icon: Briefcase, color: '#10b981', bg: '#d1fae5' },
     { label: 'Total Clients', value: String(clients.length), change: '', icon: Users, color: '#f59e0b', bg: '#fef9c3' },
     { label: 'Hours Worked', value: '156h', change: '', icon: Clock, color: '#ec4899', bg: '#fce7f3' },
@@ -117,7 +117,7 @@ export default function InsightsPage() {
                   fontSize: 14,
                   fontWeight: activeTab === tab ? 600 : 400,
                   color: activeTab === tab ? '#111827' : '#9ca3af',
-                  borderBottom: activeTab === tab ? '2px solid #4347a8' : '2px solid transparent',
+                  borderBottom: activeTab === tab ? '2px solid #15803d' : '2px solid transparent',
                   cursor: 'pointer',
                   marginBottom: -1,
                   transition: 'all 0.15s',
@@ -146,15 +146,15 @@ export default function InsightsPage() {
                 <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4347a8" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#4347a8" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#15803d" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#15803d" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="v" stroke="#4347a8" strokeWidth={2.5} fill="url(#greenGrad)" dot={false} />
+                  <Area type="monotone" dataKey="v" stroke="#15803d" strokeWidth={2.5} fill="url(#greenGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </>

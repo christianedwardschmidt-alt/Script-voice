@@ -84,7 +84,7 @@ export default function Sidebar() {
           fontSize: 12.5,
           textDecoration: 'none',
           transition: 'background 0.12s, color 0.12s, box-shadow 0.12s',
-          boxShadow: active ? 'inset 3px 0 0 #5b5fcf' : 'none',
+          boxShadow: active ? 'inset 3px 0 0 #16a34a' : 'none',
         }}
         className="sidebar-link"
       >
@@ -109,15 +109,15 @@ export default function Sidebar() {
       <div style={{ padding: '14px 16px 12px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
         <div style={{
           width: 32, height: 32, borderRadius: 9,
-          background: 'linear-gradient(135deg, #4347a8, #5b5fcf)',
+          background: 'linear-gradient(135deg, #15803d, #16a34a)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(91,95,207,0.3)', flexShrink: 0,
+          boxShadow: '0 2px 8px rgba(22,163,74,0.3)', flexShrink: 0,
         }}>
-          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>LF</span>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>GW</span>
         </div>
         <div>
-          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>LanceFlo</div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Freelancer Suite · Indigo</div>
+          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>GuildWire</div>
+          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Work free. Stay connected.</div>
         </div>
       </div>
 
@@ -143,7 +143,7 @@ export default function Sidebar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px 12px', marginTop: 4, cursor: 'pointer' }}>
           <div style={{
             width: 28, height: 28, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #4347a8, #5b5fcf)',
+            background: 'linear-gradient(135deg, #15803d, #16a34a)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0,
             boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
@@ -151,7 +151,7 @@ export default function Sidebar() {
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Chris Schmidt</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#5b5fcf' }} />
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a' }} />
               <span style={{ fontSize: 10, color: 'var(--text-2)' }}>Pro Plan · Active</span>
             </div>
           </div>

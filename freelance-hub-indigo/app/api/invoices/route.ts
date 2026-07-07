@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   db.prepare(
     `INSERT INTO invoices (id, client, project, amount, status, issued, due, avatar, color)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(id, client, project ?? '', amount ?? 0, status ?? 'Draft', issued ?? '', due ?? '', avatar ?? '👤', color ?? '#4347a8')
+  ).run(id, client, project ?? '', amount ?? 0, status ?? 'Draft', issued ?? '', due ?? '', avatar ?? '👤', color ?? '#15803d')
 
   logActivity(`Created invoice ${id} for ${client}`)
   const row = db.prepare(`SELECT * FROM invoices WHERE id = ?`).get(id)

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import SearchBar from "@/components/SearchBar";
@@ -10,11 +11,32 @@ import NotificationBell from "@/components/NotificationBell";
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LanceFlo Indigo — Freelancer Suite",
+  title: "GuildWire 2028 — Freelancer Suite",
   description: "The intelligent platform for modern freelancers",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const hasSession = !!cookieStore.get("gw_session");
+
+  if (!hasSession) {
+    return (
+      <html lang="en" className={geist.variable}>
+        <body style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "var(--bg)",
+          color: "var(--text)",
+          padding: "24px",
+        }}>
+          {children}
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en" className={geist.variable}>
       <body style={{ minHeight: "100vh", display: "flex", background: "var(--bg)", color: "var(--text)" }}>
@@ -69,7 +91,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               }}>
                 <div style={{
                   width: 18, height: 18, borderRadius: 5,
-                  background: "linear-gradient(135deg, #4347a8, #5b5fcf)",
+                  background: "linear-gradient(135deg, #15803d, #16a34a)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 9, fontWeight: 800, color: "#fff",
                 }}>A</div>

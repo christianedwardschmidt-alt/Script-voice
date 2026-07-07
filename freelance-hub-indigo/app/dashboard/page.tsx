@@ -71,8 +71,8 @@ function TrendBadge({ pct, good = true }: { pct: number; good?: boolean }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 2,
       fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 99,
-      background: positive ? 'rgba(91,95,207,0.1)' : 'rgba(220,38,38,0.09)',
-      color: positive ? '#4347a8' : '#c81e1e',
+      background: positive ? 'rgba(22,163,74,0.1)' : 'rgba(220,38,38,0.09)',
+      color: positive ? '#15803d' : '#c81e1e',
       fontVariantNumeric: 'tabular-nums',
     }}>
       {up ? '↑' : '↓'} {Math.abs(pct)}%
@@ -106,7 +106,7 @@ const aiInsights = [
 const PIPELINE = [
   { label: 'NovaBuild — Mobile App',      amount: 2100, status: 'Draft',    due: 'Jan 20', color: '#64748b' },
   { label: 'Hencewood — API Integration', amount: 3200, status: 'Pending',  due: 'Jan 1',  color: '#d97706' },
-  { label: 'DataSync — Discovery Call',   amount: 9800, status: 'Proposal', due: 'Jan 22', color: '#5b5fcf' },
+  { label: 'DataSync — Discovery Call',   amount: 9800, status: 'Proposal', due: 'Jan 22', color: '#16a34a' },
 ]
 
 export default function DashboardPage() {
@@ -134,7 +134,7 @@ export default function DashboardPage() {
   const kpi = [
     {
       label: 'YTD Revenue', value: `$${(totalRevYTD / 1000).toFixed(1)}k`, sub: 'vs $82.1k last year',
-      accent: '#5b5fcf', trend: 18,
+      accent: '#16a34a', trend: 18,
       spark: revenueData.map(d => d.income),
     },
     {
@@ -149,12 +149,12 @@ export default function DashboardPage() {
     },
     {
       label: 'Active Clients', value: String(activeClients), sub: `of ${clients.length} total`,
-      accent: '#5b5fcf', trend: 12,
+      accent: '#16a34a', trend: 12,
       spark: [3, 5, 4, 5, 4, Math.max(activeClients, 1)],
     },
     {
       label: 'Tasks Done', value: `${tasksDonePct}%`, sub: `${tasksDone} of ${tasks.length} complete`,
-      accent: '#5b5fcf', trend: 5,
+      accent: '#16a34a', trend: 5,
       spark: [72, 68, 81, 75, 83, Math.max(tasksDonePct, 1)],
     },
   ]
@@ -222,12 +222,12 @@ export default function DashboardPage() {
           <Brain size={13} style={{ color: 'var(--indigo)' }} />
           <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
         </div>
-        <div style={{ width: 1, height: 20, background: 'rgba(91,95,207,0.18)', flexShrink: 0 }} />
+        <div style={{ width: 1, height: 20, background: 'rgba(22,163,74,0.18)', flexShrink: 0 }} />
         {aiInsights.map((ins, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180 }}>
             <span style={{ fontSize: 12, flexShrink: 0 }}>{ins.icon}</span>
             <span style={{ fontSize: 11.5, color: 'var(--text-2)', flex: 1, lineHeight: 1.4 }}>{ins.text}</span>
-            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
+            <button style={{ border: 'none', background: 'rgba(22,163,74,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
               {ins.action}
             </button>
           </div>
@@ -267,10 +267,10 @@ export default function DashboardPage() {
             </div>
             <div style={{ display: 'flex', gap: 18, fontSize: 11, color: 'var(--text-2)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: '#16a34a', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Expenses
+                <span style={{ width: 18, height: 2, background: '#16a34a', display: 'inline-block', borderRadius: 2 }} />Expenses
               </span>
             </div>
           </div>
@@ -278,20 +278,20 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5b5fcf" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#5b5fcf" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#16a34a" stopOpacity={0.18} />
+                  <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5b5fcf" stopOpacity={0.1} />
-                  <stop offset="100%" stopColor="#5b5fcf" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#16a34a" stopOpacity={0.1} />
+                  <stop offset="100%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="#5b5fcf" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
-              <Area type="monotone" dataKey="expenses" stroke="#5b5fcf" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
+              <Area type="monotone" dataKey="income"   stroke="#16a34a" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="expenses" stroke="#16a34a" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -332,7 +332,7 @@ export default function DashboardPage() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {clients.slice(0, 4).map((c, i) => {
-              const colors = ['#5b5fcf', '#0ea5e9', '#5b5fcf', '#d97706']
+              const colors = ['#16a34a', '#0ea5e9', '#16a34a', '#d97706']
               const col = colors[i % 4]
               const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
               return (

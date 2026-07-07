@@ -13,8 +13,8 @@ const SPECIALTIES = [
 
 const FIRST_ACTIONS = [
   { label: 'Create my first invoice', icon: FileText, href: '/invoicing', color: '#d97706' },
-  { label: 'Add a client',            icon: Users,    href: '/clients',   color: '#5b5fcf' },
-  { label: 'Plan my tasks',           icon: CheckSquare, href: '/tasks',  color: '#5b5fcf' },
+  { label: 'Add a client',            icon: Users,    href: '/clients',   color: '#16a34a' },
+  { label: 'Plan my tasks',           icon: CheckSquare, href: '/tasks',  color: '#16a34a' },
   { label: 'Ask the AI assistant',    icon: Bot,      href: '/ai-assistant', color: '#0ea5e9' },
 ]
 
@@ -26,20 +26,20 @@ export default function OnboardingModal() {
   const router = useRouter()
 
   useEffect(() => {
-    const done = localStorage.getItem('lf_onboarded')
+    const done = localStorage.getItem('gw_onboarded')
     if (!done) {
       setTimeout(() => setShow(true), 600)
     }
   }, [])
 
   function dismiss() {
-    localStorage.setItem('lf_onboarded', '1')
+    localStorage.setItem('gw_onboarded', '1')
     setShow(false)
   }
 
   function finish(href: string) {
-    localStorage.setItem('lf_onboarded', '1')
-    if (name) localStorage.setItem('lf_username', name)
+    localStorage.setItem('gw_onboarded', '1')
+    if (name) localStorage.setItem('gw_username', name)
     setShow(false)
     router.push(href)
   }
@@ -78,7 +78,7 @@ export default function OnboardingModal() {
         {/* Progress bar */}
         <div style={{ height: 3, background: '#f0f0f0' }}>
           <div style={{
-            height: '100%', background: 'linear-gradient(90deg, #4347a8, #5b5fcf)',
+            height: '100%', background: 'linear-gradient(90deg, #15803d, #16a34a)',
             width: `${((step + 1) / 3) * 100}%`, transition: 'width 0.4s ease',
             borderRadius: 99,
           }} />
@@ -91,15 +91,15 @@ export default function OnboardingModal() {
             <>
               <div style={{
                 width: 52, height: 52, borderRadius: 14,
-                background: 'linear-gradient(135deg, #4347a8, #5b5fcf)',
+                background: 'linear-gradient(135deg, #15803d, #16a34a)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: 20, boxShadow: '0 4px 16px rgba(91,95,207,0.3)',
+                marginBottom: 20, boxShadow: '0 4px 16px rgba(22,163,74,0.3)',
               }}>
                 <Zap size={24} style={{ color: '#fff' }} />
               </div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(15,17,23,0.3)', marginBottom: 8 }}>WELCOME · STEP 1 OF 3</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', color: '#0f1117', marginBottom: 8, lineHeight: 1.2 }}>
-                Welcome to LanceFlo 2028
+                Welcome to GuildWire 2028
               </h2>
               <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6, marginBottom: 24 }}>
                 Your all-in-one freelancer OS. Let's personalize it in 60 seconds.
@@ -120,7 +120,7 @@ export default function OnboardingModal() {
                   fontFamily: 'inherit', marginBottom: 20,
                   transition: 'border-color 0.15s',
                 }}
-                onFocus={e => { e.target.style.borderColor = '#5b5fcf'; e.target.style.background = '#fff' }}
+                onFocus={e => { e.target.style.borderColor = '#16a34a'; e.target.style.background = '#fff' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.background = '#fafafa' }}
               />
               <button
@@ -128,12 +128,12 @@ export default function OnboardingModal() {
                 disabled={!name.trim()}
                 style={{
                   width: '100%', padding: '12px', borderRadius: 10,
-                  background: name.trim() ? 'linear-gradient(135deg, #4347a8, #5b5fcf)' : 'rgba(0,0,0,0.08)',
+                  background: name.trim() ? 'linear-gradient(135deg, #15803d, #16a34a)' : 'rgba(0,0,0,0.08)',
                   color: name.trim() ? '#fff' : 'rgba(15,17,23,0.35)',
                   fontSize: 13.5, fontWeight: 700, border: 'none', cursor: name.trim() ? 'pointer' : 'not-allowed',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   fontFamily: 'inherit', transition: 'all 0.2s',
-                  boxShadow: name.trim() ? '0 4px 14px rgba(91,95,207,0.28)' : 'none',
+                  boxShadow: name.trim() ? '0 4px 14px rgba(22,163,74,0.28)' : 'none',
                 }}
               >
                 Continue <ArrowRight size={15} />
@@ -158,8 +158,8 @@ export default function OnboardingModal() {
                     onClick={() => { setSpecialty(s.label); setTimeout(() => setStep(2), 180) }}
                     style={{
                       padding: '14px', borderRadius: 12, textAlign: 'left',
-                      border: specialty === s.label ? '2px solid #5b5fcf' : '1.5px solid rgba(0,0,0,0.1)',
-                      background: specialty === s.label ? 'rgba(91,95,207,0.06)' : '#fafafa',
+                      border: specialty === s.label ? '2px solid #16a34a' : '1.5px solid rgba(0,0,0,0.1)',
+                      background: specialty === s.label ? 'rgba(22,163,74,0.06)' : '#fafafa',
                       cursor: 'pointer', fontFamily: 'inherit',
                       transition: 'all 0.15s',
                     }}

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       `INSERT INTO posts (author, handle, role, avatar, color, time, trending, content, image, likes, comments, shares, views, liked, saved, reposted, createdAt)
        VALUES (?, ?, ?, ?, ?, ?, 0, ?, NULL, 0, 0, 0, 0, 0, 0, 0, ?)`
     )
-    .run('Christian Schmidt', '@christians', 'Full Stack Developer & UI Designer', '👨🏻‍💻', '#4347a8', 'now', content, new Date().toISOString())
+    .run('Christian Schmidt', '@christians', 'Full Stack Developer & UI Designer', '👨🏻‍💻', '#15803d', 'now', content, new Date().toISOString())
 
   logActivity('Shared a new post to the community')
   const row = db.prepare(`SELECT * FROM posts WHERE id = ?`).get(result.lastInsertRowid) as Record<string, unknown>

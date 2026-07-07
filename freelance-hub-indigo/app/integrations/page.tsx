@@ -62,7 +62,7 @@ export default function IntegrationsPage() {
             onClick={() => setActiveCategory(cat)}
             style={{
               padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: activeCategory === cat ? 600 : 400,
-              background: activeCategory === cat ? '#4347a8' : '#fff',
+              background: activeCategory === cat ? '#15803d' : '#fff',
               color: activeCategory === cat ? '#fff' : '#6b7280',
               border: activeCategory === cat ? 'none' : '1px solid rgba(0,0,0,0.06)',
               cursor: 'pointer', transition: 'all 0.15s',
@@ -98,7 +98,7 @@ export default function IntegrationsPage() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                  background: integ.connected ? '#f9fafb' : '#4347a8',
+                  background: integ.connected ? '#f9fafb' : '#15803d',
                   color: integ.connected ? '#6b7280' : '#fff',
                   border: integ.connected ? '1px solid rgba(0,0,0,0.06)' : 'none',
                 }}

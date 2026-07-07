@@ -18,13 +18,13 @@ const NOTIFICATIONS = [
     time: '4h ago', action: 'View', href: '/tasks',
   },
   {
-    id: 3, unread: true, Icon: TrendingUp, color: '#5b5fcf',
+    id: 3, unread: true, Icon: TrendingUp, color: '#16a34a',
     title: 'Revenue milestone',
     desc: 'You hit $17.4k this month — best month ever',
     time: '1d ago', action: 'See insights', href: '/insights',
   },
   {
-    id: 4, unread: false, Icon: MessageSquare, color: '#5b5fcf',
+    id: 4, unread: false, Icon: MessageSquare, color: '#16a34a',
     title: 'New reply on your post',
     desc: 'Marcus Williams replied to your pricing thread',
     time: '2d ago', action: 'Read', href: '/community',

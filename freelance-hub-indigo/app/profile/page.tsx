@@ -47,7 +47,7 @@ export default function ProfilePage() {
       <p style={{ color: '#78716c', fontSize: 14, marginBottom: 24 }}>Manage your personal profile</p>
       <div className="card" style={{ padding: 28, maxWidth: 560 }}>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 28 }}>
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#4347a8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, color: '#fff', fontWeight: 700 }}>
+          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, color: '#fff', fontWeight: 700 }}>
             {profile.displayName.charAt(0)}
           </div>
           <div>
@@ -75,7 +75,7 @@ export default function ProfilePage() {
           </div>
         </div>
         <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }}>
-          {saved && <span style={{ fontSize: 13, color: '#4347a8' }}>Saved!</span>}
+          {saved && <span style={{ fontSize: 13, color: '#15803d' }}>Saved!</span>}
           <button className="btn-primary" onClick={update}>Update Profile</button>
         </div>
       </div>

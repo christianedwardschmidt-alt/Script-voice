@@ -63,7 +63,7 @@ export default function EducationPage() {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
         {[
-          { label: 'Enrolled', value: enrolled.length, icon: BookOpen, color: '#4347a8', bg: '#dcfce7' },
+          { label: 'Enrolled', value: enrolled.length, icon: BookOpen, color: '#15803d', bg: '#dcfce7' },
           { label: 'Completed', value: completed.length, icon: CheckCircle, color: '#10b981', bg: '#d1fae5' },
           { label: 'In Progress', value: enrolled.filter(c => c.progress > 0 && c.progress < 100).length, icon: Clock, color: '#f59e0b', bg: '#fef9c3' },
           { label: 'Certificates', value: completed.length, icon: Award, color: '#ec4899', bg: '#fce7f3' },
@@ -94,7 +94,7 @@ export default function EducationPage() {
             onClick={() => setActiveCategory(cat)}
             style={{
               padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: activeCategory === cat ? 600 : 400,
-              background: activeCategory === cat ? '#4347a8' : '#fff',
+              background: activeCategory === cat ? '#15803d' : '#fff',
               color: activeCategory === cat ? '#fff' : '#6b7280',
               border: activeCategory === cat ? 'none' : '1px solid rgba(0,0,0,0.06)',
               cursor: 'pointer', transition: 'all 0.15s',
@@ -140,10 +140,10 @@ export default function EducationPage() {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                     <span style={{ fontSize: 11, color: '#78716c' }}>Progress</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: course.progress === 100 ? '#10b981' : '#4347a8' }}>{course.progress}%</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: course.progress === 100 ? '#10b981' : '#15803d' }}>{course.progress}%</span>
                   </div>
                   <div style={{ height: 5, background: '#f7f6f3', borderRadius: 3 }}>
-                    <div style={{ height: '100%', width: `${course.progress}%`, background: course.progress === 100 ? '#10b981' : '#4347a8', borderRadius: 3 }} />
+                    <div style={{ height: '100%', width: `${course.progress}%`, background: course.progress === 100 ? '#10b981' : '#15803d', borderRadius: 3 }} />
                   </div>
                 </div>
               ) : (

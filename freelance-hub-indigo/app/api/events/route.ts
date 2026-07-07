@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   const { title, date, startTime, endTime, type, client, description, color } = body
   const result = db
     .prepare(`INSERT INTO calendar_events (title, date, startTime, endTime, type, client, description, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
-    .run(title, date, startTime ?? null, endTime ?? null, type ?? 'meeting', client ?? null, description ?? '', color ?? '#5b5fcf')
+    .run(title, date, startTime ?? null, endTime ?? null, type ?? 'meeting', client ?? null, description ?? '', color ?? '#16a34a')
   logActivity(`Added calendar event: ${title} on ${date}`)
   const row = db.prepare(`SELECT * FROM calendar_events WHERE id = ?`).get(result.lastInsertRowid)
   return NextResponse.json(row, { status: 201 })

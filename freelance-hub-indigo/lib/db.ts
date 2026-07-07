@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3'
 import path from 'path'
 import fs from 'fs'
+import { scryptSync, randomBytes } from 'crypto'
 
 const dataDir = process.env.NODE_ENV === 'production' ? '/tmp' : path.join(process.cwd(), 'data')
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true })
@@ -21,6 +22,22 @@ const db = globalThis.__lanceflo_db ?? createConnection()
 if (process.env.NODE_ENV !== 'production') globalThis.__lanceflo_db = db
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    token TEXT NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -200,7 +217,7 @@ db.exec(`
     type TEXT DEFAULT 'meeting',
     client TEXT,
     description TEXT,
-    color TEXT DEFAULT '#5b5fcf'
+    color TEXT DEFAULT '#16a34a'
   );
 `)
 
@@ -209,10 +226,17 @@ function seedIfEmpty(table: string, seedFn: () => void) {
   if (count === 0) seedFn()
 }
 
+seedIfEmpty('users', () => {
+  const salt = randomBytes(16).toString('hex')
+  const hash = scryptSync('demo1234', salt, 64).toString('hex')
+  db.prepare(`INSERT INTO users (email, name, password_hash, created_at) VALUES (?, ?, ?, ?)`)
+    .run('demo@guildwire.io', 'Chris Schmidt', `${salt}:${hash}`, new Date().toISOString())
+})
+
 seedIfEmpty('clients', () => {
   const stmt = db.prepare(`INSERT INTO clients (name, company, email, phone, website, avatar, color, status, revenue, projects) VALUES (@name, @company, @email, @phone, @website, @avatar, @color, @status, @revenue, @projects)`)
   const rows = [
-    { name: 'Emma Thompson', company: 'Tech Trophey', email: 'emma@techtrophey.com', phone: '+1 (555) 234-5678', website: 'techtrophey.com', avatar: '👩🏻‍💼', color: '#4347a8', status: 'active', revenue: 24500, projects: 5 },
+    { name: 'Emma Thompson', company: 'Tech Trophey', email: 'emma@techtrophey.com', phone: '+1 (555) 234-5678', website: 'techtrophey.com', avatar: '👩🏻‍💼', color: '#15803d', status: 'active', revenue: 24500, projects: 5 },
     { name: 'James Park', company: 'Hencewood Digital', email: 'james@hencewood.io', phone: '+1 (555) 345-6789', website: 'hencewood.io', avatar: '👨🏻‍💻', color: '#ec4899', status: 'active', revenue: 18200, projects: 3 },
     { name: 'Aisha Williams', company: 'Margono Studio', email: 'aisha@margono.co', phone: '+1 (555) 456-7890', website: 'margono.co', avatar: '👩🏿‍💼', color: '#f59e0b', status: 'active', revenue: 15800, projects: 4 },
   ]
@@ -222,7 +246,7 @@ seedIfEmpty('clients', () => {
 seedIfEmpty('crm_clients', () => {
   const stmt = db.prepare(`INSERT INTO crm_clients (name, company, email, phone, website, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes) VALUES (@name, @company, @email, @phone, @website, @stage, @value, @avatar, @avatarBg, @tags, @lastContact, @starred, @rating, @notes)`)
   const rows = [
-    { name: 'Emma Thompson', company: 'Acme Corp', email: 'emma@acmecorp.com', phone: '+1 (555) 234-5678', website: 'acmecorp.com', stage: 'Active', value: 18500, avatar: '👩🏻‍💼', avatarBg: '#4347a8', tags: JSON.stringify(['Design', 'Retainer']), lastContact: '1h ago', starred: 1, rating: 5, notes: 'Long-term client. Pays on time. Expanding to mobile app.' },
+    { name: 'Emma Thompson', company: 'Acme Corp', email: 'emma@acmecorp.com', phone: '+1 (555) 234-5678', website: 'acmecorp.com', stage: 'Active', value: 18500, avatar: '👩🏻‍💼', avatarBg: '#15803d', tags: JSON.stringify(['Design', 'Retainer']), lastContact: '1h ago', starred: 1, rating: 5, notes: 'Long-term client. Pays on time. Expanding to mobile app.' },
     { name: 'James Park', company: 'TechFlow Inc', email: 'jpark@techflow.io', phone: '+1 (555) 345-6789', website: 'techflow.io', stage: 'Proposal', value: 12000, avatar: '👨🏻‍💻', avatarBg: '#22c55e', tags: JSON.stringify(['Development', 'API']), lastContact: '3h ago', starred: 0, rating: 4, notes: 'Needs detailed scope. Budget is flexible if scope is clear.' },
     { name: 'Aisha Williams', company: 'Bright Ideas Co', email: 'aisha@brightideas.co', phone: '+1 (555) 456-7890', website: 'brightideas.co', stage: 'Negotiation', value: 9800, avatar: '👩🏿‍💼', avatarBg: '#d97706', tags: JSON.stringify(['Marketing', 'Content']), lastContact: '1d ago', starred: 1, rating: 4, notes: 'Negotiating on timeline. They want delivery in 3 weeks.' },
     { name: 'Carlos Mendez', company: 'DataSync', email: 'carlos@datasync.io', phone: '+1 (555) 567-8901', website: 'datasync.io', stage: 'Active', value: 24000, avatar: '👨🏽‍💼', avatarBg: '#14b8a6', tags: JSON.stringify(['Development', 'Data', 'Premium']), lastContact: '2d ago', starred: 0, rating: 5, notes: 'High-value client. Careful with deadlines. C-level contacts.' },
@@ -246,7 +270,7 @@ seedIfEmpty('tasks', () => {
 seedIfEmpty('invoices', () => {
   const stmt = db.prepare(`INSERT INTO invoices (id, client, project, amount, status, issued, due, avatar, color) VALUES (@id, @client, @project, @amount, @status, @issued, @due, @avatar, @color)`)
   const rows = [
-    { id: 'INV-089', client: 'Tech Trophey', project: 'Brand Redesign Q4', amount: 4800, status: 'Paid', issued: 'Nov 15', due: 'Dec 15', avatar: '👩🏻‍💼', color: '#4347a8' },
+    { id: 'INV-089', client: 'Tech Trophey', project: 'Brand Redesign Q4', amount: 4800, status: 'Paid', issued: 'Nov 15', due: 'Dec 15', avatar: '👩🏻‍💼', color: '#15803d' },
     { id: 'INV-090', client: 'Hencewood Digital', project: 'API Integration', amount: 3200, status: 'Pending', issued: 'Dec 1', due: 'Jan 1', avatar: '👨🏻‍💻', color: '#ec4899' },
     { id: 'INV-088', client: 'Margono Studio', project: 'Dashboard UI', amount: 8400, status: 'Overdue', issued: 'Oct 20', due: 'Nov 20', avatar: '👩🏿‍💼', color: '#f59e0b' },
     { id: 'INV-091', client: 'NovaBuild', project: 'Mobile App', amount: 2100, status: 'Draft', issued: 'Dec 20', due: 'Jan 20', avatar: '👨🏽‍💼', color: '#10b981' },
@@ -268,7 +292,7 @@ seedIfEmpty('jobs', () => {
 seedIfEmpty('courses', () => {
   const stmt = db.prepare(`INSERT INTO courses (title, instructor, category, duration, lessons, rating, progress, enrolled, price, color, badge) VALUES (@title, @instructor, @category, @duration, @lessons, @rating, @progress, @enrolled, @price, @color, @badge)`)
   const rows = [
-    { title: 'Advanced Figma for Freelancers', instructor: 'Sarah Chen', category: 'Design', duration: '8h 30m', lessons: 42, rating: 4.9, progress: 65, enrolled: 1, price: 0, color: '#4347a8', badge: 'Free' },
+    { title: 'Advanced Figma for Freelancers', instructor: 'Sarah Chen', category: 'Design', duration: '8h 30m', lessons: 42, rating: 4.9, progress: 65, enrolled: 1, price: 0, color: '#15803d', badge: 'Free' },
     { title: 'Full-Stack Next.js', instructor: 'Marcus Williams', category: 'Development', duration: '22h', lessons: 95, rating: 4.8, progress: 30, enrolled: 1, price: 79, color: '#10b981', badge: 'Bestseller' },
     { title: 'AI Tools for Freelancers', instructor: 'Priya Sharma', category: 'AI & ML', duration: '6h 45m', lessons: 28, rating: 4.9, progress: 0, enrolled: 0, price: 49, color: '#f59e0b', badge: 'New' },
     { title: 'Freelance Business Mastery', instructor: 'James Rodriguez', category: 'Business', duration: '11h', lessons: 56, rating: 4.7, progress: 100, enrolled: 1, price: 89, color: '#ec4899', badge: null },
@@ -300,7 +324,7 @@ seedIfEmpty('integrations', () => {
 seedIfEmpty('posts', () => {
   const stmt = db.prepare(`INSERT INTO posts (author, handle, role, avatar, color, time, trending, content, image, likes, comments, shares, views, liked, saved, reposted, createdAt) VALUES (@author, @handle, @role, @avatar, @color, @time, @trending, @content, @image, @likes, @comments, @shares, @views, @liked, @saved, @reposted, @createdAt)`)
   const rows = [
-    { author: 'Sarah Johnson', handle: '@sarahj_ux', role: 'Senior UI/UX Designer', avatar: '👩🏻‍🎨', color: '#4347a8', time: '2h', trending: 1, content: 'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜', image: JSON.stringify({ type: 'design', label: 'Dashboard Redesign Preview', emoji: '🖥', grad: 'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)' }), likes: 142, comments: 38, shares: 21, views: 8400, liked: 0, saved: 0, reposted: 0, createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
+    { author: 'Sarah Johnson', handle: '@sarahj_ux', role: 'Senior UI/UX Designer', avatar: '👩🏻‍🎨', color: '#15803d', time: '2h', trending: 1, content: 'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜', image: JSON.stringify({ type: 'design', label: 'Dashboard Redesign Preview', emoji: '🖥', grad: 'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)' }), likes: 142, comments: 38, shares: 21, views: 8400, liked: 0, saved: 0, reposted: 0, createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString() },
     { author: 'Marcus Williams', handle: '@marcusdev', role: 'Full Stack Developer', avatar: '👨🏾‍💻', color: '#10b981', time: '5h', trending: 0, content: 'Hot take: The single best thing I did for my freelance career was raising my rates.\n\nWent from $85/hr → $150/hr and actually got MORE serious clients.\n\nPrice is a signal. Premium pricing filters out problem clients automatically. Don\'t under-price to win — it signals risk.', image: JSON.stringify({ type: 'chart', label: 'Revenue Growth 2025→2026', emoji: '📈', grad: 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 50%, #34d399 100%)' }), likes: 287, comments: 64, shares: 89, views: 21300, liked: 1, saved: 0, reposted: 0, createdAt: new Date(Date.now() - 5 * 3600 * 1000).toISOString() },
     { author: 'Priya Sharma', handle: '@priya_uxr', role: 'UX Researcher', avatar: '👩🏽‍💻', color: '#f59e0b', time: '1d', trending: 0, content: 'Sharing my freelance contract template — took me 2 years and one bad client experience to get right.\n\nIncludes:\n✅ Scope of work clauses\n✅ Revision limits\n✅ Kill fee (25% if client cancels)\n✅ IP ownership on final payment\n\nDM me for the full version. No strings.', image: null, likes: 512, comments: 97, shares: 203, views: 34100, liked: 0, saved: 1, reposted: 0, createdAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString() },
     { author: 'Tom Blake', handle: '@tomblake_brand', role: 'Brand Strategist', avatar: '👨🏼‍💼', color: '#06b6d4', time: '2d', trending: 0, content: 'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + LanceFlo for project tracking\n\nWhat\'s your must-have setup piece?', image: JSON.stringify({ type: 'photo', label: 'Home Office Setup', emoji: '🖥', grad: 'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)' }), likes: 94, comments: 41, shares: 7, views: 5200, liked: 0, saved: 0, reposted: 1, createdAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString() },
@@ -325,7 +349,7 @@ seedIfEmpty('contact_info', () => {
 seedIfEmpty('tax_deductions', () => {
   const stmt = db.prepare(`INSERT INTO tax_deductions (category, amount, icon, max, color) VALUES (@category, @amount, @icon, @max, @color)`)
   const rows = [
-    { category: 'Home Office', amount: 3600, icon: '🏠', max: 5400, color: '#4347a8' },
+    { category: 'Home Office', amount: 3600, icon: '🏠', max: 5400, color: '#15803d' },
     { category: 'Software & Tools', amount: 2840, icon: '💻', max: 5400, color: '#ec4899' },
     { category: 'Health Insurance', amount: 5400, icon: '🏥', max: 5400, color: '#10b981' },
     { category: 'Equipment', amount: 4100, icon: '🖥', max: 5400, color: '#f59e0b' },
@@ -350,7 +374,7 @@ seedIfEmpty('tax_documents', () => {
 
 seedIfEmpty('activity_log', () => {
   const stmt = db.prepare(`INSERT INTO activity_log (message, createdAt) VALUES (?, ?)`)
-  stmt.run('Welcome to LanceFlo — your workspace is ready', new Date().toISOString())
+  stmt.run('Welcome to GuildWire — your workspace is ready', new Date().toISOString())
 })
 
 seedIfEmpty('calendar_events', () => {
@@ -360,17 +384,17 @@ seedIfEmpty('calendar_events', () => {
   const m = String(now.getMonth() + 1).padStart(2, '0')
   const d = (n: number) => `${y}-${m}-${String(n).padStart(2, '0')}`
   const rows = [
-    { title: 'Kick-off Call — Tech Trophey', date: d(3), startTime: '10:00', endTime: '11:00', type: 'meeting', client: 'Tech Trophey', description: 'Discuss brand redesign scope and timeline', color: '#5b5fcf' },
+    { title: 'Kick-off Call — Tech Trophey', date: d(3), startTime: '10:00', endTime: '11:00', type: 'meeting', client: 'Tech Trophey', description: 'Discuss brand redesign scope and timeline', color: '#16a34a' },
     { title: 'Invoice INV-090 Due', date: d(5), startTime: null, endTime: null, type: 'deadline', client: 'Hencewood Digital', description: 'Payment deadline for API integration project', color: '#d97706' },
-    { title: 'Design Review — Margono', date: d(7), startTime: '14:00', endTime: '15:30', type: 'meeting', client: 'Margono Studio', description: 'Present dashboard UI mockups for feedback', color: '#5b5fcf' },
+    { title: 'Design Review — Margono', date: d(7), startTime: '14:00', endTime: '15:30', type: 'meeting', client: 'Margono Studio', description: 'Present dashboard UI mockups for feedback', color: '#16a34a' },
     { title: 'Submit final deliverables', date: d(10), startTime: null, endTime: null, type: 'deadline', client: 'Tech Trophey', description: 'Final brand assets and style guide', color: '#d97706' },
-    { title: 'Weekly sync — James Park', date: d(12), startTime: '09:00', endTime: '09:30', type: 'meeting', client: 'Hencewood Digital', description: 'Regular check-in on project progress', color: '#5b5fcf' },
+    { title: 'Weekly sync — James Park', date: d(12), startTime: '09:00', endTime: '09:30', type: 'meeting', client: 'Hencewood Digital', description: 'Regular check-in on project progress', color: '#16a34a' },
     { title: 'Quarterly tax estimate', date: d(15), startTime: null, endTime: null, type: 'deadline', client: null, description: 'Q4 estimated tax payment due', color: '#dc2626' },
-    { title: 'Discovery call — NovaBuild', date: d(17), startTime: '11:00', endTime: '12:00', type: 'meeting', client: 'NovaBuild', description: 'First call with Sophie Laurent re: enterprise project', color: '#5b5fcf' },
-    { title: 'Finish mobile app screens', date: d(18), startTime: null, endTime: null, type: 'task', client: 'NovaBuild', description: 'Complete all 12 remaining mobile UI screens', color: '#5b5fcf' },
-    { title: 'Portfolio update', date: d(20), startTime: null, endTime: null, type: 'task', client: null, description: 'Add 3 new case studies to personal site', color: '#5b5fcf' },
+    { title: 'Discovery call — NovaBuild', date: d(17), startTime: '11:00', endTime: '12:00', type: 'meeting', client: 'NovaBuild', description: 'First call with Sophie Laurent re: enterprise project', color: '#16a34a' },
+    { title: 'Finish mobile app screens', date: d(18), startTime: null, endTime: null, type: 'task', client: 'NovaBuild', description: 'Complete all 12 remaining mobile UI screens', color: '#16a34a' },
+    { title: 'Portfolio update', date: d(20), startTime: null, endTime: null, type: 'task', client: null, description: 'Add 3 new case studies to personal site', color: '#16a34a' },
     { title: 'Proposal deadline — DataSync', date: d(22), startTime: null, endTime: null, type: 'deadline', client: 'DataSync', description: 'Send detailed project proposal to Carlos', color: '#d97706' },
-    { title: 'Year-end review call', date: d(28), startTime: '15:00', endTime: '16:00', type: 'meeting', client: null, description: 'Internal review of 2028 performance and 2029 goals', color: '#5b5fcf' },
+    { title: 'Year-end review call', date: d(28), startTime: '15:00', endTime: '16:00', type: 'meeting', client: null, description: 'Internal review of 2028 performance and 2029 goals', color: '#16a34a' },
   ]
   for (const r of rows) stmt.run(r)
 })

@@ -62,7 +62,7 @@ export default function SettingsPage() {
               </div>
               <div
                 onClick={() => toggle(key)}
-                style={{ width: 44, height: 24, borderRadius: 12, background: on ? '#4347a8' : '#e5e7eb', position: 'relative', cursor: 'pointer', transition: 'background 0.15s' }}
+                style={{ width: 44, height: 24, borderRadius: 12, background: on ? '#15803d' : '#e5e7eb', position: 'relative', cursor: 'pointer', transition: 'background 0.15s' }}
               >
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--card)', position: 'absolute', top: 3, left: on ? 23 : 3, transition: 'left 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }} />
               </div>

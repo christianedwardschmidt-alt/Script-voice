@@ -32,7 +32,7 @@ const TYPE_ICON: Record<string, string> = {
   Client: '👤', Task: '✓', Invoice: '🧾', CRM: '🤝', Event: '📅', Job: '⚡',
 }
 const TYPE_COLOR: Record<string, string> = {
-  Client: '#4347a8', Task: '#5b5fcf', Invoice: '#f59e0b', CRM: '#ec4899', Event: '#06b6d4', Job: '#5b5fcf',
+  Client: '#15803d', Task: '#16a34a', Invoice: '#f59e0b', CRM: '#ec4899', Event: '#06b6d4', Job: '#16a34a',
 }
 
 function formatAnswer(text: string) {
@@ -40,7 +40,7 @@ function formatAnswer(text: string) {
     if (line.startsWith('**') && line.endsWith('**'))
       return <div key={i} style={{ fontWeight: 700, color: 'var(--text)', marginTop: i > 0 ? 6 : 0, marginBottom: 2, fontSize: 12 }}>{line.replace(/\*\*/g, '')}</div>
     if (line.startsWith('• '))
-      return <div key={i} style={{ paddingLeft: 12, color: 'var(--text-2)', fontSize: 12, marginBottom: 1, position: 'relative' }}><span style={{ position: 'absolute', left: 2, color: '#5b5fcf' }}>•</span>{line.slice(2)}</div>
+      return <div key={i} style={{ paddingLeft: 12, color: 'var(--text-2)', fontSize: 12, marginBottom: 1, position: 'relative' }}><span style={{ position: 'absolute', left: 2, color: '#16a34a' }}>•</span>{line.slice(2)}</div>
     if (line === '') return <div key={i} style={{ height: 4 }} />
     return <div key={i} style={{ color: 'var(--text-2)', fontSize: 12, lineHeight: 1.5 }}>{line}</div>
   })
@@ -212,7 +212,7 @@ export default function SearchBar() {
                 onMouseDown={askAI}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', cursor: 'pointer',
-                  background: active === allItems.length ? 'rgba(91,95,207,0.06)' : 'rgba(91,95,207,0.02)',
+                  background: active === allItems.length ? 'rgba(22,163,74,0.06)' : 'rgba(22,163,74,0.02)',
                 }}
               >
                 <span style={{ fontSize: 15, width: 20, textAlign: 'center' }}>✨</span>
@@ -222,8 +222,8 @@ export default function SearchBar() {
                   </div>
                   {!aiLoading && <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Get an instant answer</div>}
                 </div>
-                {!aiLoading && <span style={{ fontSize: 10, fontWeight: 700, color: '#5b5fcf', background: 'rgba(91,95,207,0.12)', borderRadius: 4, padding: '1px 6px' }}>AI</span>}
-                {aiLoading && <div style={{ display: 'flex', gap: 3 }}>{[0,1,2].map(i => <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#5b5fcf', opacity: 0.7 }} />)}</div>}
+                {!aiLoading && <span style={{ fontSize: 10, fontWeight: 700, color: '#16a34a', background: 'rgba(22,163,74,0.12)', borderRadius: 4, padding: '1px 6px' }}>AI</span>}
+                {aiLoading && <div style={{ display: 'flex', gap: 3 }}>{[0,1,2].map(i => <div key={i} style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', opacity: 0.7 }} />)}</div>}
               </div>
             )}
 
@@ -233,7 +233,7 @@ export default function SearchBar() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontSize: 14 }}>✨</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#5b5fcf' }}>AI Answer</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#16a34a' }}>AI Answer</span>
                   </div>
                   <button
                     onMouseDown={e => { e.stopPropagation(); setAiAnswer(null) }}
@@ -243,7 +243,7 @@ export default function SearchBar() {
                 <div style={{ marginBottom: 10 }}>{formatAnswer(aiAnswer)}</div>
                 <button
                   onMouseDown={e => { e.stopPropagation(); navigate(`/ai-assistant?q=${encodeURIComponent(query)}`) }}
-                  style={{ fontSize: 11, color: '#5b5fcf', background: 'rgba(91,95,207,0.08)', border: '1px solid rgba(91,95,207,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
+                  style={{ fontSize: 11, color: '#16a34a', background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)', borderRadius: 6, padding: '5px 12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}
                 >
                   Continue in AI Assistant →
                 </button>

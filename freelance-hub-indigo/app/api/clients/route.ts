@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       phone ?? null,
       website ?? null,
       avatar ?? '👤',
-      color ?? '#4347a8',
+      color ?? '#15803d',
       status ?? 'active',
       revenue ?? 0,
       projects ?? 0

@@ -72,7 +72,7 @@ function AIAssistantInner() {
   const formatContent = (content: string) =>
     content.split('\n').map((line, i) => {
       if (line.startsWith('**') && line.endsWith('**')) return <strong key={i} style={{ color: '#1c1917', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
-      if (line.startsWith('• ')) return <div key={i} style={{ paddingLeft: 16, color: '#1c1917', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#4347a8' }}>•</span>{line.replace('• ', '')}</div>
+      if (line.startsWith('• ')) return <div key={i} style={{ paddingLeft: 16, color: '#1c1917', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#15803d' }}>•</span>{line.replace('• ', '')}</div>
       if (line === '') return <div key={i} style={{ height: 5 }} />
       return <span key={i} style={{ color: '#1c1917', lineHeight: 1.7, display: 'block' }}>{line}</span>
     })
@@ -82,18 +82,18 @@ function AIAssistantInner() {
       {/* Left capabilities panel */}
       <div style={{ width: 240, background: 'var(--card)', borderRight: '1px solid rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 12px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '0 4px' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#4347a8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bot size={16} color="#fff" />
           </div>
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1917' }}>LanceFlo AI</div>
-            <div style={{ fontSize: 11, color: '#4347a8' }}>Powered by Claude</div>
+            <div style={{ fontSize: 11, color: '#15803d' }}>Powered by Claude</div>
           </div>
         </div>
 
         <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#78716c', marginBottom: 8, padding: '0 4px' }}>Capabilities</div>
         {[
-          { icon: PenTool, label: 'Proposals & Contracts', color: '#4347a8' },
+          { icon: PenTool, label: 'Proposals & Contracts', color: '#15803d' },
           { icon: DollarSign, label: 'Financial Analysis', color: '#10b981' },
           { icon: Users, label: 'Client Emails', color: '#f59e0b' },
           { icon: Calculator, label: 'Tax Planning', color: '#ec4899' },
@@ -120,7 +120,7 @@ function AIAssistantInner() {
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
             <span style={{ fontSize: 14, fontWeight: 600, color: '#1c1917' }}>General Assistant</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#4347a8', fontWeight: 500 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#15803d', fontWeight: 500 }}>
             <Sparkles size={13} /> AI-powered
           </div>
         </div>
@@ -136,7 +136,7 @@ function AIAssistantInner() {
                   className="card card-hover"
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', border: '1px solid rgba(0,0,0,0.06)', background: 'var(--card)', cursor: 'pointer', textAlign: 'left' }}
                 >
-                  <Icon size={15} color="#4347a8" style={{ flexShrink: 0 }} />
+                  <Icon size={15} color="#15803d" style={{ flexShrink: 0 }} />
                   <span style={{ fontSize: 13, color: '#1c1917', fontWeight: 500 }}>{label}</span>
                   <ChevronRight size={12} color="#9ca3af" style={{ marginLeft: 'auto' }} />
                 </button>
@@ -146,14 +146,14 @@ function AIAssistantInner() {
 
           {messages.map(msg => (
             <div key={msg.id} style={{ display: 'flex', gap: 10, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', maxWidth: '80%', alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0, background: msg.role === 'assistant' ? '#4347a8' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0, background: msg.role === 'assistant' ? '#15803d' : '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {msg.role === 'assistant' ? <Bot size={15} color="#fff" /> : <User size={14} color="#6b7280" />}
               </div>
               <div>
                 <div style={{
                   padding: '12px 16px',
                   borderRadius: msg.role === 'user' ? '14px 4px 14px 14px' : '4px 14px 14px 14px',
-                  background: msg.role === 'user' ? '#4347a8' : '#fff',
+                  background: msg.role === 'user' ? '#15803d' : '#fff',
                   border: msg.role === 'user' ? 'none' : '1px solid rgba(0,0,0,0.06)',
                   fontSize: 14, lineHeight: 1.6,
                 }}>
@@ -180,12 +180,12 @@ function AIAssistantInner() {
 
           {thinking && (
             <div style={{ display: 'flex', gap: 10, maxWidth: '80%' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#4347a8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#15803d', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Bot size={15} color="#fff" />
               </div>
               <div style={{ padding: '14px 18px', borderRadius: '4px 14px 14px 14px', background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: 5 }}>
                 {[0, 1, 2].map(i => (
-                  <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#4347a8' }} className={`dot-${i + 1}`} />
+                  <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#15803d' }} className={`dot-${i + 1}`} />
                 ))}
               </div>
             </div>
@@ -210,7 +210,7 @@ function AIAssistantInner() {
               <button
                 onClick={() => send()}
                 disabled={!input.trim() || thinking}
-                style={{ width: 32, height: 32, borderRadius: 8, background: input.trim() && !thinking ? '#4347a8' : '#e5e7eb', border: 'none', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
+                style={{ width: 32, height: 32, borderRadius: 8, background: input.trim() && !thinking ? '#15803d' : '#e5e7eb', border: 'none', cursor: input.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s' }}
               >
                 <Send size={14} color={input.trim() && !thinking ? '#fff' : '#9ca3af'} />
               </button>

@@ -28,7 +28,7 @@ const pipelineStages: PipelineStage[] = ['Lead', 'Proposal', 'Negotiation', 'Act
 
 const stageColors: Record<PipelineStage, string> = {
   Lead: '#78716c',
-  Proposal: '#4347a8',
+  Proposal: '#15803d',
   Negotiation: '#d97706',
   Active: '#22c55e',
   Completed: '#14b8a6',
@@ -53,7 +53,7 @@ interface Client {
 }
 
 const tagColors: Record<string, string> = {
-  Design: '#4347a8',
+  Design: '#15803d',
   Development: '#22c55e',
   Marketing: '#d97706',
   Content: '#d97706',
@@ -62,12 +62,12 @@ const tagColors: Record<string, string> = {
   Retainer: '#4ade80',
   Premium: '#4ade80',
   Enterprise: '#22c55e',
-  New: '#4347a8',
+  New: '#15803d',
   Completed: '#78716c',
 }
 
 const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
-const avatarBgs = ['#4347a8', '#22c55e', '#d97706', '#14b8a6', '#78716c', '#4ade80']
+const avatarBgs = ['#15803d', '#22c55e', '#d97706', '#14b8a6', '#78716c', '#4ade80']
 
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '', value: '', notes: '' }
 
@@ -170,7 +170,7 @@ export default function CRMPage() {
       {/* Metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
-          { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#4347a8' },
+          { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#15803d' },
           { label: 'Active Clients', value: activeCount, icon: Users, color: '#22c55e' },
           { label: 'Avg Deal Size', value: `$${avgValue.toLocaleString()}`, icon: TrendingUp, color: '#14b8a6' },
           { label: 'Avg Response', value: '2.4h', icon: Clock, color: '#d97706' },
@@ -246,7 +246,7 @@ export default function CRMPage() {
               onClick={() => setActiveView(v)}
               style={{
                 padding: '8px 14px',
-                background: activeView === v ? '#4347a8' : 'none',
+                background: activeView === v ? '#15803d' : 'none',
                 border: 'none',
                 color: activeView === v ? '#fff' : '#78716c',
                 fontSize: 12,
@@ -285,7 +285,7 @@ export default function CRMPage() {
                   style={{
                     borderBottom: '1px solid var(--border)',
                     cursor: 'pointer',
-                    background: selectedClient?.id === client.id ? '#4347a808' : 'transparent',
+                    background: selectedClient?.id === client.id ? '#15803d08' : 'transparent',
                     transition: 'background 0.15s',
                   }}
                   className="card-hover"
@@ -306,13 +306,13 @@ export default function CRMPage() {
                       {client.stage}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 700, color: '#4347a8' }}>
+                  <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 700, color: '#15803d' }}>
                     ${client.value.toLocaleString()}
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {client.tags.slice(0, 2).map((tag) => (
-                        <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#4347a8', background: `${tagColors[tag] || '#4347a8'}18`, padding: '2px 7px', borderRadius: 10 }}>
+                        <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#15803d', background: `${tagColors[tag] || '#15803d'}18`, padding: '2px 7px', borderRadius: 10 }}>
                           {tag}
                         </span>
                       ))}
@@ -376,7 +376,7 @@ export default function CRMPage() {
 
             <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
               {selectedClient.tags.map((tag) => (
-                <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#4347a8', background: `${tagColors[tag] || '#4347a8'}18`, padding: '3px 9px', borderRadius: 10, fontWeight: 500 }}>
+                <span key={tag} style={{ fontSize: 10, color: tagColors[tag] || '#15803d', background: `${tagColors[tag] || '#15803d'}18`, padding: '3px 9px', borderRadius: 10, fontWeight: 500 }}>
                   {tag}
                 </span>
               ))}

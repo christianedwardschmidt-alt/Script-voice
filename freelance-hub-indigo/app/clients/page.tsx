@@ -18,7 +18,7 @@ interface Client {
 }
 
 const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
-const colors = ['#4347a8', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
+const colors = ['#15803d', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
 
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '' }
 

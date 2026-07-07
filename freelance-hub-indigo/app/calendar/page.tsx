@@ -16,9 +16,9 @@ interface CalEvent {
 }
 
 const TYPE_META: Record<string, { label: string; color: string; bg: string }> = {
-  meeting:  { label: 'Meeting',  color: '#5b5fcf', bg: 'rgba(91,95,207,0.1)'  },
+  meeting:  { label: 'Meeting',  color: '#16a34a', bg: 'rgba(22,163,74,0.1)'  },
   deadline: { label: 'Deadline', color: '#d97706', bg: 'rgba(217,119,6,0.1)'  },
-  task:     { label: 'Task',     color: '#5b5fcf', bg: 'rgba(91,95,207,0.1)'   },
+  task:     { label: 'Task',     color: '#16a34a', bg: 'rgba(22,163,74,0.1)'   },
   personal: { label: 'Personal', color: '#64748b', bg: 'rgba(100,116,139,0.1)'},
 }
 
@@ -133,7 +133,7 @@ export default function CalendarPage() {
           </button>
           <button
             onClick={() => { setView(new Date(today.getFullYear(), today.getMonth(), 1)); setSelected(todayStr) }}
-            style={{ marginLeft: 4, fontSize: 12, fontWeight: 500, color: 'var(--green)', background: 'rgba(91,95,207,0.08)', border: '1px solid rgba(91,95,207,0.2)', borderRadius: 7, padding: '5px 11px', cursor: 'pointer', fontFamily: 'inherit' }}
+            style={{ marginLeft: 4, fontSize: 12, fontWeight: 500, color: 'var(--green)', background: 'rgba(22,163,74,0.08)', border: '1px solid rgba(22,163,74,0.2)', borderRadius: 7, padding: '5px 11px', cursor: 'pointer', fontFamily: 'inherit' }}
           >
             Today
           </button>
@@ -161,8 +161,8 @@ export default function CalendarPage() {
                 key={dateStr}
                 onClick={() => setSelected(dateStr)}
                 style={{
-                  background: isSelected ? 'rgba(91,95,207,0.06)' : 'var(--card)',
-                  border: isSelected ? '1.5px solid rgba(91,95,207,0.3)' : '1px solid var(--border)',
+                  background: isSelected ? 'rgba(22,163,74,0.06)' : 'var(--card)',
+                  border: isSelected ? '1.5px solid rgba(22,163,74,0.3)' : '1px solid var(--border)',
                   borderRadius: 9, padding: '8px 9px', cursor: 'pointer',
                   overflow: 'hidden',
                   transition: 'background 0.1s, border-color 0.1s',
@@ -171,7 +171,7 @@ export default function CalendarPage() {
                 <div style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 24, height: 24, borderRadius: '50%', marginBottom: 5,
-                  background: isToday ? '#5b5fcf' : 'transparent',
+                  background: isToday ? '#16a34a' : 'transparent',
                   color: isToday ? '#fff' : isSelected ? 'var(--green)' : 'var(--text)',
                   fontSize: 12.5, fontWeight: isToday ? 700 : 500,
                 }}>
@@ -204,7 +204,7 @@ export default function CalendarPage() {
 
         {/* Add event form */}
         {showForm && (
-          <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid var(--border)', background: 'rgba(91,95,207,0.03)' }}>
+          <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid var(--border)', background: 'rgba(22,163,74,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text)' }}>New Event</span>
               <button onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}><X size={14} /></button>
@@ -254,7 +254,7 @@ export default function CalendarPage() {
             })()}
           </div>
           {selected === todayStr && (
-            <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--green)', background: 'rgba(91,95,207,0.1)', border: '1px solid rgba(91,95,207,0.2)', borderRadius: 99, padding: '1px 8px', marginTop: 5, display: 'inline-block' }}>Today</span>
+            <span style={{ fontSize: 10.5, fontWeight: 700, color: 'var(--green)', background: 'rgba(22,163,74,0.1)', border: '1px solid rgba(22,163,74,0.2)', borderRadius: 99, padding: '1px 8px', marginTop: 5, display: 'inline-block' }}>Today</span>
           )}
         </div>
 

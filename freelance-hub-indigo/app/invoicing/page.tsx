@@ -24,7 +24,7 @@ interface Invoice {
 }
 
 const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
-const colors = ['#4347a8', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
+const colors = ['#15803d', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
 
 const today = () => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
@@ -102,7 +102,7 @@ export default function BillingPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
           { label: 'Total Paid', value: `$${paid.toLocaleString()}`, icon: CheckCircle, color: '#10b981', bg: '#d1fae5' },
-          { label: 'Pending', value: `$${pending.toLocaleString()}`, icon: Clock, color: '#4347a8', bg: '#dcfce7' },
+          { label: 'Pending', value: `$${pending.toLocaleString()}`, icon: Clock, color: '#15803d', bg: '#dcfce7' },
           { label: 'Overdue', value: `$${overdue.toLocaleString()}`, icon: AlertCircle, color: '#ef4444', bg: '#fee2e2' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="card card-hover" style={{ padding: 20 }}>
@@ -144,7 +144,7 @@ export default function BillingPage() {
           <tbody>
             {filtered.map((inv, i) => (
               <tr key={inv.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid #f9fafb' : 'none' }}>
-                <td style={{ padding: '14px 18px', fontSize: 12, fontWeight: 700, color: '#4347a8', fontFamily: 'monospace' }}>{inv.id}</td>
+                <td style={{ padding: '14px 18px', fontSize: 12, fontWeight: 700, color: '#15803d', fontFamily: 'monospace' }}>{inv.id}</td>
                 <td style={{ padding: '14px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 28, height: 28, borderRadius: '50%', background: inv.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>{inv.avatar}</div>
@@ -163,7 +163,7 @@ export default function BillingPage() {
                       <button
                         onClick={() => advanceStatus(inv)}
                         title={inv.status === 'Draft' ? 'Send invoice' : 'Mark as paid'}
-                        style={{ width: 28, height: 28, borderRadius: 7, background: '#dcfce7', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#4347a8' }}
+                        style={{ width: 28, height: 28, borderRadius: 7, background: '#dcfce7', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#15803d' }}
                       ><Send size={13} /></button>
                     )}
                     <button style={{ width: 28, height: 28, borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#78716c' }}><Download size={13} /></button>
@@ -210,7 +210,7 @@ export default function BillingPage() {
                 <div style={{ width: 240 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>Total</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#4347a8' }}>${subtotal.toLocaleString()}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#15803d' }}>${subtotal.toLocaleString()}</span>
                   </div>
                 </div>
               </div>

@@ -6,8 +6,8 @@ import { Plus, FileText, CheckSquare, Users, Clock, X } from 'lucide-react'
 
 const ACTIONS = [
   { label: 'New Invoice',  icon: FileText,    href: '/invoicing',  shortcut: 'I', color: '#d97706' },
-  { label: 'Add Task',     icon: CheckSquare, href: '/tasks',      shortcut: 'T', color: '#5b5fcf' },
-  { label: 'Add Client',   icon: Users,       href: '/clients',    shortcut: 'C', color: '#5b5fcf' },
+  { label: 'Add Task',     icon: CheckSquare, href: '/tasks',      shortcut: 'T', color: '#16a34a' },
+  { label: 'Add Client',   icon: Users,       href: '/clients',    shortcut: 'C', color: '#16a34a' },
   { label: 'Log Time',     icon: Clock,       href: '/calendar',   shortcut: 'L', color: '#0ea5e9' },
 ]
 
@@ -51,11 +51,11 @@ export default function QuickActions() {
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '6px 12px', borderRadius: 9,
           background: open
-            ? 'linear-gradient(135deg, #4347a8, #5b5fcf)'
-            : 'linear-gradient(135deg, #4347a8, #5b5fcf)',
+            ? 'linear-gradient(135deg, #15803d, #16a34a)'
+            : 'linear-gradient(135deg, #15803d, #16a34a)',
           color: '#fff', fontSize: 12, fontWeight: 700,
           border: 'none', cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 4px 14px rgba(91,95,207,0.28)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 4px 14px rgba(22,163,74,0.28)',
           transition: 'all 0.15s',
           fontFamily: 'inherit',
           whiteSpace: 'nowrap',

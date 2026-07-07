@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       stage ?? 'Lead',
       value ?? 0,
       avatar ?? '👤',
-      avatarBg ?? '#4347a8',
+      avatarBg ?? '#15803d',
       JSON.stringify(tags ?? []),
       lastContact ?? 'just now',
       starred ? 1 : 0,
