@@ -308,87 +308,35 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Voice Command Widget */}
+      {/* Tasks Widget */}
       <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
-        <div className="card" style={{ padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', borderTop: `2px solid ${voiceListening ? '#ef4444' : '#16a34a'}`, transition: 'border-color 0.2s' }}>
-
-          {/* Mic button */}
-          <button
-            onClick={startDashboardVoice}
-            title={voiceListening ? 'Stop listening' : 'Start voice command'}
-            style={{
-              width: 48, height: 48, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-              background: voiceListening ? '#ef4444' : '#16a34a',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: voiceListening ? '0 0 0 7px rgba(239,68,68,0.15)' : '0 0 0 5px rgba(22,163,74,0.10)',
-              transition: 'all 0.2s',
-            }}
-          >
-            <Mic size={20} color="#fff" />
-          </button>
-
-          {/* Status + chips */}
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>
-                {voiceListening ? 'Listening…' : voiceLoading ? 'Processing…' : 'Voice Command'}
-              </span>
-              {!voiceListening && !voiceLoading && (
-                <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>tap mic or click a command</span>
-              )}
-              {voiceListening && (
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', animation: 'pulse 1s infinite' }} />
-              )}
+        <div className="card" style={{ padding: '18px 20px', borderTop: '2px solid #16a34a' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TASKS</div>
+              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{tasksDone} of {tasks.length} complete</span>
             </div>
-
-            {voiceListening && (
-              <div style={{ fontSize: 12, color: '#78716c', fontStyle: voiceInterim ? 'normal' : 'italic', minHeight: 18 }}>
-                {voiceInterim || 'Speak your command…'}
-              </div>
-            )}
-
-            {voiceLoading && (
-              <div style={{ fontSize: 12, color: '#78716c' }}>Talking to Claude…</div>
-            )}
-
-            {!voiceListening && !voiceLoading && !voiceResult && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {QUICK_COMMANDS.map(({ label, q }) => (
-                  <a
-                    key={label}
-                    href={`/ai-assistant?q=${encodeURIComponent(q)}`}
-                    style={{ fontSize: 11.5, padding: '3px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-2)', cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none', fontWeight: 500, transition: 'all 0.12s' }}
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
-            )}
-
-            {voiceResult && !voiceLoading && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {(voiceResult.actions ?? []).map((a, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '4px 10px', borderRadius: 7, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 12 }}>
-                    <span>{ACTION_ICONS[a.name] ?? '⚡'}</span>
-                    <span style={{ color: '#15803d', fontWeight: 600 }}>{a.summary}</span>
-                  </div>
-                ))}
-                {voiceResult.text && !(voiceResult.actions ?? []).length && (
-                  <div style={{ fontSize: 12, color: 'var(--text-2)', lineHeight: 1.5 }}>{voiceResult.text.slice(0, 120)}{voiceResult.text.length > 120 ? '…' : ''}</div>
+            <a href="/tasks" style={{ fontSize: 11, color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
+              View all <ArrowUpRight size={10} />
+            </a>
+          </div>
+          <div style={{ height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
+            <div style={{ width: `${tasksDonePct}%`, height: '100%', background: '#16a34a', borderRadius: 99, transition: 'width 0.8s ease' }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {tasks.filter(t => !t.checked).slice(0, 6).map((t, i, arr) => (
+              <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                <div style={{ width: 15, height: 15, borderRadius: 4, border: '1.5px solid var(--border)', flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0, fontSize: 12.5, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</div>
+                {t.priority && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority) && (
+                  <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', flexShrink: 0 }}>URGENT</span>
                 )}
-                <button
-                  onClick={() => { setVoiceResult(null) }}
-                  style={{ alignSelf: 'flex-start', marginTop: 2, fontSize: 11, color: 'var(--text-3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}
-                >
-                  Clear ✕
-                </button>
               </div>
+            ))}
+            {tasks.filter(t => !t.checked).length === 0 && (
+              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '8px 0' }}>All caught up 🎉</div>
             )}
           </div>
-
-          <a href="/ai-assistant" style={{ fontSize: 11.5, color: '#16a34a', fontWeight: 600, textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
-            Full AI assistant <ArrowUpRight size={11} />
-          </a>
         </div>
       </div>
 
