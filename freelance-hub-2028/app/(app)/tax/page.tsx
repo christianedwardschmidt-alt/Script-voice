@@ -106,7 +106,7 @@ export default function TaxPage() {
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
@@ -138,7 +138,7 @@ export default function TaxPage() {
       </div>
 
       {/* KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
+      <div className="g-5col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 20 }}>
         {[
           { label: 'Gross Income', value: `$${totalIncome.toLocaleString()}`, icon: DollarSign, color: '#16a34a', bg: '#dcfce7' },
           { label: 'Deductions', value: `$${totalDeductions.toLocaleString()}`, icon: TrendingDown, color: '#10b981', bg: '#d1fae5' },
@@ -159,7 +159,7 @@ export default function TaxPage() {
       </div>
 
       {/* Main charts row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* Quarterly bar chart */}
         <div className="card" style={{ padding: 24 }}>
           <div style={{ fontWeight: 700, fontSize: 15, color: '#1c1917', marginBottom: 4 }}>Quarterly Breakdown</div>
@@ -213,7 +213,7 @@ export default function TaxPage() {
       </div>
 
       {/* Income trend + Tax brackets + Deduction bars */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="g-3col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
         {/* Monthly income trend */}
         <div className="card" style={{ padding: 24 }}>
           <div style={{ fontWeight: 700, fontSize: 15, color: '#1c1917', marginBottom: 4 }}>Monthly Income</div>
@@ -324,7 +324,7 @@ export default function TaxPage() {
       {/* Add Deduction modal */}
       {showDeductionModal && (
         <div onClick={() => setShowDeductionModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div onClick={e => e.stopPropagation()} className="card" style={{ padding: 24, width: 380 }}>
+          <div onClick={e => e.stopPropagation()} className="card modal-card" style={{ padding: 24, width: 380 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <div style={{ fontWeight: 700, fontSize: 16, color: '#1c1917' }}>Add Deduction</div>
               <button onClick={() => setShowDeductionModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}>
@@ -366,7 +366,7 @@ export default function TaxPage() {
       {/* Upload Document modal */}
       {showDocModal && (
         <div onClick={() => setShowDocModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100 }}>
-          <div onClick={e => e.stopPropagation()} className="card" style={{ padding: 24, width: 380 }}>
+          <div onClick={e => e.stopPropagation()} className="card modal-card" style={{ padding: 24, width: 380 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <div style={{ fontWeight: 700, fontSize: 16, color: '#1c1917' }}>Upload Document</div>
               <button onClick={() => setShowDocModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af' }}>

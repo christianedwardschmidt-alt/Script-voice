@@ -116,7 +116,7 @@ export default function TasksPage() {
   )
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Tasks</h1>
@@ -133,7 +133,7 @@ export default function TasksPage() {
         <span style={{ fontSize: 14, color: '#78716c', marginLeft: 6 }}>Total Tasks</span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
+      <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
         {/* Left — task list */}
         <div>
           {/* Search + Filter */}
@@ -292,7 +292,7 @@ export default function TasksPage() {
       {/* New Task Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
-          <div className="card" style={{ width: 440, padding: 24 }} onClick={e => e.stopPropagation()}>
+          <div className="card modal-card" style={{ width: 440, padding: 24 }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>New Task</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>

@@ -280,8 +280,109 @@ a { text-decoration: none; color: inherit; }
   .mobile-menu-btn { display: flex !important; }
   .hide-mobile { display: none !important; }
 
-  /* Search bar takes remaining width */
-  .search-input { font-size: 14px; }
+  /* Comfortable search bar */
+  .search-input { font-size: 15px; }
+
+  /* ── Dashboard ───────────────────────────────── */
+  .dash-wrap { padding: 18px 16px 96px !important; }
+
+  .dash-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    margin-bottom: 18px !important;
+  }
+  .dash-header-btns {
+    width: 100%;
+  }
+  .dash-header-btns a {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* KPI: 2 columns instead of 5 */
+  .dash-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Bento grid: single column */
+  .dash-bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Revenue chart: don't span multiple columns */
+  .dash-chart-card {
+    grid-column: 1 !important;
+  }
+
+  /* ── General page layout ─────────────────────── */
+  .page-pad { padding: 18px 16px 96px !important; }
+
+  /* Buttons: taller tap targets */
+  .btn-primary, .btn-outline {
+    min-height: 40px;
+    font-size: 13.5px !important;
+  }
+
+  /* Tab bar: scrollable on mobile */
+  .tab-bar-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .tab-bar-scroll::-webkit-scrollbar { display: none; }
+
+  /* Badges: slightly larger for touch */
+  .badge { padding: 4px 10px !important; font-size: 12px !important; }
+
+  /* Tables: horizontal scroll */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Voice FAB: don't overlap phone home bar */
+  .voice-fab {
+    bottom: 24px !important;
+    right: 20px !important;
+  }
+
+  /* ── Responsive grid utilities ───────────────── */
+  /* sidebar-style layouts (1fr + fixed sidebar) → single column */
+  .g-sidebar {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 5-column → 2 columns */
+  .g-5col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 4-column → 2 columns */
+  .g-4col {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* 3-column → 1 column */
+  .g-3col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Page-header action rows: stack on mobile */
+  .page-header-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* Modal cards: full-width on mobile */
+  .modal-card {
+    width: 90vw !important;
+    max-width: 100% !important;
+  }
 }
 
 @media (min-width: 768px) {

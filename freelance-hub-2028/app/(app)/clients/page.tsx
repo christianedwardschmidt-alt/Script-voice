@@ -63,7 +63,7 @@ export default function ClientsPage() {
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Clients</h1>

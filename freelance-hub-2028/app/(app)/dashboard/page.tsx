@@ -246,10 +246,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
+    <div className="dash-wrap" style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
 
       {/* Page header */}
-      <div className="animate-in" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, animationDelay: '0s' }}>
+      <div className="dash-header animate-in" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, animationDelay: '0s' }}>
         <div>
           <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 5 }}>OVERVIEW</div>
           <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1, textWrap: 'balance' } as any}>Dashboard</h1>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="dash-header-btns" style={{ display: 'flex', gap: 8 }}>
           <a href="/invoicing" className="btn-outline" style={{ fontSize: 12, textDecoration: 'none' }}>
             <ArrowUpRight size={13} /> View invoices
           </a>
@@ -356,7 +356,7 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI row with sparklines */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 18 }}>
+      <div className="dash-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 18 }}>
         {kpi.map(({ label, value, sub, accent, trend, spark, good }, i) => (
           <div
             key={label}
@@ -377,10 +377,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Bento grid: 3 cols × 2 rows */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }}>
+      <div className="dash-bento-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }}>
 
         {/* Revenue chart — col 1-2, row 1 */}
-        <div className="card animate-in" style={{ padding: '20px 20px 12px', gridColumn: '1 / 3', animationDelay: '0.4s' }}>
+        <div className="card dash-chart-card animate-in" style={{ padding: '20px 20px 12px', gridColumn: '1 / 3', animationDelay: '0.4s' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>REVENUE</div>
@@ -531,6 +531,7 @@ export default function DashboardPage() {
       <button
         onClick={startDashboardVoice}
         title="Voice command"
+        className="voice-fab"
         style={{
           position: 'fixed', bottom: 28, right: 28, zIndex: 50,
           width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',

@@ -155,7 +155,7 @@ export default function CRMPage() {
   }
 
   return (
-    <div style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>CRM</h1>
@@ -168,7 +168,7 @@ export default function CRMPage() {
       </div>
 
       {/* Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+      <div className="g-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
         {[
           { label: 'Total Pipeline', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: '#16a34a' },
           { label: 'Active Clients', value: activeCount, icon: Users, color: '#22c55e' },
@@ -192,7 +192,7 @@ export default function CRMPage() {
       {/* Pipeline Overview */}
       <div className="card" style={{ padding: 20, marginBottom: 20 }}>
         <div style={{ fontSize: 14, fontWeight: 700, color: '#1c1917', marginBottom: 16 }}>Pipeline Overview</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
+        <div className="g-5col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
           {pipelineStages.map((stage) => {
             const stageClients = data.filter(c => c.stage === stage)
             const stageValue = stageClients.reduce((a, c) => a + c.value, 0)
@@ -265,7 +265,7 @@ export default function CRMPage() {
         <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading clients...</div>
       ) : (
       /* Client List */
-      <div style={{ display: 'grid', gridTemplateColumns: selectedClient ? '1fr 380px' : '1fr', gap: 16 }}>
+      <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: selectedClient ? '1fr 380px' : '1fr', gap: 16 }}>
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -439,7 +439,7 @@ export default function CRMPage() {
 
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
-          <div className="card" style={{ width: 420, padding: 24 }} onClick={e => e.stopPropagation()}>
+          <div className="card modal-card" style={{ width: 420, padding: 24 }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>Add Client</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>

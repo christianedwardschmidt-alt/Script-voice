@@ -77,14 +77,14 @@ export default function InsightsPage() {
   ]
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Insights</h1>
         <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
       </div>
 
       {/* Metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
+      <div className="g-4col" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
         {metrics.map(({ label, value, change, icon: Icon, color, bg }) => (
           <div key={label} className="card card-hover" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
@@ -102,7 +102,7 @@ export default function InsightsPage() {
       </div>
 
       {/* Chart + Category */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
+      <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
         <div className="card" style={{ padding: 24 }}>
           {/* Tabs */}
           <div style={{ display: 'flex', gap: 0, marginBottom: 20, borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 0 }}>
