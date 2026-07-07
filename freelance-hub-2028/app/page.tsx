@@ -23,7 +23,8 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 64px; gap: 0; }
-.lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
+.lp-logo { display: inline-flex; align-items: center; gap: 11px; flex-shrink: 0; }
+.lp-logo-mark { flex-shrink: 0; }
 .lp-logo-text { display: inline-flex; flex-direction: column; line-height: 1; }
 .lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; color: #fff; }
 .lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; letter-spacing: 0.01em; }
@@ -197,6 +198,11 @@ export default async function HomePage() {
         <nav className="lp-nav">
           <div className="lp-container lp-nav-inner">
             <Link href="/" className="lp-logo">
+              <svg className="lp-logo-mark" width="18" height="40" viewBox="0 0 18 40" fill="none" aria-hidden="true">
+                <circle cx="9" cy="3.5" r="3" fill="#16A34A"/>
+                <path d="M9 6.5 C1 14 17 24 9 33.5" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="9" cy="36.5" r="3" fill="#16A34A"/>
+              </svg>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
@@ -464,6 +470,11 @@ export default async function HomePage() {
         <footer className="lp-footer">
           <div className="lp-container lp-footer-inner">
             <div className="lp-logo">
+              <svg className="lp-logo-mark" width="18" height="40" viewBox="0 0 18 40" fill="none" aria-hidden="true">
+                <circle cx="9" cy="3.5" r="3" fill="#16A34A"/>
+                <path d="M9 6.5 C1 14 17 24 9 33.5" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="9" cy="36.5" r="3" fill="#16A34A"/>
+              </svg>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
