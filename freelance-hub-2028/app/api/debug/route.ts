@@ -1,16 +1,21 @@
 import { NextResponse } from 'next/server'
 import { queryOne, queryAll } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 export async function GET() {
-  const settings = await queryOne(`SELECT id FROM settings WHERE id = 1`)
-  const clients = await queryAll(`SELECT COUNT(*) as cnt FROM clients`)
-  const tasks = await queryAll(`SELECT COUNT(*) as cnt FROM tasks`)
-  const invoices = await queryAll(`SELECT COUNT(*) as cnt FROM invoices`)
-  const jobs = await queryAll(`SELECT COUNT(*) as cnt FROM jobs`)
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const clients = await queryAll(`SELECT COUNT(*) as cnt FROM clients WHERE user_id = ?`, [user.id])
+  const tasks = await queryAll(`SELECT COUNT(*) as cnt FROM tasks WHERE user_id = ?`, [user.id])
+  const invoices = await queryAll(`SELECT COUNT(*) as cnt FROM invoices WHERE user_id = ?`, [user.id])
+  const jobs = await queryAll(`SELECT COUNT(*) as cnt FROM jobs WHERE user_id = ?`, [user.id])
+  const profile = await queryOne(`SELECT displayName FROM profile WHERE user_id = ?`, [user.id])
 
   return NextResponse.json({
-    dbUrl: process.env.TURSO_DATABASE_URL ? 'turso (' + process.env.TURSO_DATABASE_URL.slice(0, 30) + '…)' : 'file:/tmp (no TURSO_DATABASE_URL set!)',
-    settingsExists: !!settings,
+    userId: user.id,
+    email: user.email,
+    displayName: (profile as Record<string, unknown> | null)?.displayName,
     counts: {
       clients: clients[0]?.cnt,
       tasks: tasks[0]?.cnt,
@@ -19,4 +24,3 @@ export async function GET() {
     }
   })
 }
-// force rebuild Fri Jul  3 18:35:06 UTC 2026

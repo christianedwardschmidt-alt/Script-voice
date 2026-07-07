@@ -1,4 +1,5 @@
 import { createClient, type InValue, type Row } from '@libsql/client'
+import { scryptSync, randomBytes } from 'crypto'
 
 const client = createClient({
   url: process.env.TURSO_DATABASE_URL ?? 'file:/tmp/guildwire.db',
@@ -67,6 +68,70 @@ export async function restoreSeedData(userId: number): Promise<void> {
   })
 }
 
+// Creates minimal defaults for a real new user (no demo data, just catalog + profile)
+export async function createUserDefaults(userId: number, name: string, email: string): Promise<void> {
+  await ensureReady()
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
+    args: [userId, name, email, 'Freelancer', ''],
+  })
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
+    args: [userId, 'My Studio'],
+  })
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
+    args: [userId, name, email, '', '', '', 'UTC', ''],
+  })
+  await client.execute({
+    sql: 'INSERT INTO activity_log (user_id, message, createdAt) VALUES (?, ?, ?)',
+    args: [userId, 'Welcome to GuildWire — your workspace is ready', new Date().toISOString()],
+  })
+  await seedJobs(userId)
+  await seedCourses(userId)
+  await seedIntegrations(userId)
+  await seedPosts(userId)
+}
+
+// Seeds catalog items (jobs/courses/integrations/posts) for a user if they have none
+export async function ensureUserCatalog(userId: number): Promise<void> {
+  await ensureReady()
+  const hasJobs = await client.execute({ sql: `SELECT id FROM jobs WHERE user_id = ? LIMIT 1`, args: [userId] })
+  if (!hasJobs.rows.length) {
+    await seedJobs(userId)
+    await seedCourses(userId)
+    await seedIntegrations(userId)
+    await seedPosts(userId)
+  }
+}
+
+export async function seedUserData(userId: number, name: string, email: string): Promise<void> {
+  await ensureReady()
+  await seedClients(userId)
+  await seedCrmClients(userId)
+  await seedTasks(userId)
+  await seedInvoices(userId)
+  await seedTaxDeductions(userId)
+  await seedTaxDocuments(userId)
+  await seedCalendarEvents(userId)
+  await seedActivityLog(userId)
+  await seedJobs(userId)
+  await seedCourses(userId)
+  await seedIntegrations(userId)
+  await seedPosts(userId)
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
+    args: [userId, name, email, 'Freelance Designer & Developer', 'Figma, React, Next.js, TypeScript'],
+  })
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
+    args: [userId, 'My Studio'],
+  })
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
+    args: [userId, name, email, '', '', '', 'UTC', ''],
+  })
+}
 
 // ── Init singleton ───────────────────────────────────────────────────────────
 
@@ -128,22 +193,28 @@ async function runInit() {
       )`,
       `CREATE TABLE IF NOT EXISTS jobs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
         title TEXT NOT NULL, company TEXT, location TEXT, type TEXT, budget TEXT, posted TEXT,
         tags TEXT, description TEXT, rating REAL, reviews INTEGER,
         saved INTEGER DEFAULT 0, applied INTEGER DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS courses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
         title TEXT NOT NULL, instructor TEXT, category TEXT, duration TEXT, lessons INTEGER,
         rating REAL, progress INTEGER DEFAULT 0, enrolled INTEGER DEFAULT 0,
         price INTEGER DEFAULT 0, color TEXT, badge TEXT
       )`,
       `CREATE TABLE IF NOT EXISTS integrations (
-        id TEXT PRIMARY KEY, name TEXT NOT NULL, desc TEXT, icon TEXT,
-        connected INTEGER DEFAULT 0, lastSync TEXT, category TEXT, color TEXT
+        id TEXT NOT NULL,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        name TEXT NOT NULL, desc TEXT, icon TEXT,
+        connected INTEGER DEFAULT 0, lastSync TEXT, category TEXT, color TEXT,
+        PRIMARY KEY (id, user_id)
       )`,
       `CREATE TABLE IF NOT EXISTS posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
         author TEXT NOT NULL, handle TEXT, role TEXT, avatar TEXT, color TEXT,
         time TEXT, trending INTEGER DEFAULT 0, content TEXT, image TEXT,
         likes INTEGER DEFAULT 0, comments INTEGER DEFAULT 0, shares INTEGER DEFAULT 0,
@@ -183,7 +254,7 @@ async function runInit() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL DEFAULT 0,
         title TEXT NOT NULL, date TEXT NOT NULL, startTime TEXT, endTime TEXT,
-        type TEXT DEFAULT 'meeting', client TEXT, description TEXT, color TEXT DEFAULT '#5b5fcf'
+        type TEXT DEFAULT 'meeting', client TEXT, description TEXT, color TEXT DEFAULT '#16a34a'
       )`,
     ],
     'write'
@@ -200,41 +271,64 @@ async function runInit() {
     `ALTER TABLE activity_log ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE calendar_events ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE settings ADD COLUMN workspaceName TEXT DEFAULT 'My Studio'`,
+    `ALTER TABLE jobs ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE courses ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE integrations ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE posts ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
-  // Seed global shared data once (jobs, courses, integrations, posts)
-  const hasJobs = await client.execute(`SELECT id FROM jobs LIMIT 1`)
-  if (!hasJobs.rows.length) {
-    await seedJobs()
-    await seedCourses()
-    await seedIntegrations()
-    await seedPosts()
-  }
-}
+  // Ensure demo user exists and has data
+  const DEMO_EMAIL = 'demo@guildwire.io'
+  const demoRows = await client.execute({ sql: `SELECT id FROM users WHERE email = ?`, args: [DEMO_EMAIL] })
 
-export async function seedUserData(userId: number, name: string, email: string): Promise<void> {
-  await ensureReady()
-  await seedClients(userId)
-  await seedCrmClients(userId)
-  await seedTasks(userId)
-  await seedInvoices(userId)
-  await seedTaxDeductions(userId)
-  await seedTaxDocuments(userId)
-  await seedCalendarEvents(userId)
-  await seedActivityLog(userId)
-  await client.execute({
-    sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
-    args: [userId, name, email, 'Freelancer', ''],
-  })
-  await client.execute({
-    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
-    args: [userId, 'My Studio'],
-  })
-  await client.execute({
-    sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
-    args: [userId, name, email, '', '', '', 'UTC', ''],
-  })
+  if (!demoRows.rows.length) {
+    const salt = randomBytes(16).toString('hex')
+    const hash = scryptSync('demo1234', salt, 64)
+    const passwordHash = `${salt}:${hash.toString('hex')}`
+    const result = await client.execute({
+      sql: `INSERT INTO users (email, name, password_hash, created_at) VALUES (?, ?, ?, ?)`,
+      args: [DEMO_EMAIL, 'Demo User', passwordHash, new Date().toISOString()],
+    })
+    const demoId = Number(result.lastInsertRowid)
+    await seedClients(demoId)
+    await seedCrmClients(demoId)
+    await seedTasks(demoId)
+    await seedInvoices(demoId)
+    await seedTaxDeductions(demoId)
+    await seedTaxDocuments(demoId)
+    await seedCalendarEvents(demoId)
+    await seedJobs(demoId)
+    await seedCourses(demoId)
+    await seedIntegrations(demoId)
+    await seedPosts(demoId)
+    await client.execute({
+      sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
+      args: [demoId, 'Demo User', DEMO_EMAIL, 'Freelance Designer & Developer', 'Figma, React, Next.js, TypeScript'],
+    })
+    await client.execute({
+      sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
+      args: [demoId, 'My Studio'],
+    })
+    await client.execute({
+      sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
+      args: [demoId, 'Demo User', DEMO_EMAIL, '', '', '', 'UTC', ''],
+    })
+    await client.execute({
+      sql: 'INSERT INTO activity_log (user_id, message, createdAt) VALUES (?, ?, ?)',
+      args: [demoId, 'Welcome to GuildWire — your workspace is ready', new Date().toISOString()],
+    })
+  } else {
+    // Demo user exists — seed catalog data if missing (handles migration from global to per-user)
+    const demoId = Number((demoRows.rows[0] as { id: unknown }).id)
+    const hasJobs = await client.execute({ sql: `SELECT id FROM jobs WHERE user_id = ? LIMIT 1`, args: [demoId] })
+    if (!hasJobs.rows.length) {
+      await seedJobs(demoId)
+      await seedCourses(demoId)
+      await seedIntegrations(demoId)
+      await seedPosts(demoId)
+    }
+  }
 }
 
 // ── Seed functions ───────────────────────────────────────────────────────────
@@ -280,54 +374,54 @@ async function seedInvoices(userId: number) {
   ], 'write')
 }
 
-async function seedJobs() {
-  const sql = `INSERT INTO jobs (title,company,location,type,budget,posted,tags,description,rating,reviews,saved,applied) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
+async function seedJobs(userId: number) {
+  const sql = `INSERT INTO jobs (user_id,title,company,location,type,budget,posted,tags,description,rating,reviews,saved,applied) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: ['Senior UI/UX Designer','Stripe','Remote','Contract','$120–160/hr','2h ago',JSON.stringify(['Figma','Design Systems','React']),'Looking for an experienced designer to lead our dashboard redesign. 3-month engagement.',4.9,24,0,0] },
-    { sql, args: ['Full Stack Next.js Developer','Vercel','Remote','Project','$18,000 fixed','5h ago',JSON.stringify(['Next.js','TypeScript','PostgreSQL']),'Build a SaaS analytics platform from scratch. Solo project, 2 months timeline.',4.7,18,1,0] },
-    { sql, args: ['Brand Identity Designer','Linear','Hybrid','Contract','$90–110/hr','1d ago',JSON.stringify(['Branding','Illustration','Motion']),'Refreshing our brand identity. Need a creative who understands B2B SaaS.',4.8,31,0,0] },
-    { sql, args: ['React Native Developer','Notion','Remote','Retainer','$8,500/mo','2d ago',JSON.stringify(['React Native','iOS','Android']),'Ongoing mobile app development. 20 hrs/week retainer arrangement.',5.0,12,0,0] },
+    { sql, args: [userId,'Senior UI/UX Designer','Stripe','Remote','Contract','$120–160/hr','2h ago',JSON.stringify(['Figma','Design Systems','React']),'Looking for an experienced designer to lead our dashboard redesign. 3-month engagement.',4.9,24,0,0] },
+    { sql, args: [userId,'Full Stack Next.js Developer','Vercel','Remote','Project','$18,000 fixed','5h ago',JSON.stringify(['Next.js','TypeScript','PostgreSQL']),'Build a SaaS analytics platform from scratch. Solo project, 2 months timeline.',4.7,18,1,0] },
+    { sql, args: [userId,'Brand Identity Designer','Linear','Hybrid','Contract','$90–110/hr','1d ago',JSON.stringify(['Branding','Illustration','Motion']),'Refreshing our brand identity. Need a creative who understands B2B SaaS.',4.8,31,0,0] },
+    { sql, args: [userId,'React Native Developer','Notion','Remote','Retainer','$8,500/mo','2d ago',JSON.stringify(['React Native','iOS','Android']),'Ongoing mobile app development. 20 hrs/week retainer arrangement.',5.0,12,0,0] },
   ], 'write')
 }
 
-async function seedCourses() {
-  const sql = `INSERT INTO courses (title,instructor,category,duration,lessons,rating,progress,enrolled,price,color,badge) VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+async function seedCourses(userId: number) {
+  const sql = `INSERT INTO courses (user_id,title,instructor,category,duration,lessons,rating,progress,enrolled,price,color,badge) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: ['Advanced Figma for Freelancers','Sarah Chen','Design','8h 30m',42,4.9,65,1,0,'#16a34a','Free'] },
-    { sql, args: ['Full-Stack Next.js','Marcus Williams','Development','22h',95,4.8,30,1,79,'#10b981','Bestseller'] },
-    { sql, args: ['AI Tools for Freelancers','Priya Sharma','AI & ML','6h 45m',28,4.9,0,0,49,'#f59e0b','New'] },
-    { sql, args: ['Freelance Business Mastery','James Rodriguez','Business','11h',56,4.7,100,1,89,'#ec4899',null] },
-    { sql, args: ['UX Research & Testing','Aisha Johnson','Design','9h',38,4.8,0,0,59,'#06b6d4','Popular'] },
-    { sql, args: ['Content Marketing','Tom Blake','Marketing','7h 50m',33,4.6,0,0,39,'#78716c',null] },
+    { sql, args: [userId,'Advanced Figma for Freelancers','Sarah Chen','Design','8h 30m',42,4.9,65,1,0,'#16a34a','Free'] },
+    { sql, args: [userId,'Full-Stack Next.js','Marcus Williams','Development','22h',95,4.8,30,1,79,'#10b981','Bestseller'] },
+    { sql, args: [userId,'AI Tools for Freelancers','Priya Sharma','AI & ML','6h 45m',28,4.9,0,0,49,'#f59e0b','New'] },
+    { sql, args: [userId,'Freelance Business Mastery','James Rodriguez','Business','11h',56,4.7,100,1,89,'#ec4899',null] },
+    { sql, args: [userId,'UX Research & Testing','Aisha Johnson','Design','9h',38,4.8,0,0,59,'#06b6d4','Popular'] },
+    { sql, args: [userId,'Content Marketing','Tom Blake','Marketing','7h 50m',33,4.6,0,0,39,'#78716c',null] },
   ], 'write')
 }
 
-async function seedIntegrations() {
-  const sql = `INSERT INTO integrations (id,name,desc,icon,connected,lastSync,category,color) VALUES (?,?,?,?,?,?,?,?)`
+async function seedIntegrations(userId: number) {
+  const sql = `INSERT OR IGNORE INTO integrations (id,user_id,name,desc,icon,connected,lastSync,category,color) VALUES (?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: ['ms365','Microsoft 365','Word, Excel, PowerPoint, Outlook & Teams','🪟',1,'2 min ago','Productivity','#0078d4'] },
-    { sql, args: ['notion','Notion','All-in-one workspace for notes and docs','◼',1,'5 min ago','Productivity','#1c1917'] },
-    { sql, args: ['slack','Slack','Team communication and collaboration','💬',1,'1 min ago','Productivity','#4a154b'] },
-    { sql, args: ['figma','Figma','Collaborative design and prototyping','🎨',1,'10 min ago','Design','#f24e1e'] },
-    { sql, args: ['adobe','Adobe Creative Cloud','Photoshop, Illustrator, XD & more','🔴',0,null,'Design','#ff0000'] },
-    { sql, args: ['github','GitHub','Version control and code collaboration','🐙',1,'3 min ago','Development','#1c1917'] },
-    { sql, args: ['vscode','VS Code','Code editor with extensions and sync','💙',1,'15 min ago','Development','#007acc'] },
-    { sql, args: ['vercel','Vercel','Frontend deployment and edge network','▲',0,null,'Development','#1c1917'] },
-    { sql, args: ['stripe','Stripe','Payment processing and subscriptions','💳',1,'1 min ago','Finance','#6772e5'] },
-    { sql, args: ['wise','Wise','International transfers and multi-currency','🌍',1,'20 min ago','Finance','#9fe870'] },
-    { sql, args: ['quickbooks','QuickBooks','Accounting software for freelancers','📊',0,null,'Finance','#2ca01c'] },
-    { sql, args: ['canva','Canva','Quick design tool for social media','🖼',0,null,'Design','#00c4cc'] },
+    { sql, args: ['ms365',userId,'Microsoft 365','Word, Excel, PowerPoint, Outlook & Teams','🪟',1,'2 min ago','Productivity','#0078d4'] },
+    { sql, args: ['notion',userId,'Notion','All-in-one workspace for notes and docs','◼',1,'5 min ago','Productivity','#1c1917'] },
+    { sql, args: ['slack',userId,'Slack','Team communication and collaboration','💬',1,'1 min ago','Productivity','#4a154b'] },
+    { sql, args: ['figma',userId,'Figma','Collaborative design and prototyping','🎨',1,'10 min ago','Design','#f24e1e'] },
+    { sql, args: ['adobe',userId,'Adobe Creative Cloud','Photoshop, Illustrator, XD & more','🔴',0,null,'Design','#ff0000'] },
+    { sql, args: ['github',userId,'GitHub','Version control and code collaboration','🐙',1,'3 min ago','Development','#1c1917'] },
+    { sql, args: ['vscode',userId,'VS Code','Code editor with extensions and sync','💙',1,'15 min ago','Development','#007acc'] },
+    { sql, args: ['vercel',userId,'Vercel','Frontend deployment and edge network','▲',0,null,'Development','#1c1917'] },
+    { sql, args: ['stripe',userId,'Stripe','Payment processing and subscriptions','💳',1,'1 min ago','Finance','#6772e5'] },
+    { sql, args: ['wise',userId,'Wise','International transfers and multi-currency','🌍',1,'20 min ago','Finance','#9fe870'] },
+    { sql, args: ['quickbooks',userId,'QuickBooks','Accounting software for freelancers','📊',0,null,'Finance','#2ca01c'] },
+    { sql, args: ['canva',userId,'Canva','Quick design tool for social media','🖼',0,null,'Design','#00c4cc'] },
   ], 'write')
 }
 
-async function seedPosts() {
-  const sql = `INSERT INTO posts (author,handle,role,avatar,color,time,trending,content,image,likes,comments,shares,views,liked,saved,reposted,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+async function seedPosts(userId: number) {
+  const sql = `INSERT INTO posts (user_id,author,handle,role,avatar,color,time,trending,content,image,likes,comments,shares,views,liked,saved,reposted,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
   const now = Date.now()
   await client.batch([
-    { sql, args: ['Sarah Johnson','@sarahj_ux','Senior UI/UX Designer','👩🏻‍🎨','#16a34a','2h',1,'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜',JSON.stringify({type:'design',label:'Dashboard Redesign Preview',emoji:'🖥',grad:'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)'}),142,38,21,8400,0,0,0,new Date(now - 2*3600000).toISOString()] },
-    { sql, args: ['Marcus Williams','@marcusdev','Full Stack Developer','👨🏾‍💻','#10b981','5h',0,'Hot take: The single best thing I did for my freelance career was raising my rates.\n\nWent from $85/hr → $150/hr and actually got MORE serious clients.\n\nPrice is a signal. Premium pricing filters out problem clients automatically.',JSON.stringify({type:'chart',label:'Revenue Growth 2025→2026',emoji:'📈',grad:'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 50%, #34d399 100%)'}),287,64,89,21300,1,0,0,new Date(now - 5*3600000).toISOString()] },
-    { sql, args: ['Priya Sharma','@priya_uxr','UX Researcher','👩🏽‍💻','#f59e0b','1d',0,'Sharing my freelance contract template — took me 2 years and one bad client experience to get right.\n\nIncludes:\n✅ Scope of work clauses\n✅ Revision limits\n✅ Kill fee (25% if client cancels)\n✅ IP ownership on final payment',null,512,97,203,34100,0,1,0,new Date(now - 24*3600000).toISOString()] },
-    { sql, args: ['Tom Blake','@tomblake_brand','Brand Strategist','👨🏼‍💼','#06b6d4','2d',0,'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + GuildWire for project tracking',JSON.stringify({type:'photo',label:'Home Office Setup',emoji:'🖥',grad:'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)'}),94,41,7,5200,0,0,1,new Date(now - 48*3600000).toISOString()] },
+    { sql, args: [userId,'Sarah Johnson','@sarahj_ux','Senior UI/UX Designer','👩🏻‍🎨','#16a34a','2h',1,'Just landed my biggest client yet! 🎉 After months of building my portfolio and networking, persistence really pays off.\n\nHere\'s what worked for me:\n→ Niching down to SaaS dashboards only\n→ Cold outreach with a custom Loom video\n→ Packaging services at 3 clear price points\n\nThe journey is everything. Keep going. 💜',JSON.stringify({type:'design',label:'Dashboard Redesign Preview',emoji:'🖥',grad:'linear-gradient(135deg, #dcfce7 0%, #86efac 50%, #4ade80 100%)'}),142,38,21,8400,0,0,0,new Date(now - 2*3600000).toISOString()] },
+    { sql, args: [userId,'Marcus Williams','@marcusdev','Full Stack Developer','👨🏾‍💻','#10b981','5h',0,'Hot take: The single best thing I did for my freelance career was raising my rates.\n\nWent from $85/hr → $150/hr and actually got MORE serious clients.\n\nPrice is a signal. Premium pricing filters out problem clients automatically.',JSON.stringify({type:'chart',label:'Revenue Growth 2025→2026',emoji:'📈',grad:'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 50%, #34d399 100%)'}),287,64,89,21300,1,0,0,new Date(now - 5*3600000).toISOString()] },
+    { sql, args: [userId,'Priya Sharma','@priya_uxr','UX Researcher','👩🏽‍💻','#f59e0b','1d',0,'Sharing my freelance contract template — took me 2 years and one bad client experience to get right.\n\nIncludes:\n✅ Scope of work clauses\n✅ Revision limits\n✅ Kill fee (25% if client cancels)\n✅ IP ownership on final payment',null,512,97,203,34100,0,1,0,new Date(now - 24*3600000).toISOString()] },
+    { sql, args: [userId,'Tom Blake','@tomblake_brand','Brand Strategist','👨🏼‍💼','#06b6d4','2d',0,'My home office setup after 3 years of freelancing. The monitor arm was a game changer. 🖥\n\nTools I swear by:\n• Standing desk (health investment)\n• Good mic (clients notice)\n• Notion + GuildWire for project tracking',JSON.stringify({type:'photo',label:'Home Office Setup',emoji:'🖥',grad:'linear-gradient(135deg, #cffafe 0%, #67e8f9 50%, #22d3ee 100%)'}),94,41,7,5200,0,0,1,new Date(now - 48*3600000).toISOString()] },
   ], 'write')
 }
 
@@ -369,15 +463,15 @@ async function seedCalendarEvents(userId: number) {
   const m = String(now.getMonth() + 1).padStart(2, '0')
   const d = (n: number) => `${y}-${m}-${String(n).padStart(2, '0')}`
   await client.batch([
-    { sql, args: [userId,'Kick-off Call — Tech Trophey', d(3),'10:00','11:00','meeting','Tech Trophey','Discuss brand redesign scope and timeline','#5b5fcf'] },
+    { sql, args: [userId,'Kick-off Call — Tech Trophey', d(3),'10:00','11:00','meeting','Tech Trophey','Discuss brand redesign scope and timeline','#16a34a'] },
     { sql, args: [userId,'Invoice Due', d(5),null,null,'deadline','Hencewood Digital','Payment deadline for API integration project','#d97706'] },
-    { sql, args: [userId,'Design Review — Margono', d(7),'14:00','15:30','meeting','Margono Studio','Present dashboard UI mockups for feedback','#5b5fcf'] },
+    { sql, args: [userId,'Design Review — Margono', d(7),'14:00','15:30','meeting','Margono Studio','Present dashboard UI mockups for feedback','#16a34a'] },
     { sql, args: [userId,'Submit final deliverables', d(10),null,null,'deadline','Tech Trophey','Final brand assets and style guide','#d97706'] },
-    { sql, args: [userId,'Weekly sync', d(12),'09:00','09:30','meeting','Hencewood Digital','Regular check-in on project progress','#5b5fcf'] },
+    { sql, args: [userId,'Weekly sync', d(12),'09:00','09:30','meeting','Hencewood Digital','Regular check-in on project progress','#16a34a'] },
     { sql, args: [userId,'Quarterly tax estimate', d(15),null,null,'deadline',null,'Q4 estimated tax payment due','#dc2626'] },
-    { sql, args: [userId,'Discovery call — NovaBuild', d(17),'11:00','12:00','meeting','NovaBuild','First call with Sophie Laurent re: enterprise project','#5b5fcf'] },
+    { sql, args: [userId,'Discovery call — NovaBuild', d(17),'11:00','12:00','meeting','NovaBuild','First call with Sophie Laurent re: enterprise project','#16a34a'] },
     { sql, args: [userId,'Finish mobile app screens', d(18),null,null,'task','NovaBuild','Complete all 12 remaining mobile UI screens','#00b857'] },
     { sql, args: [userId,'Portfolio update', d(20),null,null,'task',null,'Add 3 new case studies to personal site','#00b857'] },
-    { sql, args: [userId,'Year-end review call', d(28),'15:00','16:00','meeting',null,'Internal review of 2028 performance and 2029 goals','#5b5fcf'] },
+    { sql, args: [userId,'Year-end review call', d(28),'15:00','16:00','meeting',null,'Internal review of year performance and goals','#16a34a'] },
   ], 'write')
 }

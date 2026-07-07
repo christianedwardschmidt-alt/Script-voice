@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { queryOne, execute, seedUserData } from '@/lib/db'
+import { queryOne, execute, createUserDefaults } from '@/lib/db'
 import { hashPassword, generateToken, SESSION_COOKIE, SESSION_DAYS } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     )
     const userId = result.lastInsertRowid
 
-    await seedUserData(userId, name.trim(), email.toLowerCase())
+    await createUserDefaults(userId, name.trim(), email.toLowerCase())
 
     const token = generateToken()
     const expiresAt = new Date(Date.now() + SESSION_DAYS * 86400_000).toISOString()

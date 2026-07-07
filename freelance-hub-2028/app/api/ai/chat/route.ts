@@ -1,16 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { queryAll, queryOne } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 const anthropic = new Anthropic()
 
 export async function POST(req: Request) {
+  const user = await getUser()
+  if (!user) return new Response('Unauthorized', { status: 401 })
+
   const { messages } = await req.json()
 
   const [profile, clients, tasks, invoices] = await Promise.all([
-    queryOne(`SELECT displayName, email, headline, skills FROM profile WHERE id = 1`),
-    queryAll(`SELECT name, company, status, revenue FROM clients LIMIT 10`),
-    queryAll(`SELECT title, status, priority, dueDate, project FROM tasks WHERE checked = 0 LIMIT 10`),
-    queryAll(`SELECT id, client, amount, status FROM invoices LIMIT 10`),
+    queryOne(`SELECT displayName, email, headline, skills FROM profile WHERE user_id = ?`, [user.id]),
+    queryAll(`SELECT name, company, status, revenue FROM clients WHERE user_id = ? LIMIT 10`, [user.id]),
+    queryAll(`SELECT title, status, priority, dueDate, project FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 10`, [user.id]),
+    queryAll(`SELECT id, client, amount, status FROM invoices WHERE user_id = ? LIMIT 10`, [user.id]),
   ])
 
   const today = new Date().toLocaleDateString('en-US', {
@@ -31,9 +35,9 @@ export async function POST(req: Request) {
   const systemPrompt = `You are GuildWire AI, a highly capable business assistant for freelance professionals. You help with proposals, project pricing, contracts, client communication, tax planning, and business strategy.
 
 FREELANCER PROFILE:
-Name: ${p?.displayName ?? 'Freelancer'}
+Name: ${p?.displayName ?? user.name}
 Skills: ${p?.skills ?? 'Design, Development'}
-Email: ${p?.email ?? ''}
+Email: ${p?.email ?? user.email}
 Headline: ${p?.headline ?? ''}
 
 ACTIVE CLIENTS:

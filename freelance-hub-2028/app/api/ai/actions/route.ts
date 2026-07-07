@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { execute, queryAll, queryOne } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 const anthropic = new Anthropic()
 
@@ -112,12 +113,12 @@ const tools: Anthropic.Tool[] = [
   },
 ]
 
-async function executeTool(name: string, input: AnyRecord): Promise<{ summary: string; data?: AnyRecord }> {
+async function executeTool(name: string, input: AnyRecord, userId: number): Promise<{ summary: string; data?: AnyRecord }> {
   if (name === 'create_task') {
     const { title, priority = 'medium', dueDate = '', project = '', description = '' } = input
     const r = await execute(
-      `INSERT INTO tasks (title, description, priority, status, dueDate, project, integrations, checked) VALUES (?,?,?,?,?,?,?,?)`,
-      [title, description, priority, 'todo', dueDate, project, '[]', 0]
+      `INSERT INTO tasks (user_id, title, description, priority, status, dueDate, project, integrations, checked) VALUES (?,?,?,?,?,?,?,?,?)`,
+      [userId, title, description, priority, 'todo', dueDate, project, '[]', 0]
     )
     return { summary: `Task created: "${title}"`, data: { id: r.lastInsertRowid, title, priority, dueDate, project } }
   }
@@ -128,8 +129,8 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
     const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     const due = dueDate || new Date(Date.now() + 14 * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     await execute(
-      `INSERT INTO invoices (id, client, project, amount, status, issued, due, avatar, color) VALUES (?,?,?,?,?,?,?,?,?)`,
-      [id, client, project, amount, 'Draft', today, due, '👤', '#78716c']
+      `INSERT INTO invoices (id, user_id, client, project, amount, status, issued, due, avatar, color) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      [id, userId, client, project, amount, 'Draft', today, due, '👤', '#78716c']
     )
     return { summary: `Invoice ${id} drafted for ${client} — $${Number(amount).toLocaleString()}`, data: { id, client, project, amount, due } }
   }
@@ -137,17 +138,18 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
   if (name === 'add_client') {
     const { name, company, email = '', phone = '' } = input
     const r = await execute(
-      `INSERT INTO clients (name, company, email, phone, avatar, color, status, revenue, projects) VALUES (?,?,?,?,?,?,?,?,?)`,
-      [name, company, email, phone, '👤', '#78716c', 'active', 0, 0]
+      `INSERT INTO clients (user_id, name, company, email, phone, avatar, color, status, revenue, projects) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      [userId, name, company, email, phone, '👤', '#78716c', 'active', 0, 0]
     )
     return { summary: `Client added: ${name} at ${company}`, data: { id: r.lastInsertRowid, name, company, email } }
   }
 
   if (name === 'schedule_event') {
     const { title, date, startTime = null, endTime = null, type = 'meeting', client = null, description = null } = input
+    const color = type === 'deadline' ? '#d97706' : type === 'task' ? '#00b857' : '#16a34a'
     const r = await execute(
-      `INSERT INTO calendar_events (title, date, startTime, endTime, type, client, description, color) VALUES (?,?,?,?,?,?,?,?)`,
-      [title, date, startTime, endTime, type, client, description, type === 'deadline' ? '#d97706' : '#5b5fcf']
+      `INSERT INTO calendar_events (user_id, title, date, startTime, endTime, type, client, description, color) VALUES (?,?,?,?,?,?,?,?,?)`,
+      [userId, title, date, startTime, endTime, type, client, description, color]
     )
     const dateStr = startTime ? `${date} at ${startTime}` : date
     return { summary: `Scheduled: "${title}" — ${dateStr}`, data: { id: r.lastInsertRowid, title, date, startTime } }
@@ -155,7 +157,7 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
 
   if (name === 'search_jobs') {
     const { keywords = '', type: jobType = '' } = input
-    const jobs = await queryAll(`SELECT title, company, location, budget, type, tags, description FROM jobs LIMIT 8`) as AnyRecord[]
+    const jobs = await queryAll(`SELECT title, company, location, budget, type, tags, description FROM jobs WHERE user_id = ? LIMIT 8`, [userId]) as AnyRecord[]
     const lower = (keywords + ' ' + jobType).toLowerCase()
     const filtered = lower.trim()
       ? jobs.filter(j =>
@@ -174,8 +176,8 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
   if (name === 'add_crm_contact') {
     const { name, company, email = '', stage = 'Lead', value = 0, notes = '' } = input
     const r = await execute(
-      `INSERT INTO crm_clients (name, company, email, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
-      [name, company, email, stage, value, '👤', '#78716c', '[]', 'Just added', 0, 0, notes]
+      `INSERT INTO crm_clients (user_id, name, company, email, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [userId, name, company, email, stage, value, '👤', '#78716c', '[]', 'Just added', 0, 0, notes]
     )
     return { summary: `CRM contact added: ${name} at ${company} (${stage})`, data: { id: r.lastInsertRowid, name, company, stage, value } }
   }
@@ -202,12 +204,15 @@ async function executeTool(name: string, input: AnyRecord): Promise<{ summary: s
 }
 
 export async function POST(req: Request) {
+  const user = await getUser()
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { messages } = await req.json()
 
   const [profile, clients, tasks] = await Promise.all([
-    queryOne(`SELECT displayName, skills, headline FROM profile WHERE id = 1`),
-    queryAll(`SELECT name, company FROM clients LIMIT 6`),
-    queryAll(`SELECT title, status FROM tasks WHERE checked = 0 LIMIT 5`),
+    queryOne(`SELECT displayName, skills, headline FROM profile WHERE user_id = ?`, [user.id]),
+    queryAll(`SELECT name, company FROM clients WHERE user_id = ? LIMIT 6`, [user.id]),
+    queryAll(`SELECT title, status FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 5`, [user.id]),
   ])
 
   const p = profile as AnyRecord | null
@@ -215,7 +220,7 @@ export async function POST(req: Request) {
 
   const systemPrompt = `You are GuildWire AI — an intelligent assistant that both answers questions AND takes real actions inside this freelance workspace.
 
-User: ${p?.displayName ?? 'Freelancer'} | Skills: ${p?.skills ?? 'Design, Development'}
+User: ${p?.displayName ?? user.name} | Skills: ${p?.skills ?? 'Design, Development'}
 Clients: ${(clients as AnyRecord[]).map(c => c.name).join(', ') || 'none yet'}
 Open tasks: ${(tasks as AnyRecord[]).map(t => t.title).join(', ') || 'none'}
 Today: ${today}
@@ -241,7 +246,7 @@ Navigation rule: when the user says "go to", "open", "show", "take me to", or si
 
   for (const block of first.content) {
     if (block.type === 'tool_use') {
-      const result = await executeTool(block.name, block.input as AnyRecord)
+      const result = await executeTool(block.name, block.input as AnyRecord, user.id)
       toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(result) })
       actionsPerformed.push({ name: block.name, summary: result.summary, data: result.data })
     }

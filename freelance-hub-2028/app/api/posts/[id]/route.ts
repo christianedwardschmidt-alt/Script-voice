@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { queryOne, execute } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -13,8 +14,11 @@ function deserialize(row: Record<string, unknown>) {
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { id } = await params
-  const existing = await queryOne(`SELECT * FROM posts WHERE id = ?`, [id])
+  const existing = await queryOne(`SELECT * FROM posts WHERE id = ? AND user_id = ?`, [id, user.id])
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
@@ -30,10 +34,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     next.shares = (existing.shares as number) + (body.reposted ? 1 : -1)
   }
 
-  await execute(`UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=?`, [
-    next.liked, next.likes, next.saved, next.reposted, next.shares, id
+  await execute(`UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=? AND user_id=?`, [
+    next.liked, next.likes, next.saved, next.reposted, next.shares, id, user.id
   ])
 
-  const row = await queryOne(`SELECT * FROM posts WHERE id = ?`, [id])
+  const row = await queryOne(`SELECT * FROM posts WHERE id = ? AND user_id = ?`, [id, user.id])
   return NextResponse.json(deserialize(row!))
 }
