@@ -25,7 +25,7 @@ const css = `
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
 .lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .lp-logo-text { display: inline-flex; flex-direction: column; line-height: 1; }
-.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 34px; letter-spacing: -0.01em; color: #fff; }
+.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 30px; letter-spacing: -0.02em; color: #fff; }
 .lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
