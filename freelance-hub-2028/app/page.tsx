@@ -73,7 +73,7 @@ const css = `
   background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.14);
   border-radius: 16px; padding: 32px;
 }
-.lp-pillar-icon { font-size: 36px; margin-bottom: 18px; text-align: center; }
+.lp-pillar-icon { font-size: 52px; margin-bottom: 20px; text-align: center; }
 .lp-pillar h3 { font-family: var(--font-syne); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
 .lp-pillar p { color: rgba(255,255,255,0.58); font-size: 15px; line-height: 1.65; }
 
