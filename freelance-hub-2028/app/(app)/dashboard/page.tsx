@@ -242,7 +242,7 @@ export default function DashboardPage() {
           <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 5 }}>OVERVIEW</div>
           <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1, textWrap: 'balance' } as any}>Dashboard</h1>
           <div style={{ fontSize: 11.5, color: 'var(--text-2)', marginTop: 4 }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} · 2028
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -421,7 +421,7 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>REVENUE</div>
-              <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)' }}>Annual Overview · 2028</div>
+              <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)' }}>Annual Overview · {new Date().getFullYear()}</div>
             </div>
             <div style={{ display: 'flex', gap: 18, fontSize: 11, color: 'var(--text-2)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>

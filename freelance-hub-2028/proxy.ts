@@ -5,7 +5,8 @@ const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password', '/reset-password'
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const isPublic = PUBLIC_PATHS.some(p => pathname.startsWith(p)) ||
+  const isPublic = pathname === '/' ||
+    PUBLIC_PATHS.some(p => pathname.startsWith(p)) ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon')
 

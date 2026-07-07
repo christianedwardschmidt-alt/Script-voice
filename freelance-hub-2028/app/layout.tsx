@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GuildWire 2028 — Freelancer Suite",
-  description: "Work free. Get connected. — The intelligent platform for modern freelancers.",
+  title: {
+    template: '%s | GuildWire',
+    default: 'GuildWire — The Operating System for Independent Professionals',
+  },
+  description: 'CRM, invoicing, AI companion, and community for serious independent professionals. Keep 97% of what you earn. Join as a founding member.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
