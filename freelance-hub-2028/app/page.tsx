@@ -23,7 +23,9 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
-.lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
+.lp-logo { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.lp-logo-badge { width: 40px; height: 40px; background: #16A34A; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.lp-logo-badge-text { font-family: var(--font-inter); font-weight: 800; font-size: 14px; letter-spacing: -0.02em; color: #fff; }
 .lp-logo-text { display: inline-flex; flex-direction: column; line-height: 1; }
 .lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 30px; letter-spacing: -0.02em; color: #fff; }
 .lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; }
@@ -197,6 +199,7 @@ export default async function HomePage() {
         <nav className="lp-nav">
           <div className="lp-container lp-nav-inner">
             <Link href="/" className="lp-logo">
+              <div className="lp-logo-badge"><span className="lp-logo-badge-text">GW</span></div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
@@ -464,6 +467,7 @@ export default async function HomePage() {
         <footer className="lp-footer">
           <div className="lp-container lp-footer-inner">
             <div className="lp-logo">
+              <div className="lp-logo-badge"><span className="lp-logo-badge-text">GW</span></div>
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
                 <span className="lp-logo-tag">Work free. Stay connected.</span>
