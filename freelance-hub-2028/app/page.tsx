@@ -73,7 +73,7 @@ const css = `
   background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.14);
   border-radius: 16px; padding: 32px;
 }
-.lp-pillar-icon { margin-bottom: 20px; }
+.lp-pillar-icon { font-size: 36px; margin-bottom: 18px; }
 .lp-pillar h3 { font-family: var(--font-syne); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
 .lp-pillar p { color: rgba(255,255,255,0.58); font-size: 15px; line-height: 1.65; }
 
@@ -238,50 +238,17 @@ export default async function HomePage() {
           <div className="lp-container">
             <div className="lp-pillars-grid">
               <div className="lp-pillar">
-                <div className="lp-pillar-icon">
-                  <svg width="42" height="44" viewBox="0 0 42 44" fill="none" aria-hidden="true">
-                    <path d="M7 24 C7 35 13 41 21 41 C29 41 35 35 35 24 C35 18 30 16 21 16 C12 16 7 18 7 24Z" fill="rgba(22,163,74,0.12)" stroke="rgba(255,255,255,0.78)" strokeWidth="1.7" strokeLinejoin="round"/>
-                    <path d="M15 16 C15 10 27 10 27 16" stroke="rgba(255,255,255,0.78)" strokeWidth="1.7" fill="none" strokeLinecap="round"/>
-                    <circle cx="21" cy="8" r="3" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/>
-                    <circle cx="21" cy="8" r="1.4" fill="#16A34A"/>
-                    <line x1="18.5" y1="6" x2="15" y2="3" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2" strokeLinecap="round"/>
-                    <line x1="23.5" y1="6" x2="27" y2="3" stroke="rgba(255,255,255,0.4)" strokeWidth="1.2" strokeLinecap="round"/>
-                    <path d="M13 26 C17 25 21 25 29 26" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                    <path d="M12 31 C16 30 21 30 30 31" stroke="rgba(255,255,255,0.2)" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                    <path d="M13 21 C15 19 17 19 19 20" stroke="rgba(255,255,255,0.25)" strokeWidth="1" fill="none" strokeLinecap="round"/>
-                  </svg>
-                </div>
+                <div className="lp-pillar-icon">💰</div>
                 <h3>Keep 97%</h3>
                 <p>Stop giving 20% to platforms that don't work for you. GuildWire takes 3%.</p>
               </div>
               <div className="lp-pillar">
-                <div className="lp-pillar-icon">
-                  <svg width="36" height="44" viewBox="0 0 36 44" fill="none" aria-hidden="true">
-                    <path d="M24 2 L11 23 L17 23 L13 42 L25 21 L19 21 Z" fill="rgba(22,163,74,0.14)" stroke="rgba(255,255,255,0.78)" strokeWidth="1.7" strokeLinejoin="round"/>
-                    <path d="M22 6 L13 23 L18 23 L15 38 L23 23 L18.5 23 Z" fill="rgba(22,163,74,0.28)"/>
-                    <line x1="4" y1="7" x2="8" y2="11" stroke="rgba(134,239,172,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="8" y1="7" x2="4" y2="11" stroke="rgba(134,239,172,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="30" y1="11" x2="34" y2="15" stroke="rgba(134,239,172,0.5)" strokeWidth="1.2" strokeLinecap="round"/>
-                    <line x1="34" y1="11" x2="30" y2="15" stroke="rgba(134,239,172,0.5)" strokeWidth="1.2" strokeLinecap="round"/>
-                    <circle cx="4" cy="22" r="1.5" fill="rgba(22,163,74,0.7)"/>
-                  </svg>
-                </div>
+                <div className="lp-pillar-icon">⚡</div>
                 <h3>One Platform</h3>
                 <p>CRM, invoicing, AI companion, and community. All in one place. Finally.</p>
               </div>
               <div className="lp-pillar">
-                <div className="lp-pillar-icon">
-                  <svg width="46" height="44" viewBox="0 0 46 44" fill="none" aria-hidden="true">
-                    <rect x="2" y="18" width="15" height="8" rx="4" fill="rgba(22,163,74,0.12)" stroke="rgba(255,255,255,0.78)" strokeWidth="1.6"/>
-                    <rect x="29" y="18" width="15" height="8" rx="4" fill="rgba(22,163,74,0.12)" stroke="rgba(255,255,255,0.78)" strokeWidth="1.6"/>
-                    <path d="M15 18 C14 12 10 10 9 14" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
-                    <path d="M31 18 C32 12 36 10 37 14" stroke="rgba(255,255,255,0.6)" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
-                    <path d="M17 16 L17 28 Q17 30 19 30 L27 30 Q29 30 29 28 L29 16 Q29 14 27 14 L19 14 Q17 14 17 16Z" fill="rgba(22,163,74,0.15)" stroke="rgba(255,255,255,0.78)" strokeWidth="1.6"/>
-                    <line x1="21" y1="14" x2="21" y2="30" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2"/>
-                    <line x1="25" y1="14" x2="25" y2="30" stroke="rgba(255,255,255,0.2)" strokeWidth="1.2"/>
-                    <circle cx="23" cy="22" r="2.5" fill="#16A34A"/>
-                  </svg>
-                </div>
+                <div className="lp-pillar-icon">🤝</div>
                 <h3>Real Community</h3>
                 <p>A guild of serious independent professionals who actually get it.</p>
               </div>
