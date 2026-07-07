@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'GuildWire <onboarding@resend.dev>',
+            from: 'GuildWire <noreply@guildwire.io>',
             to: [email.toLowerCase()],
             subject: 'Reset your GuildWire password',
             html: `
