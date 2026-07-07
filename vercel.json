@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "installCommand": "cd freelance-hub-2028 && npm install",
-  "buildCommand": "cd freelance-hub-2028 && npm run build",
-  "outputDirectory": "freelance-hub-2028/.next"
+  "installCommand": "cd freelance-hub-indigo && npm install",
+  "buildCommand": "cd freelance-hub-indigo && npm run build",
+  "outputDirectory": "freelance-hub-indigo/.next"
 }
