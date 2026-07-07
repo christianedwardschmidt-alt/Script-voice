@@ -335,35 +335,21 @@ export default function DashboardPage() {
           <div style={{ height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
             <div style={{ width: `${tasksDonePct}%`, height: '100%', background: '#16a34a', borderRadius: 99, transition: 'width 0.8s ease' }} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {tasks.filter(t => !t.checked).slice(0, 6).map(t => (
-              <a
-                key={t.id}
-                href="/tasks"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '10px 12px', borderRadius: 8,
-                  border: '1px solid var(--border)',
-                  background: 'var(--bg)',
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s, border-color 0.15s',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-3)'; (e.currentTarget as HTMLElement).style.borderColor = '#16a34a44' }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}
-              >
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: t.priority && ['high','High','urgent','Urgent'].includes(t.priority) ? '#dc2626' : '#16a34a', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title}</div>
-                {t.project && (
-                  <span style={{ fontSize: 10, color: 'var(--text-3)', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 80, whiteSpace: 'nowrap' }}>{t.project}</span>
-                )}
-                {t.priority && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority) && (
-                  <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', flexShrink: 0 }}>URGENT</span>
-                )}
-              </a>
-            ))}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {tasks.filter(t => !t.checked).slice(0, 12).map(t => {
+              const p = (t.priority ?? '').toLowerCase()
+              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
+                        : p === 'medium' ? 'badge badge-medium'
+                        : p === 'low' ? 'badge badge-low'
+                        : 'badge badge-todo'
+              return (
+                <a key={t.id} href="/tasks" className={cls} style={{ padding: '5px 11px', fontSize: 11.5, fontWeight: 500, cursor: 'pointer', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {t.title}
+                </a>
+              )
+            })}
             {tasks.filter(t => !t.checked).length === 0 && (
-              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '8px 0' }}>All caught up 🎉</div>
+              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '4px 0' }}>All caught up 🎉</div>
             )}
           </div>
         </div>
