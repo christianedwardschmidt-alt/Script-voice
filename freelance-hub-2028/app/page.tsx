@@ -41,7 +41,7 @@ const css = `
   color: #FCD34D; font-size: 13px; font-weight: 600; padding: 6px 18px; border-radius: 99px; margin-bottom: 32px;
 }
 .lp-headline {
-  font-family: var(--font-syne); font-weight: 700;
+  font-family: var(--font-inter); font-weight: 700;
   font-size: clamp(32px, 4vw, 52px); color: #fff; line-height: 1.08;
   letter-spacing: -0.02em; max-width: 820px; margin: 0 auto 20px; text-wrap: balance;
 }
@@ -74,7 +74,7 @@ const css = `
   border-radius: 16px; padding: 32px; text-align: center;
 }
 .lp-pillar-icon { font-size: 52px; margin-bottom: 20px; text-align: center; }
-.lp-pillar h3 { font-family: var(--font-syne); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
+.lp-pillar h3 { font-family: var(--font-inter); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
 .lp-pillar p { color: rgba(255,255,255,0.58); font-size: 15px; line-height: 1.65; }
 
 /* Features */
@@ -89,7 +89,7 @@ const css = `
   color: #16A34A; margin-bottom: 10px;
 }
 .lp-feature-text h2 {
-  font-family: var(--font-syne); font-weight: 700;
+  font-family: var(--font-inter); font-weight: 700;
   font-size: clamp(22px, 2.5vw, 34px); color: #0A1A0F; line-height: 1.12;
   letter-spacing: -0.02em; margin-bottom: 16px; text-wrap: balance;
 }
@@ -121,7 +121,7 @@ const css = `
   background: #CA8A04; color: #1C1200; font-weight: 700; font-size: 15px;
   text-align: center; padding: 15px 24px; border-radius: 12px; margin-bottom: 52px;
 }
-.lp-section-title { font-family: var(--font-syne); font-weight: 700; font-size: clamp(26px, 3vw, 40px); letter-spacing: -0.02em; }
+.lp-section-title { font-family: var(--font-inter); font-weight: 700; font-size: clamp(26px, 3vw, 40px); letter-spacing: -0.02em; }
 .lp-pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .lp-plan {
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
@@ -134,11 +134,11 @@ const css = `
   padding: 4px 16px; border-radius: 99px; white-space: nowrap;
 }
 .lp-plan-label {
-  font-family: var(--font-syne); font-weight: 700; font-size: 11px;
+  font-family: var(--font-inter); font-weight: 700; font-size: 11px;
   letter-spacing: 0.1em; text-transform: uppercase; color: #86EFAC; margin-bottom: 10px;
 }
 .lp-plan-price {
-  font-family: var(--font-syne); font-weight: 700; font-size: 46px;
+  font-family: var(--font-inter); font-weight: 700; font-size: 46px;
   letter-spacing: -0.03em; color: #fff; line-height: 1; margin-bottom: 6px;
 }
 .lp-plan-price span { font-size: 18px; font-weight: 400; color: rgba(255,255,255,0.45); }
