@@ -7,7 +7,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [resetLink, setResetLink] = useState('')
+  const [sent, setSent] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -21,12 +21,7 @@ export default function ForgotPasswordPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      if (data.token) {
-        setResetLink(`${window.location.origin}/reset-password?token=${data.token}`)
-      } else {
-        // Email not found — still show success to avoid leaking existence
-        setResetLink('__not_found__')
-      }
+      setSent(true)
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -53,56 +48,17 @@ export default function ForgotPasswordPage() {
     </div>
   )
 
-  if (resetLink === '__not_found__') {
+  if (sent) {
     return (
       <div style={{ width: '100%', maxWidth: 420 }}>
         {logoBlock}
-        <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: '32px 36px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>📬</div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0f1117', marginBottom: 8 }}>Check your inbox</h1>
-            <p style={{ fontSize: 14, color: 'rgba(15,17,23,0.5)', lineHeight: 1.6 }}>
-              If an account exists for <strong>{email}</strong>, a reset link has been sent.
-            </p>
-          </div>
-          <Link href="/login" style={{ display: 'block', textAlign: 'center', marginTop: 16, fontSize: 14, color: '#16a34a', fontWeight: 600 }}>
-            Back to sign in
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
-  if (resetLink) {
-    return (
-      <div style={{ width: '100%', maxWidth: 420 }}>
-        {logoBlock}
-        <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: '32px 36px' }}>
-          <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🔑</div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0f1117', marginBottom: 8 }}>Reset link ready</h1>
-            <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.5)', lineHeight: 1.6, marginBottom: 20 }}>
-              In production this would arrive by email. For this demo, click the link below to reset your password. It expires in 1 hour.
-            </p>
-          </div>
-          <a
-            href={resetLink}
-            style={{
-              display: 'block', width: '100%', padding: '12px',
-              background: 'linear-gradient(135deg, #15803d, #16a34a)',
-              color: '#fff', border: 'none', borderRadius: 10,
-              fontSize: 14, fontWeight: 700, textAlign: 'center',
-              boxShadow: '0 4px 14px rgba(22,163,74,0.28)',
-              textDecoration: 'none',
-            }}
-          >
-            Reset my password →
-          </a>
-          <div style={{ marginTop: 14, padding: '10px 12px', background: '#f8fafc', border: '1px solid rgba(0,0,0,0.07)', borderRadius: 8 }}>
-            <div style={{ fontSize: 11, color: 'rgba(15,17,23,0.4)', marginBottom: 4 }}>Or copy the link:</div>
-            <div style={{ fontSize: 11, color: '#16a34a', wordBreak: 'break-all', fontFamily: 'monospace' }}>{resetLink}</div>
-          </div>
-          <Link href="/login" style={{ display: 'block', textAlign: 'center', marginTop: 16, fontSize: 13, color: 'rgba(15,17,23,0.45)', fontWeight: 500 }}>
+        <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: '32px 36px', textAlign: 'center' }}>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>📬</div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0f1117', marginBottom: 8 }}>Check your inbox</h1>
+          <p style={{ fontSize: 14, color: 'rgba(15,17,23,0.5)', lineHeight: 1.6 }}>
+            If an account exists for <strong>{email}</strong>, we&apos;ve sent a password reset link. It expires in 1 hour.
+          </p>
+          <Link href="/login" style={{ display: 'block', marginTop: 24, fontSize: 14, color: '#16a34a', fontWeight: 600 }}>
             Back to sign in
           </Link>
         </div>
