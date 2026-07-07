@@ -465,15 +465,12 @@ export default async function HomePage() {
         {/* ── FOOTER ──────────────────────────── */}
         <footer className="lp-footer">
           <div className="lp-container lp-footer-inner">
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <div className="lp-logo">
-                <div className="lp-logo-mark">GW</div>
-                <div className="lp-logo-text">
-                  <span className="lp-logo-name">GuildWire</span>
-                  <span className="lp-logo-tag">Work free. Stay wired.</span>
-                </div>
+            <div className="lp-logo">
+              <div className="lp-logo-mark">GW</div>
+              <div className="lp-logo-text">
+                <span className="lp-logo-name">GuildWire</span>
+                <span className="lp-logo-tag">Work free. Stay wired.</span>
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Work free. Stay wired.</p>
             </div>
             <div className="lp-footer-links">
               <a href="#features">Features</a>
