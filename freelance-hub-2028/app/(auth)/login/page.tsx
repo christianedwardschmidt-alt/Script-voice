@@ -47,7 +47,7 @@ export default function LoginPage() {
           <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
         </div>
         <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, marginTop: 4, letterSpacing: '0.01em' }}>
-          Work free. Get connected.
+          Work free. Stay connected.
         </div>
       </div>
 
