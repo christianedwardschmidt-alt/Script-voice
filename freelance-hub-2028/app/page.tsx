@@ -71,7 +71,7 @@ const css = `
 .lp-pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .lp-pillar {
   background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.14);
-  border-radius: 16px; padding: 32px;
+  border-radius: 16px; padding: 32px; text-align: center;
 }
 .lp-pillar-icon { font-size: 52px; margin-bottom: 20px; text-align: center; }
 .lp-pillar h3 { font-family: var(--font-syne); font-weight: 700; font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px; }
