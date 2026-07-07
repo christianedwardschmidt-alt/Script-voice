@@ -156,7 +156,7 @@ export default function CRMPage() {
 
   return (
     <div className="page-pad" style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>CRM</h1>
           <p style={{ fontSize: 14, color: '#78716c', marginTop: 2 }}>Manage client relationships & pipeline</p>
@@ -267,7 +267,8 @@ export default function CRMPage() {
       /* Client List */
       <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: selectedClient ? '1fr 380px' : '1fr', gap: 16 }}>
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="table-scroll">
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 {['Client', 'Stage', 'Value', 'Tags', 'Last Contact', ''].map((h) => (
@@ -356,6 +357,7 @@ export default function CRMPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Client Detail Panel */}

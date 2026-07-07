@@ -117,7 +117,7 @@ export default function TasksPage() {
 
   return (
     <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+      <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Tasks</h1>
           <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Manage your work and stay organized</p>

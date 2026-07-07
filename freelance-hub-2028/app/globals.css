@@ -385,7 +385,86 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
+  /* ── Page headers: stack title + button on mobile ─ */
+  .page-hdr {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+  }
+  .page-hdr .btn-primary,
+  .page-hdr .btn-outline {
+    width: 100%;
+    justify-content: center;
+  }
+  /* Tax header has multiple buttons in a div */
+  .page-hdr > div:last-child {
+    display: flex;
+    gap: 8px;
+  }
+  .page-hdr > div:last-child > * {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Table horizontal scroll */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+}
+
+/* ─── BOTTOM NAV (mobile only) ───────────────── */
+.bottom-nav { display: none; }
+
+@media (max-width: 767px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 6px 8px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.09);
+    gap: 4px;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 7px 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 10px;
+    font-weight: 500;
+    font-family: inherit;
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 10px;
+    min-height: 52px;
+  }
+  .bottom-nav-item.active {
+    color: var(--green-dk);
+    background: var(--green-light);
+  }
+  .bottom-nav-item:not(.active):active {
+    background: var(--bg-3);
+    color: var(--text-2);
+  }
+}
+
 @media (min-width: 768px) {
   .mobile-menu-btn { display: none !important; }
   .sidebar-backdrop { display: none !important; }
+  .bottom-nav { display: none !important; }
 }
