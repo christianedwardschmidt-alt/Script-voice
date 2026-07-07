@@ -1,40 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db, { logActivity } from '@/lib/db'
+import { db, logActivity, toRow } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await params
-  const row = db.prepare(`SELECT * FROM invoices WHERE id = ?`).get(id)
-  if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(row)
+  const res = await db.execute({ sql: `SELECT * FROM invoices WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  if (!res.rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  return NextResponse.json(toRow(res.rows[0]))
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await params
-  const existing = db.prepare(`SELECT * FROM invoices WHERE id = ?`).get(id) as Record<string, unknown> | undefined
-  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const existing = await db.execute({ sql: `SELECT * FROM invoices WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  if (!existing.rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
-  const next: Record<string, unknown> = { ...existing }
+  const next = toRow(existing.rows[0])
   const fields = ['client', 'project', 'amount', 'status', 'issued', 'due', 'avatar', 'color']
   for (const f of fields) if (body[f] !== undefined) next[f] = body[f]
 
-  db.prepare(
-    `UPDATE invoices SET client=?, project=?, amount=?, status=?, issued=?, due=?, avatar=?, color=? WHERE id=?`
-  ).run(next.client, next.project, next.amount, next.status, next.issued, next.due, next.avatar, next.color, id)
+  await db.execute({
+    sql: `UPDATE invoices SET client=?, project=?, amount=?, status=?, issued=?, due=?, avatar=?, color=? WHERE id=? AND user_id=?`,
+    args: [next.client, next.project, next.amount, next.status, next.issued, next.due, next.avatar, next.color, id, user.id],
+  })
 
-  if (body.status !== undefined && body.status !== existing.status) {
-    logActivity(`Invoice ${id} marked as ${body.status}`)
+  if (body.status !== undefined && body.status !== existing.rows[0].status) {
+    await logActivity(user.id, `Invoice ${id} marked as ${body.status}`)
   }
 
-  const row = db.prepare(`SELECT * FROM invoices WHERE id = ?`).get(id)
-  return NextResponse.json(row)
+  const row = await db.execute({ sql: `SELECT * FROM invoices WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  return NextResponse.json(toRow(row.rows[0]))
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await params
-  const existing = db.prepare(`SELECT * FROM invoices WHERE id = ?`).get(id)
-  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  db.prepare(`DELETE FROM invoices WHERE id = ?`).run(id)
-  logActivity(`Deleted invoice ${id}`)
+
+  const existing = await db.execute({ sql: `SELECT id FROM invoices WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  if (!existing.rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  await db.execute({ sql: `DELETE FROM invoices WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  await logActivity(user.id, `Deleted invoice ${id}`)
   return NextResponse.json({ success: true })
 }

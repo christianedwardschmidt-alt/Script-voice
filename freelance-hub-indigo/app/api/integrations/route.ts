@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { db, toRows } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return { ...row, connected: !!row.connected }
 }
 
 export async function GET() {
-  const rows = db.prepare(`SELECT * FROM integrations ORDER BY rowid ASC`).all() as Record<string, unknown>[]
-  return NextResponse.json(rows.map(deserialize))
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const res = await db.execute({ sql: `SELECT * FROM integrations WHERE user_id = ? ORDER BY rowid ASC`, args: [user.id] })
+  return NextResponse.json(toRows(res.rows).map(deserialize))
 }

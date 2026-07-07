@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { db, toRow } from '@/lib/db'
 import { hashPassword } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -13,23 +13,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 8 characters.' }, { status: 400 })
     }
 
-    const row = db
-      .prepare(`SELECT user_id, expires_at FROM password_reset_tokens WHERE token = ?`)
-      .get(token) as { user_id: number; expires_at: string } | undefined
-
-    if (!row) {
+    const res = await db.execute({
+      sql: `SELECT user_id, expires_at FROM password_reset_tokens WHERE token = ?`,
+      args: [token],
+    })
+    if (!res.rows[0]) {
       return NextResponse.json({ error: 'Invalid or expired reset link.' }, { status: 400 })
     }
+    const row = toRow(res.rows[0]) as { user_id: number; expires_at: string }
+
     if (new Date(row.expires_at) < new Date()) {
-      db.prepare(`DELETE FROM password_reset_tokens WHERE token = ?`).run(token)
+      await db.execute({ sql: `DELETE FROM password_reset_tokens WHERE token = ?`, args: [token] })
       return NextResponse.json({ error: 'This reset link has expired. Please request a new one.' }, { status: 400 })
     }
 
     const passwordHash = hashPassword(password)
-    db.prepare(`UPDATE users SET password_hash = ? WHERE id = ?`).run(passwordHash, row.user_id)
-    db.prepare(`DELETE FROM password_reset_tokens WHERE token = ?`).run(token)
-    // Invalidate all existing sessions for this user
-    db.prepare(`DELETE FROM sessions WHERE user_id = ?`).run(row.user_id)
+    await db.batch([
+      { sql: `UPDATE users SET password_hash = ? WHERE id = ?`, args: [passwordHash, row.user_id] },
+      { sql: `DELETE FROM password_reset_tokens WHERE token = ?`, args: [token] },
+      { sql: `DELETE FROM sessions WHERE user_id = ?`, args: [row.user_id] },
+    ], 'write')
 
     return NextResponse.json({ ok: true })
   } catch (err: unknown) {

@@ -1,6 +1,6 @@
 import { scryptSync, randomBytes, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
-import db from './db'
+import { db, toRow } from './db'
 
 export type SessionUser = { id: number; email: string; name: string }
 
@@ -31,16 +31,20 @@ export async function getUser(): Promise<SessionUser | null> {
     const token = cookieStore.get('gw_session')?.value
     if (!token) return null
 
-    const session = db
-      .prepare(`SELECT user_id, expires_at FROM sessions WHERE token = ?`)
-      .get(token) as { user_id: number; expires_at: string } | undefined
+    const sessRes = await db.execute({
+      sql: `SELECT user_id, expires_at FROM sessions WHERE token = ?`,
+      args: [token],
+    })
+    if (!sessRes.rows[0]) return null
+    const session = toRow(sessRes.rows[0])
+    if (new Date(session.expires_at as string) < new Date()) return null
 
-    if (!session) return null
-    if (new Date(session.expires_at) < new Date()) return null
-
-    return db
-      .prepare(`SELECT id, email, name FROM users WHERE id = ?`)
-      .get(session.user_id) as SessionUser | null
+    const userRes = await db.execute({
+      sql: `SELECT id, email, name FROM users WHERE id = ?`,
+      args: [session.user_id as number],
+    })
+    if (!userRes.rows[0]) return null
+    return toRow(userRes.rows[0]) as unknown as SessionUser
   } catch {
     return null
   }

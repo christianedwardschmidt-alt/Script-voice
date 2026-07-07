@@ -1,26 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db, { logActivity } from '@/lib/db'
+import { db, logActivity, toRow } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return { ...row, enrolled: !!row.enrolled }
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await params
-  const existing = db.prepare(`SELECT * FROM courses WHERE id = ?`).get(id) as Record<string, unknown> | undefined
-  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const existing = await db.execute({ sql: `SELECT * FROM courses WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  if (!existing.rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
-  const next: Record<string, unknown> = { ...existing }
+  const next = toRow(existing.rows[0])
   if (body.enrolled !== undefined) next.enrolled = body.enrolled ? 1 : 0
   if (body.progress !== undefined) next.progress = body.progress
 
-  db.prepare(`UPDATE courses SET enrolled=?, progress=? WHERE id=?`).run(next.enrolled, next.progress, id)
+  await db.execute({ sql: `UPDATE courses SET enrolled=?, progress=? WHERE id=? AND user_id=?`, args: [next.enrolled, next.progress, id, user.id] })
 
-  if (body.enrolled && !existing.enrolled) {
-    logActivity(`Enrolled in course: ${existing.title}`)
+  if (body.enrolled && !existing.rows[0].enrolled) {
+    await logActivity(user.id, `Enrolled in course: ${existing.rows[0].title}`)
   }
 
-  const row = db.prepare(`SELECT * FROM courses WHERE id = ?`).get(id) as Record<string, unknown>
-  return NextResponse.json(deserialize(row))
+  const row = await db.execute({ sql: `SELECT * FROM courses WHERE id = ?`, args: [id] })
+  return NextResponse.json(deserialize(toRow(row.rows[0])))
 }

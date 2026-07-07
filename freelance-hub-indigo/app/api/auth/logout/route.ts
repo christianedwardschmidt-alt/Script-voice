@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
 import { SESSION_COOKIE } from '@/lib/auth'
 import { cookies } from 'next/headers'
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     const cookieStore = await cookies()
     const token = cookieStore.get(SESSION_COOKIE)?.value
     if (token) {
-      db.prepare(`DELETE FROM sessions WHERE token = ?`).run(token)
+      await db.execute({ sql: `DELETE FROM sessions WHERE token = ?`, args: [token] })
     }
   } catch { /* ignore */ }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db, { logActivity } from '@/lib/db'
+import { db, logActivity, toRows, toRow } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -10,29 +11,25 @@ function deserialize(row: Record<string, unknown>) {
 }
 
 export async function GET() {
-  const rows = db.prepare(`SELECT * FROM tasks ORDER BY id DESC`).all() as Record<string, unknown>[]
-  return NextResponse.json(rows.map(deserialize))
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const res = await db.execute({ sql: `SELECT * FROM tasks WHERE user_id = ? ORDER BY id DESC`, args: [user.id] })
+  return NextResponse.json(toRows(res.rows).map(deserialize))
 }
 
 export async function POST(request: NextRequest) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const body = await request.json()
   const { title, description, priority, status, dueDate, project, integrations, checked } = body
-  const result = db
-    .prepare(
-      `INSERT INTO tasks (title, description, priority, status, dueDate, project, integrations, checked)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .run(
-      title,
-      description ?? '',
-      priority ?? 'medium',
-      status ?? 'todo',
-      dueDate ?? '',
-      project ?? '',
-      JSON.stringify(integrations ?? []),
-      checked ? 1 : 0
-    )
-  logActivity(`Created new task: ${title}`)
-  const row = db.prepare(`SELECT * FROM tasks WHERE id = ?`).get(result.lastInsertRowid) as Record<string, unknown>
-  return NextResponse.json(deserialize(row), { status: 201 })
+
+  const res = await db.execute({
+    sql: `INSERT INTO tasks (user_id, title, description, priority, status, dueDate, project, integrations, checked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [user.id, title, description ?? '', priority ?? 'medium', status ?? 'todo', dueDate ?? '', project ?? '', JSON.stringify(integrations ?? []), checked ? 1 : 0],
+  })
+
+  await logActivity(user.id, `Created new task: ${title}`)
+  const row = await db.execute({ sql: `SELECT * FROM tasks WHERE id = ?`, args: [Number(res.lastInsertRowid!)] })
+  return NextResponse.json(deserialize(toRow(row.rows[0])), { status: 201 })
 }

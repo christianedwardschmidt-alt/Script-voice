@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db'
+import { db, toRow } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -13,27 +14,31 @@ function deserialize(row: Record<string, unknown>) {
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await params
-  const existing = db.prepare(`SELECT * FROM posts WHERE id = ?`).get(id) as Record<string, unknown> | undefined
-  if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const existing = await db.execute({ sql: `SELECT * FROM posts WHERE id = ? AND user_id = ?`, args: [id, user.id] })
+  if (!existing.rows[0]) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await request.json()
-  const next: Record<string, unknown> = { ...existing }
+  const next = toRow(existing.rows[0])
 
   if (body.liked !== undefined) {
     next.liked = body.liked ? 1 : 0
-    next.likes = (existing.likes as number) + (body.liked ? 1 : -1)
+    next.likes = (next.likes as number) + (body.liked ? 1 : -1)
   }
   if (body.saved !== undefined) next.saved = body.saved ? 1 : 0
   if (body.reposted !== undefined) {
     next.reposted = body.reposted ? 1 : 0
-    next.shares = (existing.shares as number) + (body.reposted ? 1 : -1)
+    next.shares = (next.shares as number) + (body.reposted ? 1 : -1)
   }
 
-  db.prepare(`UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=?`).run(
-    next.liked, next.likes, next.saved, next.reposted, next.shares, id
-  )
+  await db.execute({
+    sql: `UPDATE posts SET liked=?, likes=?, saved=?, reposted=?, shares=? WHERE id=? AND user_id=?`,
+    args: [next.liked, next.likes, next.saved, next.reposted, next.shares, id, user.id],
+  })
 
-  const row = db.prepare(`SELECT * FROM posts WHERE id = ?`).get(id) as Record<string, unknown>
-  return NextResponse.json(deserialize(row))
+  const row = await db.execute({ sql: `SELECT * FROM posts WHERE id = ?`, args: [id] })
+  return NextResponse.json(deserialize(toRow(row.rows[0])))
 }

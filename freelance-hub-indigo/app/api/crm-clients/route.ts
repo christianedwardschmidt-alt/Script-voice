@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db, { logActivity } from '@/lib/db'
+import { db, logActivity, toRows, toRow } from '@/lib/db'
+import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
   return {
@@ -10,35 +11,25 @@ function deserialize(row: Record<string, unknown>) {
 }
 
 export async function GET() {
-  const rows = db.prepare(`SELECT * FROM crm_clients ORDER BY id DESC`).all() as Record<string, unknown>[]
-  return NextResponse.json(rows.map(deserialize))
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const res = await db.execute({ sql: `SELECT * FROM crm_clients WHERE user_id = ? ORDER BY id DESC`, args: [user.id] })
+  return NextResponse.json(toRows(res.rows).map(deserialize))
 }
 
 export async function POST(request: NextRequest) {
+  const user = await getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const body = await request.json()
   const { name, company, email, phone, website, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes } = body
-  const result = db
-    .prepare(
-      `INSERT INTO crm_clients (name, company, email, phone, website, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .run(
-      name,
-      company,
-      email ?? null,
-      phone ?? null,
-      website ?? null,
-      stage ?? 'Lead',
-      value ?? 0,
-      avatar ?? '👤',
-      avatarBg ?? '#15803d',
-      JSON.stringify(tags ?? []),
-      lastContact ?? 'just now',
-      starred ? 1 : 0,
-      rating ?? 0,
-      notes ?? ''
-    )
-  logActivity(`Added new CRM lead: ${name}`)
-  const row = db.prepare(`SELECT * FROM crm_clients WHERE id = ?`).get(result.lastInsertRowid) as Record<string, unknown>
-  return NextResponse.json(deserialize(row), { status: 201 })
+
+  const res = await db.execute({
+    sql: `INSERT INTO crm_clients (user_id, name, company, email, phone, website, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [user.id, name, company, email ?? null, phone ?? null, website ?? null, stage ?? 'Lead', value ?? 0, avatar ?? '👤', avatarBg ?? '#15803d', JSON.stringify(tags ?? []), lastContact ?? 'just now', starred ? 1 : 0, rating ?? 0, notes ?? ''],
+  })
+
+  await logActivity(user.id, `Added new CRM lead: ${name}`)
+  const row = await db.execute({ sql: `SELECT * FROM crm_clients WHERE id = ?`, args: [Number(res.lastInsertRowid!)] })
+  return NextResponse.json(deserialize(toRow(row.rows[0])), { status: 201 })
 }
