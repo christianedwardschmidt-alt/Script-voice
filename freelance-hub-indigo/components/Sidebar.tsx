@@ -117,7 +117,7 @@ export default function Sidebar() {
         </div>
         <div>
           <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>GuildWire</div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Work free. Stay connected.</div>
+          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Work free. Get connected.</div>
         </div>
       </div>
 

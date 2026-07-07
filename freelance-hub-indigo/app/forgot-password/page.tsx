@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
         <span style={{ color: '#0d1017' }}>Guild</span><span style={{ color: '#16a34a' }}>Wire</span>
       </div>
       <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, marginTop: 4 }}>
-        Work free. Stay connected.
+        Work free. Get connected.
       </div>
     </div>
   )
