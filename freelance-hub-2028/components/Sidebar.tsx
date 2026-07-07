@@ -58,7 +58,16 @@ export default function Sidebar() {
   const [displayName, setDisplayName] = useState('Chris Schmidt')
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [isDemo, setIsDemo] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function toggle() { setIsMobileOpen(v => !v) }
+    window.addEventListener('toggle-sidebar', toggle)
+    return () => window.removeEventListener('toggle-sidebar', toggle)
+  }, [])
+
+  useEffect(() => { setIsMobileOpen(false) }, [pathname])
 
   useEffect(() => {
     fetch('/api/profile').then(r => r.json()).then(d => {
@@ -122,14 +131,21 @@ export default function Sidebar() {
   }
 
   return (
-    <aside style={{
-      width: 220, minHeight: '100vh',
-      background: 'var(--sidebar-bg)',
-      borderRight: '1px solid var(--border)',
-      display: 'flex', flexDirection: 'column',
-      position: 'sticky', top: 0,
-      flexShrink: 0, overflowY: 'auto', overflowX: 'hidden',
-    }}>
+    <>
+    <div
+      className={`sidebar-backdrop${isMobileOpen ? ' sidebar-open' : ''}`}
+      onClick={() => setIsMobileOpen(false)}
+    />
+    <aside
+      className={`sidebar-aside${isMobileOpen ? ' sidebar-open' : ''}`}
+      style={{
+        width: 220, minHeight: '100vh',
+        background: 'var(--sidebar-bg)',
+        borderRight: '1px solid var(--border)',
+        display: 'flex', flexDirection: 'column',
+        position: 'sticky', top: 0,
+        flexShrink: 0, overflowY: 'auto', overflowX: 'hidden',
+      }}>
 
       {/* Logo */}
       <div style={{ padding: '14px 16px 12px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
@@ -248,5 +264,6 @@ export default function Sidebar() {
         .user-card-btn:hover { background: var(--bg-3) !important; border-radius: 8px; }
       `}</style>
     </aside>
+    </>
   )
 }

@@ -181,6 +181,11 @@ const css = `
 @media (max-width: 640px) {
   .lp-nav-links { display: none; }
   .lp-hero { padding: 120px 0 72px; }
+  .lp-logo-tag { display: none; }
+  .lp-logo-name { font-size: 22px; }
+  .lp-btn-outline-nav { padding: 6px 14px; font-size: 13px; }
+  .lp-badge { font-size: 11px; padding: 5px 12px; }
+  .lp-founding-banner { font-size: 13px; padding: 12px 16px; }
 }
 `
 

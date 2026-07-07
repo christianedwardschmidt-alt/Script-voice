@@ -7,6 +7,7 @@ import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
 import WorkspaceSelector from "@/components/WorkspaceSelector";
 import ClientAuthGuard from "@/components/ClientAuthGuard";
+import MobileMenuButton from "@/components/MobileMenuButton";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
@@ -32,17 +33,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
           boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.03)",
         }}>
+          <MobileMenuButton />
           <SearchBar />
-          <QuickActions />
+          <div className="hide-mobile"><QuickActions /></div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div className="ai-chip ai-pulse">
+            <div className="ai-chip ai-pulse hide-mobile">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
               </svg>
               AI active
             </div>
             <NotificationBell />
-            <WorkspaceSelector />
+            <div className="hide-mobile"><WorkspaceSelector /></div>
           </div>
         </header>
 
