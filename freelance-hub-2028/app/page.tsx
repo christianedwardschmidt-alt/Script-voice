@@ -215,9 +215,9 @@ export default async function HomePage() {
         <section className="lp-hero">
           <div className="lp-container">
             <div className="lp-badge">⚡ Founding member spots are limited — 30 days free, 20% off for life</div>
-            <h1 className="lp-headline">GuildWire — The Platform Built for Independent Professionals</h1>
+            <h1 className="lp-headline">The Operating System for Independent Professionals</h1>
             <p className="lp-subheadline">
-              GuildWire gives freelancers everything in one place: CRM, invoicing, an AI business assistant, and a community of serious peers. You keep 97% of what you earn.
+              Everything in one place: CRM, invoicing, an AI business assistant, and a community of serious peers. You keep 97% of what you earn.
             </p>
             <div className="lp-hero-ctas">
               <Link href="/signup" className="lp-btn-primary">Join as a Founding Member</Link>
