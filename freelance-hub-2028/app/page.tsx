@@ -248,7 +248,7 @@ export default async function HomePage() {
                 <p>CRM, invoicing, AI companion, and community. All in one place. Finally.</p>
               </div>
               <div className="lp-pillar">
-                <div className="lp-pillar-icon">🤝</div>
+                <div className="lp-pillar-icon" style={{fontSize: '48px'}}>🤝</div>
                 <h3>Real Community</h3>
                 <p>A guild of serious independent professionals who actually get it.</p>
               </div>
