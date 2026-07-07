@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "GuildWire 2028 — Freelancer Suite",
-  description: "Work free. Stay wired. — The intelligent platform for modern freelancers.",
+  description: "Work free. Get connected. — The intelligent platform for modern freelancers.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
