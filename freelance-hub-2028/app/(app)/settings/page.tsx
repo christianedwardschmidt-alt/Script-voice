@@ -27,6 +27,9 @@ export default function SettingsPage() {
   const [restoring, setRestoring] = useState(false)
   const [restored, setRestored] = useState(false)
   const [confirmRestore, setConfirmRestore] = useState(false)
+  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' })
+  const [pwStatus, setPwStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [pwError, setPwError] = useState('')
 
   useEffect(() => {
     fetch('/api/settings')
@@ -50,6 +53,23 @@ export default function SettingsPage() {
     setRestored(true)
     setCleared(false)
     setConfirmRestore(false)
+  }
+
+  const changePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPwError('')
+    if (pwForm.next !== pwForm.confirm) { setPwError('New passwords do not match.'); return }
+    setPwStatus('saving')
+    const res = await fetch('/api/auth/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword: pwForm.current, newPassword: pwForm.next }),
+    })
+    const data = await res.json()
+    if (!res.ok) { setPwError(data.error ?? 'Failed'); setPwStatus('error'); return }
+    setPwStatus('saved')
+    setPwForm({ current: '', next: '', confirm: '' })
+    setTimeout(() => setPwStatus('idle'), 3000)
   }
 
   const toggle = async (key: keyof Omit<Settings, 'id'>) => {
@@ -93,6 +113,40 @@ export default function SettingsPage() {
             </div>
           )
         })}
+        <div className="card" style={{ padding: 18 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#1c1917', marginBottom: 4 }}>Change Password</div>
+          <div style={{ fontSize: 12, color: '#78716c', marginBottom: 16 }}>Update your account password. You&apos;ll stay logged in after changing it.</div>
+          {pwStatus === 'saved' && (
+            <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500, marginBottom: 12 }}>Password updated successfully!</div>
+          )}
+          {pwError && (
+            <div style={{ fontSize: 13, color: '#dc2626', marginBottom: 12, background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 12px' }}>{pwError}</div>
+          )}
+          <form onSubmit={changePassword} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {(['current', 'next', 'confirm'] as const).map((field, i) => (
+              <input
+                key={field}
+                type="password"
+                required
+                placeholder={i === 0 ? 'Current password' : i === 1 ? 'New password (min 8 chars)' : 'Confirm new password'}
+                value={pwForm[field]}
+                onChange={e => { setPwForm(f => ({ ...f, [field]: e.target.value })); setPwStatus('idle'); setPwError('') }}
+                style={{ width: '100%', padding: '9px 12px', border: '1.5px solid rgba(0,0,0,0.1)', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', outline: 'none', background: 'var(--bg)', color: 'var(--text)' }}
+              />
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="submit"
+                disabled={pwStatus === 'saving'}
+                className="btn-primary"
+                style={{ opacity: pwStatus === 'saving' ? 0.6 : 1 }}
+              >
+                {pwStatus === 'saving' ? 'Saving…' : 'Update password'}
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div className="card" style={{ padding: 18 }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: '#ef4444', marginBottom: 4 }}>Danger Zone</div>
           <div style={{ fontSize: 12, color: '#78716c', marginBottom: 16 }}>These actions are irreversible. Please proceed with caution.</div>
