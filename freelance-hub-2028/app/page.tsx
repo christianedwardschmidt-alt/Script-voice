@@ -25,8 +25,8 @@ const css = `
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
 .lp-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
 .lp-logo-text { display: inline-flex; flex-direction: column; line-height: 1; }
-.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 22px; letter-spacing: -0.03em; color: #fff; }
-.lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 3px; width: 100%; display: flex; justify-content: space-between; }
+.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 34px; letter-spacing: -0.01em; color: #fff; }
+.lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
 .lp-nav-links a:hover { color: #86EFAC; }
@@ -199,7 +199,7 @@ export default async function HomePage() {
             <Link href="/" className="lp-logo">
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
-                <span className="lp-logo-tag"><span>Work free.</span><span>Stay connected.</span></span>
+                <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
             </Link>
             <div className="lp-nav-links">
@@ -466,7 +466,7 @@ export default async function HomePage() {
             <div className="lp-logo">
               <div className="lp-logo-text">
                 <span className="lp-logo-name">GuildWire</span>
-                <span className="lp-logo-tag"><span>Work free.</span><span>Stay connected.</span></span>
+                <span className="lp-logo-tag">Work free. Stay connected.</span>
               </div>
             </div>
             <div className="lp-footer-links">
