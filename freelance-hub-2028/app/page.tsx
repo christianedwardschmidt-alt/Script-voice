@@ -23,11 +23,11 @@ const css = `
   border-bottom: 1px solid rgba(22,163,74,0.13);
 }
 .lp-nav-inner { display: flex; align-items: center; height: 80px; gap: 0; }
-.lp-logo { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.lp-logo-mark { width: 38px; height: 38px; background: #16A34A; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: var(--font-inter); font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.03em; flex-shrink: 0; }
+.lp-logo { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.lp-logo-mark { width: 46px; height: 46px; background: #16A34A; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-family: var(--font-inter); font-weight: 800; font-size: 17px; color: #fff; letter-spacing: -0.03em; flex-shrink: 0; }
 .lp-logo-text { display: flex; flex-direction: column; line-height: 1; }
-.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 17px; letter-spacing: -0.02em; color: #fff; }
-.lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 10px; color: rgba(255,255,255,0.45); letter-spacing: 0; margin-top: 2px; }
+.lp-logo-name { font-family: var(--font-inter); font-weight: 800; font-size: 21px; letter-spacing: -0.02em; color: #fff; }
+.lp-logo-tag { font-family: var(--font-inter); font-weight: 500; font-size: 11px; color: rgba(255,255,255,0.45); letter-spacing: 0; margin-top: 3px; }
 .lp-nav-links { display: flex; gap: 28px; margin: 0 auto; }
 .lp-nav-links a { color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500; transition: color 0.2s; }
 .lp-nav-links a:hover { color: #86EFAC; }
