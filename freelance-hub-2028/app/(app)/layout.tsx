@@ -9,6 +9,7 @@ import WorkspaceSelector from "@/components/WorkspaceSelector";
 import ClientAuthGuard from "@/components/ClientAuthGuard";
 import MobileMenuButton from "@/components/MobileMenuButton";
 import BottomNav from "@/components/BottomNav";
+import MobileNavStrip from "@/components/MobileNavStrip";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
@@ -49,6 +50,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
+        <MobileNavStrip />
         <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
       </div>
 

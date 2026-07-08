@@ -464,6 +464,17 @@ a { text-decoration: none; color: inherit; }
   }
 }
 
+@media (max-width: 767px) {
+  /* Clients: single column */
+  .clients-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Extra bottom padding everywhere to clear bottom nav + nav strip */
+  .dash-wrap { padding-bottom: 110px !important; }
+  .page-pad  { padding-bottom: 110px !important; }
+}
+
 @media (min-width: 768px) {
   .mobile-menu-btn { display: none !important; }
   .sidebar-backdrop { display: none !important; }

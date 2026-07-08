@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
@@ -127,6 +127,16 @@ export default function DashboardPage() {
   const [tasks, setTasks]       = useState<Task[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [activity, setActivity] = useState<ActivityRow[]>([])
+
+  const [insightIdx, setInsightIdx] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const h = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', h)
+    return () => mq.removeEventListener('change', h)
+  }, [])
 
   const [voiceListening, setVoiceListening] = useState(false)
   const [voiceInterim, setVoiceInterim] = useState('')
@@ -303,22 +313,49 @@ export default function DashboardPage() {
       )}
 
       {/* AI Insights */}
-      <div className="card-ai animate-in" style={{ padding: '13px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', animationDelay: '0.1s' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
-          <Brain size={13} style={{ color: 'var(--indigo)' }} />
-          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
-        </div>
-        <div style={{ width: 1, height: 20, background: 'rgba(91,95,207,0.18)', flexShrink: 0 }} />
-        {aiInsights.map((ins, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180 }}>
-            <span style={{ fontSize: 12, flexShrink: 0 }}>{ins.icon}</span>
-            <span style={{ fontSize: 11.5, color: 'var(--text-2)', flex: 1, lineHeight: 1.4 }}>{ins.text}</span>
-            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
-              {ins.action}
+      {isMobile ? (
+        <div className="card-ai animate-in" style={{ padding: '12px 14px', marginBottom: 18, animationDelay: '0.1s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Brain size={12} style={{ color: 'var(--indigo)' }} />
+              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insight</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {aiInsights.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setInsightIdx(i)}
+                  style={{ width: i === insightIdx ? 16 : 6, height: 6, borderRadius: 99, border: 'none', cursor: 'pointer', background: i === insightIdx ? 'var(--indigo)' : 'rgba(91,95,207,0.25)', padding: 0, transition: 'all 0.2s' }}
+                />
+              ))}
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18, flexShrink: 0 }}>{aiInsights[insightIdx].icon}</span>
+            <span style={{ fontSize: 13, color: 'var(--text-2)', flex: 1, lineHeight: 1.5 }}>{aiInsights[insightIdx].text}</span>
+            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 11, fontWeight: 600, padding: '5px 10px', borderRadius: 7, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
+              {aiInsights[insightIdx].action}
             </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="card-ai animate-in" style={{ padding: '13px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', animationDelay: '0.1s' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
+            <Brain size={13} style={{ color: 'var(--indigo)' }} />
+            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
+          </div>
+          <div style={{ width: 1, height: 20, background: 'rgba(91,95,207,0.18)', flexShrink: 0 }} />
+          {aiInsights.map((ins, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180 }}>
+              <span style={{ fontSize: 12, flexShrink: 0 }}>{ins.icon}</span>
+              <span style={{ fontSize: 11.5, color: 'var(--text-2)', flex: 1, lineHeight: 1.4 }}>{ins.text}</span>
+              <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
+                {ins.action}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Tasks Widget */}
       <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
@@ -527,24 +564,47 @@ export default function DashboardPage() {
 
       </div>
 
-      {/* Floating voice button */}
-      <button
-        onClick={startDashboardVoice}
-        title="Voice command"
-        className="voice-fab"
-        style={{
-          position: 'fixed', bottom: 28, right: 28, zIndex: 50,
-          width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-          background: voiceListening ? '#ef4444' : '#16a34a',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: voiceListening
-            ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'
-            : '0 4px 20px rgba(22,163,74,0.35)',
-          transition: 'all 0.2s',
-        }}
-      >
-        <Mic size={22} color="#fff" />
-      </button>
+      {/* Floating voice button — hides on mobile (mic is in bottom nav) */}
+      {!isMobile && (
+        <button
+          onClick={startDashboardVoice}
+          title="Voice command"
+          className="voice-fab"
+          style={{
+            position: 'fixed', bottom: 28, right: 28, zIndex: 110,
+            width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
+            background: voiceListening ? '#ef4444' : '#16a34a',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: voiceListening
+              ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'
+              : '0 4px 20px rgba(22,163,74,0.35)',
+            transition: 'all 0.2s',
+          }}
+        >
+          <Mic size={22} color="#fff" />
+        </button>
+      )}
+
+      {/* Voice state feedback (mobile) */}
+      {voiceListening && (
+        <div style={{
+          position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.75)', color: '#fff', fontSize: 13, fontWeight: 500,
+          padding: '8px 18px', borderRadius: 99, zIndex: 120, backdropFilter: 'blur(8px)',
+          whiteSpace: 'nowrap',
+        }}>
+          🎤 {voiceInterim || 'Listening…'}
+        </div>
+      )}
+      {voiceLoading && (
+        <div style={{
+          position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.75)', color: '#fff', fontSize: 13,
+          padding: '8px 18px', borderRadius: 99, zIndex: 120,
+        }}>
+          ✨ Processing…
+        </div>
+      )}
     </div>
   )
 }
