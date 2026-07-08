@@ -357,41 +357,6 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Tasks Widget */}
-      <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
-        <div className="card" style={{ padding: '18px 20px', borderTop: '2px solid #16a34a' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TASKS</div>
-              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{tasksDone} of {tasks.length} complete</span>
-            </div>
-            <a href="/tasks" style={{ fontSize: 11, color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
-              View all <ArrowUpRight size={10} />
-            </a>
-          </div>
-          <div style={{ height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ width: `${tasksDonePct}%`, height: '100%', background: '#16a34a', borderRadius: 99, transition: 'width 0.8s ease' }} />
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {tasks.filter(t => !t.checked).slice(0, 12).map(t => {
-              const p = (t.priority ?? '').toLowerCase()
-              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
-                        : p === 'medium' ? 'badge badge-medium'
-                        : p === 'low' ? 'badge badge-low'
-                        : 'badge badge-todo'
-              return (
-                <a key={t.id} href="/tasks" className={cls} style={{ padding: '5px 11px', fontSize: 11.5, fontWeight: 500, cursor: 'pointer', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {t.title}
-                </a>
-              )
-            })}
-            {tasks.filter(t => !t.checked).length === 0 && (
-              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '4px 0' }}>All caught up 🎉</div>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* KPI row with sparklines */}
       <div className="dash-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 18 }}>
         {kpi.map(({ label, value, sub, accent, trend, spark, good }, i) => (
