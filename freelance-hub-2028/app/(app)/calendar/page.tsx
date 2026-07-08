@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Plus, X, Clock, User, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, X, Clock, User, Trash2, Pencil } from 'lucide-react'
 
 interface CalEvent {
   id: number
@@ -43,6 +43,7 @@ export default function CalendarPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm]         = useState({ ...emptyForm, date: fmt(today) })
   const [saving, setSaving]     = useState(false)
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
@@ -101,6 +102,26 @@ export default function CalendarPage() {
   const selectedEvents = eventsByDate[selected] ?? []
   const todayStr = fmt(today)
 
+  function startEdit(ev: CalEvent) {
+    setForm({
+      title: ev.title,
+      date: ev.date,
+      startTime: ev.startTime ?? '',
+      endTime: ev.endTime ?? '',
+      type: ev.type,
+      client: ev.client ?? '',
+      description: ev.description,
+    })
+    setEditingId(ev.id)
+    setShowForm(true)
+  }
+
+  function cancelForm() {
+    setShowForm(false)
+    setEditingId(null)
+    setForm({ ...emptyForm, date: selected })
+  }
+
   async function addEvent() {
     if (!form.title || !form.date) return
     setSaving(true)
@@ -114,6 +135,22 @@ export default function CalendarPage() {
     setEvents(prev => [...prev, created])
     setSelected(form.date)
     setForm({ ...emptyForm, date: form.date })
+    setShowForm(false)
+    setSaving(false)
+  }
+
+  async function saveEdit() {
+    if (!form.title || !form.date || editingId === null) return
+    setSaving(true)
+    const meta = TYPE_META[form.type]
+    const res = await fetch(`/api/events/${editingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, color: meta.color }),
+    })
+    const updated = await res.json()
+    setEvents(prev => prev.map(e => e.id === editingId ? updated : e))
+    setEditingId(null)
     setShowForm(false)
     setSaving(false)
   }
@@ -144,8 +181,8 @@ export default function CalendarPage() {
         style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 13.5, background: 'var(--card)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
       <textarea placeholder="Notes (optional)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2}
         style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 13.5, background: 'var(--card)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit', resize: 'none', boxSizing: 'border-box' }} />
-      <button onClick={addEvent} disabled={!form.title || !form.date || saving} className="btn-primary" style={{ fontSize: 13, width: '100%', justifyContent: 'center' }}>
-        {saving ? 'Saving…' : 'Add Event'}
+      <button onClick={editingId !== null ? saveEdit : addEvent} disabled={!form.title || !form.date || saving} className="btn-primary" style={{ fontSize: 13, width: '100%', justifyContent: 'center' }}>
+        {saving ? 'Saving…' : editingId !== null ? 'Save Changes' : 'Add Event'}
       </button>
     </div>
   )
@@ -160,7 +197,7 @@ export default function CalendarPage() {
             <div className="section-label" style={{ marginBottom: 3, fontSize: 10 }}>SCHEDULE</div>
             <h1 style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text)', lineHeight: 1 }}>Calendar</h1>
           </div>
-          <button onClick={() => { setShowForm(true); setForm({ ...emptyForm, date: selected }) }} className="btn-primary" style={{ fontSize: 12 }}>
+          <button onClick={() => { setEditingId(null); setForm({ ...emptyForm, date: selected }); setShowForm(true) }} className="btn-primary" style={{ fontSize: 12 }}>
             <Plus size={13} /> New Event
           </button>
         </div>
@@ -308,9 +345,14 @@ export default function CalendarPage() {
                         <span style={{ fontSize: 10, fontWeight: 700, color: meta.color, background: meta.bg, borderRadius: 4, padding: '2px 7px' }}>{meta.label.toUpperCase()}</span>
                       </div>
                     </div>
-                    <button onClick={() => deleteEvent(ev.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 4 }}>
-                      <Trash2 size={14} />
-                    </button>
+                    <div style={{ display: 'flex', gap: 2 }}>
+                      <button onClick={() => startEdit(ev)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 4 }}>
+                        <Pencil size={13} />
+                      </button>
+                      <button onClick={() => deleteEvent(ev.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 4 }}>
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )
@@ -318,13 +360,13 @@ export default function CalendarPage() {
           </div>
         )}
 
-        {/* Add Event bottom-sheet modal */}
+        {/* Add/Edit Event bottom-sheet modal */}
         {showForm && (
-          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 100 }} onClick={() => setShowForm(false)}>
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 100 }} onClick={cancelForm}>
             <div style={{ background: 'var(--card)', borderRadius: '20px 20px 0 0', padding: '24px 20px 40px', width: '100%', maxHeight: '90dvh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>New Event</span>
-                <button onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}><X size={18} /></button>
+                <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{editingId !== null ? 'Edit Event' : 'New Event'}</span>
+                <button onClick={cancelForm} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}><X size={18} /></button>
               </div>
               {formFields}
             </div>
@@ -346,7 +388,7 @@ export default function CalendarPage() {
             <div className="section-label" style={{ marginBottom: 4 }}>SCHEDULE</div>
             <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', color: 'var(--text)', lineHeight: 1 }}>Calendar</h1>
           </div>
-          <button onClick={() => { setShowForm(true); setForm({ ...emptyForm, date: selected }) }} className="btn-primary" style={{ fontSize: 12 }}>
+          <button onClick={() => { setEditingId(null); setForm({ ...emptyForm, date: selected }); setShowForm(true) }} className="btn-primary" style={{ fontSize: 12 }}>
             <Plus size={13} /> New Event
           </button>
         </div>
@@ -403,7 +445,7 @@ export default function CalendarPage() {
                   {day}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {dayEvents.slice(0, 3).map(ev => (
+                  {dayEvents.slice(0, 2).map(ev => (
                     <div key={ev.id} style={{
                       fontSize: 10.5, fontWeight: 500, lineHeight: 1.3, color: ev.color,
                       background: TYPE_META[ev.type]?.bg ?? 'rgba(0,0,0,0.05)',
@@ -412,8 +454,8 @@ export default function CalendarPage() {
                       {ev.startTime ? ev.startTime.slice(0,5)+' ' : ''}{ev.title}
                     </div>
                   ))}
-                  {dayEvents.length > 3 && (
-                    <div style={{ fontSize: 10, color: 'var(--text-3)', paddingLeft: 5 }}>+{dayEvents.length - 3} more</div>
+                  {dayEvents.length > 2 && (
+                    <div style={{ fontSize: 10, color: 'var(--text-3)', paddingLeft: 5 }}>+{dayEvents.length - 2} more</div>
                   )}
                 </div>
               </div>
@@ -428,8 +470,8 @@ export default function CalendarPage() {
         {showForm && (
           <div style={{ padding: '18px 18px 14px', borderBottom: '1px solid var(--border)', background: 'rgba(0,184,87,0.03)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-              <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text)' }}>New Event</span>
-              <button onClick={() => setShowForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}><X size={14} /></button>
+              <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text)' }}>{editingId !== null ? 'Edit Event' : 'New Event'}</span>
+              <button onClick={cancelForm} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex' }}><X size={14} /></button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <input placeholder="Event title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
@@ -450,8 +492,8 @@ export default function CalendarPage() {
                 style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid var(--border)', fontSize: 12.5, background: 'var(--card)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit' }} />
               <textarea placeholder="Notes (optional)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2}
                 style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid var(--border)', fontSize: 12.5, background: 'var(--card)', color: 'var(--text)', outline: 'none', fontFamily: 'inherit', resize: 'none' }} />
-              <button onClick={addEvent} disabled={!form.title || !form.date || saving} className="btn-primary" style={{ fontSize: 12, width: '100%', justifyContent: 'center' }}>
-                {saving ? 'Saving…' : 'Add Event'}
+              <button onClick={editingId !== null ? saveEdit : addEvent} disabled={!form.title || !form.date || saving} className="btn-primary" style={{ fontSize: 12, width: '100%', justifyContent: 'center' }}>
+                {saving ? 'Saving…' : editingId !== null ? 'Save Changes' : 'Add Event'}
               </button>
             </div>
           </div>
@@ -502,9 +544,14 @@ export default function CalendarPage() {
                           <span style={{ fontSize: 10, fontWeight: 700, color: meta.color, background: meta.bg, borderRadius: 4, padding: '1px 6px' }}>{meta.label.toUpperCase()}</span>
                         </div>
                       </div>
-                      <button onClick={() => deleteEvent(ev.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 2 }}>
-                        <Trash2 size={13} />
-                      </button>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        <button onClick={() => startEdit(ev)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 2 }}>
+                          <Pencil size={12} />
+                        </button>
+                        <button onClick={() => deleteEvent(ev.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-3)', display: 'flex', padding: 2 }}>
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )
