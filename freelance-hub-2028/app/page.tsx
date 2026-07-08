@@ -17,7 +17,7 @@ const css = `
 /* Hero */
 .lp-hero {
   background: radial-gradient(ellipse at 50% -10%, #14532D 0%, #0A1A0F 58%);
-  padding: 120px 0 100px; text-align: center; min-height: 90vh;
+  padding: 64px 0 72px; text-align: center; min-height: 80vh;
   display: flex; flex-direction: column; justify-content: center;
 }
 .lp-badge {
