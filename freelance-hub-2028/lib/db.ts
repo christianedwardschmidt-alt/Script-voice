@@ -325,6 +325,8 @@ async function runInit() {
     await seedCrmClients(demoId)
     await seedTasks(demoId)
     await seedInvoices(demoId)
+    await seedTaxExpenses(demoId)
+    await seedTaxMileage(demoId)
     await seedTaxDeductions(demoId)
     await seedTaxDocuments(demoId)
     await seedCalendarEvents(demoId)
@@ -334,7 +336,7 @@ async function runInit() {
     await seedPosts(demoId)
     await client.execute({
       sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
-      args: [demoId, 'Demo User', DEMO_EMAIL, 'Freelance Designer & Developer', 'Figma, React, Next.js, TypeScript'],
+      args: [demoId, 'Alex Rivera', DEMO_EMAIL, 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding'],
     })
     await client.execute({
       sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
@@ -349,8 +351,9 @@ async function runInit() {
       args: [demoId, 'Welcome to GuildWire — your workspace is ready', new Date().toISOString()],
     })
   } else {
-    // Demo user exists — seed catalog data if missing (handles migration from global to per-user)
     const demoId = Number((demoRows.rows[0] as { id: unknown }).id)
+
+    // Re-seed catalog data if missing
     const hasJobs = await client.execute({ sql: `SELECT id FROM jobs WHERE user_id = ? LIMIT 1`, args: [demoId] })
     if (!hasJobs.rows.length) {
       await seedJobs(demoId)
@@ -358,6 +361,28 @@ async function runInit() {
       await seedIntegrations(demoId)
       await seedPosts(demoId)
     }
+
+    // Re-seed transactional data if demo still has old sparse invoices
+    const paidRes = await client.execute({ sql: `SELECT COUNT(*) as cnt FROM invoices WHERE user_id = ? AND status = 'Paid'`, args: [demoId] })
+    const paidCount = Number((paidRes.rows[0] as { cnt: unknown }).cnt)
+    if (paidCount < 5) {
+      await client.execute({ sql: `DELETE FROM invoices WHERE user_id = ?`, args: [demoId] })
+      await client.execute({ sql: `DELETE FROM tax_expenses WHERE user_id = ?`, args: [demoId] })
+      await client.execute({ sql: `DELETE FROM tax_mileage WHERE user_id = ?`, args: [demoId] })
+      await client.execute({ sql: `DELETE FROM clients WHERE user_id = ?`, args: [demoId] })
+      await client.execute({ sql: `DELETE FROM crm_clients WHERE user_id = ?`, args: [demoId] })
+      await seedInvoices(demoId)
+      await seedTaxExpenses(demoId)
+      await seedTaxMileage(demoId)
+      await seedClients(demoId)
+      await seedCrmClients(demoId)
+    }
+
+    // Update profile name if still showing placeholder
+    await client.execute({
+      sql: `UPDATE profile SET displayName = ?, headline = ?, skills = ? WHERE user_id = ? AND displayName IN ('Demo User','')`,
+      args: ['Alex Rivera', 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding', demoId],
+    })
   }
 }
 
@@ -366,41 +391,49 @@ async function runInit() {
 async function seedClients(userId: number) {
   const sql = `INSERT INTO clients (user_id,name,company,email,phone,website,avatar,color,status,revenue,projects) VALUES (?,?,?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: [userId,'Emma Thompson','Tech Trophey','emma@techtrophey.com','+1 (555) 234-5678','techtrophey.com','👩🏻‍💼','#16a34a','active',24500,5] },
-    { sql, args: [userId,'James Park','Hencewood Digital','james@hencewood.io','+1 (555) 345-6789','hencewood.io','👨🏻‍💻','#ec4899','active',18200,3] },
-    { sql, args: [userId,'Aisha Williams','Margono Studio','aisha@margono.co','+1 (555) 456-7890','margono.co','👩🏿‍💼','#f59e0b','active',15800,4] },
+    { sql, args: [userId,'Emma Thompson','Acme Corp','emma@acmecorp.com','+1 (555) 234-5678','acmecorp.com','👩🏻‍💼','#16a34a','active',44600,7] },
+    { sql, args: [userId,'Carlos Mendez','DataSync','carlos@datasync.io','+1 (555) 567-8901','datasync.io','👨🏽‍💼','#14b8a6','active',32800,5] },
+    { sql, args: [userId,'Sophie Laurent','NovaBuild','sophie@novabuild.fr','+33 1 23 45 67 89','novabuild.fr','👩🏻‍🎨','#8b5cf6','active',24700,3] },
+    { sql, args: [userId,'James Park','Hencewood Digital','james@hencewood.io','+1 (555) 345-6789','hencewood.io','👨🏻‍💻','#ec4899','active',19400,4] },
+    { sql, args: [userId,'Aisha Williams','Margono Studio','aisha@margono.co','+1 (555) 456-7890','margono.co','👩🏿‍💼','#f59e0b','active',14600,4] },
   ], 'write')
 }
 
 async function seedCrmClients(userId: number) {
   const sql = `INSERT INTO crm_clients (user_id,name,company,email,phone,website,stage,value,avatar,avatarBg,tags,lastContact,starred,rating,notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: [userId,'Emma Thompson','Acme Corp','emma@acmecorp.com','+1 (555) 234-5678','acmecorp.com','Active',18500,'👩🏻‍💼','#16a34a',JSON.stringify(['Design','Retainer']),'1h ago',1,5,'Long-term client. Pays on time. Expanding to mobile app.'] },
-    { sql, args: [userId,'James Park','TechFlow Inc','jpark@techflow.io','+1 (555) 345-6789','techflow.io','Proposal',12000,'👨🏻‍💻','#22c55e',JSON.stringify(['Development','API']),'3h ago',0,4,'Needs detailed scope. Budget is flexible if scope is clear.'] },
-    { sql, args: [userId,'Aisha Williams','Bright Ideas Co','aisha@brightideas.co','+1 (555) 456-7890','brightideas.co','Negotiation',9800,'👩🏿‍💼','#d97706',JSON.stringify(['Marketing','Content']),'1d ago',1,4,'Negotiating on timeline. They want delivery in 3 weeks.'] },
-    { sql, args: [userId,'Carlos Mendez','DataSync','carlos@datasync.io','+1 (555) 567-8901','datasync.io','Active',24000,'👨🏽‍💼','#14b8a6',JSON.stringify(['Development','Data','Premium']),'2d ago',0,5,'High-value client. Careful with deadlines. C-level contacts.'] },
-    { sql, args: [userId,'Sophie Laurent','NovaBuild','sophie@novabuild.fr','+33 1 23 45 67 89','novabuild.fr','Lead',35000,'👩🏻‍🎨','#78716c',JSON.stringify(['Design','Enterprise','New']),'3d ago',1,3,'Warm lead from LinkedIn. Need to schedule discovery call.'] },
-    { sql, args: [userId,'Raj Patel','InnovateTech','raj@innovatetech.in','+91 98765 43210','innovatetech.in','Completed',8200,'👨🏽‍💻','#4ade80',JSON.stringify(['Development','Completed']),'2w ago',0,4,'Project completed successfully. Ask for referral.'] },
+    { sql, args: [userId,'Emma Thompson','Acme Corp','emma@acmecorp.com','+1 (555) 234-5678','acmecorp.com','Active',36000,'👩🏻‍💼','#16a34a',JSON.stringify(['Design','Retainer','Priority']),'15m ago',1,5,'On retainer since Jan. Pays within 3 days. Expanding to native mobile — huge upsell opportunity.'] },
+    { sql, args: [userId,'Carlos Mendez','DataSync','carlos@datasync.io','+1 (555) 567-8901','datasync.io','Active',28000,'👨🏽‍💼','#14b8a6',JSON.stringify(['Development','Data','Premium']),'2h ago',1,5,'Best engineering client. Analytics v2 in review — invoice going out this week.'] },
+    { sql, args: [userId,'Sophie Laurent','NovaBuild','sophie@novabuild.fr','+33 1 23 45 67 89','novabuild.fr','Negotiation',42000,'👩🏻‍🎨','#8b5cf6',JSON.stringify(['Mobile','Enterprise','Hot']),'1d ago',1,4,'Phase 2 contract circulating for signatures. Largest single contract this year if it closes.'] },
+    { sql, args: [userId,'James Park','Hencewood Digital','james@hencewood.io','+1 (555) 345-6789','hencewood.io','Proposal',19500,'👨🏻‍💻','#ec4899',JSON.stringify(['Development','Proposal']),'4h ago',0,4,'Revised proposal sent. They loved the interactive prototype. Expecting sign-off Thursday.'] },
+    { sql, args: [userId,'Raj Patel','TechFlow Inc','raj@techflow.io','+1 (555) 678-9012','techflow.io','Lead',58000,'👨🏽‍💻','#6366f1',JSON.stringify(['Enterprise','SaaS','Dream Client']),'3h ago',1,3,'Referral from Carlos. SaaS dashboard from scratch — 4-month engagement. Discovery call booked Jul 14.'] },
+    { sql, args: [userId,'Aisha Williams','Margono Studio','aisha@margono.co','+1 (555) 456-7890','margono.co','Completed',14600,'👩🏿‍💼','#f59e0b',JSON.stringify(['Design','Brand','Completed']),'1w ago',0,5,'Brand identity delivered and loved. Left a 5-star review. Following up re: web redesign.'] },
   ], 'write')
 }
 
 async function seedTasks(userId: number) {
   const sql = `INSERT INTO tasks (user_id,title,description,priority,status,dueDate,project,integrations,checked) VALUES (?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: [userId,'Complete website redesign mockups','Create high-fidelity mockups for the client homepage and product pages','high','in progress','Jan 14','Tech Trophey Website',JSON.stringify(['figma','slack','google']),0] },
-    { sql, args: [userId,'Review frontend code pull request','Check the new React components for best practices','medium','todo','Jan 12','Hencewood Digital',JSON.stringify(['github','slack']),0] },
-    { sql, args: [userId,'Client meeting - Project kickoff','Discuss project scope and timeline with new client','high','todo','Jan 11','Margono Studio',JSON.stringify(['slack']),0] },
-    { sql, args: [userId,'Update portfolio website','Add recent case studies and update project showcase','low','todo','Jan 20','Personal',JSON.stringify([]),0] },
+    { sql, args: [userId,'Finalize DataSync Analytics v2 screens','Complete all dashboard mockups for client review before Friday','high','in progress','Jul 11','DataSync',JSON.stringify(['figma','slack']),0] },
+    { sql, args: [userId,'Send NovaBuild Phase 2 contract','Prepare and send updated statement of work with revised scope','high','todo','Jul 12','NovaBuild',JSON.stringify(['notion','slack']),0] },
+    { sql, args: [userId,'Discovery call prep — TechFlow Inc','Research their SaaS product and prepare 10 discovery questions','medium','todo','Jul 14','TechFlow Inc',JSON.stringify(['notion']),0] },
+    { sql, args: [userId,'Add NovaBuild case study to portfolio','Write up Mobile App v1 project with results and visuals','low','todo','Jul 20','Personal',JSON.stringify([]),0] },
   ], 'write')
 }
 
 async function seedInvoices(userId: number) {
   const sql = `INSERT INTO invoices (id,user_id,client,project,amount,status,issued,due,avatar,color) VALUES (?,?,?,?,?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: [`INV-${userId}-089`,userId,'Tech Trophey','Brand Redesign Q4',4800,'Paid','Nov 15','Dec 15','👩🏻‍💼','#16a34a'] },
-    { sql, args: [`INV-${userId}-090`,userId,'Hencewood Digital','API Integration',3200,'Pending','Dec 1','Jan 1','👨🏻‍💻','#ec4899'] },
-    { sql, args: [`INV-${userId}-088`,userId,'Margono Studio','Dashboard UI',8400,'Overdue','Oct 20','Nov 20','👩🏿‍💼','#f59e0b'] },
-    { sql, args: [`INV-${userId}-091`,userId,'NovaBuild','Mobile App',2100,'Draft','Dec 20','Jan 20','👨🏽‍💼','#10b981'] },
+    { sql, args: [`INV-${userId}-081`,userId,'Acme Corp','Design System v2',7200,'Paid','Jan 10','Feb 10','👩🏻‍💼','#16a34a'] },
+    { sql, args: [`INV-${userId}-082`,userId,'DataSync','Analytics Dashboard',9400,'Paid','Feb 14','Mar 14','👨🏽‍💼','#14b8a6'] },
+    { sql, args: [`INV-${userId}-083`,userId,'Margono Studio','Brand Identity',8100,'Paid','Mar 7','Apr 7','👩🏿‍💼','#f59e0b'] },
+    { sql, args: [`INV-${userId}-084`,userId,'Acme Corp','Product Design Sprint',11200,'Paid','Apr 18','May 18','👩🏻‍💼','#16a34a'] },
+    { sql, args: [`INV-${userId}-085`,userId,'Hencewood Digital','Platform UI',10800,'Paid','May 9','Jun 9','👨🏻‍💻','#ec4899'] },
+    { sql, args: [`INV-${userId}-086`,userId,'NovaBuild','Mobile App v1',13500,'Paid','Jun 25','Jul 25','👩🏻‍🎨','#8b5cf6'] },
+    { sql, args: [`INV-${userId}-087`,userId,'Acme Corp','Q3 Retainer',8400,'Paid','Jul 2','Aug 2','👩🏻‍💼','#16a34a'] },
+    { sql, args: [`INV-${userId}-088`,userId,'DataSync','Analytics v2',9800,'Pending','Jul 15','Aug 15','👨🏽‍💼','#14b8a6'] },
+    { sql, args: [`INV-${userId}-089`,userId,'NovaBuild','Phase 2 Features',6200,'Pending','Jul 22','Aug 22','👩🏻‍🎨','#8b5cf6'] },
+    { sql, args: [`INV-${userId}-090`,userId,'TechFlow Inc','SaaS Dashboard',14500,'Draft','Jul 25','Aug 25','👨🏽‍💻','#6366f1'] },
   ], 'write')
 }
 
