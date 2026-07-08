@@ -11,7 +11,9 @@
   --gw-gold: #CA8A04;
   --gw-gold-light: rgba(202,138,4,0.1);
 
-  --font-display: 'Syne', sans-serif;
+  /* Display font — swap these two lines to toggle heading style */
+  --font-display: 'Inter', -apple-system, sans-serif; /* all-Inter (current) */
+  /* --font-display: 'Syne', sans-serif; */            /* original Syne — uncomment to revert */
   --font-body: 'Inter', -apple-system, sans-serif;
 
   /* Legacy aliases — kept so existing pages don't break */
