@@ -257,6 +257,36 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Tasks strip */}
+      {tasks.filter(t => !t.checked).length > 0 && (
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginBottom: 16, borderTop: '2px solid #16A34A' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
+              <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
+            </div>
+            <a href="/tasks" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
+          </div>
+          <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
+            <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: '#16A34A', borderRadius: 99, transition: 'width 0.8s ease' }} />
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {tasks.filter(t => !t.checked).slice(0, 10).map(t => {
+              const p = (t.priority ?? '').toLowerCase()
+              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
+                        : p === 'medium' ? 'badge badge-medium'
+                        : p === 'low' ? 'badge badge-low'
+                        : 'badge badge-todo'
+              return (
+                <a key={t.id} href="/tasks" className={cls} style={{ cursor: 'pointer', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>
+                  {t.title}
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Bento grid: 3 cols */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }} className="dash-bento-grid">
 
@@ -404,37 +434,6 @@ export default function DashboardPage() {
         </div>
 
       </div>
-
-      {/* Tasks strip */}
-      {tasks.filter(t => !t.checked).length > 0 && (
-        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginTop: 16, borderTop: '2px solid #16A34A' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <div>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
-              <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
-            </div>
-            <a href="/tasks" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
-          </div>
-          {/* Progress bar */}
-          <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: '#16A34A', borderRadius: 99, transition: 'width 0.8s ease' }} />
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {tasks.filter(t => !t.checked).slice(0, 10).map(t => {
-              const p = (t.priority ?? '').toLowerCase()
-              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
-                        : p === 'medium' ? 'badge badge-medium'
-                        : p === 'low' ? 'badge badge-low'
-                        : 'badge badge-todo'
-              return (
-                <a key={t.id} href="/tasks" className={cls} style={{ cursor: 'pointer', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>
-                  {t.title}
-                </a>
-              )
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Voice FAB */}
       {!isMobile && (
