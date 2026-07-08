@@ -75,9 +75,9 @@ export default async function HomePage() {
 
           {/* Headline */}
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontSize: 'clamp(34px, 3.8vw, 52px)',
-            fontWeight: 800, color: 'white', lineHeight: 1.12,
-            letterSpacing: '-0.025em', marginBottom: 24,
+            fontFamily: 'var(--font-display)', fontSize: 'clamp(44px, 5.5vw, 72px)',
+            fontWeight: 800, color: 'white', lineHeight: 1.08,
+            letterSpacing: '-0.03em', marginBottom: 24,
             textWrap: 'balance',
           } as React.CSSProperties}>
             The Operating System for <span style={{ color: '#16A34A' }}>Independent</span>{' '}Professionals
