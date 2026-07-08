@@ -6,6 +6,7 @@ import NotificationBell from "@/components/NotificationBell";
 import ClientAuthGuard from "@/components/ClientAuthGuard";
 import BottomNav from "@/components/BottomNav";
 import MobileMenuButton from "@/components/MobileMenuButton";
+import GlobalSearch from "@/components/GlobalSearch";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
@@ -36,11 +37,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           zIndex: 40,
           boxShadow: "0 1px 0 #F3F4F6",
         }}>
-          {/* Left: mobile menu + page title placeholder */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {/* Left: mobile menu */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
             <MobileMenuButton />
             <span id="page-title" style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "#111827" }} />
           </div>
+
+          {/* Center: search */}
+          <GlobalSearch />
 
           {/* Right: bell + avatar */}
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
