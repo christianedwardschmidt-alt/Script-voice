@@ -232,7 +232,7 @@ export default function DashboardPage() {
     <div style={{ padding: '40px 32px 52px', minHeight: '100vh' }}>
 
       {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 32 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
           <h1 style={{
             fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700,
