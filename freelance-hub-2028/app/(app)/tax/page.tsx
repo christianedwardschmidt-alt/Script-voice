@@ -61,7 +61,7 @@ function UL({ children }: { children: React.ReactNode }) {
   return <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 4 }}>{children}</div>
 }
 
-function Sparkline({ values, color, id, smooth = false }: { values: number[]; color: string; id: number; smooth?: boolean }) {
+function Sparkline({ values, color, id }: { values: number[]; color: string; id: number }) {
   const w = 72, h = 26
   const min = Math.min(...values)
   const max = Math.max(...values)
@@ -70,15 +70,7 @@ function Sparkline({ values, color, id, smooth = false }: { values: number[]; co
     (i / (values.length - 1)) * w,
     h - ((v - min) / range) * (h - 5) - 2.5,
   ])
-  const line = smooth
-    ? pts.map(([x, y], i, arr) => {
-        if (i === 0) return `M${x.toFixed(1)},${y.toFixed(1)}`
-        const [px, py] = arr[i - 1]
-        const cx1 = (px + (x - px) * 0.5).toFixed(1)
-        const cx2 = (x - (x - px) * 0.5).toFixed(1)
-        return `C${cx1},${py.toFixed(1)} ${cx2},${y.toFixed(1)} ${x.toFixed(1)},${y.toFixed(1)}`
-      }).join(' ')
-    : pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
   const fill = `${line} L${w},${h} L0,${h} Z`
   const [lx, ly] = pts[pts.length - 1]
   return (
@@ -90,7 +82,7 @@ function Sparkline({ values, color, id, smooth = false }: { values: number[]; co
         </linearGradient>
       </defs>
       <path d={fill} fill={`url(#tsg${id})`} />
-      <path d={line} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin={smooth ? 'round' : 'miter'} />
+      <path d={line} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
       <circle cx={lx.toFixed(1)} cy={ly.toFixed(1)} r={2.5} fill={color} />
     </svg>
   )
@@ -352,7 +344,7 @@ export default function TaxPage() {
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: '-0.02em' }}>{k.value}</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
                   <span style={{ fontSize: 13, color: trendColor, fontFamily: 'var(--font-body)' }}>{trendText}</span>
-                  <Sparkline values={k.spark} color={trendColor} id={i} smooth={i >= 2} />
+                  <Sparkline values={k.spark} color={trendColor} id={i} />
                 </div>
               </div>
             )
