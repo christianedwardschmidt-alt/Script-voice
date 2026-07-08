@@ -362,7 +362,7 @@ export default function Sidebar() {
             <span style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.12em', lineHeight: 1 }}>Work free.<span style={{ marginLeft: 3 }}>Stay connected.</span></span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.09em', lineHeight: 1 }}>Work free.<span style={{ marginLeft: 3 }}>Stay connected.</span></span>
           </Link>
         </div>
 
