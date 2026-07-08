@@ -5,7 +5,7 @@ const SKELs = [
 
 export default function TasksLoading() {
   return (
-    <div style={{ padding: '28px 28px', background: '#f2f4f8', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: '#f2f4f8', minHeight: '100dvh' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>

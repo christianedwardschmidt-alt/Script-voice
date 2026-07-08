@@ -261,7 +261,7 @@ export default function TasksPage() {
         {/* Right sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Upcoming Deadlines */}
-          <div className="card" style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 20, background: loading ? '#edf0f5' : 'var(--card)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Calendar size={16} color="#6b7280" />
               <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
@@ -292,7 +292,7 @@ export default function TasksPage() {
           </div>
 
           {/* Active Projects */}
-          <div className="card" style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 20, background: loading ? '#edf0f5' : 'var(--card)' }}>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {loading && Array.from({ length: 3 }).map((_, i) => (
