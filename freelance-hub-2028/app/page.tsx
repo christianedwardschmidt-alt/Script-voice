@@ -17,9 +17,10 @@ const css = `
 /* Hero */
 .lp-hero {
   background: radial-gradient(ellipse at 50% -10%, #14532D 0%, #0A1A0F 58%);
-  padding: 64px 0 72px; min-height: 80vh;
+  padding: 64px 0 72px; min-height: 80vh; text-align: center;
   display: flex; flex-direction: column; justify-content: center;
 }
+.lp-hero-inner { max-width: 660px; margin: 0 auto; }
 .lp-badge {
   display: inline-block; background: rgba(202,138,4,0.12); border: 1px solid rgba(202,138,4,0.35);
   color: #FCD34D; font-size: 13px; font-weight: 600; padding: 6px 18px; border-radius: 99px; margin-bottom: 32px;
@@ -27,14 +28,14 @@ const css = `
 }
 .lp-headline {
   font-family: var(--font-syne), Syne, sans-serif; font-weight: 700;
-  font-size: clamp(36px, 5vw, 64px); color: #fff; line-height: 1.05;
-  letter-spacing: -0.02em; max-width: 760px; margin: 0 0 22px; text-wrap: balance;
+  font-size: clamp(36px, 5vw, 58px); color: #fff; line-height: 1.08;
+  letter-spacing: -0.02em; margin: 0 0 20px; text-wrap: balance;
 }
 .lp-subheadline {
   font-size: clamp(15px, 1.8vw, 18px); color: rgba(134,239,172,0.85); line-height: 1.65;
-  max-width: 560px; margin: 0 0 40px; font-family: var(--font-inter);
+  margin: 0 0 36px; font-family: var(--font-inter);
 }
-.lp-hero-ctas { display: flex; align-items: center; justify-content: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+.lp-hero-ctas { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
 .lp-btn-primary {
   background: #16A34A; color: #fff; padding: 14px 28px; border-radius: 12px;
   font-weight: 600; font-size: 15px; display: inline-block; transition: all 0.18s;
@@ -52,7 +53,7 @@ const css = `
 
 /* Social proof avatars */
 .lp-social-proof {
-  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
   color: rgba(255,255,255,0.45); font-size: 13px; font-family: var(--font-inter);
 }
 .lp-avatars { display: flex; align-items: center; }
@@ -245,25 +246,26 @@ export default async function HomePage() {
         {/* ── HERO ────────────────────────────── */}
         <section className="lp-hero">
           <div className="lp-container">
-            <div className="lp-badge">✦ Now open to founding members</div>
-            <h1 className="lp-headline">The Operating System for Independent Professionals</h1>
-            <p className="lp-subheadline">
-              Everything in one place: CRM, invoicing, an AI business companion, and a community of serious peers. You keep 97% of what you earn.
-            </p>
-            <div className="lp-hero-ctas">
-              <Link href="/signup" className="lp-btn-primary">Join as a Founding Member</Link>
-              <a href="#features" className="lp-link-sec">See how it works</a>
-            </div>
-            {/* Social proof */}
-            <div className="lp-social-proof">
-              <div className="lp-avatars">
-                {[{ bg: '#16A34A', l: 'M' }, { bg: '#0EA5E9', l: 'J' }, { bg: '#6366F1', l: 'S' }].map((a, i) => (
-                  <div key={i} className="lp-avatar" style={{ background: a.bg, color: '#fff' }}>{a.l}</div>
-                ))}
+            <div className="lp-hero-inner">
+              <div className="lp-badge">✦ Now open to founding members</div>
+              <h1 className="lp-headline">The Operating System for Independent Professionals</h1>
+              <p className="lp-subheadline">
+                Everything in one place: CRM, invoicing, an AI business companion, and a community of serious peers. You keep 97% of what you earn.
+              </p>
+              <div className="lp-hero-ctas">
+                <Link href="/signup" className="lp-btn-primary">Join as a Founding Member</Link>
+                <a href="#features" className="lp-link-sec">See how it works</a>
               </div>
-              <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.42)', fontSize: 13 }}>
-                Join 2,400+ independent professionals already on GuildWire
-              </span>
+              <div className="lp-social-proof">
+                <div className="lp-avatars">
+                  {[{ bg: '#16A34A', l: 'M' }, { bg: '#0EA5E9', l: 'J' }, { bg: '#6366F1', l: 'S' }].map((a, i) => (
+                    <div key={i} className="lp-avatar" style={{ background: a.bg, color: '#fff' }}>{a.l}</div>
+                  ))}
+                </div>
+                <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.42)', fontSize: 13 }}>
+                  Join 2,400+ independent professionals already on GuildWire
+                </span>
+              </div>
             </div>
           </div>
         </section>
