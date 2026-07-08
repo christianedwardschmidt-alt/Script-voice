@@ -200,8 +200,8 @@ const css = `
 .lp-footer { background: #050D07; border-top: 1px solid rgba(255,255,255,0.06); padding: 52px 0 40px; }
 .lp-footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
 .lp-footer-brand-name {
-  font-family: var(--font-syne), Syne, sans-serif; font-weight: 700;
-  font-size: 18px; letter-spacing: -0.02em; margin-bottom: 8px;
+  font-family: var(--font-inter), -apple-system, sans-serif; font-weight: 800;
+  font-size: 18px; letter-spacing: -0.03em; margin-bottom: 8px;
 }
 .lp-footer-brand-desc { color: rgba(255,255,255,0.35); font-size: 13px; line-height: 1.6; max-width: 240px; font-family: var(--font-inter); }
 .lp-footer-col-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 14px; font-family: var(--font-inter); }
@@ -245,6 +245,15 @@ export default async function HomePage() {
         {/* ── HERO ────────────────────────────── */}
         <section className="lp-hero">
           <div className="lp-container">
+            {/* Brand wordmark + tagline */}
+            <div style={{ marginBottom: 32, textAlign: 'center' }}>
+              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 'clamp(48px, 7vw, 80px)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+                <span style={{ color: '#ffffff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)', marginTop: 12 }}>
+                work free, stay connected
+              </div>
+            </div>
             <div className="lp-badge">✦ Now open to founding members</div>
             <h1 className="lp-headline">The Operating System for Independent Professionals</h1>
             <p className="lp-subheadline">
