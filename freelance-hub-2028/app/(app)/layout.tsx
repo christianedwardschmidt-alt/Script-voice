@@ -1,53 +1,66 @@
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import Sidebar from "@/components/Sidebar";
-import SearchBar from "@/components/SearchBar";
-import QuickActions from "@/components/QuickActions";
 import OnboardingModal from "@/components/OnboardingModal";
 import NotificationBell from "@/components/NotificationBell";
-import WorkspaceSelector from "@/components/WorkspaceSelector";
 import ClientAuthGuard from "@/components/ClientAuthGuard";
 import BottomNav from "@/components/BottomNav";
+import MobileMenuButton from "@/components/MobileMenuButton";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser();
   if (!user) redirect("/login");
+
+  const initials = user.name
+    ? user.name.split(' ').map((n: string) => n[0] ?? '').join('').slice(0, 2).toUpperCase()
+    : 'U';
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", background: "var(--bg)", color: "var(--text)" }}>
+    <div style={{ minHeight: "100vh", background: "#F8FAFC" }}>
       <Sidebar />
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
+      {/* Main content — offset for fixed sidebar */}
+      <div style={{ marginLeft: 240, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+
+        {/* Top bar */}
         <header style={{
-          height: 52,
-          background: "var(--header-bg)",
-          borderBottom: "1px solid rgba(0,0,0,0.08)",
+          height: 60,
+          background: "white",
+          borderBottom: "1px solid #F3F4F6",
           display: "flex",
           alignItems: "center",
-          padding: "0 20px",
-          gap: 10,
-          flexShrink: 0,
+          padding: "0 32px",
+          justifyContent: "space-between",
           position: "sticky",
           top: 0,
-          zIndex: 50,
-          backdropFilter: "blur(20px) saturate(180%)",
-          WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.03)",
+          zIndex: 40,
+          boxShadow: "0 1px 0 #F3F4F6",
         }}>
-          <SearchBar />
-          <div className="hide-mobile"><QuickActions /></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div className="ai-chip ai-pulse hide-mobile">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-              </svg>
-              AI active
-            </div>
+          {/* Left: mobile menu + page title placeholder */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <MobileMenuButton />
+            <span id="page-title" style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "#111827" }} />
+          </div>
+
+          {/* Right: bell + avatar */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <NotificationBell />
-            <div className="hide-mobile"><WorkspaceSelector /></div>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "linear-gradient(135deg, #14532D, #16A34A)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13, fontWeight: 700, color: "white",
+              cursor: "pointer",
+              fontFamily: "var(--font-body)",
+            }}>
+              {initials}
+            </div>
           </div>
         </header>
 
-        <main style={{ flex: 1, overflow: "auto", background: "var(--bg)", minHeight: 0 }}>{children}</main>
+        <main style={{ flex: 1, background: "#F8FAFC", minHeight: 0 }}>
+          {children}
+        </main>
       </div>
 
       <BottomNav />
