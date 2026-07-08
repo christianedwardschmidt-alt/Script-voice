@@ -167,20 +167,20 @@ export default function TasksPage() {
           </div>
 
           {/* Tasks */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="card" style={{ padding: 0, overflow: 'hidden', background: loading ? '#edf0f5' : 'var(--card)' }}>
             {loading && Array.from({ length: 6 }).map((_, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 20px',
                 borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                background: 'var(--card)',
+                background: '#edf0f5',
               }}>
-                <div className="skel" style={{ width: 16, height: 16, marginTop: 3, flexShrink: 0 }} />
+                <div style={{ width: 16, height: 16, marginTop: 3, flexShrink: 0, borderRadius: 4, background: '#b8bfcc' }} />
                 <div style={{ flex: 1 }}>
-                  <div className="skel" style={{ width: `${60 + (i % 3) * 15}%`, height: 14, marginBottom: 8 }} />
-                  <div className="skel" style={{ width: `${40 + (i % 2) * 20}%`, height: 12, marginBottom: 10 }} />
+                  <div style={{ width: `${60 + (i % 3) * 15}%`, height: 14, borderRadius: 4, background: '#b8bfcc', marginBottom: 8 }} />
+                  <div style={{ width: `${40 + (i % 2) * 20}%`, height: 12, borderRadius: 4, background: '#c8cdd8', marginBottom: 10 }} />
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <div className="skel skel-pill" style={{ width: 56, height: 20 }} />
-                    <div className="skel skel-pill" style={{ width: 72, height: 20 }} />
+                    <div style={{ width: 56, height: 20, borderRadius: 99, background: '#b8bfcc' }} />
+                    <div style={{ width: 72, height: 20, borderRadius: 99, background: '#c8cdd8' }} />
                   </div>
                 </div>
               </div>
@@ -270,10 +270,10 @@ export default function TasksPage() {
               {loading && Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < 2 ? 12 : 0, borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div style={{ flex: 1, marginRight: 8 }}>
-                    <div className="skel" style={{ width: '70%', height: 12, marginBottom: 6 }} />
-                    <div className="skel" style={{ width: '40%', height: 10 }} />
+                    <div style={{ width: '70%', height: 12, borderRadius: 4, background: '#b8bfcc', marginBottom: 6 }} />
+                    <div style={{ width: '40%', height: 10, borderRadius: 4, background: '#c8cdd8' }} />
                   </div>
-                  <div className="skel skel-pill" style={{ width: 44, height: 18 }} />
+                  <div style={{ width: 44, height: 18, borderRadius: 99, background: '#b8bfcc' }} />
                 </div>
               ))}
               {!loading && upcomingDeadlines.length === 0 && (
@@ -298,10 +298,10 @@ export default function TasksPage() {
               {loading && Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div style={{ flex: 1 }}>
-                    <div className="skel" style={{ width: '60%', height: 12, marginBottom: 6 }} />
-                    <div className="skel" style={{ width: '35%', height: 10 }} />
+                    <div style={{ width: '60%', height: 12, borderRadius: 4, background: '#b8bfcc', marginBottom: 6 }} />
+                    <div style={{ width: '35%', height: 10, borderRadius: 4, background: '#c8cdd8' }} />
                   </div>
-                  <div className="skel" style={{ width: 8, height: 8, borderRadius: '50%' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#b8bfcc' }} />
                 </div>
               ))}
               {!loading && activeProjects.length === 0 && (
