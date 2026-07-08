@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
+import { Syne, Inter } from 'next/font/google'
 import "./globals.css";
 
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-syne',
+  display: 'swap',
+})
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
 const SITE_URL = 'https://guildwire.io'
-const TITLE    = 'GuildWire — The Freelancer Platform Built for Independent Professionals'
+const TITLE    = 'GuildWire — The Operating System for Independent Professionals'
 const DESC     = 'GuildWire is the all-in-one platform for freelancers: CRM, invoicing, AI assistant, tax tools, and a professional community. Keep 97% of what you earn. Join free.'
 
 export const metadata: Metadata = {
@@ -54,14 +69,14 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${syne.variable} ${inter.variable}`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text)", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" }}>
+      <body>
         {children}
       </body>
     </html>
