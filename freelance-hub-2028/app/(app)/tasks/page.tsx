@@ -168,9 +168,23 @@ export default function TasksPage() {
 
           {/* Tasks */}
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-            {loading && (
-              <div style={{ padding: 24, fontSize: 13, color: '#78716c' }}>Loading tasks...</div>
-            )}
+            {loading && Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 20px',
+                borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                background: 'var(--card)',
+              }}>
+                <div style={{ width: 16, height: 16, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginTop: 3, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ width: `${60 + (i % 3) * 15}%`, height: 14, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginBottom: 8 }} />
+                  <div style={{ width: `${40 + (i % 2) * 20}%`, height: 12, borderRadius: 4, background: 'rgba(0,0,0,0.06)', marginBottom: 10 }} />
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <div style={{ width: 56, height: 20, borderRadius: 99, background: 'rgba(0,0,0,0.08)' }} />
+                    <div style={{ width: 72, height: 20, borderRadius: 99, background: 'rgba(0,0,0,0.06)' }} />
+                  </div>
+                </div>
+              </div>
+            ))}
             {!loading && filtered.length === 0 && (
               <div style={{ padding: 24, fontSize: 13, color: '#78716c' }}>No tasks found.</div>
             )}
