@@ -136,8 +136,9 @@ const css = `
   width: 56px; height: 56px; border-radius: 16px;
   background: rgba(22,163,74,0.12); border: 1px solid rgba(22,163,74,0.2);
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px; font-size: 24px;
+  margin: 0 auto 20px;
 }
+.lp-pillar-icon-wrap svg { width: 26px; height: 26px; stroke: #16A34A; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .lp-pillar h3 {
   font-family: var(--font-syne), Syne, sans-serif; font-weight: 700;
   font-size: 20px; letter-spacing: -0.01em; color: #fff; margin-bottom: 10px;
@@ -348,17 +349,23 @@ export default async function HomePage() {
             <h2 className="lp-pillars-title">Built for the way you actually work</h2>
             <div className="lp-pillars-grid">
               <div className="lp-pillar">
-                <div className="lp-pillar-icon-wrap">💰</div>
+                <div className="lp-pillar-icon-wrap">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v1m0 8v1m-3-5h6m-6 0a3 3 0 0 1 3-3m0 6a3 3 0 0 1-3-3"/></svg>
+                </div>
                 <h3>Keep 97%</h3>
                 <p>Stop giving 20% to platforms that don&apos;t work for you. GuildWire charges a flat 3% — nothing else.</p>
               </div>
               <div className="lp-pillar">
-                <div className="lp-pillar-icon-wrap">⚡</div>
+                <div className="lp-pillar-icon-wrap">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                </div>
                 <h3>One Platform</h3>
                 <p>CRM, invoicing, AI companion, and community. All in one place, all working together. Finally.</p>
               </div>
               <div className="lp-pillar">
-                <div className="lp-pillar-icon-wrap">🤝</div>
+                <div className="lp-pillar-icon-wrap">
+                  <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
                 <h3>Real Community</h3>
                 <p>A guild of serious independent professionals who actually get what it means to build on your own terms.</p>
               </div>

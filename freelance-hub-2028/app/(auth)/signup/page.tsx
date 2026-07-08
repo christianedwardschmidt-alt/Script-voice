@@ -33,138 +33,130 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{ width: '100%' }}>
-      {/* Founding member badge */}
-      <div style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 6,
-        background: 'rgba(202,138,4,0.08)',
-        border: '1px solid rgba(202,138,4,0.25)',
-        borderRadius: 99,
-        padding: '5px 14px',
-        marginBottom: 24,
-      }}>
-        <span style={{ fontSize: 12, color: '#CA8A04', fontWeight: 600 }}>⚡ Founding member — 30 days free, 20% off for life</span>
+    <div style={{ width: '100%', maxWidth: 440 }}>
+      {/* Logo */}
+      <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 14,
+          background: 'linear-gradient(135deg, #007a3a, #00b857)',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 16px rgba(0,184,87,0.3)', marginBottom: 14,
+        }}>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 17, letterSpacing: '-0.5px' }}>GW</span>
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+          <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+        </div>
+        <div style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, marginTop: 4, letterSpacing: '0.01em' }}>
+          Work free. Stay connected.
+        </div>
       </div>
 
-      {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{
-          fontFamily: 'var(--font-syne), Syne, sans-serif',
-          fontSize: 28,
-          fontWeight: 700,
-          color: '#111827',
-          letterSpacing: '-0.02em',
-          marginBottom: 8,
-          lineHeight: 1.2,
-        }}>
-          Join GuildWire
+      {/* Card */}
+      <div style={{
+        background: '#fff', borderRadius: 20,
+        boxShadow: '0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)',
+        padding: '32px 36px',
+      }}>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0f1117', marginBottom: 6, letterSpacing: '-0.3px' }}>
+          Create your account
         </h1>
-        <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.5)', marginBottom: 24 }}>
           Already have an account?{' '}
           <Link href="/login" style={{ color: '#16A34A', fontWeight: 600 }}>Sign in</Link>
         </p>
+
+        {error && (
+          <div style={{
+            background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 10,
+            padding: '10px 14px', fontSize: 13, color: '#dc2626', marginBottom: 18,
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(15,17,23,0.6)', marginBottom: 6 }}>
+              Full name
+            </label>
+            <input
+              type="text"
+              required
+              autoComplete="name"
+              autoFocus
+              placeholder="Your name"
+              value={form.name}
+              onChange={e => setForm({ ...form, name: e.target.value })}
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = '#00b857'; e.target.style.boxShadow = '0 0 0 3px rgba(0,184,87,0.1)' }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.boxShadow = 'none' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(15,17,23,0.6)', marginBottom: 6 }}>
+              Email address
+            </label>
+            <input
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = '#00b857'; e.target.style.boxShadow = '0 0 0 3px rgba(0,184,87,0.1)' }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.boxShadow = 'none' }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(15,17,23,0.6)', marginBottom: 6 }}>
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              autoComplete="new-password"
+              placeholder="At least 8 characters"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = '#00b857'; e.target.style.boxShadow = '0 0 0 3px rgba(0,184,87,0.1)' }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(0,0,0,0.12)'; e.target.style.boxShadow = 'none' }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              marginTop: 6,
+              width: '100%', padding: '12px',
+              background: loading ? 'rgba(0,0,0,0.08)' : 'linear-gradient(135deg, #007a3a, #00b857)',
+              color: loading ? 'rgba(15,17,23,0.35)' : '#fff',
+              border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontFamily: 'inherit',
+              boxShadow: loading ? 'none' : '0 4px 14px rgba(0,184,87,0.28)',
+              transition: 'all 0.2s',
+            }}
+          >
+            {loading ? 'Creating account…' : 'Create account'}
+          </button>
+        </form>
+
+        <p style={{ fontSize: 11, color: 'rgba(15,17,23,0.35)', textAlign: 'center', marginTop: 20, lineHeight: 1.5 }}>
+          By signing up you agree to our Terms of Service and Privacy Policy.
+        </p>
       </div>
-
-      {error && (
-        <div style={{
-          background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 10,
-          padding: '12px 16px', fontSize: 13, color: '#DC2626', marginBottom: 20,
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}>
-          <span>⚠</span> {error}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 7 }}>
-            Full name
-          </label>
-          <input
-            type="text"
-            required
-            autoComplete="name"
-            autoFocus
-            placeholder="Your name"
-            value={form.name}
-            onChange={e => setForm({ ...form, name: e.target.value })}
-            style={inputStyle}
-            onFocus={e => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 4px rgba(22,163,74,0.08)' }}
-            onBlur={e => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none' }}
-          />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 7 }}>
-            Email address
-          </label>
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={e => setForm({ ...form, email: e.target.value })}
-            style={inputStyle}
-            onFocus={e => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 4px rgba(22,163,74,0.08)' }}
-            onBlur={e => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none' }}
-          />
-        </div>
-        <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 7 }}>
-            Password
-          </label>
-          <input
-            type="password"
-            required
-            autoComplete="new-password"
-            placeholder="At least 8 characters"
-            value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })}
-            style={inputStyle}
-            onFocus={e => { e.target.style.borderColor = '#16A34A'; e.target.style.boxShadow = '0 0 0 4px rgba(22,163,74,0.08)' }}
-            onBlur={e => { e.target.style.borderColor = '#E5E7EB'; e.target.style.boxShadow = 'none' }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            marginTop: 4,
-            width: '100%', padding: '13px',
-            background: loading ? '#F3F4F6' : '#16A34A',
-            color: loading ? '#9CA3AF' : '#fff',
-            border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 600,
-            cursor: loading ? 'not-allowed' : 'pointer',
-            fontFamily: 'var(--font-inter), inherit',
-            boxShadow: loading ? 'none' : '0 2px 8px rgba(22,163,74,0.3)',
-            transition: 'all 0.2s',
-            letterSpacing: '-0.01em',
-          }}
-          onMouseEnter={e => { if (!loading) { (e.target as HTMLButtonElement).style.background = '#15803D' } }}
-          onMouseLeave={e => { if (!loading) { (e.target as HTMLButtonElement).style.background = '#16A34A' } }}
-        >
-          {loading ? 'Creating your account…' : 'Claim your founding spot'}
-        </button>
-      </form>
-
-      <p style={{ fontSize: 12, color: '#9CA3AF', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
-        By signing up you agree to our{' '}
-        <a href="#" style={{ color: '#6B7280', textDecoration: 'underline' }}>Terms of Service</a>
-        {' '}and{' '}
-        <a href="#" style={{ color: '#6B7280', textDecoration: 'underline' }}>Privacy Policy</a>.
-        No credit card required.
-      </p>
     </div>
   )
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '12px 14px',
-  border: '1.5px solid #E5E7EB', borderRadius: 10,
-  background: '#FAFAFA', fontSize: 14, color: '#111827',
+  width: '100%', padding: '11px 14px',
+  border: '1.5px solid rgba(0,0,0,0.12)', borderRadius: 10,
+  background: '#fafafa', fontSize: 14, color: '#0f1117',
   outline: 'none', fontFamily: 'inherit',
   transition: 'border-color 0.15s, box-shadow 0.15s',
 }
