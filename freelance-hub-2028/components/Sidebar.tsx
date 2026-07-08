@@ -294,8 +294,8 @@ export default function Sidebar() {
 
   function navItem(href: string, Icon: React.ComponentType<{ size?: number; color?: string }>, label: string) {
     const active = pathname === href
-    const iconColor = active ? '#16A34A' : 'rgba(255,255,255,0.35)'
-    const labelColor = active ? 'white' : 'rgba(255,255,255,0.5)'
+    const iconColor = active ? '#16A34A' : '#9CA3AF'
+    const labelColor = active ? '#111827' : '#6B7280'
     const bg = active ? 'rgba(22,163,74,0.08)' : 'transparent'
     const shadow = active ? 'inset 2px 0 0 #16A34A' : 'none'
 
@@ -316,19 +316,18 @@ export default function Sidebar() {
         }}
         onMouseEnter={e => {
           if (!active) {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
-            e.currentTarget.style.color = 'rgba(255,255,255,0.85)'
-            // Update icon color via data attribute trick - icons read from parent
+            e.currentTarget.style.background = '#F9FAFB'
+            e.currentTarget.style.color = '#111827'
             const svg = e.currentTarget.querySelector('svg')
-            if (svg) svg.setAttribute('stroke', 'rgba(255,255,255,0.85)')
+            if (svg) svg.setAttribute('stroke', '#374151')
           }
         }}
         onMouseLeave={e => {
           if (!active) {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'rgba(255,255,255,0.5)'
+            e.currentTarget.style.color = '#6B7280'
             const svg = e.currentTarget.querySelector('svg')
-            if (svg) svg.setAttribute('stroke', 'rgba(255,255,255,0.35)')
+            if (svg) svg.setAttribute('stroke', '#9CA3AF')
           }
         }}
       >
@@ -348,8 +347,8 @@ export default function Sidebar() {
         className={`sidebar-aside${isMobileOpen ? ' sidebar-open' : ''}`}
         style={{
           width: 240, height: '100vh',
-          background: '#0A1A0F',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: '#ffffff',
+          borderRight: '1px solid #F3F4F6',
           display: 'flex', flexDirection: 'column',
           position: 'fixed', top: 0, left: 0,
           zIndex: 50,
@@ -358,10 +357,10 @@ export default function Sidebar() {
       >
 
         {/* Logo */}
-        <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+        <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
             <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>
-              <span style={{ color: 'white' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+              <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
           </Link>
         </div>
@@ -372,7 +371,7 @@ export default function Sidebar() {
             <div key={group.label} style={{ marginBottom: 8 }}>
               <div style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-                textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)',
+                textTransform: 'uppercase', color: '#9CA3AF',
                 padding: '8px 20px 4px',
                 fontFamily: 'var(--font-body)',
               }}>{group.label}</div>
@@ -385,7 +384,7 @@ export default function Sidebar() {
         {isDemo && (
           <div style={{ margin: '0 12px 10px', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 'var(--radius-md)' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#818CF8', marginBottom: 4, fontFamily: 'var(--font-body)' }}>Demo mode</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', lineHeight: 1.4, marginBottom: 8, fontFamily: 'var(--font-body)' }}>You&apos;re browsing read-only sample data.</div>
+            <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4, marginBottom: 8, fontFamily: 'var(--font-body)' }}>You&apos;re browsing read-only sample data.</div>
             <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '6px 10px', background: '#6366F1', color: '#fff', borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>
               Create free account
             </Link>
@@ -393,7 +392,7 @@ export default function Sidebar() {
         )}
 
         {/* Bottom nav items */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 8, flexShrink: 0 }}>
+        <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 8, flexShrink: 0 }}>
           {BOTTOM_NAV.map(({ label, href, Icon }) => navItem(href, Icon, label))}
 
           {/* User card */}
@@ -401,20 +400,20 @@ export default function Sidebar() {
             {showUserMenu && (
               <div style={{
                 position: 'absolute', bottom: '100%', left: 12, right: 12, marginBottom: 4,
-                background: '#1a2e1f', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 'var(--radius-md)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                background: '#ffffff', border: '1px solid #F3F4F6',
+                borderRadius: 'var(--radius-md)', boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
                 overflow: 'hidden', zIndex: 100,
               }}>
                 <Link
                   href="/profile"
                   onClick={() => setShowUserMenu(false)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 500, textDecoration: 'none', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: 13, color: '#374151', fontWeight: 500, textDecoration: 'none', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#F9FAFB')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <IconUser size={13} color="rgba(255,255,255,0.5)" /> View Profile
+                  <IconUser size={13} color="#9CA3AF" /> View Profile
                 </Link>
-                <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
+                <div style={{ height: 1, background: '#F3F4F6' }} />
                 <button
                   onClick={signOut}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', fontSize: 13, color: '#F87171', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' }}
@@ -429,7 +428,7 @@ export default function Sidebar() {
             <button
               onClick={() => setShowUserMenu(v => !v)}
               style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 20px 14px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+              onMouseEnter={e => (e.currentTarget.style.background = '#F9FAFB')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <div style={{
@@ -440,11 +439,11 @@ export default function Sidebar() {
                 animation: 'pulse-dot 3s ease-in-out infinite',
               }}>{displayName.charAt(0).toUpperCase()}</div>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayName}</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayEmail}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayName}</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayEmail}</div>
               </div>
               <div style={{ transform: showUserMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}>
-                <IconChevronUp size={13} color="rgba(255,255,255,0.3)" />
+                <IconChevronUp size={13} color="#9CA3AF" />
               </div>
             </button>
           </div>
