@@ -358,11 +358,11 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
-          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em' }}>
+          <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
-            <div style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.01em', marginTop: 2 }}>Work free. Stay connected.</div>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.01em', lineHeight: 1 }}>Work free. Stay connected.</span>
           </Link>
         </div>
 
