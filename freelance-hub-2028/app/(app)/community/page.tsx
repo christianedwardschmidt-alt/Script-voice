@@ -16,9 +16,9 @@ const trending = [
 ]
 
 const suggested = [
-  { name: 'Alex Thompson', handle: '@alex_design', role: 'Brand Designer', mutual: 12, avatar: '👨🏼‍🎨', color: '#16a34a', followers: '4.2k' },
-  { name: 'Jessica Wu', handle: '@jess_markets', role: 'Marketing Expert', mutual: 8, avatar: '👩🏻‍💼', color: '#ec4899', followers: '8.1k' },
-  { name: 'David Park', handle: '@dpark_video', role: 'Video Creator', mutual: 5, avatar: '👨🏻‍💻', color: '#f59e0b', followers: '11.5k' },
+  { name: 'Alex Thompson', handle: '@alex_design', role: 'Brand Designer', mutual: 12, avatar: 'AT', color: '#16a34a', followers: '4.2k' },
+  { name: 'Jessica Wu', handle: '@jess_markets', role: 'Marketing Expert', mutual: 8, avatar: 'JW', color: '#ec4899', followers: '8.1k' },
+  { name: 'David Park', handle: '@dpark_video', role: 'Video Creator', mutual: 5, avatar: 'DP', color: '#f59e0b', followers: '11.5k' },
 ]
 
 interface Post {
@@ -42,11 +42,11 @@ interface Post {
 }
 
 const stories = [
-  { name: 'You', avatar: '⚡', color: '#16a34a', isOwn: true },
-  { name: 'Sarah J.', avatar: '👩🏻‍🎨', color: '#16a34a', isOwn: false },
-  { name: 'Marcus', avatar: '👨🏾‍💻', color: '#10b981', isOwn: false },
-  { name: 'Priya', avatar: '👩🏽‍💻', color: '#f59e0b', isOwn: false },
-  { name: 'David', avatar: '👨🏻‍💻', color: '#ec4899', isOwn: false },
+  { name: 'You', avatar: 'Y', color: '#16a34a', isOwn: true },
+  { name: 'Sarah J.', avatar: 'SJ', color: '#16a34a', isOwn: false },
+  { name: 'Marcus', avatar: 'M', color: '#10b981', isOwn: false },
+  { name: 'Priya', avatar: 'P', color: '#f59e0b', isOwn: false },
+  { name: 'David', avatar: 'D', color: '#ec4899', isOwn: false },
 ]
 
 const tabs = ['Feed', 'Trending', 'Saved']
@@ -216,7 +216,7 @@ export default function CommunityPage() {
           {/* Compose box */}
           <div className="card" style={{ padding: 16, marginBottom: 14 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>⚡</div>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', fontFamily: 'var(--font-body)', flexShrink: 0 }}>Y</div>
               <div style={{ flex: 1 }}>
                 <textarea
                   value={newPost}
@@ -249,15 +249,15 @@ export default function CommunityPage() {
               <div key={post.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 {post.trending && (
                   <div style={{ padding: '6px 18px', background: '#fef9c3', borderBottom: '1px solid #fde68a', fontSize: 12, fontWeight: 600, color: '#92400e', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    🔥 Trending in #FreelanceLife
+                    <TrendingUp size={12} /> Trending in #FreelanceLife
                   </div>
                 )}
                 <div style={{ padding: 18 }}>
                   {/* Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <div style={{ width: 44, height: 44, borderRadius: '50%', background: post.color + '18', border: `2px solid ${post.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                        {post.avatar}
+                      <div style={{ width: 44, height: 44, borderRadius: '50%', background: post.color + '18', border: `2px solid ${post.color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: post.color, fontFamily: 'var(--font-body)', flexShrink: 0 }}>
+                        {post.author.charAt(0)}
                       </div>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

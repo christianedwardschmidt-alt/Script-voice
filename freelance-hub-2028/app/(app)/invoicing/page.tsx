@@ -25,7 +25,6 @@ interface Invoice {
 
 interface LineItem { description: string; qty: number; rate: number }
 
-const AVATARS = ['👩🏻‍💼','👨🏻‍💻','👩🏿‍💼','👨🏽‍💼','👩🏽‍🎨','👨🏾‍💻']
 const COLORS  = ['#16a34a','#ec4899','#f59e0b','#10b981','#06b6d4','#8b5cf6']
 
 function fmt(n: number) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
@@ -94,7 +93,7 @@ export default function BillingPage() {
   async function createInvoice(status: Status) {
     if (!fClient.trim() || subtotal <= 0) return
     const project = lines.filter(l => l.description).map(l => l.description).join(', ') || 'Services'
-    const avatar  = AVATARS[invoices.length % AVATARS.length]
+    const avatar  = fClient.trim().charAt(0).toUpperCase() || '?'
     const color   = COLORS[invoices.length % COLORS.length]
     const res = await fetch('/api/invoices', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -322,7 +321,7 @@ export default function BillingPage() {
                   <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>Total Due</div>
                   <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>${fmt(preview.amount)}</div>
                 </div>
-                <div style={{ fontSize: 34 }}>{preview.avatar}</div>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: preview.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: preview.color, fontFamily: 'var(--font-body)' }}>{preview.avatar}</div>
               </div>
 
               {/* Change status */}
