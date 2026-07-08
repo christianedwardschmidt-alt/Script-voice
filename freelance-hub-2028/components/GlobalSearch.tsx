@@ -200,16 +200,35 @@ export default function GlobalSearch() {
                 <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#16A34A', fontFamily: 'var(--font-body)' }}>AI Answer</span>
               </div>
               <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: 'var(--font-body)', margin: 0 }}>{aiText}</p>
-              <button
-                onMouseDown={dismiss}
-                style={{
-                  marginTop: 10, fontSize: 11.5, color: '#9CA3AF', background: 'none',
-                  border: 'none', cursor: 'pointer', padding: 0,
-                  fontFamily: 'var(--font-body)',
-                }}
-              >
-                Dismiss
-              </button>
+
+              {/* Action row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 }}>
+                <button
+                  onMouseDown={() => { navigate(`/ai-assistant?q=${encodeURIComponent(trimmed)}`) }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '6px 12px', borderRadius: 7,
+                    background: '#16A34A', color: '#fff',
+                    border: 'none', cursor: 'pointer',
+                    fontSize: 12.5, fontWeight: 600, fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  Continue in AI Assistant
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button
+                  onMouseDown={dismiss}
+                  style={{
+                    fontSize: 12, color: '#9CA3AF', background: 'none',
+                    border: 'none', cursor: 'pointer', padding: 0,
+                    fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  Dismiss
+                </button>
+              </div>
             </div>
           )}
         </div>
