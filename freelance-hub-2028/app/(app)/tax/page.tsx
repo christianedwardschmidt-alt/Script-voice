@@ -359,8 +359,8 @@ export default function TaxPage() {
                   <UL>Monthly Revenue</UL>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>Income trend · 2026</div>
                 </div>
-                <ResponsiveContainer width="100%" height={200}>
-                  <AreaChart data={areaData} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={areaData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                     <defs>
                       <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#16A34A" stopOpacity={0.18} />
@@ -368,9 +368,9 @@ export default function TaxPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} tickFormatter={v => v ? `$${v/1000}k` : '$0'} />
-                    <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12 }} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} dy={6} />
+                    <YAxis tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} tickFormatter={v => v ? `$${(v/1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : '$0'} width={48} />
+                    <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12, fontFamily: 'var(--font-body)' }} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
                     <Area type="monotone" dataKey="revenue" stroke="#16A34A" strokeWidth={2} fill="url(#revGrad)" dot={false} activeDot={{ r: 4, fill: '#16A34A' }} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -385,11 +385,11 @@ export default function TaxPage() {
                 {catData.length === 0 ? (
                   <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13, fontFamily: 'var(--font-body)' }}>No expenses yet</div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={catData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }} barSize={10}>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={catData} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 4 }} barSize={10}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
-                      <YAxis type="category" dataKey="cat" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} width={110} />
+                      <XAxis type="number" tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} dy={4} />
+                      <YAxis type="category" dataKey="cat" tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} width={120} />
                       <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12 }} formatter={(v: number) => [`$${v.toLocaleString()}`, '']} />
                       <Bar dataKey="amt" radius={[0, 4, 4, 0]}>
                         {catData.map((entry, idx) => (
