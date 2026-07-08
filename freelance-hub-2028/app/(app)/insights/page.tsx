@@ -77,10 +77,10 @@ export default function InsightsPage() {
   ]
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Insights</h1>
-        <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>Insights</h1>
+        <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginTop: 2 }}>Track your performance and growth</p>
       </div>
 
       {/* Metric cards */}
@@ -95,8 +95,8 @@ export default function InsightsPage() {
                 <ArrowUpRight size={11} /> {change}
               </span>
             </div>
-            <div style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.5px' }}>{value}</div>
-            <div style={{ fontSize: 13, color: '#78716c', marginTop: 3 }}>{label}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.03em' }}>{value}</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', marginTop: 3 }}>{label}</div>
           </div>
         ))}
       </div>
@@ -129,7 +129,7 @@ export default function InsightsPage() {
             <select
               value={range}
               onChange={e => setRange(e.target.value)}
-              style={{ marginLeft: 'auto', padding: '6px 10px', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 13, color: '#1c1917', background: 'var(--card)', cursor: 'pointer' }}
+              style={{ marginLeft: 'auto', padding: '6px 10px', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 13, color: '#111827', background: 'var(--card)', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
             >
               {['Last 7 months', 'Last 3 months', 'Last year'].map(r => (
                 <option key={r}>{r}</option>
@@ -139,7 +139,7 @@ export default function InsightsPage() {
 
           {activeTab !== 'Clients' ? (
             <>
-              <div style={{ fontWeight: 600, fontSize: 16, color: '#1c1917', marginBottom: 16 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16, color: '#111827', marginBottom: 16 }}>
                 {activeTab === 'Revenue' ? 'Revenue Trend' : 'Projects Over Time'}
               </div>
               <ResponsiveContainer width="100%" height={240}>
@@ -165,8 +165,8 @@ export default function InsightsPage() {
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 500, color: '#1c1917' }}>{c.name}</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1c1917' }}>${c.revenue.toLocaleString()}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500, color: '#111827' }}>{c.name}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#111827' }}>${c.revenue.toLocaleString()}</span>
                     </div>
                     <div style={{ height: 5, background: '#f7f6f3', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${(c.revenue / maxClientRevenue) * 100}%`, background: c.color, borderRadius: 4 }} />
@@ -198,9 +198,9 @@ export default function InsightsPage() {
               <div key={item.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ width: 10, height: 10, borderRadius: '50%', background: item.color }} />
-                  <span style={{ fontSize: 13, color: '#1c1917' }}>{item.name}</span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#111827' }}>{item.name}</span>
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#1c1917' }}>{item.value}%</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#111827' }}>{item.value}%</span>
               </div>
             ))}
           </div>

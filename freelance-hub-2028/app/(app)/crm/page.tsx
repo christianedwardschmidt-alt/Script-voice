@@ -66,8 +66,7 @@ const tagColors: Record<string, string> = {
   Completed: '#78716c',
 }
 
-const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
-const avatarBgs = ['#16a34a', '#22c55e', '#d97706', '#14b8a6', '#78716c', '#4ade80']
+const avatarBgs = ['#16A34A', '#22C55E', '#D97706', '#14B8A6', '#6B7280', '#4ADE80']
 
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '', value: '', notes: '' }
 
@@ -131,7 +130,6 @@ export default function CRMPage() {
 
   const createClient = async () => {
     if (!form.name.trim() || !form.company.trim()) return
-    const avatar = avatars[data.length % avatars.length]
     const avatarBg = avatarBgs[data.length % avatarBgs.length]
     const res = await fetch('/api/crm-clients', {
       method: 'POST',
@@ -140,7 +138,7 @@ export default function CRMPage() {
         ...form,
         value: Number(form.value) || 0,
         stage: 'Lead',
-        avatar,
+        avatar: form.name.charAt(0).toUpperCase(),
         avatarBg,
         tags: ['New'],
         lastContact: 'just now',
@@ -155,11 +153,11 @@ export default function CRMPage() {
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>CRM</h1>
-          <p style={{ fontSize: 14, color: '#78716c', marginTop: 2 }}>Manage client relationships & pipeline</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>CRM</h1>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#6B7280', marginTop: 2 }}>Manage client relationships & pipeline</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
           <Plus size={14} />
@@ -293,12 +291,12 @@ export default function CRMPage() {
                 >
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${client.avatarBg}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-                        {client.avatar}
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: client.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: 'white', flexShrink: 0, fontFamily: 'var(--font-display)' }}>
+                        {(client.avatar || client.name || '?').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#1c1917' }}>{client.name}</div>
-                        <div style={{ fontSize: 11, color: '#78716c' }}>{client.company}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#111827' }}>{client.name}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280' }}>{client.company}</div>
                       </div>
                     </div>
                   </td>
@@ -365,12 +363,12 @@ export default function CRMPage() {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${selectedClient.avatarBg}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
-                  {selectedClient.avatar}
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: selectedClient.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, color: 'white', fontFamily: 'var(--font-display)' }}>
+                  {(selectedClient.avatar || selectedClient.name || '?').charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>{selectedClient.name}</div>
-                  <div style={{ fontSize: 12, color: '#78716c' }}>{selectedClient.company}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: '#111827' }}>{selectedClient.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280' }}>{selectedClient.company}</div>
                 </div>
               </div>
               <button onClick={() => setSelectedClient(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#a8a29e', fontSize: 18 }}>×</button>

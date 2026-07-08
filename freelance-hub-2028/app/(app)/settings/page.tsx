@@ -103,24 +103,24 @@ export default function SettingsPage() {
 
   if (!settings) {
     return (
-      <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
-        <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading settings...</div>
+      <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
+        <div className="card" style={{ padding: 40, textAlign: 'center', color: '#6B7280', fontSize: 14, fontFamily: 'var(--font-body)' }}>Loading settings...</div>
       </div>
     )
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
-      <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', marginBottom: 6 }}>Settings</h1>
-      <p style={{ color: '#78716c', fontSize: 14, marginBottom: 24 }}>Configure your account preferences</p>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
+      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 6, letterSpacing: '-0.02em' }}>Settings</h1>
+      <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginBottom: 28 }}>Configure your account preferences</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 560 }}>
         {items.map(({ key, title, desc }) => {
           const on = settings[key]
           return (
             <div key={key} className="card" style={{ padding: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#1c1917' }}>{title}</div>
-                <div style={{ fontSize: 12, color: '#78716c', marginTop: 2 }}>{desc}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827' }}>{title}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginTop: 2 }}>{desc}</div>
               </div>
               <div
                 onClick={() => toggle(key)}
@@ -132,8 +132,8 @@ export default function SettingsPage() {
           )
         })}
         <div className="card" style={{ padding: 18 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#1c1917', marginBottom: 4 }}>Change Password</div>
-          <div style={{ fontSize: 12, color: '#78716c', marginBottom: 16 }}>Update your account password. You&apos;ll stay logged in after changing it.</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Change Password</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 16 }}>Update your account password. You&apos;ll stay logged in after changing it.</div>
           {pwStatus === 'saved' && (
             <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500, marginBottom: 12 }}>Password updated successfully!</div>
           )}
@@ -188,8 +188,8 @@ export default function SettingsPage() {
         </div>
 
         <div className="card" style={{ padding: 18 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#ef4444', marginBottom: 4 }}>Danger Zone</div>
-          <div style={{ fontSize: 12, color: '#78716c', marginBottom: 16 }}>These actions are irreversible. Please proceed with caution.</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#EF4444', marginBottom: 4 }}>Danger Zone</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 16 }}>These actions are irreversible. Please proceed with caution.</div>
 
           {/* Clear sample data */}
           <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid var(--border)' }}>

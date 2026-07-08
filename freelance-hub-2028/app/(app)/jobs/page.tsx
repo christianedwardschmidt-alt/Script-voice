@@ -68,10 +68,10 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Browse Jobs</h1>
-        <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Discover top freelance opportunities</p>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>Browse Jobs</h1>
+        <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginTop: 2 }}>Discover top freelance opportunities</p>
       </div>
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
@@ -92,8 +92,8 @@ export default function JobsPage() {
                   <Briefcase size={20} color="#16a34a" />
                 </div>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#1c1917' }}>{job.title}</div>
-                  <div style={{ fontSize: 13, color: '#78716c', marginTop: 2 }}>{job.company}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 600, color: '#111827' }}>{job.title}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', marginTop: 2 }}>{job.company}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -111,7 +111,7 @@ export default function JobsPage() {
               </div>
             </div>
 
-            <p style={{ fontSize: 13, color: '#78716c', lineHeight: 1.5, marginBottom: 12 }}>{job.description}</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', lineHeight: 1.5, marginBottom: 12 }}>{job.description}</p>
 
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
               {job.tags.map(tag => (

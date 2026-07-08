@@ -25,16 +25,16 @@ const suggestions = [
   { icon: Calculator, label: 'Schedule a meeting', prompt: 'Schedule a kickoff call with NovaBuild for tomorrow at 10am.' },
 ]
 
-const ACTION_ICONS: Record<string, string> = {
-  create_task: '✓',
-  draft_invoice: '🧾',
-  add_client: '👤',
-  schedule_event: '📅',
-  search_jobs: '🔍',
-  add_crm_contact: '📇',
-  navigate_to: '🧭',
+const ACTION_LABELS: Record<string, string> = {
+  create_task: 'Task',
+  draft_invoice: 'Invoice',
+  add_client: 'Client',
+  schedule_event: 'Event',
+  search_jobs: 'Jobs',
+  add_crm_contact: 'CRM',
+  navigate_to: 'Nav',
 }
-function actionIcon(name: string) { return ACTION_ICONS[name] ?? '⚡' }
+function actionIcon(name: string) { return ACTION_LABELS[name] ?? 'AI' }
 
 function AIAssistantInner() {
   const searchParams = useSearchParams()
@@ -173,10 +173,10 @@ function AIAssistantInner() {
 
   const formatContent = (content: string) =>
     content.split('\n').map((line, i) => {
-      if (line.startsWith('**') && line.endsWith('**')) return <strong key={i} style={{ color: '#1c1917', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
-      if (line.startsWith('• ')) return <div key={i} style={{ paddingLeft: 16, color: '#1c1917', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#16a34a' }}>•</span>{line.replace('• ', '')}</div>
+      if (line.startsWith('**') && line.endsWith('**')) return <strong key={i} style={{ fontFamily: 'var(--font-body)', color: '#111827', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
+      if (line.startsWith('• ')) return <div key={i} style={{ fontFamily: 'var(--font-body)', paddingLeft: 16, color: '#111827', marginBottom: 2, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#16A34A' }}>•</span>{line.replace('• ', '')}</div>
       if (line === '') return <div key={i} style={{ height: 5 }} />
-      return <span key={i} style={{ color: '#1c1917', lineHeight: 1.7, display: 'block' }}>{line}</span>
+      return <span key={i} style={{ fontFamily: 'var(--font-body)', color: '#111827', lineHeight: 1.7, display: 'block' }}>{line}</span>
     })
 
   return (
@@ -188,8 +188,8 @@ function AIAssistantInner() {
             <Bot size={16} color="#fff" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1c1917' }}>GuildWire AI</div>
-            <div style={{ fontSize: 11, color: '#16a34a' }}>Powered by Claude</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, color: '#111827' }}>GuildWire AI</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#16A34A' }}>Powered by Claude</div>
           </div>
         </div>
 
@@ -220,7 +220,7 @@ function AIAssistantInner() {
         <div style={{ padding: '14px 24px', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--card)', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#1c1917' }}>General Assistant</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: '#111827' }}>General Assistant</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#16a34a', fontWeight: 500 }}>
             <Sparkles size={13} /> AI-powered
@@ -256,8 +256,8 @@ function AIAssistantInner() {
                   <div style={{ marginBottom: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {msg.actions.map((a, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 12px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0', fontSize: 12 }}>
-                        <span style={{ fontSize: 14 }}>{actionIcon(a.name)}</span>
-                        <span style={{ color: '#15803d', fontWeight: 600 }}>{a.summary}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#15803D', background: '#dcfce7', padding: '2px 5px', borderRadius: 4, fontFamily: 'var(--font-body)', flexShrink: 0 }}>{actionIcon(a.name)}</span>
+                        <span style={{ color: '#15803D', fontWeight: 600, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
                       </div>
                     ))}
                   </div>
@@ -322,7 +322,7 @@ function AIAssistantInner() {
               value={listening && interimText ? interimText : input}
               onChange={e => { if (!listening) setInput(e.target.value) }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder="Ask anything or give a voice command — tap 🎤 and speak"
+              placeholder="Ask anything or give a voice command — tap the mic and speak"
               rows={1}
               style={{ flex: 1, background: 'none', border: 'none', color: listening ? '#78716c' : '#1c1917', fontSize: 14, resize: 'none', outline: 'none', fontFamily: 'inherit', lineHeight: 1.5, maxHeight: 100, overflowY: 'auto' }}
             />

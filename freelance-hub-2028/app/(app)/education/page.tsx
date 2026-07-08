@@ -51,11 +51,11 @@ export default function EducationPage() {
   const completed = courses.filter(c => c.progress === 100)
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Upskilling</h1>
-          <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Level up your skills with curated courses</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>Upskilling</h1>
+          <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginTop: 2 }}>Level up your skills with curated courses</p>
         </div>
         <button className="btn-primary"><Plus size={14} /> Browse All</button>
       </div>
@@ -123,8 +123,8 @@ export default function EducationPage() {
             </div>
             <div style={{ padding: 16 }}>
               <div style={{ fontSize: 10, color: course.color, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 700, marginBottom: 5 }}>{course.category}</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#1c1917', marginBottom: 3, lineHeight: 1.4 }}>{course.title}</div>
-              <div style={{ fontSize: 12, color: '#78716c', marginBottom: 10 }}>by {course.instructor}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 3, lineHeight: 1.4 }}>{course.title}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 10 }}>by {course.instructor}</div>
               <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11, color: '#78716c' }}>
                   <Star size={10} fill="#f59e0b" color="#f59e0b" /> {course.rating}

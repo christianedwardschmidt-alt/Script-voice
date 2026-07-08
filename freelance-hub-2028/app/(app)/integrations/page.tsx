@@ -43,11 +43,11 @@ export default function IntegrationsPage() {
   const connectedCount = data.filter(i => i.connected).length
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Workspace</h1>
-          <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>Workspace</h1>
+          <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginTop: 2 }}>
             {connectedCount}/{data.length} integrations connected
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function IntegrationsPage() {
                   {integ.icon}
                 </div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#1c1917' }}>{integ.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827' }}>{integ.name}</div>
                   {integ.connected && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
@@ -106,7 +106,7 @@ export default function IntegrationsPage() {
                 {integ.connected ? <><Check size={11} /> Connected</> : <><Plus size={11} /> Connect</>}
               </button>
             </div>
-            <p style={{ fontSize: 12, color: '#78716c', marginBottom: integ.connected ? 10 : 0, lineHeight: 1.4 }}>{integ.desc}</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: integ.connected ? 10 : 0, lineHeight: 1.4 }}>{integ.desc}</p>
             {integ.connected && (
               <div style={{ display: 'flex', gap: 6 }}>
                 <button style={{ flex: 1, padding: '6px 0', borderRadius: 7, background: 'var(--bg-2)', border: '1px solid rgba(0,0,0,0.06)', color: '#78716c', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>

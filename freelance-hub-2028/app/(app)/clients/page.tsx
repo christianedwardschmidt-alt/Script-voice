@@ -17,8 +17,7 @@ interface Client {
   projects: number
 }
 
-const avatars = ['👩🏻‍💼', '👨🏻‍💻', '👩🏿‍💼', '👨🏽‍💼', '👩🏽‍🎨', '👨🏾‍💻']
-const colors = ['#16a34a', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6']
+const colors = ['#16A34A', '#EC4899', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6']
 
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '' }
 
@@ -43,12 +42,11 @@ export default function ClientsPage() {
 
   const createClient = async () => {
     if (!form.name.trim() || !form.company.trim()) return
-    const avatar = avatars[clients.length % avatars.length]
     const color = colors[clients.length % colors.length]
     const res = await fetch('/api/clients', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, avatar, color, status: 'active', revenue: 0, projects: 0 }),
+      body: JSON.stringify({ ...form, avatar: form.name.charAt(0).toUpperCase(), color, status: 'active', revenue: 0, projects: 0 }),
     })
     const created = await res.json()
     setClients(prev => [created, ...prev])
@@ -63,11 +61,11 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Clients</h1>
-          <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Manage your client relationships</p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>Clients</h1>
+          <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginTop: 2 }}>Manage your client relationships</p>
         </div>
         <button className="btn-primary" onClick={() => setShowModal(true)}>
           <Plus size={15} />
@@ -102,12 +100,12 @@ export default function ClientsPage() {
             <div key={client.id} className="card card-hover" style={{ padding: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: client.color + '20', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                    {client.avatar}
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: client.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: 'white', flexShrink: 0, fontFamily: 'var(--font-display)' }}>
+                    {(client.avatar || client.name || '?').charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: '#1c1917' }}>{client.name}</div>
-                    <div style={{ fontSize: 13, color: '#78716c' }}>{client.company}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: '#111827' }}>{client.name}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280' }}>{client.company}</div>
                   </div>
                 </div>
                 <div style={{ position: 'relative' }}>
@@ -141,18 +139,18 @@ export default function ClientsPage() {
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Icon size={13} color="#9ca3af" />
-                    <span style={{ fontSize: 12, color: '#78716c' }}>{text}</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280' }}>{text}</span>
                   </div>
                 ))}
               </div>
               <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>${client.revenue.toLocaleString()}</div>
-                  <div style={{ fontSize: 11, color: '#78716c' }}>Total revenue</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: '#111827' }}>${client.revenue.toLocaleString()}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280' }}>Total revenue</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#1c1917' }}>{client.projects}</div>
-                  <div style={{ fontSize: 11, color: '#78716c' }}>Projects</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: '#111827' }}>{client.projects}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#6B7280' }}>Projects</div>
                 </div>
                 <span className="badge badge-completed">{client.status}</span>
               </div>
@@ -165,8 +163,8 @@ export default function ClientsPage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
           <div className="card" style={{ width: 420, padding: 24 }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-              <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>Add Client</span>
-              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 17, color: '#111827' }}>Add Client</span>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}>
                 <X size={18} />
               </button>
             </div>
