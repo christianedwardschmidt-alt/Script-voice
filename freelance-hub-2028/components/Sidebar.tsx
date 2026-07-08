@@ -200,6 +200,24 @@ function IconPlug({ size = 18, color = 'currentColor' }: { size?: number; color?
   )
 }
 
+function IconBell({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+  )
+}
+
+function IconCreditCard({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+      <line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+  )
+}
+
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
 const NAV_GROUPS = [
@@ -228,14 +246,21 @@ const NAV_GROUPS = [
       { label: 'Jobs',    href: '/jobs',      Icon: IconZap,     key: '8' },
     ],
   },
+  {
+    label: 'SETTINGS',
+    items: [
+      { label: 'Profile',       href: '/profile',       Icon: IconUser,       key: undefined },
+      { label: 'Billing',       href: '/billing',       Icon: IconCreditCard, key: undefined },
+      { label: 'Integrations',  href: '/integrations',  Icon: IconPlug,       key: undefined },
+      { label: 'Notifications', href: '/notifications', Icon: IconBell,       key: undefined },
+    ],
+  },
 ]
 
 const BOTTOM_NAV = [
-  { label: 'Tax Center',   href: '/tax',          Icon: IconTax },
-  { label: 'Education',    href: '/education',    Icon: IconBook },
-  { label: 'Integrations', href: '/integrations', Icon: IconPlug },
-  { label: 'Settings',     href: '/settings',     Icon: IconSettings },
-  { label: 'Help',         href: '/contact',      Icon: IconHelp },
+  { label: 'Tax Center', href: '/tax',       Icon: IconTax },
+  { label: 'Education',  href: '/education', Icon: IconBook },
+  { label: 'Help',       href: '/contact',   Icon: IconHelp },
 ]
 
 // ── Component ─────────────────────────────────────────────────────────────────
