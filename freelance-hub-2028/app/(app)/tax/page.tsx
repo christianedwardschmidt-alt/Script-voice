@@ -70,7 +70,8 @@ export default function TaxPage() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ category: deductionForm.category, amount: Number(deductionForm.amount) }),
     })
-    setDeductions(prev => [...prev, await res.json()])
+    const created = await res.json()
+    setDeductions(prev => [...prev, created])
     setDeductionForm({ category: '', amount: '' })
     setShowDeductionModal(false)
   }
@@ -86,7 +87,8 @@ export default function TaxPage() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: docForm.name }),
     })
-    setDocs(prev => [await res.json(), ...prev])
+    const created = await res.json()
+    setDocs(prev => [created, ...prev])
     setDocForm({ name: '' })
     setShowDocModal(false)
   }
