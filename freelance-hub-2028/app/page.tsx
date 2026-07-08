@@ -17,7 +17,7 @@ const css = `
 /* Hero */
 .lp-hero {
   background: radial-gradient(ellipse at 50% -10%, #14532D 0%, #0A1A0F 58%);
-  padding: 64px 0 72px; text-align: center; min-height: 80vh;
+  padding: 64px 0 72px; min-height: 80vh;
   display: flex; flex-direction: column; justify-content: center;
 }
 .lp-badge {
@@ -28,13 +28,13 @@ const css = `
 .lp-headline {
   font-family: var(--font-syne), Syne, sans-serif; font-weight: 700;
   font-size: clamp(36px, 5vw, 64px); color: #fff; line-height: 1.05;
-  letter-spacing: -0.02em; max-width: 820px; margin: 0 auto 22px; text-wrap: balance;
+  letter-spacing: -0.02em; max-width: 760px; margin: 0 0 22px; text-wrap: balance;
 }
 .lp-subheadline {
-  font-size: clamp(16px, 2vw, 20px); color: rgba(134,239,172,0.85); line-height: 1.65;
-  max-width: 580px; margin: 0 auto 40px; font-family: var(--font-inter);
+  font-size: clamp(15px, 1.8vw, 18px); color: rgba(134,239,172,0.85); line-height: 1.65;
+  max-width: 560px; margin: 0 0 40px; font-family: var(--font-inter);
 }
-.lp-hero-ctas { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+.lp-hero-ctas { display: flex; align-items: center; justify-content: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
 .lp-btn-primary {
   background: #16A34A; color: #fff; padding: 14px 28px; border-radius: 12px;
   font-weight: 600; font-size: 15px; display: inline-block; transition: all 0.18s;
@@ -52,7 +52,7 @@ const css = `
 
 /* Social proof avatars */
 .lp-social-proof {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
   color: rgba(255,255,255,0.45); font-size: 13px; font-family: var(--font-inter);
 }
 .lp-avatars { display: flex; align-items: center; }
