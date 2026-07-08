@@ -174,13 +174,13 @@ export default function TasksPage() {
                 borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                 background: 'var(--card)',
               }}>
-                <div style={{ width: 16, height: 16, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginTop: 3, flexShrink: 0 }} />
+                <div className="skel" style={{ width: 16, height: 16, marginTop: 3, flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ width: `${60 + (i % 3) * 15}%`, height: 14, borderRadius: 4, background: 'rgba(0,0,0,0.08)', marginBottom: 8 }} />
-                  <div style={{ width: `${40 + (i % 2) * 20}%`, height: 12, borderRadius: 4, background: 'rgba(0,0,0,0.06)', marginBottom: 10 }} />
+                  <div className="skel" style={{ width: `${60 + (i % 3) * 15}%`, height: 14, marginBottom: 8 }} />
+                  <div className="skel" style={{ width: `${40 + (i % 2) * 20}%`, height: 12, marginBottom: 10 }} />
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <div style={{ width: 56, height: 20, borderRadius: 99, background: 'rgba(0,0,0,0.08)' }} />
-                    <div style={{ width: 72, height: 20, borderRadius: 99, background: 'rgba(0,0,0,0.06)' }} />
+                    <div className="skel skel-pill" style={{ width: 56, height: 20 }} />
+                    <div className="skel skel-pill" style={{ width: 72, height: 20 }} />
                   </div>
                 </div>
               </div>
@@ -267,10 +267,19 @@ export default function TasksPage() {
               <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {upcomingDeadlines.length === 0 && (
+              {loading && Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < 2 ? 12 : 0, borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                  <div style={{ flex: 1, marginRight: 8 }}>
+                    <div className="skel" style={{ width: '70%', height: 12, marginBottom: 6 }} />
+                    <div className="skel" style={{ width: '40%', height: 10 }} />
+                  </div>
+                  <div className="skel skel-pill" style={{ width: 44, height: 18 }} />
+                </div>
+              ))}
+              {!loading && upcomingDeadlines.length === 0 && (
                 <div style={{ fontSize: 13, color: '#78716c' }}>No upcoming deadlines.</div>
               )}
-              {upcomingDeadlines.map((d, i) => (
+              {!loading && upcomingDeadlines.map((d, i) => (
                 <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < upcomingDeadlines.length - 1 ? 12 : 0, borderBottom: i < upcomingDeadlines.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', marginBottom: 3 }}>{d.title}</div>
@@ -286,10 +295,19 @@ export default function TasksPage() {
           <div className="card" style={{ padding: 20 }}>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {activeProjects.length === 0 && (
+              {loading && Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
+                  <div style={{ flex: 1 }}>
+                    <div className="skel" style={{ width: '60%', height: 12, marginBottom: 6 }} />
+                    <div className="skel" style={{ width: '35%', height: 10 }} />
+                  </div>
+                  <div className="skel" style={{ width: 8, height: 8, borderRadius: '50%' }} />
+                </div>
+              ))}
+              {!loading && activeProjects.length === 0 && (
                 <div style={{ fontSize: 13, color: '#78716c' }}>No active projects.</div>
               )}
-              {activeProjects.map((p, i) => (
+              {!loading && activeProjects.map((p, i) => (
                 <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < activeProjects.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 500, color: '#1c1917' }}>{p.name}</div>
