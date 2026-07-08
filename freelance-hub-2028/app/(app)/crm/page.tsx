@@ -155,7 +155,7 @@ export default function CRMPage() {
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>CRM</h1>

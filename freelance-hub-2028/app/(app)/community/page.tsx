@@ -124,7 +124,7 @@ export default function CommunityPage() {
   const fmtNum = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Community</h1>
         <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Connect, share, and grow with fellow freelancers</p>

@@ -103,14 +103,14 @@ export default function SettingsPage() {
 
   if (!settings) {
     return (
-      <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+      <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
         <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading settings...</div>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', marginBottom: 6 }}>Settings</h1>
       <p style={{ color: '#78716c', fontSize: 14, marginBottom: 24 }}>Configure your account preferences</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 560 }}>

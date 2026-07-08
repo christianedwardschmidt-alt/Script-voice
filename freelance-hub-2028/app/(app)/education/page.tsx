@@ -51,7 +51,7 @@ export default function EducationPage() {
   const completed = courses.filter(c => c.progress === 100)
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Upskilling</h1>

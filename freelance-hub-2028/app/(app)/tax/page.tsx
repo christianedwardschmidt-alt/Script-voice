@@ -106,7 +106,7 @@ export default function TaxPage() {
   }
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       {/* Header */}
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
         <div>

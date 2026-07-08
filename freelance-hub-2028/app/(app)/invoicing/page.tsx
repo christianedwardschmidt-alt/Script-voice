@@ -130,7 +130,7 @@ export default function BillingPage() {
   }
 
   return (
-    <div style={{ padding: 28, background: 'var(--bg)', minHeight: '100%', display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <div style={{ padding: 28, background: 'var(--bg)', minHeight: '100dvh', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
