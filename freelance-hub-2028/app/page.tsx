@@ -284,8 +284,7 @@ export default async function HomePage() {
         <div className="lp-top-banner">
           <span>⚡ Founding member spots are limited — 30 days free, 20% off for life</span>
           <span style={{ margin: '0 4px' }}>·</span>
-          <Link href="/signup" className="lp-top-banner-link" style={{ color: '#FEF3C7', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '2px' }}>Claim yours →</Link>
-          <button className="lp-banner-close" aria-label="Close banner" onClick={() => {}}>×</button>
+          <Link href="/signup" style={{ color: '#FEF3C7', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '2px' }}>Claim yours →</Link>
         </div>
 
         {/* ── NAV ─────────────────────────────── */}
