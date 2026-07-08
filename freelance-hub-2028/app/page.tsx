@@ -245,15 +245,6 @@ export default async function HomePage() {
         {/* ── HERO ────────────────────────────── */}
         <section className="lp-hero">
           <div className="lp-container">
-            {/* Brand wordmark + tagline */}
-            <div style={{ marginBottom: 32, textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 'clamp(48px, 7vw, 80px)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
-                <span style={{ color: '#ffffff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
-              </div>
-              <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)', marginTop: 12 }}>
-                WORK FREE. STAY CONNECTED.
-              </div>
-            </div>
             <div className="lp-badge">✦ Now open to founding members</div>
             <h1 className="lp-headline">The Operating System for Independent Professionals</h1>
             <p className="lp-subheadline">
