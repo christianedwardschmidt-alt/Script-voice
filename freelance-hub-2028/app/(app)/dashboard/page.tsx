@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { ArrowUpRight, Zap, Brain, Mic } from 'lucide-react'
+import { Mic } from 'lucide-react'
 
 const revenueData = [
   { month: 'Jan', income: 7200,  expenses: 2100 },
@@ -25,7 +25,7 @@ const revenueData = [
 interface Client  { id: number; name: string; company: string; status: string; revenue: number }
 interface Task    { id: number; checked: boolean; title?: string; priority?: string; project?: string }
 interface Invoice { id: string; amount: number; status: string; client?: string; due?: string }
-interface ActivityRow { id: number; message: string; createdAt: string }
+interface ActivityRow { id: number; message: string; createdAt: string; type?: string }
 
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime()
@@ -64,71 +64,51 @@ function Sparkline({ values, color, id }: { values: number[]; color: string; id:
   )
 }
 
-function TrendBadge({ pct, good = true }: { pct: number; good?: boolean }) {
-  const up = pct >= 0
-  const positive = good ? up : !up
-  return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center', gap: 2,
-      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 99,
-      background: positive ? 'rgba(0,184,87,0.1)' : 'rgba(220,38,38,0.09)',
-      color: positive ? '#008040' : '#c81e1e',
-      fontVariantNumeric: 'tabular-nums',
-    }}>
-      {up ? '↑' : '↓'} {Math.abs(pct)}%
-    </span>
-  )
-}
-
 const TICK_COLOR = 'rgba(120,128,145,0.7)'
 
-const ChartTip = ({ active, payload, label }: any) => {
+const ChartTip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 14px', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}>
-      <div style={{ fontSize: 9, color: 'var(--text-3)', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase' }}>{label}</div>
-      {payload.map((p: any) => (
-        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color, fontVariantNumeric: 'tabular-nums' }}>
+    <div style={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 'var(--radius-md)', padding: '10px 14px', boxShadow: 'var(--shadow-md)' }}>
+      <div style={{ fontSize: 9, color: '#9CA3AF', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>{label}</div>
+      {payload.map((p) => (
+        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color, fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--font-body)' }}>
           <span>${Number(p.value).toLocaleString()}</span>
-          <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 11 }}>{p.name}</span>
+          <span style={{ color: '#9CA3AF', fontWeight: 400, fontSize: 11 }}>{p.name}</span>
         </div>
       ))}
     </div>
   )
 }
 
-const ACTION_ICONS: Record<string, string> = {
-  create_task: '✓', draft_invoice: '🧾', add_client: '👤',
-  schedule_event: '📅', search_jobs: '🔍', add_crm_contact: '📇',
-  navigate_to: '🧭',
-}
-
-const QUICK_COMMANDS = [
-  { label: '+ Add task', q: 'I need to add a task — what should I create?' },
-  { label: '🧾 Draft invoice', q: 'I need to draft a new invoice for a client.' },
-  { label: '🔍 Find jobs', q: 'Show me available job listings.' },
-  { label: '📅 Schedule meeting', q: 'I need to schedule a client meeting.' },
-]
-
-const aiInsights = [
-  { icon: '⚡', text: 'Stripe payment from Hencewood overdue by 3 days — send a nudge?', action: 'Draft email' },
-  { icon: '📈', text: 'Revenue up 18% vs last quarter. Best month: October at $16.4k.', action: 'Breakdown' },
-  { icon: '🎯', text: '2 tasks due today. Prioritize "API Integration" for TechTrophy first.', action: 'View tasks' },
-]
-
 const PIPELINE = [
   { label: 'NovaBuild — Mobile App',      amount: 2100, status: 'Draft',    due: 'Jan 20', color: '#64748b' },
-  { label: 'Hencewood — API Integration', amount: 3200, status: 'Pending',  due: 'Jan 1',  color: '#d97706' },
-  { label: 'DataSync — Discovery Call',   amount: 9800, status: 'Proposal', due: 'Jan 22', color: '#5b5fcf' },
+  { label: 'Hencewood — API Integration', amount: 3200, status: 'Pending',  due: 'Jan 1',  color: '#D97706' },
+  { label: 'DataSync — Discovery Call',   amount: 9800, status: 'Proposal', due: 'Jan 22', color: '#6366F1' },
 ]
+
+const ACTIVITY_COLORS: Record<string, string> = {
+  payment: '#16A34A',
+  client: '#3B82F6',
+  invoice: '#D97706',
+  overdue: '#EF4444',
+}
+
+function getDotColor(msg: string) {
+  if (msg.toLowerCase().includes('paid') || msg.toLowerCase().includes('payment')) return '#16A34A'
+  if (msg.toLowerCase().includes('client') || msg.toLowerCase().includes('new')) return '#3B82F6'
+  if (msg.toLowerCase().includes('invoice') || msg.toLowerCase().includes('sent')) return '#D97706'
+  if (msg.toLowerCase().includes('overdue')) return '#EF4444'
+  return '#16A34A'
+}
 
 export default function DashboardPage() {
   const [clients, setClients]   = useState<Client[]>([])
   const [tasks, setTasks]       = useState<Task[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [activity, setActivity] = useState<ActivityRow[]>([])
+  const [userName, setUserName] = useState('there')
 
-  const [insightIdx, setInsightIdx] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
@@ -151,6 +131,9 @@ export default function DashboardPage() {
     fetch('/api/tasks').then(r => r.json()).then(d => setTasks(Array.isArray(d) ? d : []))
     fetch('/api/invoices').then(r => r.json()).then(d => setInvoices(Array.isArray(d) ? d : []))
     fetch('/api/activity?limit=6').then(r => r.json()).then(d => setActivity(Array.isArray(d) ? d : []))
+    fetch('/api/profile').then(r => r.json()).then(d => {
+      if (d?.displayName) setUserName(d.displayName.split(' ')[0] ?? 'there')
+    }).catch(() => {})
   }, [])
 
   const toggleTask = async (id: number) => {
@@ -167,34 +150,15 @@ export default function DashboardPage() {
 
   const activeClients   = clients.filter(c => c.status === 'active').length
   const tasksDone       = tasks.filter(t => t.checked).length
-  const tasksDonePct    = tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0
   const outstanding     = invoices.filter(i => i.status === 'Pending' || i.status === 'Overdue').reduce((s, i) => s + i.amount, 0)
   const totalRevYTD     = invoices.filter(i => i.status === 'Paid').reduce((s, i) => s + i.amount, 0)
   const thisMonthRev    = revenueData[revenueData.length - 1].income
-  const overdueInvoices = invoices.filter(i => i.status === 'Overdue')
-  const urgentTasks     = tasks.filter(t => !t.checked && ['high', 'High', 'urgent', 'Urgent'].includes(t.priority ?? ''))
 
-  const kpi = [
-    {
-      label: 'YTD Revenue', value: `$${(totalRevYTD / 1000).toFixed(1)}k`, sub: 'vs $82.1k last year',
-      accent: '#00b857', trend: 18,
-      spark: revenueData.map(d => d.income),
-    },
-    {
-      label: 'Dec Revenue', value: `$${(thisMonthRev / 1000).toFixed(1)}k`, sub: 'vs $15.2k last month',
-      accent: '#0ea5e9', trend: 14,
-      spark: revenueData.slice(-6).map(d => d.income),
-    },
-    {
-      label: 'Outstanding', value: `$${(outstanding / 1000).toFixed(1)}k`, sub: 'across invoices',
-      accent: '#d97706', trend: -8, good: false,
-      spark: [3100, 5200, 2800, 6400, 3200, outstanding > 0 ? outstanding : 1200],
-    },
-    {
-      label: 'Active Clients', value: String(activeClients), sub: `of ${clients.length} total`,
-      accent: '#5b5fcf', trend: 12,
-      spark: [3, 5, 4, 5, 4, Math.max(activeClients, 1)],
-    },
+  const stats = [
+    { label: 'YTD Revenue',   value: `$${(totalRevYTD / 1000).toFixed(1)}k`, trend: '+18% vs last year', up: true, spark: revenueData.map(d => d.income) },
+    { label: 'Dec Revenue',   value: `$${(thisMonthRev / 1000).toFixed(1)}k`, trend: '+14% vs Nov', up: true, spark: revenueData.slice(-6).map(d => d.income) },
+    { label: 'Outstanding',   value: `$${(outstanding / 1000).toFixed(1)}k`, trend: '−8% vs last month', up: false, spark: [3100, 5200, 2800, 6400, 3200, outstanding > 0 ? outstanding : 1200] },
+    { label: 'Active Clients', value: String(activeClients), trend: `+12% vs last month`, up: true, spark: [3, 5, 4, 5, 4, Math.max(activeClients, 1)] },
   ]
 
   const processVoiceCommand = async (text: string) => {
@@ -250,180 +214,65 @@ export default function DashboardPage() {
     rec.start()
   }
 
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+
   return (
-    <div className="dash-wrap" style={{ padding: '28px 28px 52px', minHeight: '100vh' }}>
+    <div style={{ padding: '40px 32px 52px', minHeight: '100vh' }}>
 
       {/* Page header */}
-      <div className="dash-header animate-in" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 22, animationDelay: '0s' }}>
-        <div>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 5 }}>OVERVIEW</div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.8px', color: 'var(--text)', lineHeight: 1, textWrap: 'balance' } as any}>Dashboard</h1>
-          <div style={{ fontSize: 11.5, color: 'var(--text-2)', marginTop: 4 }}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-          </div>
-        </div>
-        <div className="dash-header-btns" style={{ display: 'flex', gap: 8 }}>
-          <a href="/invoicing" className="btn-outline" style={{ fontSize: 12, textDecoration: 'none' }}>
-            <ArrowUpRight size={13} /> View invoices
-          </a>
-          <a href="/tasks" className="btn-primary" style={{ fontSize: 12, textDecoration: 'none' }}>
-            <Zap size={13} /> My tasks
-          </a>
-        </div>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{
+          fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700,
+          color: '#111827', letterSpacing: '-0.02em', marginBottom: 6,
+        }}>
+          {greeting}, {userName}.
+        </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6B7280' }}>
+          Here&apos;s what&apos;s happening with your business.
+        </p>
       </div>
 
-      {/* Today's Focus */}
-      {(overdueInvoices.length > 0 || urgentTasks.length > 0) && (
-        <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.05s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#dc2626' }} className="ai-pulse" />
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>Today's Focus</span>
-            <span style={{ fontSize: 11, color: 'var(--text-3)', marginLeft: 'auto' }}>
-              {overdueInvoices.length + urgentTasks.length} item{overdueInvoices.length + urgentTasks.length !== 1 ? 's' : ''} need attention
-            </span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
-            {overdueInvoices.slice(0, 2).map(inv => (
-              <div key={inv.id} className="card" style={{ padding: '13px 15px', borderLeft: '3px solid #dc2626', display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#dc2626', textTransform: 'uppercase', marginBottom: 2 }}>Overdue · Invoice {inv.id}</div>
-                  <div style={{ fontSize: 16, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.6px', fontVariantNumeric: 'tabular-nums' }}>${inv.amount.toLocaleString()}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{(inv as any).client || 'Unknown client'}</div>
-                </div>
-                <button className="btn-primary" style={{ fontSize: 11, padding: '6px 11px', flexShrink: 0 }}>Send reminder</button>
-              </div>
-            ))}
-            {urgentTasks.slice(0, 2).map(t => (
-              <div key={t.id} className="card" style={{ padding: '13px 15px', borderLeft: '3px solid #d97706', display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', color: '#d97706', textTransform: 'uppercase', marginBottom: 2 }}>{(t.priority ?? 'High').charAt(0).toUpperCase() + (t.priority ?? 'high').slice(1)} priority</div>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.title || `Task #${t.id}`}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-2)', marginTop: 1 }}>{t.project || 'No project'}</div>
-                </div>
-                <button className="btn-outline" style={{ fontSize: 11, padding: '6px 11px', flexShrink: 0 }}>Start</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* AI Insights */}
-      {isMobile ? (
-        <div className="card-ai animate-in" style={{ padding: '12px 14px', marginBottom: 18, animationDelay: '0.1s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Brain size={12} style={{ color: 'var(--indigo)' }} />
-              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insight</span>
-            </div>
-            <div style={{ display: 'flex', gap: 4 }}>
-              {aiInsights.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setInsightIdx(i)}
-                  style={{ width: i === insightIdx ? 16 : 6, height: 6, borderRadius: 99, border: 'none', cursor: 'pointer', background: i === insightIdx ? 'var(--indigo)' : 'rgba(91,95,207,0.25)', padding: 0, transition: 'all 0.2s' }}
-                />
-              ))}
-            </div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18, flexShrink: 0 }}>{aiInsights[insightIdx].icon}</span>
-            <span style={{ fontSize: 13, color: 'var(--text-2)', flex: 1, lineHeight: 1.5 }}>{aiInsights[insightIdx].text}</span>
-            <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 11, fontWeight: 600, padding: '5px 10px', borderRadius: 7, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
-              {aiInsights[insightIdx].action}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="card-ai animate-in" style={{ padding: '13px 18px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', animationDelay: '0.1s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
-            <Brain size={13} style={{ color: 'var(--indigo)' }} />
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--indigo)' }}>AI Insights</span>
-          </div>
-          <div style={{ width: 1, height: 20, background: 'rgba(91,95,207,0.18)', flexShrink: 0 }} />
-          {aiInsights.map((ins, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 180 }}>
-              <span style={{ fontSize: 12, flexShrink: 0 }}>{ins.icon}</span>
-              <span style={{ fontSize: 11.5, color: 'var(--text-2)', flex: 1, lineHeight: 1.4 }}>{ins.text}</span>
-              <button style={{ border: 'none', background: 'rgba(91,95,207,0.09)', color: 'var(--indigo)', fontSize: 10.5, fontWeight: 600, padding: '3px 9px', borderRadius: 6, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit', flexShrink: 0 }}>
-                {ins.action}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Tasks Widget */}
-      <div className="animate-in" style={{ marginBottom: 18, animationDelay: '0.12s' }}>
-        <div className="card" style={{ padding: '18px 20px', borderTop: '2px solid #16a34a' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TASKS</div>
-              <span style={{ fontSize: 11, color: 'var(--text-3)' }}>{tasksDone} of {tasks.length} complete</span>
-            </div>
-            <a href="/tasks" style={{ fontSize: 11, color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
-              View all <ArrowUpRight size={10} />
-            </a>
-          </div>
-          <div style={{ height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ width: `${tasksDonePct}%`, height: '100%', background: '#16a34a', borderRadius: 99, transition: 'width 0.8s ease' }} />
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {tasks.filter(t => !t.checked).slice(0, 12).map(t => {
-              const p = (t.priority ?? '').toLowerCase()
-              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
-                        : p === 'medium' ? 'badge badge-medium'
-                        : p === 'low' ? 'badge badge-low'
-                        : 'badge badge-todo'
-              return (
-                <a key={t.id} href="/tasks" className={cls} style={{ padding: '5px 11px', fontSize: 11.5, fontWeight: 500, cursor: 'pointer', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {t.title}
-                </a>
-              )
-            })}
-            {tasks.filter(t => !t.checked).length === 0 && (
-              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '4px 0' }}>All caught up 🎉</div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* KPI row with sparklines */}
-      <div className="dash-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 18 }}>
-        {kpi.map(({ label, value, sub, accent, trend, spark, good }, i) => (
-          <div
-            key={label}
-            className="card card-lift animate-in"
-            style={{ padding: '16px 16px 14px', borderTop: `2px solid ${accent}`, animationDelay: `${0.15 + i * 0.05}s` }}
-          >
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>{label}</div>
-              <TrendBadge pct={trend} good={good !== false} />
-            </div>
-            <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: '-1.5px', color: 'var(--text)', lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>{value}</div>
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-              <div style={{ fontSize: 10.5, color: 'var(--text-2)', lineHeight: 1.3 }}>{sub}</div>
-              <Sparkline values={spark} color={accent} id={i} />
+      {/* Stats row — unified bar */}
+      <div style={{
+        background: 'white', borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-sm)',
+        display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
+        marginBottom: 28,
+      }}
+        className="dash-kpi-grid"
+      >
+        {stats.map((stat, i) => (
+          <div key={stat.label} style={{
+            padding: '24px 28px',
+            borderRight: i < 3 ? '1px solid #F3F4F6' : 'none',
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: '-0.02em' }}>{stat.value}</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+              <span style={{ fontSize: 13, color: stat.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
+              <Sparkline values={stat.spark} color={stat.up ? '#16A34A' : '#EF4444'} id={i} />
             </div>
           </div>
         ))}
       </div>
 
-      {/* Bento grid: 3 cols × 2 rows */}
-      <div className="dash-bento-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }}>
+      {/* Bento grid: 3 cols */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }} className="dash-bento-grid">
 
-        {/* Revenue chart — col 1-2, row 1 */}
-        <div className="card dash-chart-card animate-in" style={{ padding: '20px 20px 12px', gridColumn: '1 / 3', animationDelay: '0.4s' }}>
+        {/* Revenue chart — col 1-2 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px 12px', gridColumn: '1 / 3' }} className="dash-chart-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
-              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 4 }}>REVENUE</div>
-              <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.4px', color: 'var(--text)' }}>Annual Overview · {new Date().getFullYear()}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 4 }}>REVENUE</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>Annual Overview · {new Date().getFullYear()}</div>
             </div>
-            <div style={{ display: 'flex', gap: 18, fontSize: 11, color: 'var(--text-2)' }}>
+            <div style={{ display: 'flex', gap: 18, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#00b857', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: '#16A34A', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#5b5fcf', display: 'inline-block', borderRadius: 2 }} />Expenses
+                <span style={{ width: 18, height: 2, background: '#6366F1', display: 'inline-block', borderRadius: 2 }} />Expenses
               </span>
             </div>
           </div>
@@ -431,31 +280,28 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00b857" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#00b857" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#16A34A" stopOpacity={0.18} />
+                  <stop offset="100%" stopColor="#16A34A" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#5b5fcf" stopOpacity={0.1} />
-                  <stop offset="100%" stopColor="#5b5fcf" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#6366F1" stopOpacity={0.1} />
+                  <stop offset="100%" stopColor="#6366F1" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="#00b857" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
-              <Area type="monotone" dataKey="expenses" stroke="#5b5fcf" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
+              <Area type="monotone" dataKey="income"   stroke="#16A34A" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="expenses" stroke="#6366F1" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        {/* This Week — col 3, row 1 */}
-        <div className="card-glow animate-in" style={{ padding: '16px 18px', animationDelay: '0.45s', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 18 }}>
-            <Zap size={11} style={{ color: 'rgba(255,255,255,0.75)' }} />
-            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' }}>THIS WEEK</span>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        {/* This Week — col 3 */}
+        <div style={{ background: 'linear-gradient(145deg, #14532D 0%, #166534 50%, #15803D 100%)', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(20,83,45,0.25), 0 12px 32px rgba(22,163,74,0.2)', padding: '20px 20px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)', marginBottom: 16 }}>THIS WEEK</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="week-stats-grid">
             {[
               { label: 'Invoiced',  val: '$4,200', pct: 87 },
               { label: 'Collected', val: '$3,100', pct: 64 },
@@ -463,8 +309,8 @@ export default function DashboardPage() {
               { label: 'Rate',      val: '$140/h',  pct: null },
             ].map(s => (
               <div key={s.label}>
-                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 17, fontWeight: 900, letterSpacing: '-0.8px', color: '#fff', fontVariantNumeric: 'tabular-nums' }}>{s.val}</div>
+                <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4, fontFamily: 'var(--font-body)' }}>{s.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>{s.val}</div>
                 {s.pct !== null && (
                   <div style={{ marginTop: 6, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 99, overflow: 'hidden' }}>
                     <div style={{ width: `${s.pct}%`, height: '100%', background: 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
@@ -475,91 +321,122 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Top clients — col 1, row 2 */}
-        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.5s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>TOP CLIENTS</div>
-            <a href="/clients" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
-              View all <ArrowUpRight size={10} />
-            </a>
+        {/* Top clients — col 1 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TOP CLIENTS</div>
+            <a href="/clients" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {clients.slice(0, 4).map((c, i) => {
-              const colors = ['#00b857', '#0ea5e9', '#5b5fcf', '#d97706']
+              const colors = ['#16A34A', '#0EA5E9', '#6366F1', '#D97706']
               const col = colors[i % 4]
               const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
               return (
-                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? '1px solid var(--border)' : 'none' }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 8, background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: col, flexShrink: 0 }}>
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-sm)', background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: col, flexShrink: 0, fontFamily: 'var(--font-body)' }}>
                     {c.name[0]}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{c.name}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                      <div style={{ flex: 1, height: 3, background: 'var(--bg-3)', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
+                      <div style={{ flex: 1, height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
                         <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: 99 }} />
                       </div>
-                      <span style={{ fontSize: 10, color: 'var(--text-3)' }}>{c.status}</span>
+                      <span style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{c.status}</span>
                     </div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: col, fontVariantNumeric: 'tabular-nums' }}>${c.revenue.toLocaleString()}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: col }}>${c.revenue.toLocaleString()}</div>
                 </div>
               )
             })}
+            {clients.length === 0 && <div style={{ fontSize: 13, color: '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No clients yet</div>}
           </div>
         </div>
 
-        {/* Pipeline — col 2, row 2 */}
-        <div className="card animate-in" style={{ padding: '18px 20px', animationDelay: '0.55s' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)' }}>PIPELINE</div>
-            <a href="/crm" style={{ fontSize: 11, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
-              Open CRM <ArrowUpRight size={10} />
-            </a>
+        {/* Pipeline — col 2 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE</div>
+            <a href="/crm" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>Open CRM →</a>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 16 }}>
             {PIPELINE.map((p, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < PIPELINE.length - 1 ? '1px solid var(--border)' : 'none' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < PIPELINE.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.label}</div>
-                  <div style={{ fontSize: 10.5, color: 'var(--text-3)', marginTop: 1 }}>Due {p.due}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{p.label}</div>
+                  <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>Due {p.due}</div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>${p.amount.toLocaleString()}</div>
-                  <span style={{ fontSize: 9.5, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25` }}>{p.status}</span>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#111827' }}>${p.amount.toLocaleString()}</div>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25`, fontFamily: 'var(--font-body)' }}>{p.status}</span>
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ padding: '10px 12px', background: 'var(--bg)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 11, color: 'var(--text-2)', fontWeight: 500 }}>Pipeline total</span>
-            <span style={{ fontSize: 14, fontWeight: 900, color: 'var(--text)', letterSpacing: '-0.5px', fontVariantNumeric: 'tabular-nums' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
+          <div style={{ padding: '10px 12px', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Pipeline total</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Activity — col 3, row 2 */}
-        <div className="card animate-in" style={{ padding: '16px', animationDelay: '0.6s' }}>
-          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: 12 }}>RECENT ACTIVITY</div>
+        {/* Recent Activity — col 3 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 14 }}>RECENT ACTIVITY</div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {activity.slice(0, 6).map((a, i) => (
-              <div key={a.id} style={{ display: 'flex', gap: 9, padding: '7px 0', borderBottom: i < 5 ? '1px solid var(--border)' : 'none', alignItems: 'flex-start' }}>
-                <div className="dot-green" style={{ flexShrink: 0, marginTop: 5 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 11.5, color: 'var(--text)', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.message}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text-3)', marginTop: 1 }}>{timeAgo(a.createdAt)}</div>
+            {activity.slice(0, 6).map((a, i) => {
+              const dotColor = getDotColor(a.message)
+              return (
+                <div key={a.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: i < 5 ? '1px solid #F3F4F6' : 'none', alignItems: 'flex-start' }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 5 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: '#111827', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{a.message}</div>
+                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>{timeAgo(a.createdAt)}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             {activity.length === 0 && (
-              <div style={{ fontSize: 12, color: 'var(--text-3)', padding: '8px 0' }}>No recent activity</div>
+              <div style={{ fontSize: 13, color: '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No recent activity</div>
             )}
           </div>
         </div>
 
       </div>
 
-      {/* Floating voice button — hides on mobile (mic is in bottom nav) */}
+      {/* Tasks strip */}
+      {tasks.filter(t => !t.checked).length > 0 && (
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginTop: 16, borderTop: '2px solid #16A34A' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
+              <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
+            </div>
+            <a href="/tasks" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
+          </div>
+          {/* Progress bar */}
+          <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
+            <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: '#16A34A', borderRadius: 99, transition: 'width 0.8s ease' }} />
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {tasks.filter(t => !t.checked).slice(0, 10).map(t => {
+              const p = (t.priority ?? '').toLowerCase()
+              const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
+                        : p === 'medium' ? 'badge badge-medium'
+                        : p === 'low' ? 'badge badge-low'
+                        : 'badge badge-todo'
+              return (
+                <a key={t.id} href="/tasks" className={cls} style={{ cursor: 'pointer', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none' }}>
+                  {t.title}
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Voice FAB */}
       {!isMobile && (
         <button
           onClick={startDashboardVoice}
@@ -568,36 +445,46 @@ export default function DashboardPage() {
           style={{
             position: 'fixed', bottom: 28, right: 28, zIndex: 110,
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: voiceListening ? '#ef4444' : '#16a34a',
+            background: voiceListening ? '#EF4444' : '#16A34A',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: voiceListening
               ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'
-              : '0 4px 20px rgba(22,163,74,0.35)',
-            transition: 'all 0.2s',
+              : 'var(--shadow-green)',
+            transition: 'all 0.2s ease',
           }}
         >
           <Mic size={22} color="#fff" />
         </button>
       )}
 
-      {/* Voice state feedback (mobile) */}
       {voiceListening && (
         <div style={{
-          position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
-          background: 'rgba(0,0,0,0.75)', color: '#fff', fontSize: 13, fontWeight: 500,
+          position: 'fixed', bottom: 92, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.8)', color: '#fff', fontSize: 13, fontWeight: 500,
           padding: '8px 18px', borderRadius: 99, zIndex: 120, backdropFilter: 'blur(8px)',
-          whiteSpace: 'nowrap',
+          whiteSpace: 'nowrap', fontFamily: 'var(--font-body)',
         }}>
-          🎤 {voiceInterim || 'Listening…'}
+          Listening… {voiceInterim}
         </div>
       )}
       {voiceLoading && (
         <div style={{
-          position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
-          background: 'rgba(0,0,0,0.75)', color: '#fff', fontSize: 13,
-          padding: '8px 18px', borderRadius: 99, zIndex: 120,
+          position: 'fixed', bottom: 92, left: '50%', transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.8)', color: '#fff', fontSize: 13,
+          padding: '8px 18px', borderRadius: 99, zIndex: 120, fontFamily: 'var(--font-body)',
         }}>
-          ✨ Processing…
+          Processing your request…
+        </div>
+      )}
+      {voiceResult && (
+        <div style={{
+          position: 'fixed', bottom: 92, left: '50%', transform: 'translateX(-50%)',
+          background: 'white', border: '1px solid #E5E7EB', fontSize: 13, maxWidth: 400,
+          padding: '12px 16px', borderRadius: 'var(--radius-md)', zIndex: 120, boxShadow: 'var(--shadow-lg)',
+          fontFamily: 'var(--font-body)',
+        }}>
+          <div style={{ color: '#111827', lineHeight: 1.5 }}>{voiceResult.text}</div>
+          <button onClick={() => setVoiceResult(null)} style={{ marginTop: 8, fontSize: 11, color: '#9CA3AF', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'var(--font-body)' }}>Dismiss</button>
         </div>
       )}
     </div>
