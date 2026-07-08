@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { queryAll, queryOne, execute, logActivity, ensureUserCatalog } from '@/lib/db'
+import { queryAll, queryOne, execute, logActivity } from '@/lib/db'
 import { getUser } from '@/lib/auth'
 
 function deserialize(row: Record<string, unknown>) {
@@ -17,7 +17,6 @@ export async function GET() {
   const user = await getUser()
   if (!user) return NextResponse.json([], { status: 401 })
 
-  await ensureUserCatalog(user.id)
   const rows = await queryAll(`SELECT * FROM posts WHERE user_id = ? ORDER BY id DESC`, [user.id])
   return NextResponse.json(rows.map(deserialize))
 }

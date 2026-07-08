@@ -87,10 +87,6 @@ export async function createUserDefaults(userId: number, name: string, email: st
     sql: 'INSERT INTO activity_log (user_id, message, createdAt) VALUES (?, ?, ?)',
     args: [userId, 'Welcome to GuildWire — your workspace is ready', new Date().toISOString()],
   })
-  await seedJobs(userId)
-  await seedCourses(userId)
-  await seedIntegrations(userId)
-  await seedPosts(userId)
 }
 
 // Seeds catalog items (jobs/courses/integrations/posts) for a user if they have none
