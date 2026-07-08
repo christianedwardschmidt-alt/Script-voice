@@ -144,6 +144,41 @@ export default function TaxPage() {
   const expByCat: Record<string, number> = {}
   expenses.forEach(e => { expByCat[e.category] = (expByCat[e.category] || 0) + e.amount })
 
+  // Month-over-month trends
+  const MONTH_ABR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const nowMonth = new Date().getMonth()
+  const prevMonth = nowMonth === 0 ? 11 : nowMonth - 1
+
+  const invByMonth = Array(12).fill(0)
+  paidInvs.forEach(inv => {
+    const m = inv.issued?.split?.(' ')?.[0]
+    const idx = MONTH_ABR.indexOf(m)
+    if (idx >= 0) invByMonth[idx] += inv.amount
+  })
+  const expByMonth = Array(12).fill(0)
+  expenses.forEach(e => {
+    const m = e.date ? parseInt(e.date.split('-')[1]) - 1 : -1
+    if (m >= 0) expByMonth[m] += e.amount
+  })
+  const mileByMonth = Array(12).fill(0)
+  mileage.forEach(m => {
+    const mo = m.date ? parseInt(m.date.split('-')[1]) - 1 : -1
+    if (mo >= 0) mileByMonth[mo] += m.miles
+  })
+
+  function trend(cur: number, prev: number): { pct: string; up: boolean | null } {
+    if (prev === 0 && cur === 0) return { pct: '—', up: null }
+    if (prev === 0) return { pct: 'new', up: true }
+    const p = ((cur - prev) / prev) * 100
+    return { pct: `${Math.abs(p).toFixed(1)}%`, up: p >= 0 }
+  }
+
+  const revTrend   = trend(invByMonth[nowMonth], invByMonth[prevMonth])
+  const expTrend   = trend(expByMonth[nowMonth], expByMonth[prevMonth])
+  const mileTrend  = trend(mileByMonth[nowMonth] * IRS_RATE, mileByMonth[prevMonth] * IRS_RATE)
+  const netTrend   = trend(Math.max(invByMonth[nowMonth] - expByMonth[nowMonth], 0), Math.max(invByMonth[prevMonth] - expByMonth[prevMonth], 0))
+  const taxTrend   = trend(Math.round(invByMonth[nowMonth] * 0.25), Math.round(invByMonth[prevMonth] * 0.25))
+
   // — Actions —
   const addExpense = async () => {
     if (!expForm.description || !expForm.amount) return
@@ -244,12 +279,12 @@ export default function TaxPage() {
   const renderOverview = () => {
     const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
 
-    const kpiRow1 = [
-      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A' },
-      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,     sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6' },
-      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,   sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6' },
-      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,    sub: 'After all deductions', color: '#D97706' },
-      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,       sub: `${effectiveRate}% effective rate`, color: '#EF4444' },
+    const kpiRow1: Array<{ label: string; value: string; sub: string; color: string; trend: { pct: string; up: boolean | null }; trendPositive: boolean }> = [
+      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A', trend: revTrend,  trendPositive: true },
+      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,     sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6', trend: expTrend,  trendPositive: false },
+      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,   sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6', trend: mileTrend, trendPositive: true },
+      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,    sub: 'After all deductions',  color: '#D97706', trend: netTrend,  trendPositive: true },
+      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,       sub: `${effectiveRate}% effective rate`, color: '#EF4444', trend: taxTrend,  trendPositive: false },
     ]
 
     const kpiRow2 = [
@@ -262,16 +297,28 @@ export default function TaxPage() {
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Row 1 — income & deductions */}
+        {/* Row 1 — income & deductions with trend indicators */}
         <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
-          {kpiRow1.map((k, i) => (
-            <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
-              <UL>{k.label}</UL>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', marginTop: 4 }}>{k.value}</div>
-              <div style={{ width: 20, height: 3, background: k.color, borderRadius: 99, marginTop: 8, opacity: 0.7 }} />
-              <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{k.sub}</div>
-            </div>
-          ))}
+          {kpiRow1.map((k, i) => {
+            const isUp = k.trend.up
+            const hasData = k.trend.up !== null && k.trend.pct !== '—'
+            const goodTrend = k.trendPositive ? isUp : !isUp
+            return (
+              <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <UL>{k.label}</UL>
+                  {hasData && (
+                    <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 99, fontFamily: 'var(--font-body)', background: goodTrend ? '#F0FDF4' : '#FEF2F2', color: goodTrend ? '#16A34A' : '#EF4444' }}>
+                      {isUp ? '↑' : '↓'} {k.trend.pct}
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em' }}>{k.value}</div>
+                <div style={{ width: 20, height: 3, background: k.color, borderRadius: 99, marginTop: 8, opacity: 0.7 }} />
+                <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{k.sub}</div>
+              </div>
+            )
+          })}
         </div>
 
         {/* Row 2 — tax & payment metrics */}
