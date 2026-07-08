@@ -276,8 +276,7 @@ a { text-decoration: none; color: inherit; }
   }
   .sidebar-backdrop.sidebar-open { display: block; }
 
-  /* Show hamburger, hide desktop-only items */
-  .mobile-menu-btn { display: flex !important; }
+  /* Hide desktop-only items on mobile */
   .hide-mobile { display: none !important; }
 
   /* Comfortable search bar */
@@ -476,7 +475,5 @@ a { text-decoration: none; color: inherit; }
 }
 
 @media (min-width: 768px) {
-  .mobile-menu-btn { display: none !important; }
   .sidebar-backdrop { display: none !important; }
-  .bottom-nav { display: none !important; }
 }

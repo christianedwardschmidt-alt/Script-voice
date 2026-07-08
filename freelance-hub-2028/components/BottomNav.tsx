@@ -3,35 +3,28 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, CheckSquare, Receipt, Users, Menu, Mic } from 'lucide-react'
+import {
+  LayoutDashboard, CheckSquare, Receipt, Users,
+  Briefcase, Calculator, TrendingUp, Bot, Globe,
+  Calendar, GraduationCap, Plug, Settings, Users2,
+} from 'lucide-react'
+import { Mic } from 'lucide-react'
 
-const LEFT_TABS = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-  { href: '/tasks',     icon: CheckSquare,     label: 'Tasks' },
+const SECTIONS = [
+  { href: '/dashboard',    icon: LayoutDashboard, label: 'Home' },
+  { href: '/tasks',        icon: CheckSquare,     label: 'Tasks' },
+  { href: '/invoicing',    icon: Receipt,         label: 'Invoicing' },
+  { href: '/clients',      icon: Users,           label: 'Clients' },
+  { href: '/crm',          icon: Users2,          label: 'CRM' },
+  { href: '/tax',          icon: Calculator,      label: 'Tax' },
+  { href: '/insights',     icon: TrendingUp,      label: 'Insights' },
+  { href: '/jobs',         icon: Briefcase,       label: 'Jobs' },
+  { href: '/community',    icon: Globe,           label: 'Community' },
+  { href: '/calendar',     icon: Calendar,        label: 'Calendar' },
+  { href: '/education',    icon: GraduationCap,   label: 'Learn' },
+  { href: '/integrations', icon: Plug,            label: 'Apps' },
+  { href: '/settings',     icon: Settings,        label: 'Settings' },
 ]
-const RIGHT_TABS = [
-  { href: '/invoicing', icon: Receipt, label: 'Invoices' },
-  { href: '/clients',   icon: Users,   label: 'Clients' },
-]
-
-const tabStyle = (active: boolean): React.CSSProperties => ({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  gap: 3,
-  padding: '6px 4px 8px',
-  textDecoration: 'none',
-  border: 'none',
-  cursor: 'pointer',
-  fontFamily: 'inherit',
-  fontSize: 10,
-  fontWeight: active ? 700 : 500,
-  color: active ? 'var(--green-dk)' : 'var(--text-3)',
-  background: 'transparent',
-  transition: 'color 0.15s',
-})
 
 export default function BottomNav() {
   const pathname = usePathname()
@@ -47,80 +40,91 @@ export default function BottomNav() {
 
   if (!isMobile) return null
 
+  const navHeight = 64
+
   return (
-    <nav
-      role="navigation"
-      aria-label="Main navigation"
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'var(--card)',
-        borderTop: '1px solid var(--border)',
-        display: 'flex',
-        alignItems: 'flex-end',
-        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        boxShadow: '0 -4px 24px rgba(0,0,0,0.09)',
-        minHeight: 60,
-      }}
-    >
-      {/* Left tabs */}
-      {LEFT_TABS.map(({ href, icon: Icon, label }) => {
-        const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
-        return (
-          <Link key={href} href={href} style={tabStyle(active)}>
-            <Icon size={21} strokeWidth={active ? 2.2 : 1.6} />
-            <span>{label}</span>
-          </Link>
-        )
-      })}
-
-      {/* Center mic FAB */}
-      <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 8, position: 'relative' }}>
-        <Link
-          href="/ai-assistant"
-          aria-label="AI Voice Assistant"
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #16a34a, #10b981)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textDecoration: 'none',
-            boxShadow: '0 4px 20px rgba(16,163,74,0.45), 0 0 0 4px var(--card)',
-            marginBottom: 4,
-            flexShrink: 0,
-            transition: 'transform 0.15s, box-shadow 0.15s',
-          }}
-        >
-          <Mic size={24} color="#fff" strokeWidth={2} />
-        </Link>
-      </div>
-
-      {/* Right tabs */}
-      {RIGHT_TABS.map(({ href, icon: Icon, label }) => {
-        const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
-        return (
-          <Link key={href} href={href} style={tabStyle(active)}>
-            <Icon size={21} strokeWidth={active ? 2.2 : 1.6} />
-            <span>{label}</span>
-          </Link>
-        )
-      })}
-
-      {/* More */}
-      <button
-        style={tabStyle(false)}
-        onClick={() => window.dispatchEvent(new Event('toggle-sidebar'))}
-        aria-label="More navigation"
+    <>
+      {/* Centered mic FAB — floats above the nav strip */}
+      <Link
+        href="/ai-assistant"
+        aria-label="AI Voice Assistant"
+        style={{
+          position: 'fixed',
+          bottom: navHeight + 12,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 110,
+          width: 58,
+          height: 58,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #16a34a 0%, #10b981 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          textDecoration: 'none',
+          boxShadow: '0 0 0 5px var(--bg), 0 6px 24px rgba(16,163,74,0.5)',
+          flexShrink: 0,
+        }}
       >
-        <Menu size={21} strokeWidth={1.6} />
-        <span>More</span>
-      </button>
-    </nav>
+        <Mic size={26} color="#fff" strokeWidth={2} />
+      </Link>
+
+      {/* Scrollable bottom nav strip */}
+      <nav
+        role="navigation"
+        aria-label="Main navigation"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          height: navHeight,
+          background: 'var(--card)',
+          borderTop: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch' as any,
+          boxShadow: '0 -4px 24px rgba(0,0,0,0.09)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          gap: 2,
+          paddingLeft: 8,
+          paddingRight: 8,
+        }}
+      >
+        {SECTIONS.map(({ href, icon: Icon, label }) => {
+          const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
+          return (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 3,
+                padding: '6px 10px',
+                borderRadius: 10,
+                textDecoration: 'none',
+                flexShrink: 0,
+                minWidth: 56,
+                fontSize: 10,
+                fontWeight: active ? 700 : 500,
+                color: active ? 'var(--green-dk)' : 'var(--text-3)',
+                background: active ? 'var(--green-light)' : 'transparent',
+                transition: 'color 0.15s, background 0.15s',
+              }}
+            >
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.6} />
+              <span style={{ whiteSpace: 'nowrap' }}>{label}</span>
+            </Link>
+          )
+        })}
+      </nav>
+    </>
   )
 }
