@@ -13,17 +13,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const user = await getUser();
   if (!user) redirect("/login");
   return (
-    <div style={{ minHeight: "100vh", display: "flex", background: "var(--bg)", color: "var(--text)" }}>
+    <div style={{ minHeight: "100vh", display: "flex", background: "var(--app-bg)", color: "var(--text)" }}>
       <Sidebar />
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 0 }}>
         <header style={{
-          height: 52,
-          background: "var(--header-bg)",
-          borderBottom: "1px solid rgba(0,0,0,0.08)",
+          height: 60,
+          background: "rgba(255,255,255,0.97)",
+          borderBottom: "1px solid var(--gray-100)",
           display: "flex",
           alignItems: "center",
-          padding: "0 20px",
+          padding: "0 24px",
           gap: 10,
           flexShrink: 0,
           position: "sticky",
@@ -31,7 +31,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           zIndex: 50,
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          boxShadow: "0 1px 0 rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.03)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
         }}>
           <SearchBar />
           <div className="hide-mobile"><QuickActions /></div>
@@ -47,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <main style={{ flex: 1, overflow: "auto", background: "var(--bg)", minHeight: 0 }}>{children}</main>
+        <main style={{ flex: 1, overflow: "auto", background: "var(--app-bg)", minHeight: 0 }}>{children}</main>
       </div>
 
       <BottomNav />

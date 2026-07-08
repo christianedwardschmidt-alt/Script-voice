@@ -112,14 +112,14 @@ export default function Sidebar() {
         title={shortcut ? `${label} (⌘${shortcut})` : label}
         style={{
           display: 'flex', alignItems: 'center', gap: 9,
-          padding: '7px 10px 7px 13px', borderRadius: 8, marginBottom: 1,
-          color: active ? 'var(--green-dk)' : 'var(--text-2)',
-          background: active ? 'var(--green-light)' : 'transparent',
-          fontWeight: active ? 600 : 450,
-          fontSize: 12.5,
+          padding: '9px 12px 9px 14px', borderRadius: 8, marginBottom: 2,
+          color: active ? '#16A34A' : 'rgba(255,255,255,0.58)',
+          background: active ? 'rgba(22,163,74,0.1)' : 'transparent',
+          fontWeight: active ? 600 : 400,
+          fontSize: 13.5,
           textDecoration: 'none',
-          transition: 'background 0.12s, color 0.12s, box-shadow 0.12s',
-          boxShadow: active ? 'inset 3px 0 0 #00b857' : 'none',
+          transition: 'background 0.12s, color 0.12s',
+          borderLeft: active ? '3px solid #16A34A' : '3px solid transparent',
         }}
         className="sidebar-link"
       >
@@ -139,40 +139,32 @@ export default function Sidebar() {
     <aside
       className={`sidebar-aside${isMobileOpen ? ' sidebar-open' : ''}`}
       style={{
-        width: 220, minHeight: '100vh',
-        background: 'var(--sidebar-bg)',
-        borderRight: '1px solid var(--border)',
+        width: 224, minHeight: '100vh',
+        background: '#0A1A0F',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
         display: 'flex', flexDirection: 'column',
         position: 'sticky', top: 0,
         flexShrink: 0, overflowY: 'auto', overflowX: 'hidden',
       }}>
 
       {/* Logo */}
-      <div style={{ padding: '14px 16px 12px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 9,
-          background: 'linear-gradient(135deg, #007a3a, #00b857)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(0,184,87,0.3)', flexShrink: 0,
-        }}>
-          <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, letterSpacing: '-0.5px' }}>GW</span>
-        </div>
+      <div style={{ padding: '16px 16px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
         <div>
-          <div style={{ fontSize: 13.5, fontWeight: 800, letterSpacing: '-0.4px', lineHeight: 1.1 }}>
-            <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+          <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1, fontFamily: 'var(--font-syne), Syne, sans-serif' }}>
+            <span style={{ color: '#ffffff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
           </div>
-          <div style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 500 }}>Work free. Stay connected.</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 400, marginTop: 3, letterSpacing: '0.02em' }}>Work free. Stay connected.</div>
         </div>
       </div>
 
       {/* Nav groups */}
-      <nav style={{ flex: 1, padding: '8px 10px 0', overflowY: 'auto' }}>
+      <nav style={{ flex: 1, padding: '10px 10px 0', overflowY: 'auto' }}>
         {NAV_GROUPS.map(group => (
-          <div key={group.label} style={{ marginBottom: 4 }}>
+          <div key={group.label} style={{ marginBottom: 6 }}>
             <div style={{
-              fontSize: 8.5, fontWeight: 700, letterSpacing: '2.5px',
-              textTransform: 'uppercase', color: 'var(--text-3)',
-              padding: '8px 13px 4px',
+              fontSize: 9, fontWeight: 700, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)',
+              padding: '8px 14px 4px',
             }}>{group.label}</div>
             {group.items.map(({ label, href, icon, key }) => navItem(href, icon, label, key))}
           </div>
@@ -181,17 +173,17 @@ export default function Sidebar() {
 
       {/* Demo banner */}
       {isDemo && (
-        <div style={{ margin: '0 10px 8px', padding: '10px 12px', background: 'rgba(91,95,207,0.08)', border: '1px solid rgba(91,95,207,0.2)', borderRadius: 10 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--indigo)', marginBottom: 4 }}>Demo mode</div>
-          <div style={{ fontSize: 11, color: 'var(--text-2)', lineHeight: 1.4, marginBottom: 8 }}>You're browsing read-only sample data.</div>
-          <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '6px 10px', background: 'var(--indigo)', color: '#fff', borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none' }}>
+        <div style={{ margin: '0 10px 8px', padding: '10px 12px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#818CF8', marginBottom: 4 }}>Demo mode</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4, marginBottom: 8 }}>You're browsing read-only sample data.</div>
+          <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '6px 10px', background: '#6366F1', color: '#fff', borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none' }}>
             Create free account
           </Link>
         </div>
       )}
 
       {/* Bottom section */}
-      <div style={{ padding: '8px 10px 0', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
+      <div style={{ padding: '8px 10px 0', borderTop: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
         {BOTTOM_NAV.map(({ label, href, icon }) => navItem(href, icon, label))}
 
         {/* User card */}
@@ -199,22 +191,22 @@ export default function Sidebar() {
           {showUserMenu && (
             <div style={{
               position: 'absolute', bottom: '100%', left: 0, right: 0, marginBottom: 6,
-              background: 'var(--card)', border: '1px solid var(--border)',
-              borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+              background: '#132A1A', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 10, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
               overflow: 'hidden', zIndex: 100,
             }}>
               <Link
                 href="/profile"
                 onClick={() => setShowUserMenu(false)}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 13px', fontSize: 12.5, color: 'var(--text)', fontWeight: 500, textDecoration: 'none' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: 13, color: 'rgba(255,255,255,0.75)', fontWeight: 500, textDecoration: 'none' }}
                 className="user-menu-item"
               >
                 <User size={13} /> View Profile
               </Link>
-              <div style={{ height: 1, background: 'var(--border)' }} />
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)' }} />
               <button
                 onClick={signOut}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 13px', fontSize: 12.5, color: '#dc2626', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', fontSize: 13, color: '#F87171', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
                 className="user-menu-item"
               >
                 <LogOut size={13} /> Sign out
@@ -223,45 +215,51 @@ export default function Sidebar() {
           )}
           <button
             onClick={() => setShowUserMenu(v => !v)}
-            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 13px 12px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 14px 12px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
             className="user-card-btn"
           >
             <div style={{
-              width: 28, height: 28, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #007a3a, #00b857)',
+              width: 30, height: 30, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #14532D, #16A34A)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 10, fontWeight: 800, color: '#fff', flexShrink: 0,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+              fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
             }}>{displayName.charAt(0).toUpperCase()}</div>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.9)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{displayName}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#00b857' }} />
-                <span style={{ fontSize: 10, color: 'var(--text-2)' }}>Pro Plan · Active</span>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A' }} />
+                <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>Pro Plan · Active</span>
               </div>
             </div>
-            <ChevronUp size={13} style={{ color: 'var(--text-3)', flexShrink: 0, transform: showUserMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+            <ChevronUp size={13} style={{ color: 'rgba(255,255,255,0.3)', flexShrink: 0, transform: showUserMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
           </button>
         </div>
 
         {/* Keyboard shortcut hint */}
-        <div style={{ padding: '6px 13px 10px', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <kbd style={{ fontSize: 8.5, color: 'var(--text-3)', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 4, padding: '1px 4px', fontFamily: 'inherit' }}>⌘</kbd>
-          <span style={{ fontSize: 9.5, color: 'var(--text-3)' }}>1–9 to navigate</span>
+        <div style={{ padding: '4px 14px 10px', display: 'flex', alignItems: 'center', gap: 5 }}>
+          <kbd style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 5px', fontFamily: 'inherit' }}>⌘</kbd>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>1–9 to navigate</span>
         </div>
       </div>
 
       <style>{`
-        .sidebar-link:hover { background: var(--bg-3) !important; color: var(--text) !important; }
+        .sidebar-link:hover {
+          background: rgba(255,255,255,0.05) !important;
+          color: rgba(255,255,255,0.9) !important;
+        }
+        .sidebar-link.active:hover {
+          background: rgba(22,163,74,0.14) !important;
+          color: #16A34A !important;
+        }
         .nav-shortcut {
-          font-size: 9px; color: var(--text-3);
-          background: var(--bg-3); border: 1px solid var(--border);
+          font-size: 9px; color: rgba(255,255,255,0.25);
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
           border-radius: 4px; padding: 1px 4px; font-family: inherit;
           flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
         }
         .sidebar-link:hover .nav-shortcut { opacity: 1; }
-        .user-menu-item:hover { background: var(--bg-3) !important; }
-        .user-card-btn:hover { background: var(--bg-3) !important; border-radius: 8px; }
+        .user-menu-item:hover { background: rgba(255,255,255,0.06) !important; }
+        .user-card-btn:hover { background: rgba(255,255,255,0.05) !important; border-radius: 8px; }
       `}</style>
     </aside>
     </>
