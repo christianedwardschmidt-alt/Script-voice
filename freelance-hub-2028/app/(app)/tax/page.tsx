@@ -97,7 +97,7 @@ export default function TaxPage() {
   const [settSaved, setSettSaved] = useState(false)
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       fetch('/api/invoices').then(r => r.json()),
       fetch('/api/tax/expenses').then(r => r.json()),
       fetch('/api/tax/mileage').then(r => r.json()),
@@ -106,7 +106,10 @@ export default function TaxPage() {
       fetch('/api/clients').then(r => r.json()),
       fetch('/api/tax/w9').then(r => r.json()),
       fetch('/api/tax/settings').then(r => r.json()),
-    ]).then(([inv, exp, mil, qtr, docs, cli, w9, sett]) => {
+    ]).then(results => {
+      const val = (i: number) => results[i].status === 'fulfilled' ? (results[i] as PromiseFulfilledResult<unknown>).value : null
+      const inv = val(0), exp = val(1), mil = val(2), qtr = val(3)
+      const docs = val(4), cli = val(5), w9 = val(6), sett = val(7)
       setInvoices(Array.isArray(inv) ? inv : [])
       setExpenses(Array.isArray(exp) ? exp : [])
       setMileage(Array.isArray(mil) ? mil : [])
@@ -114,7 +117,7 @@ export default function TaxPage() {
       setDocuments(Array.isArray(docs) ? docs : [])
       setClients(Array.isArray(cli) ? cli : [])
       setW9Records(Array.isArray(w9) ? w9 : [])
-      if (sett && !sett.error) setTaxSettings(sett)
+      if (sett && typeof sett === 'object' && !(sett as Record<string,unknown>).error) setTaxSettings(sett as TaxSettings)
     })
   }, [])
 
@@ -238,132 +241,93 @@ export default function TaxPage() {
   // — Tab renders —
 
   const renderOverview = () => {
-    const kpis = [
-      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  color: '#16A34A' },
-      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,     color: '#3B82F6' },
-      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,   color: '#8B5CF6' },
-      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,    color: '#D97706' },
-      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,       color: '#EF4444' },
+    const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
+
+    const kpiRow1 = [
+      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A' },
+      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,     sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6' },
+      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,   sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6' },
+      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,    sub: 'After all deductions', color: '#D97706' },
+      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,       sub: `${effectiveRate}% effective rate`, color: '#EF4444' },
     ]
 
-    const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
+    const kpiRow2 = [
+      { label: 'Self-Employment Tax', value: `$${seTax.toLocaleString()}`,       sub: '15.3% on 92.35% of net',      color: '#EF4444' },
+      { label: 'Total Deductions',    value: `$${totalDed.toLocaleString()}`,     sub: 'Expenses + mileage',          color: '#3B82F6' },
+      { label: 'Quarterly Paid',      value: `$${totalPaid.toLocaleString()}`,    sub: `${quarterly.filter(p=>p.year===2026).length} of 4 quarters`, color: '#16A34A' },
+      { label: 'Outstanding',         value: `$${outstanding.toLocaleString()}`,  sub: 'Remaining this year',         color: '#D97706' },
+      { label: '1099 Clients',        value: `${clients1099.length}`,             sub: 'Paid $600+ this year',        color: '#6366F1' },
+    ]
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* KPI bar */}
+        {/* Row 1 — income & deductions */}
         <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
-          {kpis.map((k, i) => (
-            <div key={k.label} style={{ padding: '24px 28px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
+          {kpiRow1.map((k, i) => (
+            <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
               <UL>{k.label}</UL>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', marginTop: 4 }}>{k.value}</div>
-              <div style={{ width: 20, height: 3, background: k.color, borderRadius: 99, marginTop: 10, opacity: 0.7 }} />
+              <div style={{ width: 20, height: 3, background: k.color, borderRadius: 99, marginTop: 8, opacity: 0.7 }} />
+              <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{k.sub}</div>
             </div>
           ))}
         </div>
 
-        {/* Middle row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {/* Quarter tracker */}
-          <div style={{ ...card, padding: 24 }}>
-            <UL>Quarterly Payments</UL>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 16 }}>
-              ${totalPaid.toLocaleString()} paid · ${outstanding.toLocaleString()} remaining
+        {/* Row 2 — tax & payment metrics */}
+        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
+          {kpiRow2.map((k, i) => (
+            <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
+              <UL>{k.label}</UL>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', marginTop: 4 }}>{k.value}</div>
+              <div style={{ width: 20, height: 3, background: k.color, borderRadius: 99, marginTop: 8, opacity: 0.7 }} />
+              <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{k.sub}</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {QUARTERS.map((q, idx) => {
-                const payment = quarterly.find(p => p.quarter === q.q && p.year === 2026)
-                const isPaid = !!payment
-                const isCurrent = idx === currentQIdx
-                return (
-                  <div key={q.q} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, background: isCurrent && !isPaid ? '#FFFBEB' : isPaid ? '#F0FDF4' : '#F8FAFC', border: `1px solid ${isCurrent && !isPaid ? '#FDE68A' : isPaid ? '#BBF7D0' : '#F3F4F6'}` }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, background: isPaid ? '#16A34A' : isCurrent ? '#D97706' : '#E5E7EB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      {isPaid ? <Check size={14} color="#fff" /> : <span style={{ fontSize: 11, fontWeight: 700, color: isCurrent ? '#fff' : '#9CA3AF' }}>{q.q}</span>}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{q.label}</div>
-                      <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Due {q.due}</div>
-                    </div>
-                    {isPaid
-                      ? <span style={{ fontSize: 13, fontWeight: 700, color: '#16A34A', fontFamily: 'var(--font-display)' }}>${payment.paid_amount.toLocaleString()}</span>
-                      : <span style={{ fontSize: 13, fontWeight: 700, color: '#9CA3AF', fontFamily: 'var(--font-display)' }}>~${quarterlyAmt.toLocaleString()}</span>
-                    }
-                  </div>
-                )
-              })}
-            </div>
-            <button onClick={() => setTab('Quarterly')} style={{ marginTop: 14, width: '100%', padding: '9px', borderRadius: 10, border: '1px solid #E5E7EB', background: 'transparent', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              Manage Payments <ChevronRight size={13} />
-            </button>
-          </div>
-
-          {/* Expense breakdown */}
-          <div style={{ ...card, padding: 24 }}>
-            <UL>Top Expense Categories</UL>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827', marginBottom: 16 }}>
-              ${totalExp.toLocaleString()} total deductible
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {Object.entries(expByCat).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([cat, amt]) => (
-                <div key={cat} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 8, height: 8, borderRadius: 99, background: CAT_COLOR[cat] ?? '#9CA3AF', flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', fontWeight: 500 }}>{cat}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-display)' }}>${amt.toLocaleString()}</span>
-                    </div>
-                    <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${totalExp ? Math.round((amt / totalExp) * 100) : 0}%`, background: CAT_COLOR[cat] ?? '#9CA3AF', borderRadius: 99 }} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {Object.keys(expByCat).length === 0 && <div style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>No expenses recorded yet</div>}
-            </div>
-            <button onClick={() => setTab('Expenses')} style={{ marginTop: 14, width: '100%', padding: '9px', borderRadius: 10, border: '1px solid #E5E7EB', background: 'transparent', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              View All Expenses <ChevronRight size={13} />
-            </button>
-          </div>
+          ))}
         </div>
 
-        {/* Bottom row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-          <div style={{ ...card, padding: 24 }}>
-            <UL>Est. Annual Tax</UL>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em', marginTop: 4 }}>${estTax.toLocaleString()}</div>
-            <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>Effective rate: {effectiveRate}%</div>
-            <div style={{ marginTop: 14, padding: '12px 14px', background: '#FEF2F2', borderRadius: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#EF4444', fontFamily: 'var(--font-body)', marginBottom: 4 }}>Self-Employment Tax</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#EF4444' }}>${seTax.toLocaleString()}</div>
-              <div style={{ fontSize: 11, color: '#F87171', fontFamily: 'var(--font-body)', marginTop: 2 }}>12.4% SS + 2.9% Medicare on 92.35%</div>
-            </div>
-          </div>
-          <div style={{ ...card, padding: 24 }}>
-            <UL>Mileage Tracker</UL>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em', marginTop: 4 }}>{totalMiles.toLocaleString()} mi</div>
-            <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{mileage.length} trips recorded</div>
-            <div style={{ marginTop: 14, padding: '12px 14px', background: '#F0FDF4', borderRadius: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#16A34A', fontFamily: 'var(--font-body)', marginBottom: 4 }}>Deduction Value</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#16A34A' }}>${mileageDed.toLocaleString()}</div>
-              <div style={{ fontSize: 11, color: '#4ADE80', fontFamily: 'var(--font-body)', marginTop: 2 }}>IRS rate ${IRS_RATE}/mi · 2026</div>
-            </div>
-          </div>
-          <div style={{ ...card, padding: 24 }}>
-            <UL>1099 Clients</UL>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800, color: '#111827', letterSpacing: '-0.03em', marginTop: 4 }}>{clients1099.length}</div>
-            <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>paid $600+ this year</div>
-            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {clients1099.slice(0, 3).map(c => (
-                <div key={c.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)' }}>{c.name}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-display)' }}>${c.revenue.toLocaleString()}</span>
+        {/* Row 3 — quarterly status cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+          {QUARTERS.map((q, idx) => {
+            const payment = quarterly.find(p => p.quarter === q.q && p.year === 2026)
+            const isPaid = !!payment
+            const isCurrent = idx === currentQIdx
+            return (
+              <div key={q.q} style={{ ...card, padding: '20px 24px', border: `1px solid ${isPaid ? '#BBF7D0' : isCurrent ? '#FDE68A' : 'transparent'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{q.label}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 99, fontFamily: 'var(--font-body)', background: isPaid ? '#F0FDF4' : isCurrent ? '#FFFBEB' : '#F3F4F6', color: isPaid ? '#16A34A' : isCurrent ? '#D97706' : '#9CA3AF' }}>
+                    {isPaid ? 'Paid' : isCurrent ? 'Due Soon' : 'Upcoming'}
+                  </span>
                 </div>
-              ))}
-              {clients1099.length === 0 && <span style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>No qualifying clients yet</span>}
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: isPaid ? '#16A34A' : '#111827', letterSpacing: '-0.02em' }}>
+                  {isPaid ? `$${payment.paid_amount.toLocaleString()}` : `~$${quarterlyAmt.toLocaleString()}`}
+                </div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>Due {q.due}</div>
+                {!isPaid && (
+                  <button onClick={() => { setPayingQuarter(q.q); setTab('Quarterly') }} style={{ marginTop: 12, width: '100%', padding: '7px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'transparent', fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                    Mark Paid →
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Row 4 — activity counts */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
+          {[
+            { label: 'Expense Records',   value: `${expenses.length}`,   sub: `$${totalExp.toLocaleString()} total`,           color: '#3B82F6', tab: 'Expenses' },
+            { label: 'Trips Logged',      value: `${mileage.length}`,    sub: `${totalMiles} mi total`,                        color: '#8B5CF6', tab: 'Mileage' },
+            { label: 'Tax Documents',     value: `${documents.length}`,  sub: `${documents.filter(d=>d.status==='Filed').length} filed`, color: '#14B8A6', tab: 'Documents' },
+            { label: 'W-9 Status',        value: `${w9Records.filter(r=>r.status==='received').length}/${[...new Set([...clients.map(c=>c.name),...w9Records.map(r=>r.client_name)])].filter(Boolean).length}`, sub: 'Received / Total clients', color: '#F59E0B', tab: '1099 & W-9' },
+          ].map(k => (
+            <div key={k.label} onClick={() => setTab(k.tab)} style={{ ...card, padding: '20px 24px', cursor: 'pointer' }}>
+              <UL>{k.label}</UL>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', marginTop: 4 }}>{k.value}</div>
+              <div style={{ width: 16, height: 3, background: k.color, borderRadius: 99, marginTop: 8, opacity: 0.7 }} />
+              <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>{k.sub}</div>
             </div>
-            <button onClick={() => setTab('1099 & W-9')} style={{ marginTop: 14, width: '100%', padding: '8px', borderRadius: 10, border: '1px solid #E5E7EB', background: 'transparent', fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              Manage <ChevronRight size={12} />
-            </button>
-          </div>
+          ))}
         </div>
       </div>
     )
