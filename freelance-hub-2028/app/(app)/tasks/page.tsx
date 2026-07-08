@@ -47,6 +47,8 @@ const tabs = ['All', 'To Do', 'In Progress', 'Completed']
 
 const emptyForm = { title: '', description: '', priority: 'medium' as Priority, status: 'todo' as Status, dueDate: '', project: '' }
 
+const SKEL_WIDTHS = [75, 90, 65, 80, 70, 85]
+
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
@@ -115,6 +117,11 @@ export default function TasksPage() {
     }, {} as Record<string, { name: string; tasks: number }>)
   )
 
+  // Shared skeleton card style — no shadow/border during loading
+  const skelCard = (extra?: React.CSSProperties): React.CSSProperties => loading
+    ? { padding: 20, background: '#edf0f5', borderRadius: 14, boxShadow: 'none', border: 'none', ...extra }
+    : { padding: 20, ...extra }
+
   return (
     <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -129,54 +136,71 @@ export default function TasksPage() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: '#1c1917' }}>{tasks.length}</span>
-        <span style={{ fontSize: 14, color: '#78716c', marginLeft: 6 }}>Total Tasks</span>
+        {loading
+          ? <div style={{ width: 80, height: 22, borderRadius: 6, background: '#c8cdd8' }} />
+          : <><span style={{ fontSize: 22, fontWeight: 700, color: '#1c1917' }}>{tasks.length}</span><span style={{ fontSize: 14, color: '#78716c', marginLeft: 6 }}>Total Tasks</span></>
+        }
       </div>
 
       <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
         {/* Left — task list */}
         <div>
           {/* Search + Filter */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#78716c' }} />
-              <input
-                className="search-input"
-                placeholder="Search tasks..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
+          {loading ? (
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+              <div style={{ flex: 1, height: 38, borderRadius: 9, background: '#e0e4ed' }} />
+              <div style={{ width: 80, height: 38, borderRadius: 9, background: '#e0e4ed' }} />
             </div>
-            <button className="btn-outline">
-              <Filter size={14} />
-              Filter
-            </button>
-          </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <Search size={15} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#78716c' }} />
+                <input
+                  className="search-input"
+                  placeholder="Search tasks..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </div>
+              <button className="btn-outline">
+                <Filter size={14} />
+                Filter
+              </button>
+            </div>
+          )}
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-            {tabs.map(tab => (
-              <button
-                key={tab}
-                className={`tab-btn${activeTab === tab ? ' active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+          {loading ? (
+            <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+              {[50, 52, 82, 88].map((w, i) => (
+                <div key={i} style={{ width: w, height: 30, borderRadius: 8, background: '#c8cdd8' }} />
+              ))}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+              {tabs.map(tab => (
+                <button
+                  key={tab}
+                  className={`tab-btn${activeTab === tab ? ' active' : ''}`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Tasks */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden', background: loading ? '#edf0f5' : 'var(--card)' }}>
-            {loading && Array.from({ length: 6 }).map((_, i) => (
+          <div className="card" style={{ padding: 0, overflow: 'hidden', background: loading ? '#edf0f5' : 'var(--card)', boxShadow: loading ? 'none' : undefined, border: loading ? 'none' : undefined }}>
+            {loading && SKEL_WIDTHS.map((w, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px 20px',
-                borderBottom: i < 5 ? '1px solid rgba(0,0,0,0.06)' : 'none',
+                borderBottom: i < SKEL_WIDTHS.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                 background: '#edf0f5',
               }}>
                 <div style={{ width: 16, height: 16, marginTop: 3, flexShrink: 0, borderRadius: 4, background: '#b8bfcc' }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ width: `${60 + (i % 3) * 15}%`, height: 14, borderRadius: 4, background: '#b8bfcc', marginBottom: 8 }} />
+                  <div style={{ width: `${w}%`, height: 14, borderRadius: 4, background: '#b8bfcc', marginBottom: 8 }} />
                   <div style={{ width: `${40 + (i % 2) * 20}%`, height: 12, borderRadius: 4, background: '#c8cdd8', marginBottom: 10 }} />
                   <div style={{ display: 'flex', gap: 6 }}>
                     <div style={{ width: 56, height: 20, borderRadius: 99, background: '#b8bfcc' }} />
@@ -261,13 +285,17 @@ export default function TasksPage() {
         {/* Right sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Upcoming Deadlines */}
-          <div className="card" style={{ padding: 20, background: loading ? '#edf0f5' : 'var(--card)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <Calendar size={16} color="#6b7280" />
-              <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
-            </div>
+          <div className="card" style={skelCard()}>
+            {loading ? (
+              <div style={{ width: 140, height: 14, borderRadius: 4, background: '#b8bfcc', marginBottom: 16 }} />
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                <Calendar size={16} color="#6b7280" />
+                <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
+              </div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {loading && Array.from({ length: 3 }).map((_, i) => (
+              {loading && [0, 1, 2].map(i => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: i < 2 ? 12 : 0, borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div style={{ flex: 1, marginRight: 8 }}>
                     <div style={{ width: '70%', height: 12, borderRadius: 4, background: '#b8bfcc', marginBottom: 6 }} />
@@ -292,10 +320,14 @@ export default function TasksPage() {
           </div>
 
           {/* Active Projects */}
-          <div className="card" style={{ padding: 20, background: loading ? '#edf0f5' : 'var(--card)' }}>
-            <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
+          <div className="card" style={skelCard()}>
+            {loading ? (
+              <div style={{ width: 110, height: 14, borderRadius: 4, background: '#b8bfcc', marginBottom: 14 }} />
+            ) : (
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {loading && Array.from({ length: 3 }).map((_, i) => (
+              {loading && [0, 1, 2].map(i => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: i < 2 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ width: '60%', height: 12, borderRadius: 4, background: '#b8bfcc', marginBottom: 6 }} />
