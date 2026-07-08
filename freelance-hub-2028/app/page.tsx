@@ -251,7 +251,7 @@ export default async function HomePage() {
                 <span style={{ color: '#ffffff' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
               </div>
               <div style={{ fontFamily: 'var(--font-inter)', fontSize: 13, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.38)', marginTop: 12 }}>
-                work free, stay connected
+                WORK FREE. STAY CONNECTED.
               </div>
             </div>
             <div className="lp-badge">✦ Now open to founding members</div>
