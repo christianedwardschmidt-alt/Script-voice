@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Plus, X, Trash2, Download, FileText, Car, AlertCircle, Upload, Search, Check, ChevronRight } from 'lucide-react'
+import { AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface Invoice { id: string; amount: number; status: string; client: string }
 interface Expense { id: number; date: string; description: string; category: string; amount: number; notes: string }
@@ -284,6 +285,77 @@ export default function TaxPage() {
             </div>
           ))}
         </div>
+
+        {/* Charts row */}
+        {(() => {
+          const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+          const MONTH_IDX: Record<string,number> = Object.fromEntries(MONTHS.map((m,i)=>[m,i]))
+          const monthlyRev = Array(12).fill(0)
+          paidInvs.forEach(inv => {
+            const month = inv.issued?.split?.(' ')?.[0]
+            if (month && month in MONTH_IDX) monthlyRev[MONTH_IDX[month]] += inv.amount
+          })
+          const areaData = MONTHS.map((m, i) => ({ month: m, revenue: monthlyRev[i] }))
+
+          const catData = Object.entries(expByCat)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 8)
+            .map(([cat, amt]) => ({ cat: cat.length > 18 ? cat.slice(0, 16) + '…' : cat, amt, color: CAT_COLOR[cat] ?? '#9CA3AF' }))
+
+          const TICK = 'rgba(120,128,145,0.7)'
+
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 16 }}>
+              {/* Monthly revenue area */}
+              <div style={{ ...card, padding: 24 }}>
+                <div style={{ marginBottom: 20 }}>
+                  <UL>Monthly Revenue</UL>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>Income trend · 2026</div>
+                </div>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={areaData} margin={{ top: 0, right: 0, left: -18, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#16A34A" stopOpacity={0.18} />
+                        <stop offset="95%" stopColor="#16A34A" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} tickFormatter={v => v ? `$${v/1000}k` : '$0'} />
+                    <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12 }} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
+                    <Area type="monotone" dataKey="revenue" stroke="#16A34A" strokeWidth={2} fill="url(#revGrad)" dot={false} activeDot={{ r: 4, fill: '#16A34A' }} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Expense breakdown */}
+              <div style={{ ...card, padding: 24 }}>
+                <div style={{ marginBottom: 20 }}>
+                  <UL>Expense Breakdown</UL>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>By category · ${totalExp.toLocaleString()} total</div>
+                </div>
+                {catData.length === 0 ? (
+                  <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13, fontFamily: 'var(--font-body)' }}>No expenses yet</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={catData} layout="vertical" margin={{ top: 0, right: 0, left: 0, bottom: 0 }} barSize={10}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
+                      <YAxis type="category" dataKey="cat" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} width={110} />
+                      <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12 }} formatter={(v: number) => [`$${v.toLocaleString()}`, '']} />
+                      <Bar dataKey="amt" radius={[0, 4, 4, 0]}>
+                        {catData.map((entry, idx) => (
+                          <Cell key={idx} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Row 3 — quarterly status cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
