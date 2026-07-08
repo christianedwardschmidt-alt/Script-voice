@@ -16,8 +16,7 @@
   /* --font-display: 'Syne', sans-serif; */            /* original Syne — uncomment to revert */
   --font-body: 'Inter', -apple-system, sans-serif;
 
-  /* Legacy aliases — kept so existing pages don't break */
-  --font-syne: var(--font-display);
+  --font-syne: 'Syne', sans-serif; /* always Syne, regardless of --font-display */
   --font-inter: var(--font-body);
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);

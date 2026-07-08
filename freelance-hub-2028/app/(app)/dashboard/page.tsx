@@ -235,7 +235,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700,
+            fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700,
             color: '#111827', letterSpacing: '-0.02em', marginBottom: 6,
           }}>
             {greeting}, {userName}.
