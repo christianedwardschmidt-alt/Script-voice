@@ -4,15 +4,15 @@ import "./globals.css";
 
 const syne = Syne({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-syne',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-display',
   display: 'swap',
 })
 
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-inter',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-body',
   display: 'swap',
 })
 
