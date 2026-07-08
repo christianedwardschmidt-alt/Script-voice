@@ -231,7 +231,7 @@ const NAV_GROUPS = [
 ]
 
 const BOTTOM_NAV = [
-  { label: 'Tax',          href: '/tax',          Icon: IconTax },
+  { label: 'Tax Center',   href: '/tax',          Icon: IconTax },
   { label: 'Education',    href: '/education',    Icon: IconBook },
   { label: 'Integrations', href: '/integrations', Icon: IconPlug },
   { label: 'Settings',     href: '/settings',     Icon: IconSettings },

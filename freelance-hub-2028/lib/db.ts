@@ -53,7 +53,7 @@ export function logActivity(userId: number, message: string) {
 
 export async function restoreSeedData(userId: number): Promise<void> {
   await ensureReady()
-  const userTables = ['clients', 'crm_clients', 'tasks', 'invoices', 'calendar_events', 'tax_deductions', 'tax_documents', 'activity_log']
+  const userTables = ['clients', 'crm_clients', 'tasks', 'invoices', 'calendar_events', 'tax_deductions', 'tax_documents', 'tax_expenses', 'tax_mileage', 'tax_quarterly_payments', 'tax_w9', 'activity_log']
   for (const t of userTables) await client.execute({ sql: `DELETE FROM ${t} WHERE user_id = ?`, args: [userId] })
   await seedClients(userId)
   await seedCrmClients(userId)
@@ -61,6 +61,8 @@ export async function restoreSeedData(userId: number): Promise<void> {
   await seedInvoices(userId)
   await seedTaxDeductions(userId)
   await seedTaxDocuments(userId)
+  await seedTaxExpenses(userId)
+  await seedTaxMileage(userId)
   await seedCalendarEvents(userId)
   await client.execute({
     sql: 'INSERT INTO activity_log (user_id, message, createdAt) VALUES (?, ?, ?)',
@@ -109,6 +111,8 @@ export async function seedUserData(userId: number, name: string, email: string):
   await seedInvoices(userId)
   await seedTaxDeductions(userId)
   await seedTaxDocuments(userId)
+  await seedTaxExpenses(userId)
+  await seedTaxMileage(userId)
   await seedCalendarEvents(userId)
   await seedActivityLog(userId)
   await seedJobs(userId)
@@ -252,6 +256,35 @@ async function runInit() {
         title TEXT NOT NULL, date TEXT NOT NULL, startTime TEXT, endTime TEXT,
         type TEXT DEFAULT 'meeting', client TEXT, description TEXT, color TEXT DEFAULT '#16a34a'
       )`,
+      `CREATE TABLE IF NOT EXISTS tax_expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        date TEXT, description TEXT, category TEXT, amount INTEGER DEFAULT 0, notes TEXT
+      )`,
+      `CREATE TABLE IF NOT EXISTS tax_mileage (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        date TEXT, from_loc TEXT, to_loc TEXT, purpose TEXT, miles REAL DEFAULT 0
+      )`,
+      `CREATE TABLE IF NOT EXISTS tax_quarterly_payments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        quarter TEXT, year INTEGER DEFAULT 2026,
+        paid_amount INTEGER DEFAULT 0, paid_date TEXT
+      )`,
+      `CREATE TABLE IF NOT EXISTS tax_settings (
+        user_id INTEGER PRIMARY KEY,
+        filing_status TEXT DEFAULT 'Single',
+        state TEXT DEFAULT '',
+        entity_type TEXT DEFAULT 'Sole Proprietor',
+        fiscal_year TEXT DEFAULT 'Calendar Year',
+        accountant_email TEXT DEFAULT ''
+      )`,
+      `CREATE TABLE IF NOT EXISTS tax_w9 (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        client_name TEXT, status TEXT DEFAULT 'needed'
+      )`,
     ],
     'write'
   )
@@ -271,6 +304,7 @@ async function runInit() {
     `ALTER TABLE courses ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE integrations ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE posts ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
+    `ALTER TABLE tax_documents ADD COLUMN category TEXT DEFAULT 'Other Tax Documents'`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
@@ -433,15 +467,49 @@ async function seedTaxDeductions(userId: number) {
   ], 'write')
 }
 
-async function seedTaxDocuments(userId: number) {
-  const sql = `INSERT INTO tax_documents (user_id,name,status,date,size) VALUES (?,?,?,?,?)`
+async function seedTaxExpenses(userId: number) {
+  const sql = `INSERT INTO tax_expenses (user_id,date,description,category,amount,notes) VALUES (?,?,?,?,?,?)`
   await client.batch([
-    { sql, args: [userId,'1099-NEC (Tech Trophey)','Received','Jan 5','48 KB'] },
-    { sql, args: [userId,'1099-NEC (Hencewood)','Received','Jan 8','52 KB'] },
-    { sql, args: [userId,'Schedule C Draft','In Progress','Jan 12','—'] },
-    { sql, args: [userId,'2023 Tax Return','Filed','Apr 12','210 KB'] },
-    { sql, args: [userId,'W-9 Form','Filed','Mar 1','28 KB'] },
-    { sql, args: [userId,'Estimated Payments','In Progress','Jan 14','—'] },
+    { sql, args: [userId,'2026-01-15','Adobe Creative Cloud subscription','Software & Subscriptions',55,''] },
+    { sql, args: [userId,'2026-01-20','Rent – home office portion (20% of $2,400)','Home Office',480,'Based on 20% home office use'] },
+    { sql, args: [userId,'2026-02-03','New 4K monitor','Equipment & Technology',429,'Dell UltraSharp – used exclusively for work'] },
+    { sql, args: [userId,'2026-02-18','Notion Pro annual','Software & Subscriptions',192,'Project management & docs'] },
+    { sql, args: [userId,'2026-03-05','Flight to NYC – client kickoff','Travel & Transportation',380,'Roundtrip JFK – Apex Creative onboarding'] },
+    { sql, args: [userId,'2026-03-18','Client lunch – Foundry Labs','Meals & Entertainment',94,'50% deductible – business lunch'] },
+    { sql, args: [userId,'2026-04-01','LinkedIn Premium','Marketing & Advertising',40,''] },
+    { sql, args: [userId,'2026-04-10','Next.js conference ticket','Professional Development',299,'Next.js Conf 2026'] },
+    { sql, args: [userId,'2026-04-20','Health insurance premium (April)','Health Insurance Premiums',380,'Self-employed health insurance'] },
+    { sql, args: [userId,'2026-05-01','Internet service – business portion (80%)','Software & Subscriptions',80,'$100/mo × 80%'] },
+    { sql, args: [userId,'2026-05-15','Health insurance premium (May)','Health Insurance Premiums',380,''] },
+    { sql, args: [userId,'2026-05-28','Figma Professional – annual','Software & Subscriptions',144,'Design tool'] },
+    { sql, args: [userId,'2026-06-10','Hotel – client on-site week','Travel & Transportation',840,'4 nights – Meridian Co project'] },
+    { sql, args: [userId,'2026-06-20','Health insurance premium (June)','Health Insurance Premiums',380,''] },
+    { sql, args: [userId,'2026-07-01','SEP-IRA contribution (Q2)','Retirement Contributions',2000,'Quarterly SEP-IRA deposit'] },
+  ], 'write')
+}
+
+async function seedTaxMileage(userId: number) {
+  const sql = `INSERT INTO tax_mileage (user_id,date,from_loc,to_loc,purpose,miles) VALUES (?,?,?,?,?,?)`
+  await client.batch([
+    { sql, args: [userId,'2026-01-22','Home','Apex Creative office','Project kickoff meeting',24] },
+    { sql, args: [userId,'2026-02-11','Home','Post office + FedEx','Mail signed contracts',6] },
+    { sql, args: [userId,'2026-03-08','Home','Downtown coworking space','Client presentation',13] },
+    { sql, args: [userId,'2026-04-14','Home','Foundry Labs HQ','Design review session',19] },
+    { sql, args: [userId,'2026-05-03','Home','Office Depot + client office','Supplies + meeting',28] },
+    { sql, args: [userId,'2026-06-17','Home','Meridian Co. office','Monthly check-in',31] },
+    { sql, args: [userId,'2026-07-02','Home','Bank + accountant office','Q2 tax payment + CPA meeting',15] },
+  ], 'write')
+}
+
+async function seedTaxDocuments(userId: number) {
+  const sql = `INSERT INTO tax_documents (user_id,name,status,date,size,category) VALUES (?,?,?,?,?,?)`
+  await client.batch([
+    { sql, args: [userId,'1099-NEC (Tech Trophey)','Received','Jan 5','48 KB','1099s Received'] },
+    { sql, args: [userId,'1099-NEC (Hencewood)','Received','Jan 8','52 KB','1099s Received'] },
+    { sql, args: [userId,'Schedule C Draft','In Progress','Jan 12','—','Other Tax Documents'] },
+    { sql, args: [userId,'2023 Tax Return','Filed','Apr 12','210 KB','Prior Year Returns'] },
+    { sql, args: [userId,'W-9 Form (Emma Thompson)','Filed','Mar 1','28 KB','W-9s Collected'] },
+    { sql, args: [userId,'Q1 2026 Estimated Payment Receipt','Received','Apr 15','14 KB','Quarterly Payment Receipts'] },
   ], 'write')
 }
 
