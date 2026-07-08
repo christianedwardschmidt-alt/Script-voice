@@ -51,7 +51,7 @@ export default function EducationPage() {
   const completed = courses.filter(c => c.progress === 100)
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Upskilling</h1>
@@ -61,7 +61,7 @@ export default function EducationPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div className="edu-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
         {[
           { label: 'Enrolled', value: enrolled.length, icon: BookOpen, color: '#16a34a', bg: '#dcfce7' },
           { label: 'Completed', value: completed.length, icon: CheckCircle, color: '#10b981', bg: '#d1fae5' },

@@ -68,7 +68,7 @@ export default function JobsPage() {
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Browse Jobs</h1>
         <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Discover top freelance opportunities</p>

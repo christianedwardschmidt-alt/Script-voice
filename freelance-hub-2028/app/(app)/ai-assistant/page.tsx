@@ -182,7 +182,7 @@ function AIAssistantInner() {
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 56px)', background: 'var(--bg)', overflow: 'hidden' }}>
       {/* Left capabilities panel */}
-      <div style={{ width: 240, background: 'var(--card)', borderRight: '1px solid rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 12px', flexShrink: 0 }}>
+      <div className="ai-cap-panel" style={{ width: 240, background: 'var(--card)', borderRight: '1px solid rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 12px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '0 4px' }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bot size={16} color="#fff" />

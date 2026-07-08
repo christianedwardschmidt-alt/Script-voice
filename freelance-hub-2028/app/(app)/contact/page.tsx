@@ -47,18 +47,18 @@ export default function ContactPage() {
 
   if (!contact) {
     return (
-      <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+      <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
         <div className="card" style={{ padding: 40, textAlign: 'center', color: '#78716c', fontSize: 14 }}>Loading contact info...</div>
       </div>
     )
   }
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', marginBottom: 6 }}>Contact Info</h1>
       <p style={{ color: '#78716c', fontSize: 14, marginBottom: 24 }}>Your public freelancer profile information</p>
       <div className="card" style={{ padding: 28, maxWidth: 600 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+        <div className="g-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
           {fields.map(({ key, label, type }) => (
             <div key={key}>
               <label style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', display: 'block', marginBottom: 6 }}>{label}</label>

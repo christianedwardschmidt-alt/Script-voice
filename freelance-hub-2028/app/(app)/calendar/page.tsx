@@ -200,7 +200,7 @@ export default function CalendarPage() {
       </div>
 
       {/* Right panel */}
-      <div style={{ width: 300, background: 'var(--card)', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
+      <div className="cal-event-panel" style={{ width: 300, background: 'var(--card)', borderLeft: '1px solid var(--border)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflowY: 'auto' }}>
 
         {/* Add event form */}
         {showForm && (

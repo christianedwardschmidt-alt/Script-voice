@@ -124,16 +124,16 @@ export default function CommunityPage() {
   const fmtNum = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n)
 
   return (
-    <div style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Community</h1>
         <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Connect, share, and grow with fellow freelancers</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr 260px', gap: 20 }}>
+      <div className="community-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr 260px', gap: 20 }}>
 
         {/* ── Left panel ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="community-side" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div className="card" style={{ padding: 18 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 14, fontWeight: 600, fontSize: 14, color: '#1c1917' }}>
               <TrendingUp size={15} color="#16a34a" /> Trending Topics
@@ -340,7 +340,7 @@ export default function CommunityPage() {
         </div>
 
         {/* ── Right panel ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="community-side" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Top Contributor */}
           <div style={{ background: 'linear-gradient(135deg, #16a34a, #22c55e)', borderRadius: 16, padding: 20, color: '#fff' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>

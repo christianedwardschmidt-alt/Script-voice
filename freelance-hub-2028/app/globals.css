@@ -395,6 +395,31 @@ a { text-decoration: none; color: inherit; }
     width: 90vw !important;
     max-width: 100% !important;
   }
+
+  /* ── Two-column forms → single column ────────── */
+  .g-2col { grid-template-columns: 1fr !important; }
+
+  /* ── Education stats: 4-col → 2-col ─────────── */
+  .edu-stats { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── Invoicing KPI row: 3-col → 1-col ────────── */
+  .inv-kpi { grid-template-columns: 1fr !important; }
+
+  /* ── Community: hide sidebars, feed only ─────── */
+  .community-grid { grid-template-columns: 1fr !important; }
+  .community-side  { display: none !important; }
+
+  /* ── AI assistant: hide capabilities panel ───── */
+  .ai-cap-panel { display: none !important; }
+
+  /* ── Calendar: hide event sidebar ────────────── */
+  .cal-event-panel { display: none !important; }
+
+  /* ── Dash "This Week" stats ──────────────────── */
+  .week-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── Invoicing table scroll ──────────────────── */
+  .inv-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
 
 @media (max-width: 767px) {

@@ -130,7 +130,7 @@ export default function BillingPage() {
   }
 
   return (
-    <div style={{ padding: 28, background: 'var(--bg)', minHeight: '100dvh', display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <div className="page-pad" style={{ padding: 28, background: 'var(--bg)', minHeight: '100dvh', display: 'flex', flexDirection: 'column', gap: 18 }}>
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -142,7 +142,7 @@ export default function BillingPage() {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+      <div className="inv-kpi" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
         {[
           { label: 'Total Paid',        value: totals.paid,    Icon: CheckCircle, accent: '#10b981' },
           { label: 'Awaiting Payment',  value: totals.pending, Icon: Clock,       accent: '#d97706' },
@@ -194,7 +194,7 @@ export default function BillingPage() {
             <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 4 }}>Create your first invoice to get started</div>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="inv-table-wrap"><table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg)' }}>
                 {['Invoice', 'Client', 'Project', 'Amount', 'Status', 'Issued', 'Due', ''].map(h => (
@@ -269,7 +269,7 @@ export default function BillingPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
 
