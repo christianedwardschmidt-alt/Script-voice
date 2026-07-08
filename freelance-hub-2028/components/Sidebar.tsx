@@ -357,9 +357,9 @@ export default function Sidebar() {
       >
 
         {/* Logo */}
-        <div style={{ padding: '24px 20px 16px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
+        <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, letterSpacing: '-0.02em' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, letterSpacing: '-0.03em' }}>
               <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
           </Link>
