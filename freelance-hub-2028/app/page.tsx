@@ -61,7 +61,7 @@ export default async function HomePage() {
         }} />
 
         {/* Content */}
-        <div style={{ position: 'relative', maxWidth: 760, margin: '0 auto', padding: '80px 24px' }}>
+        <div style={{ position: 'relative', maxWidth: 860, margin: '0 auto', padding: '80px 24px' }}>
           {/* Eyebrow badge */}
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 32 }}>
             <span style={{
@@ -75,12 +75,12 @@ export default async function HomePage() {
 
           {/* Headline */}
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 72px)',
-            fontWeight: 800, color: 'white', lineHeight: 1.1,
-            letterSpacing: '-0.03em', marginBottom: 24,
-          }}>
-            The Operating System for<br />
-            <span style={{ color: '#16A34A' }}>Independent</span>{' '}Professionals
+            fontFamily: 'var(--font-display)', fontSize: 'clamp(34px, 3.8vw, 52px)',
+            fontWeight: 800, color: 'white', lineHeight: 1.12,
+            letterSpacing: '-0.025em', marginBottom: 24,
+            textWrap: 'balance',
+          } as React.CSSProperties}>
+            The Operating System for <span style={{ color: '#16A34A' }}>Independent</span>{' '}Professionals
           </h1>
 
           {/* Sub */}
