@@ -76,12 +76,11 @@ export default async function HomePage() {
           {/* Headline */}
           <h1 style={{
             fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 6vw, 72px)',
-            fontWeight: 800, color: 'white', lineHeight: 1.05,
+            fontWeight: 800, color: 'white', lineHeight: 1.1,
             letterSpacing: '-0.03em', marginBottom: 24,
           }}>
-            The Operating System for{' '}
-            <span style={{ color: '#16A34A' }}>Independent</span>{' '}
-            Professionals
+            The Operating System for<br />
+            <span style={{ color: '#16A34A' }}>Independent</span>{' '}Professionals
           </h1>
 
           {/* Sub */}
