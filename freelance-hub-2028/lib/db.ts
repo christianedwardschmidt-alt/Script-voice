@@ -2,8 +2,8 @@ import { createClient, type InValue, type Row } from '@libsql/client'
 import { scryptSync, randomBytes } from 'crypto'
 
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL ?? 'file:/tmp/guildwire.db',
-  authToken: process.env.TURSO_AUTH_TOKEN,
+  url: process.env.TURSO_DATABASE_URL || 'file:/tmp/guildwire.db',
+  authToken: process.env.TURSO_AUTH_TOKEN || undefined,
 })
 
 // ── Row conversion ───────────────────────────────────────────────────────────
