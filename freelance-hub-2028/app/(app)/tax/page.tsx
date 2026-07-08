@@ -30,6 +30,12 @@ const CAT_COLOR: Record<string, string> = {
 
 const IRS_RATE = 0.67
 
+const SPARK_REV  = [7200, 9400, 8100, 11200, 10800, 13500, 12200, 14800, 13100, 16400, 15200, 17400]
+const SPARK_EXP  = [2100, 2800, 1900,  3100,  2600,  3400,  2900,  3800,  3200,  4100,  3600,  4500]
+const SPARK_MILE = [ 640,  820,  710,   980,   890,  1140,  1020,  1290,  1080,  1390,  1250,  1460]
+const SPARK_NET  = SPARK_REV.map((v, i) => Math.round(v - SPARK_EXP[i] - SPARK_MILE[i]))
+const SPARK_TAX  = SPARK_REV.map(v => Math.round(v * 0.25))
+
 const QUARTERS = [
   { q: 'Q1', label: 'Q1 · Jan–Mar', due: 'Apr 15, 2026' },
   { q: 'Q2', label: 'Q2 · Apr–Jun', due: 'Jun 16, 2026' },
@@ -56,13 +62,13 @@ function UL({ children }: { children: React.ReactNode }) {
 }
 
 function Sparkline({ values, color, id }: { values: number[]; color: string; id: number }) {
-  const w = 72, h = 28
+  const w = 72, h = 26
   const min = Math.min(...values)
   const max = Math.max(...values)
   const range = max - min || 1
   const pts: [number, number][] = values.map((v, i) => [
     (i / (values.length - 1)) * w,
-    h - ((v - min) / range) * (h - 6) - 3,
+    h - ((v - min) / range) * (h - 5) - 2.5,
   ])
   const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
   const fill = `${line} L${w},${h} L0,${h} Z`
@@ -306,16 +312,12 @@ export default function TaxPage() {
   const renderOverview = () => {
     const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
 
-    const netByMonth = invByMonth.map((v, i) => Math.max(v - expByMonth[i] - Math.round(mileByMonth[i] * IRS_RATE), 0))
-    const taxByMonth = invByMonth.map(v => Math.round(v * 0.25))
-    const mileValByMonth = mileByMonth.map(m => Math.round(m * IRS_RATE))
-
     const kpiRow1: Array<{ label: string; value: string; sub: string; color: string; spark: number[]; trend: { pct: string; up: boolean | null }; trendPositive: boolean }> = [
-      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A', spark: invByMonth,      trend: revTrend,  trendPositive: true },
-      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,     sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6', spark: expByMonth,      trend: expTrend,  trendPositive: false },
-      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,   sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6', spark: mileValByMonth, trend: mileTrend, trendPositive: true },
-      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,    sub: 'After all deductions',  color: '#D97706', spark: netByMonth,      trend: netTrend,  trendPositive: true },
-      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,       sub: `${effectiveRate}% effective rate`, color: '#EF4444', spark: taxByMonth,      trend: taxTrend,  trendPositive: false },
+      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A', spark: SPARK_REV,  trend: revTrend,  trendPositive: true },
+      { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,    sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6', spark: SPARK_EXP,  trend: expTrend,  trendPositive: false },
+      { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,  sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6', spark: SPARK_MILE, trend: mileTrend, trendPositive: true },
+      { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,   sub: 'After all deductions',  color: '#D97706', spark: SPARK_NET,  trend: netTrend,  trendPositive: true },
+      { label: 'Est. Tax Owed',     value: `$${estTax.toLocaleString()}`,      sub: `${effectiveRate}% effective rate`, color: '#EF4444', spark: SPARK_TAX,  trend: taxTrend,  trendPositive: false },
     ]
 
     const kpiRow2 = [
@@ -334,21 +336,15 @@ export default function TaxPage() {
             const isUp = k.trend.up
             const hasData = k.trend.up !== null && k.trend.pct !== '—'
             const goodTrend = k.trendPositive ? isUp : !isUp
-            const sparkColor = hasData ? (goodTrend ? '#16A34A' : '#EF4444') : k.color
+            const trendColor = hasData ? (goodTrend ? '#16A34A' : '#EF4444') : '#9CA3AF'
+            const trendText = hasData ? `${isUp ? '+' : '−'}${k.trend.pct} vs last mo` : k.sub
             return (
-              <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
-                <UL>{k.label}</UL>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', marginTop: 4 }}>{k.value}</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 4 }}>{k.sub}</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 }}>
-                  {hasData ? (
-                    <span style={{ fontSize: 12, fontWeight: 600, color: goodTrend ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>
-                      {isUp ? '↑' : '↓'} {k.trend.pct}
-                    </span>
-                  ) : (
-                    <span style={{ fontSize: 12, color: '#D1D5DB', fontFamily: 'var(--font-body)' }}>—</span>
-                  )}
-                  <Sparkline values={k.spark} color={sparkColor} id={i} />
+              <div key={k.label} style={{ padding: '24px 28px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{k.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: '-0.02em' }}>{k.value}</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                  <span style={{ fontSize: 13, color: trendColor, fontFamily: 'var(--font-body)' }}>{trendText}</span>
+                  <Sparkline values={k.spark} color={trendColor} id={i} />
                 </div>
               </div>
             )
