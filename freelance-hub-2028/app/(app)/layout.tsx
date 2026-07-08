@@ -47,7 +47,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
+        <main style={{ flex: 1, overflow: "auto", background: "var(--bg)", minHeight: 0 }}>{children}</main>
       </div>
 
       <BottomNav />

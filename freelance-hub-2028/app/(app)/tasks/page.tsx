@@ -116,7 +116,7 @@ export default function TasksPage() {
   )
 
   return (
-    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100%' }}>
+    <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Tasks</h1>
@@ -183,7 +183,7 @@ export default function TasksPage() {
                   gap: 12,
                   padding: '16px 20px',
                   borderBottom: i < filtered.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
-                  background: task.checked ? '#fafafa' : '#fff',
+                  background: task.checked ? 'var(--bg)' : 'var(--card)',
                   position: 'relative',
                 }}
               >
