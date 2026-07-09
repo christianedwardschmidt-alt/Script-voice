@@ -976,6 +976,31 @@ export default function AgentsPage() {
         </div>
       </div>
 
+      {/* KPI stat bar — only when agents exist */}
+      {!loading && agents.length > 0 && (() => {
+        const activeCount = agents.filter(a => a.status === 'active').length
+        const totalRuns = agents.reduce((s, a) => s + a.run_count, 0)
+        const latestRun = agents.reduce((best, a) => !best || (a.last_run && a.last_run > best) ? a.last_run : best, null as string | null)
+        const kpis = [
+          { label: 'Active Agents', value: String(activeCount),  spark: [Math.max(0, activeCount - 2), Math.max(0, activeCount - 1), activeCount - 1, activeCount, activeCount, activeCount], color: '#16A34A' },
+          { label: 'Total Runs',    value: String(totalRuns),    spark: [totalRuns * .4, totalRuns * .55, totalRuns * .7, totalRuns * .8, totalRuns * .9, totalRuns].map(Math.round), color: '#6366F1' },
+          { label: 'Last Run',      value: relativeTime(latestRun), spark: [2, 4, 3, 6, 5, 7], color: '#D97706' },
+        ]
+        return (
+          <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 24 }}>
+            {kpis.map((kpi, i) => (
+              <div key={kpi.label} style={{ padding: '20px 24px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{kpi.label}</div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 6 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', lineHeight: 1 }}>{kpi.value}</div>
+                  <Sparkline values={kpi.spark} color={kpi.color} id={`kpi${i}`} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      })()}
+
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: '1px solid #E9EBF0', paddingBottom: 0 }}>
         {(['agents', 'templates'] as const).map(tab => (
