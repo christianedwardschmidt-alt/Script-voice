@@ -22,6 +22,7 @@ const SECTIONS = [
   { href: '/community',    icon: Globe,           label: 'Community' },
   { href: '/calendar',     icon: Calendar,        label: 'Calendar' },
   { href: '/education',    icon: GraduationCap,   label: 'Learn' },
+  { href: '/transcriptions', icon: Mic,            label: 'Transcribe' },
   { href: '/integrations', icon: Plug,            label: 'Apps' },
   { href: '/settings',     icon: Settings,        label: 'Settings' },
 ]
