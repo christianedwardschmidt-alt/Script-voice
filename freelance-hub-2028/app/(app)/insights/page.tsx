@@ -147,7 +147,7 @@ export default function InsightsPage() {
       </div>
 
       {/* KPI bar — matches dashboard style exactly */}
-      <div style={{
+      <div className="g-4col kpi-bar" style={{
         background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)',
         display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
         marginBottom: 20,

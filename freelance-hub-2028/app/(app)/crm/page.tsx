@@ -170,7 +170,7 @@ export default function CRMPage() {
       </div>
 
       {/* Stats bar — matching dashboard layout */}
-      <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', marginBottom: 20 }}>
+      <div className="g-4col kpi-bar" style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', marginBottom: 20 }}>
         {stats.map((stat, i) => (
           <div key={stat.label} style={{ padding: '24px 28px', borderRight: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
             <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
@@ -189,7 +189,7 @@ export default function CRMPage() {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE STAGES</div>
           <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{data.length} total clients</div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
+        <div className="g-5col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
           {pipelineStages.map(stage => {
             const stageClients = data.filter(c => c.stage === stage)
             const stageValue = stageClients.reduce((a, c) => a + c.value, 0)

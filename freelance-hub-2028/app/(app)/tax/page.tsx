@@ -331,7 +331,7 @@ export default function TaxPage() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* Row 1 — income & deductions with trend indicators */}
-        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
+        <div className="g-5col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
           {kpiRow1.map((k, i) => {
             const isUp = k.trend.up
             const hasData = k.trend.up !== null && k.trend.pct !== '—'
@@ -352,7 +352,7 @@ export default function TaxPage() {
         </div>
 
         {/* Row 2 — tax & payment metrics */}
-        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
+        <div className="g-5col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(5,1fr)' }}>
           {kpiRow2.map((k, i) => (
             <div key={k.label} style={{ padding: '22px 24px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>
               <UL>{k.label}</UL>
@@ -486,7 +486,7 @@ export default function TaxPage() {
     const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
+        <div className="g-3col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
           {[
             { label: 'Est. Annual Tax', value: `$${estTax.toLocaleString()}`, color: '#EF4444' },
             { label: 'Total Paid',      value: `$${totalPaid.toLocaleString()}`, color: '#16A34A' },
@@ -555,7 +555,7 @@ export default function TaxPage() {
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
+        <div className="g-4col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
           {[
             { label: 'Total Expenses', value: `$${totalExp.toLocaleString()}`, color: '#3B82F6' },
             { label: 'Records', value: `${expenses.length}`, color: '#8B5CF6' },
@@ -623,7 +623,7 @@ export default function TaxPage() {
 
   const renderMileage = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
+      <div className="g-4col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(4,1fr)' }}>
         {[
           { label: 'Total Miles', value: `${totalMiles.toLocaleString(undefined, { maximumFractionDigits: 1 })} mi`, color: '#8B5CF6' },
           { label: 'Trips Logged', value: `${mileage.length}`, color: '#3B82F6' },

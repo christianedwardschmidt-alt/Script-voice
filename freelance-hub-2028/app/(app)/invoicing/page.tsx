@@ -170,7 +170,7 @@ export default function BillingPage() {
       </div>
 
       {/* KPI row — matching dashboard stat bar style */}
-      <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
+      <div className="inv-kpi kpi-bar" style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
         {kpis.map(({ label, value, Icon, accent, spark, trend, up }, i) => (
           <div key={label} style={{ padding: '24px 28px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', borderTop: `2px solid ${accent}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>

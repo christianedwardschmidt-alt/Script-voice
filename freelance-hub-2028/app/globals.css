@@ -343,6 +343,11 @@ h1, h2, h3, h4, h5, h6 {
   .week-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
   .inv-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .clients-grid { grid-template-columns: 1fr !important; }
+  /* KPI stat bar cells: reduce padding and remove stray right-border in 2-col */
+  .kpi-bar > div { padding: 16px 14px !important; }
+  .kpi-bar > div:nth-child(even) { border-right: none !important; }
+  /* Trend text: allow natural wrapping rather than overflow */
+  .kpi-bar > div span { white-space: normal !important; word-break: break-word; }
   .dash-wrap { padding-bottom: 110px !important; }
   .page-pad  { padding-bottom: 110px !important; }
   .page-hdr { flex-direction: column !important; align-items: stretch !important; gap: 14px !important; }
