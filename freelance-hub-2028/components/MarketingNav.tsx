@@ -8,7 +8,7 @@ export default function MarketingNav() {
       <div className="mkt-nav-inner">
         {/* Logo */}
         <Link href="/" className="mkt-logo" style={{ marginLeft: 120 }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em' }}>
             <span style={{ color: 'white' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
           </span>
         </Link>
