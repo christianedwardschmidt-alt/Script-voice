@@ -1,8 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function MarketingNav() {
+  const [hovered, setHovered] = useState(false)
+
   return (
     <nav className="mkt-nav">
       <div className="mkt-nav-inner">
@@ -28,7 +31,31 @@ export default function MarketingNav() {
         {/* Right CTAs */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href="/login" className="mkt-nav-signin">Sign in</Link>
-          <Link href="/signup" className="mkt-nav-cta">Get started</Link>
+          <Link
+            href="/signup"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              height: 44,
+              padding: '0 28px',
+              background: hovered ? '#15803D' : '#16A34A',
+              color: '#fff',
+              borderRadius: 10,
+              fontSize: 15,
+              fontWeight: 600,
+              fontFamily: 'var(--font-body)',
+              letterSpacing: '-0.01em',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+              boxShadow: '0 2px 8px rgba(22,163,74,0.35)',
+              transition: 'background 0.15s',
+            }}
+          >
+            Get started
+          </Link>
         </div>
       </div>
     </nav>
