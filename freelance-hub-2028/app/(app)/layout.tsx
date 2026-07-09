@@ -21,16 +21,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar />
 
       {/* Main content — offset for fixed sidebar */}
-      <div style={{ marginLeft: 240, display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div className="app-main" style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
 
         {/* Top bar */}
-        <header style={{
-          height: 60,
+        <header className="app-header" style={{
           background: "white",
           borderBottom: "1px solid #F3F4F6",
           display: "flex",
           alignItems: "center",
-          padding: "0 32px",
           justifyContent: "space-between",
           position: "sticky",
           top: 0,

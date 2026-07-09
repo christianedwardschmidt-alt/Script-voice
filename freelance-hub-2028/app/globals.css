@@ -298,8 +298,14 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
+/* ─── APP SHELL ──────────────────────────── */
+.app-main    { margin-left: 240px; }
+.app-header  { height: 60px; padding: 0 32px; }
+
 /* ─── MOBILE ─────────────────────────────── */
 @media (max-width: 767px) {
+  .app-main   { margin-left: 0 !important; }
+  .app-header { height: 52px !important; padding: 0 14px !important; }
   .sidebar-aside {
     position: fixed !important;
     left: -240px;
@@ -319,6 +325,8 @@ h1, h2, h3, h4, h5, h6 {
   .sidebar-backdrop.sidebar-open { display: block; }
   .hide-mobile { display: none !important; }
   .search-input { font-size: 15px; }
+  /* hide desktop search bar; keep only hamburger + avatar in header */
+  .global-search-wrap { display: none !important; }
   .dash-wrap { padding: 18px 16px 96px !important; }
   .dash-header { flex-direction: column !important; align-items: flex-start !important; gap: 14px !important; margin-bottom: 18px !important; }
   .dash-header-btns { width: 100%; }

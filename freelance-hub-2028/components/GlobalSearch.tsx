@@ -87,7 +87,7 @@ export default function GlobalSearch() {
   const showDropdown = focused && !!trimmed
 
   return (
-    <div style={{ position: 'relative', flex: 1, maxWidth: 440, margin: '0 24px' }}>
+    <div className="global-search-wrap" style={{ position: 'relative', flex: 1, maxWidth: 440, margin: '0 24px' }}>
       {/* Input */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
