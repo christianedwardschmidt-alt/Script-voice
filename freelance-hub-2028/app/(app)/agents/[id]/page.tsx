@@ -1,12 +1,30 @@
 'use client'
 
-import { use, useEffect, useState, useCallback } from 'react'
+import React, { use, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Play, Settings2, Activity, Timer,
   ToggleLeft, ToggleRight, CheckCircle, XCircle,
   RefreshCw, Zap, TrendingUp,
+  Bot, Cpu, Database, Globe, Layers, Shield, Target,
+  Mail, Bell, Send, Rocket, BarChart2, AlertCircle,
+  DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
+  Mic, CheckSquare, Search, Link, Star, Edit3,
 } from 'lucide-react'
+
+const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
+  Bot, Zap, Cpu, Database, Globe, Layers, Shield, Target,
+  Mail, Bell, Send, Rocket, BarChart2, TrendingUp, Activity,
+  DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
+  Mic, CheckSquare, AlertCircle, RefreshCw, Search, Link, Settings2, Star,
+  Edit3, Play,
+}
+
+function AgentIcon({ icon, size = 20, color }: { icon: string; size?: number; color?: string }) {
+  const Comp = ICON_MAP[icon]
+  if (Comp) return <Comp size={size} color={color} />
+  return <span style={{ fontSize: size * 0.9, lineHeight: 1 }}>{icon}</span>
+}
 
 type AgentRun = {
   id: number
@@ -170,7 +188,9 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 32 }}>{agent.icon}</span>
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AgentIcon icon={agent.icon} size={28} color="#16A34A" />
+            </div>
             <div>
               <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--text-1)' }}>
                 {agent.name}

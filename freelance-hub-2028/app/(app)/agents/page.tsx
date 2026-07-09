@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Plus, Trash2, Check, X, Ellipsis, ChevronDown, ChevronRight,
   ArrowRight, Play, Pause, RefreshCw, Settings2, Activity,
   Bot, Sparkles, Zap, Mail, Bell, Rocket, Send, RotateCcw,
   ToggleLeft, ToggleRight, Timer, TrendingUp, Star,
+  UserPlus, Users, FileText, Award, BarChart2, AlertCircle,
+  DollarSign, CheckSquare, Mic, Calendar, Clock, Cpu,
+  Shield, Layers, Target, Database, Globe, Link, Search, Edit3,
 } from 'lucide-react'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -43,15 +46,15 @@ type ViewType = 'home' | 'template-setup' | 'custom-builder'
 // ── Static data ───────────────────────────────────────────────────────────────
 
 const TEMPLATES = [
-  { id: 'followup-email',      name: 'Follow-up Email Agent',        desc: "Automatically sends a follow-up email to prospects who haven't responded in X days", icon: '✉️', category: 'COMMUNICATION', popular: true, color: '#16A34A', bg: 'rgba(22,163,74,0.1)', defaultName: 'Follow-up Email Agent', defaultIcon: '✉️' },
-  { id: 'invoice-reminder',    name: 'Invoice Reminder Agent',       desc: 'Sends polite payment reminders when invoices are overdue by X days', icon: '🔔', category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)', defaultName: 'Invoice Reminder', defaultIcon: '🔔' },
-  { id: 'new-client-welcome',  name: 'New Client Welcome Agent',     desc: 'Sends a personalized welcome email when you add a new client to your CRM', icon: '🌟', category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)', defaultName: 'New Client Welcome', defaultIcon: '🌟' },
-  { id: 'project-kickoff',     name: 'Project Kickoff Agent',        desc: 'Sends a project kickoff message with next steps when a proposal is accepted', icon: '🚀', category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)', defaultName: 'Project Kickoff Agent', defaultIcon: '🚀' },
-  { id: 'proposal-followup',   name: 'Proposal Follow-up Agent',     desc: 'Follows up on sent proposals after X days if no response', icon: '📄', category: 'PROPOSALS', popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)', defaultName: 'Proposal Follow-up', defaultIcon: '📄' },
-  { id: 'proposal-won',        name: 'Proposal Won Celebration',     desc: 'Sends a warm congratulations to yourself and a thank you to the client when a proposal is marked Won', icon: '🏆', category: 'PROPOSALS', popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)', defaultName: 'Proposal Won Agent', defaultIcon: '🏆' },
-  { id: 'weekly-revenue',      name: 'Weekly Revenue Report Agent',  desc: 'Sends you a weekly summary of revenue, outstanding invoices, and upcoming payments every Monday morning', icon: '📊', category: 'FINANCE', popular: false, color: '#D97706', bg: 'rgba(217,119,6,0.1)', defaultName: 'Weekly Revenue Report', defaultIcon: '📊' },
-  { id: 'low-invoice-alert',   name: 'Low Invoice Alert Agent',      desc: 'Alerts you when you have fewer than X active invoices — your pipeline reminder', icon: '⚠️', category: 'FINANCE', popular: false, color: '#D97706', bg: 'rgba(217,119,6,0.1)', defaultName: 'Low Invoice Alert', defaultIcon: '⚠️' },
-  { id: 'community-welcome',   name: 'New Member Welcome Agent',     desc: 'Welcomes new GuildWire community members with a personal message when they join', icon: '🤝', category: 'COMMUNITY', popular: false, color: '#0EA5E9', bg: 'rgba(14,165,233,0.1)', defaultName: 'Community Welcome', defaultIcon: '🤝' },
+  { id: 'followup-email',      name: 'Follow-up Email Agent',        desc: "Automatically sends a follow-up email to prospects who haven't responded in X days", icon: 'Mail',         category: 'COMMUNICATION', popular: true,  color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Follow-up Email Agent', defaultIcon: 'Mail' },
+  { id: 'invoice-reminder',    name: 'Invoice Reminder Agent',       desc: 'Sends polite payment reminders when invoices are overdue by X days',                icon: 'Bell',         category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Invoice Reminder',      defaultIcon: 'Bell' },
+  { id: 'new-client-welcome',  name: 'New Client Welcome Agent',     desc: 'Sends a personalized welcome email when you add a new client to your CRM',          icon: 'UserPlus',     category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'New Client Welcome',    defaultIcon: 'UserPlus' },
+  { id: 'project-kickoff',     name: 'Project Kickoff Agent',        desc: 'Sends a project kickoff message with next steps when a proposal is accepted',        icon: 'Rocket',       category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Project Kickoff Agent', defaultIcon: 'Rocket' },
+  { id: 'proposal-followup',   name: 'Proposal Follow-up Agent',     desc: 'Follows up on sent proposals after X days if no response',                          icon: 'FileText',     category: 'PROPOSALS',     popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)',  defaultName: 'Proposal Follow-up',    defaultIcon: 'FileText' },
+  { id: 'proposal-won',        name: 'Proposal Won Celebration',     desc: 'Sends a warm congratulations to yourself and a thank you to the client when a proposal is marked Won', icon: 'Award', category: 'PROPOSALS', popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)', defaultName: 'Proposal Won Agent', defaultIcon: 'Award' },
+  { id: 'weekly-revenue',      name: 'Weekly Revenue Report Agent',  desc: 'Sends you a weekly summary of revenue, outstanding invoices, and upcoming payments every Monday morning', icon: 'BarChart2', category: 'FINANCE', popular: false, color: '#D97706', bg: 'rgba(217,119,6,0.1)', defaultName: 'Weekly Revenue Report', defaultIcon: 'BarChart2' },
+  { id: 'low-invoice-alert',   name: 'Low Invoice Alert Agent',      desc: 'Alerts you when you have fewer than X active invoices — your pipeline reminder',     icon: 'AlertCircle',  category: 'FINANCE',       popular: false, color: '#D97706', bg: 'rgba(217,119,6,0.1)',   defaultName: 'Low Invoice Alert',     defaultIcon: 'AlertCircle' },
+  { id: 'community-welcome',   name: 'New Member Welcome Agent',     desc: 'Welcomes new GuildWire community members with a personal message when they join',    icon: 'Users',        category: 'COMMUNITY',     popular: false, color: '#0EA5E9', bg: 'rgba(14,165,233,0.1)', defaultName: 'Community Welcome',     defaultIcon: 'Users' },
 ]
 
 type FieldType = 'number' | 'select' | 'textarea' | 'text' | 'time'
@@ -70,14 +73,14 @@ const TEMPLATE_FIELDS: Record<string, TemplateField[]> = {
 }
 
 const TRIGGER_OPTIONS = [
-  { value: 'invoice-paid',       label: 'When an invoice is paid',                   emoji: '💰' },
-  { value: 'invoice-overdue',    label: 'When an invoice becomes overdue',             emoji: '⚠️' },
-  { value: 'new-client',         label: 'When a new client is added',                  emoji: '👤' },
-  { value: 'proposal-sent',      label: 'When a proposal is sent',                     emoji: '📄' },
-  { value: 'proposal-accepted',  label: 'When a proposal is accepted or rejected',     emoji: '✅' },
-  { value: 'schedule',           label: 'On a schedule (daily / weekly / monthly)',    emoji: '📅' },
-  { value: 'transcription-done', label: 'When a transcription is completed',           emoji: '🎙️' },
-  { value: 'manual',             label: 'Manually (run on demand)',                    emoji: '▶️' },
+  { value: 'invoice-paid',       label: 'When an invoice is paid',                   icon: 'DollarSign'  },
+  { value: 'invoice-overdue',    label: 'When an invoice becomes overdue',            icon: 'AlertCircle' },
+  { value: 'new-client',         label: 'When a new client is added',                 icon: 'UserPlus'    },
+  { value: 'proposal-sent',      label: 'When a proposal is sent',                    icon: 'Send'        },
+  { value: 'proposal-accepted',  label: 'When a proposal is accepted or rejected',    icon: 'CheckSquare' },
+  { value: 'schedule',           label: 'On a schedule (daily / weekly / monthly)',   icon: 'Calendar'    },
+  { value: 'transcription-done', label: 'When a transcription is completed',          icon: 'Mic'         },
+  { value: 'manual',             label: 'Manually (run on demand)',                   icon: 'Play'        },
 ]
 
 const CONDITION_TYPES = [
@@ -87,16 +90,35 @@ const CONDITION_TYPES = [
 ]
 
 const ACTION_TYPES = [
-  { value: 'send-email',     label: 'Send an email',              emoji: '📧' },
-  { value: 'notify-me',      label: 'Send me a notification',     emoji: '🔔' },
-  { value: 'create-task',    label: 'Create a task in CRM',       emoji: '✅' },
-  { value: 'add-note',       label: 'Add a note to client',       emoji: '📝' },
-  { value: 'update-status',  label: 'Update client status',       emoji: '🔄' },
-  { value: 'generate-report',label: 'Generate a report',          emoji: '📊' },
-  { value: 'wait',           label: 'Wait X days then continue',  emoji: '⏳' },
+  { value: 'send-email',      label: 'Send an email',             icon: 'Mail'       },
+  { value: 'notify-me',       label: 'Send me a notification',    icon: 'Bell'       },
+  { value: 'create-task',     label: 'Create a task in CRM',      icon: 'CheckSquare'},
+  { value: 'add-note',        label: 'Add a note to client',      icon: 'Edit3'      },
+  { value: 'update-status',   label: 'Update client status',      icon: 'RefreshCw'  },
+  { value: 'generate-report', label: 'Generate a report',         icon: 'BarChart2'  },
+  { value: 'wait',            label: 'Wait X days then continue', icon: 'Clock'      },
 ]
 
-const EMOJI_OPTIONS = ['🤖', '⚡', '💌', '📧', '🔔', '💼', '📊', '🎯', '🚀', '✅', '💰', '📋', '🏆', '🤝', '📅', '🌟', '⏰', '🔄', '📱', '💡']
+const ICON_OPTIONS = [
+  'Bot', 'Zap', 'Cpu', 'Database', 'Globe', 'Layers', 'Shield', 'Target',
+  'Mail', 'Bell', 'Send', 'Rocket', 'BarChart2', 'TrendingUp', 'Activity',
+  'DollarSign', 'FileText', 'Award', 'UserPlus', 'Users', 'Calendar', 'Clock',
+  'Mic', 'CheckSquare', 'AlertCircle', 'RefreshCw', 'Search', 'Link', 'Settings2', 'Star',
+]
+
+const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
+  Bot, Zap, Cpu, Database, Globe, Layers, Shield, Target,
+  Mail, Bell, Send, Rocket, BarChart2, TrendingUp, Activity,
+  DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
+  Mic, CheckSquare, AlertCircle, RefreshCw, Search, Link, Settings2, Star,
+  Edit3, Play,
+}
+
+function AgentIcon({ icon, size = 20, color }: { icon: string; size?: number; color?: string }) {
+  const Comp = ICON_MAP[icon]
+  if (Comp) return <Comp size={size} color={color} />
+  return <span style={{ fontSize: size * 0.9, lineHeight: 1 }}>{icon}</span>
+}
 
 function Sparkline({ values, color, id }: { values: number[]; color: string; id: string }) {
   const w = 68, h = 24
@@ -251,7 +273,7 @@ export default function AgentsPage() {
   const [setupScheduleTime, setSetupScheduleTime] = useState('08:00')
   const [setupScheduleDay, setSetupScheduleDay] = useState('Monday')
   const [agentName, setAgentName] = useState('')
-  const [agentIcon, setAgentIcon] = useState('🤖')
+  const [agentIcon, setAgentIcon] = useState('Bot')
   const [showPreview, setShowPreview] = useState(false)
   const [showTestRun, setShowTestRun] = useState(false)
   const [testRunning, setTestRunning] = useState(false)
@@ -263,7 +285,7 @@ export default function AgentsPage() {
   const [builderActions, setBuilderActions] = useState<BuilderAction[]>([])
   const [selectedActionIdx, setSelectedActionIdx] = useState<number | null>(null)
   const [builderName, setBuilderName] = useState('')
-  const [builderIcon, setBuilderIcon] = useState('⚡')
+  const [builderIcon, setBuilderIcon] = useState('Bot')
   const [aiEmailLoading, setAiEmailLoading] = useState(false)
   const [emailSubject, setEmailSubject] = useState('')
   const [emailBody, setEmailBody] = useState('')
@@ -449,15 +471,18 @@ export default function AgentsPage() {
         <div style={{ padding: '16px 28px 40px' }}>
           {/* Agent name + icon row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-            <div style={{ position: 'relative' }}>
-              <span style={{ fontSize: 32 }}>{builderIcon}</span>
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <AgentIcon icon={builderIcon} size={26} color="#16A34A" />
             </div>
             <div>
               <input value={builderName} onChange={e => setBuilderName(e.target.value)} placeholder="Name your agent…"
                 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#111827', border: 'none', outline: 'none', background: 'transparent', letterSpacing: '-0.02em' }} />
-              <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-                {EMOJI_OPTIONS.slice(0, 10).map(e => (
-                  <button key={e} onClick={() => setBuilderIcon(e)} style={{ fontSize: 18, padding: '2px 4px', borderRadius: 6, border: builderIcon === e ? '2px solid #16A34A' : '2px solid transparent', background: 'none', cursor: 'pointer' }}>{e}</button>
+              <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
+                {ICON_OPTIONS.slice(0, 12).map(name => (
+                  <button key={name} onClick={() => setBuilderIcon(name)}
+                    style={{ width: 30, height: 30, borderRadius: 8, border: builderIcon === name ? '2px solid #16A34A' : '2px solid transparent', background: builderIcon === name ? 'rgba(22,163,74,0.08)' : '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
+                    <AgentIcon icon={name} size={15} color={builderIcon === name ? '#16A34A' : '#6B7280'} />
+                  </button>
                 ))}
               </div>
             </div>
@@ -481,7 +506,7 @@ export default function AgentsPage() {
                   <button key={t.value} onClick={() => setBuilderTrigger(t.value)}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10, border: builderTrigger === t.value ? '1.5px solid #16A34A' : '1.5px solid #F3F4F6', background: builderTrigger === t.value ? 'rgba(22,163,74,0.06)' : '#F8FAFC', cursor: 'pointer', textAlign: 'left', transition: 'all 0.12s' }}
                   >
-                    <span style={{ fontSize: 16, width: 20, flexShrink: 0 }}>{t.emoji}</span>
+                    <span style={{ width: 20, flexShrink: 0, display: 'flex' }}><AgentIcon icon={t.icon} size={15} color={builderTrigger === t.value ? '#16A34A' : '#6B7280'} /></span>
                     <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.3 }}>{t.label}</span>
                     {builderTrigger === t.value && <Check size={13} color="#16A34A" style={{ marginLeft: 'auto', flexShrink: 0 }} />}
                   </button>
@@ -577,7 +602,7 @@ export default function AgentsPage() {
                     <div key={action.id} className="act-row" style={{ position: 'relative' }}>
                       <button onClick={() => setSelectedActionIdx(idx === selectedActionIdx ? null : idx)}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10, border: selectedActionIdx === idx ? '1.5px solid #0EA5E9' : '1.5px solid #E9EBF0', background: selectedActionIdx === idx ? 'rgba(14,165,233,0.06)' : '#F8FAFC', cursor: 'pointer', textAlign: 'left' }}>
-                        <span style={{ fontSize: 16 }}>{at?.emoji || '⚙️'}</span>
+                        <span style={{ display: 'flex' }}><AgentIcon icon={at?.icon || 'Settings2'} size={15} color="#6B7280" /></span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {action.type ? (
                             <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)' }}>{at?.label || action.type}</span>
@@ -618,7 +643,7 @@ export default function AgentsPage() {
                   }}
                     className="action-chip"
                     style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: selectedAction?.type === at.value ? '1.5px solid #16A34A' : '1.5px solid #E9EBF0', background: selectedAction?.type === at.value ? 'rgba(22,163,74,0.07)' : '#F8FAFC', cursor: 'pointer', fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', transition: 'all 0.12s' }}>
-                    <span>{at.emoji}</span> {at.label}
+                    <AgentIcon icon={at.icon} size={13} color={selectedAction?.type === at.value ? '#16A34A' : '#6B7280'} /> {at.label}
                   </button>
                 ))}
               </div>
@@ -750,7 +775,7 @@ export default function AgentsPage() {
         <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 28px 60px' }}>
           {/* Template header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flexShrink: 0 }}>{setupTemplate.icon}</div>
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1px solid ${cc.accent}20` }}><AgentIcon icon={setupTemplate.icon} size={26} color={cc.accent} /></div>
             <div>
               <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#111827', margin: 0 }}>{setupTemplate.name}</h1>
               <p style={{ fontSize: 13, color: '#6B7280', margin: '4px 0 0', fontFamily: 'var(--font-body)' }}>{setupTemplate.desc}</p>
@@ -927,10 +952,10 @@ export default function AgentsPage() {
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 8, fontFamily: 'var(--font-body)' }}>Choose an icon</label>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {EMOJI_OPTIONS.map(e => (
-                      <button key={e} onClick={() => setAgentIcon(e)}
-                        style={{ width: 40, height: 40, borderRadius: 10, border: agentIcon === e ? `2px solid ${cc.accent}` : '2px solid #E5E7EB', background: agentIcon === e ? cc.bg : '#F8FAFC', fontSize: 20, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
-                        {e}
+                    {ICON_OPTIONS.map(name => (
+                      <button key={name} onClick={() => setAgentIcon(name)}
+                        style={{ width: 40, height: 40, borderRadius: 10, border: agentIcon === name ? `2px solid ${cc.accent}` : '2px solid #E5E7EB', background: agentIcon === name ? cc.bg : '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
+                        <AgentIcon icon={name} size={18} color={agentIcon === name ? cc.accent : '#9CA3AF'} />
                       </button>
                     ))}
                   </div>
@@ -978,7 +1003,7 @@ export default function AgentsPage() {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <Sparkles size={14} /> Templates
           </button>
-          <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('⚡'); setView('custom-builder') }}
+          <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setView('custom-builder') }}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 4px rgba(22,163,74,0.35)' }}>
             <Plus size={14} /> New Agent
           </button>
@@ -1030,7 +1055,7 @@ export default function AgentsPage() {
                 <button onClick={() => setActiveTab('templates')} className="btn-primary" style={{ fontSize: 13 }}>
                   <Sparkles size={14} /> Browse Templates
                 </button>
-                <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('⚡'); setView('custom-builder') }} className="btn-outline" style={{ fontSize: 13 }}>
+                <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setView('custom-builder') }} className="btn-outline" style={{ fontSize: 13 }}>
                   <Plus size={14} /> Build Custom Agent
                 </button>
               </div>
@@ -1049,8 +1074,8 @@ export default function AgentsPage() {
                   <div key={agent.id} className="agent-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, position: 'relative', cursor: 'default', transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', borderTop: `3px solid ${isActive ? '#16A34A' : '#E5E7EB'}` }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(22,163,74,0.08)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
-                          {agent.icon}
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(22,163,74,0.08)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <AgentIcon icon={agent.icon} size={22} color={isActive ? '#16A34A' : '#6B7280'} />
                         </div>
                         <div>
                           <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em' }}>{agent.name}</div>
@@ -1143,7 +1168,7 @@ export default function AgentsPage() {
                         <div style={{ position: 'absolute', top: 14, right: 14, fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(22,163,74,0.1)', color: '#15803D', fontWeight: 700, fontFamily: 'var(--font-body)', letterSpacing: '0.04em' }}>POPULAR</div>
                       )}
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                        <div style={{ width: 46, height: 46, borderRadius: 12, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: `1px solid ${cc.accent}20` }}>{t.icon}</div>
+                        <div style={{ width: 46, height: 46, borderRadius: 12, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1px solid ${cc.accent}20` }}><AgentIcon icon={t.icon} size={22} color={cc.accent} /></div>
                         <div style={{ flex: 1, minWidth: 0, paddingRight: t.popular ? 64 : 0 }}>
                           <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', marginBottom: 4 }}>{t.name}</div>
                           <p style={{ fontSize: 12, color: '#6B7280', margin: 0, lineHeight: 1.5, fontFamily: 'var(--font-body)' }}>{t.desc}</p>
