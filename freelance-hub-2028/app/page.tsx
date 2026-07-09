@@ -36,8 +36,8 @@ const css = `
 }
 .lp-hero-ctas { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
 .lp-btn-primary {
-  background: #16A34A; color: #fff; padding: 14px 28px; border-radius: 12px;
-  font-weight: 600; font-size: 15px; display: inline-block; transition: all 0.18s;
+  background: #16A34A; color: #fff; padding: 18px 42px; border-radius: 14px;
+  font-weight: 600; font-size: 17px; display: inline-block; transition: all 0.18s;
   font-family: var(--font-inter); box-shadow: 0 4px 16px rgba(22,163,74,0.35);
   letter-spacing: -0.01em;
 }

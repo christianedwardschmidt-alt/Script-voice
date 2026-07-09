@@ -388,8 +388,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 .mkt-nav-signin:hover { color: white; }
 .mkt-nav-cta {
-  font-size: 14px; font-weight: 600; background: #16A34A; color: white;
-  padding: 9px 20px; border-radius: var(--radius-md);
+  font-size: 15px; font-weight: 600; background: #16A34A; color: white;
+  padding: 11px 26px; border-radius: var(--radius-md);
   box-shadow: var(--shadow-green); transition: all 0.2s ease; text-decoration: none;
 }
 .mkt-nav-cta:hover { background: #15803D; transform: translateY(-1px); }
