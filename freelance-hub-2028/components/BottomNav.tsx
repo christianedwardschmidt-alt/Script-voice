@@ -7,8 +7,8 @@ import {
   LayoutDashboard, CheckSquare, Receipt, Users,
   Briefcase, Calculator, TrendingUp, Bot, Globe,
   Calendar, GraduationCap, Plug, Settings, Users2,
+  Mic, NotebookPen,
 } from 'lucide-react'
-import { Mic } from 'lucide-react'
 
 const SECTIONS = [
   { href: '/dashboard',    icon: LayoutDashboard, label: 'Home' },
@@ -22,6 +22,7 @@ const SECTIONS = [
   { href: '/community',    icon: Globe,           label: 'Community' },
   { href: '/calendar',     icon: Calendar,        label: 'Calendar' },
   { href: '/education',    icon: GraduationCap,   label: 'Learn' },
+  { href: '/notes',          icon: NotebookPen,    label: 'Notes' },
   { href: '/transcriptions', icon: Mic,            label: 'Transcribe' },
   { href: '/integrations', icon: Plug,            label: 'Apps' },
   { href: '/settings',     icon: Settings,        label: 'Settings' },

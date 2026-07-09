@@ -229,6 +229,18 @@ function IconMic({ size = 18, color = 'currentColor' }: { size?: number; color?:
   )
 }
 
+function IconNote({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+      <line x1="10" y1="9" x2="8" y2="9"/>
+    </svg>
+  )
+}
+
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
 const NAV_GROUPS = [
@@ -247,6 +259,7 @@ const NAV_GROUPS = [
       { label: 'Analytics',    href: '/insights',     Icon: IconBarChart,  key: undefined },
       { label: 'Calendar',     href: '/calendar',     Icon: IconCalendar,  key: '2' },
       { label: 'Tasks',          href: '/tasks',          Icon: IconCheckSquare, key: '3' },
+      { label: 'Notes',          href: '/notes',          Icon: IconNote,        key: undefined },
       { label: 'Transcriptions', href: '/transcriptions', Icon: IconMic,         key: undefined },
     ],
   },

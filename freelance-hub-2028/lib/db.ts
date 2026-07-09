@@ -285,6 +285,17 @@ async function runInit() {
         user_id INTEGER NOT NULL DEFAULT 0,
         client_name TEXT, status TEXT DEFAULT 'needed'
       )`,
+      `CREATE TABLE IF NOT EXISTS notes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        title TEXT NOT NULL DEFAULT '',
+        content TEXT NOT NULL DEFAULT '',
+        pinned INTEGER DEFAULT 0,
+        linked_client TEXT DEFAULT '',
+        tags TEXT DEFAULT '[]',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
     ],
     'write'
   )
@@ -334,6 +345,7 @@ async function runInit() {
     await seedCourses(demoId)
     await seedIntegrations(demoId)
     await seedPosts(demoId)
+    await seedNotes(demoId)
     await client.execute({
       sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
       args: [demoId, 'Alex Rivera', DEMO_EMAIL, 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding'],
@@ -551,6 +563,18 @@ async function seedActivityLog(userId: number) {
     sql: `INSERT INTO activity_log (user_id,message,createdAt) VALUES (?,?,?)`,
     args: [userId, 'Welcome to GuildWire — your workspace is ready', new Date().toISOString()],
   })
+}
+
+async function seedNotes(userId: number) {
+  const sql = `INSERT INTO notes (user_id,title,content,pinned,linked_client,tags,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)`
+  const now = new Date()
+  const d = (h: number) => new Date(now.getTime() - h * 3600000).toISOString()
+  await client.batch([
+    { sql, args: [userId, 'Project Kickoff — Acme Corp', '## Meeting Notes — Jul 9\n\nAttendees: Emma Thompson, Alex Rivera\n\n### Goals\n- Redesign the core dashboard for Q3 launch\n- Establish a new design system with component library\n- Align on mobile-first approach\n\n### Key decisions\n- Kick off with a 2-week discovery sprint\n- Weekly syncs every Tuesday at 10am\n- Emma is primary stakeholder, final approval sign-off\n\n### Action items\n- [ ] Share brand guidelines by Friday\n- [ ] Set up shared Figma workspace\n- [ ] Draft SOW v2 by next Monday\n\n> "We want something that feels premium but approachable — think Linear meets Stripe." — Emma', 1, 'Acme Corp', JSON.stringify(['Meeting', 'Design', 'Priority']), d(2), d(2)] },
+    { sql, args: [userId, 'TechFlow Discovery Questions', '## Discovery Call Prep — Jul 14\n\nClient: TechFlow Inc (Raj Patel)\nBudget: ~$58k | Timeline: 4 months\n\n### Questions to ask\n1. What does your current analytics stack look like?\n2. Who are the primary users — data analysts or executives?\n3. What are the biggest pain points with your current dashboard?\n4. What integrations are must-haves (Snowflake, BigQuery, dbt)?\n5. Do you have an existing design system or starting from scratch?\n6. What does success look like at the 90-day mark?\n\n### Research notes\n- TechFlow is a Series B SaaS (~200 employees)\n- Their current analytics tool is a legacy Tableau setup\n- Referral from Carlos Mendez — warm intro\n- Recent LinkedIn post about "data democratization" — good angle\n\n### Rate & scope estimate\n- $14,500/month × 4 months = $58,000\n- Includes: discovery, design system, 3 dashboard views, handoff docs', 0, 'TechFlow Inc', JSON.stringify(['Discovery', 'SaaS', 'Prep']), d(18), d(5)] },
+    { sql, args: [userId, 'Q3 Goals & Focus Areas', '# Q3 2026 — Personal Goals\n\n## Revenue target: $48,000\n\nCurrent pipeline:\n- Acme Corp retainer: $8,400/mo ✓\n- DataSync v2: $9,800 (due Aug)\n- TechFlow (if closes): $14,500/mo\n- NovaBuild Phase 2: $6,200\n\n## Focus areas\n\n### 1. Niche deeper into SaaS dashboards\nStop taking brand identity work. Every hour on brand is an hour not on the $150/hr dashboard work.\n\n### 2. Productize the discovery process\nCreate a repeatable 2-week discovery sprint I can sell for $4,500. Reduces scope creep massively.\n\n### 3. Raise retainer rate to $9,500/mo\nCurrent: $8,400 with Acme. Renewal is in September — perfect time.\n\n## Non-negotiables\n- No calls before 10am\n- Friday afternoons are protected (portfolio + learning)\n- 3 weeks vacation in Q4', 1, '', JSON.stringify(['Goals', 'Personal', 'Q3']), d(72), d(24)] },
+    { sql, args: [userId, 'Invoice Follow-up Scripts', '## Client Communication Templates\n\nUse these when invoices go past due.\n\n---\n\n### 3 days overdue — friendly\n\nSubject: Quick check-in on INV-XXX\n\nHi [Name], just wanted to make sure INV-XXX ($X,XXX) landed in the right place — payment was due [date]. Let me know if you need anything from my end. Happy to resend if needed!\n\n---\n\n### 10 days overdue — firm\n\nSubject: Following up on overdue invoice\n\nHi [Name], I wanted to follow up on INV-XXX ($X,XXX) which is now 10 days past due. Could you let me know the expected payment date? I\'d appreciate getting this sorted.\n\n---\n\n### Notes\n- Always CC yourself\n- Never apologize for following up — it\'s a business transaction\n- If no response after 2 follow-ups, call them directly', 0, '', JSON.stringify(['Templates', 'Finance']), d(96), d(96)] },
+  ], 'write')
 }
 
 async function seedCalendarEvents(userId: number) {
