@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, Code, Globe } from 'lucide-react'
+import { Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator, Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, Code, Globe, NotebookPen, Zap } from 'lucide-react'
 
 interface Action {
   name: string
@@ -19,24 +19,27 @@ interface Message {
 }
 
 const suggestions = [
-  { icon: FileText,    label: 'Add a task',        prompt: 'Add a high-priority task: finish the dashboard mockups by Friday for Tech Trophey.' },
-  { icon: DollarSign, label: 'Draft an invoice',   prompt: 'Draft an invoice for Hencewood Digital for $4,500 — API integration project, due in 14 days.' },
-  { icon: Users,      label: 'Find a job',         prompt: 'Find me React or Next.js contract jobs in my job board.' },
-  { icon: Calculator, label: 'Schedule a meeting', prompt: 'Schedule a kickoff call with NovaBuild for tomorrow at 10am.' },
+  { icon: FileText,     label: 'Add a task',          prompt: 'Add a high-priority task: finish the dashboard mockups by Friday for Tech Trophey.' },
+  { icon: DollarSign,  label: 'Draft an invoice',    prompt: 'Draft an invoice for Hencewood Digital for $4,500 — API integration project, due in 14 days.' },
+  { icon: NotebookPen, label: 'Turn notes to tasks',  prompt: 'Read my notes and turn any action items or to-dos into tasks.' },
+  { icon: Calculator,  label: 'Schedule a meeting',  prompt: 'Schedule a kickoff call with NovaBuild for tomorrow at 10am.' },
 ]
 
 const CAPABILITIES = [
-  { icon: FileText,    label: 'Create tasks',    color: '#16A34A' },
-  { icon: DollarSign, label: 'Draft invoices',   color: '#10B981' },
-  { icon: Users,      label: 'Add clients',      color: '#D97706' },
-  { icon: Calculator, label: 'Schedule events',  color: '#6366F1' },
-  { icon: Code,       label: 'Search jobs',      color: '#06B6D4' },
-  { icon: Globe,      label: 'Add CRM leads',    color: '#9CA3AF' },
+  { icon: FileText,     label: 'Create tasks',       color: '#16A34A' },
+  { icon: DollarSign,  label: 'Draft invoices',      color: '#10B981' },
+  { icon: Users,       label: 'Add clients',         color: '#D97706' },
+  { icon: Calculator,  label: 'Schedule events',     color: '#6366F1' },
+  { icon: NotebookPen, label: 'Notes → Tasks',       color: '#8B5CF6' },
+  { icon: Code,        label: 'Search jobs',         color: '#06B6D4' },
+  { icon: Globe,       label: 'Add CRM leads',       color: '#9CA3AF' },
+  { icon: Zap,         label: 'Run agents',          color: '#F59E0B' },
 ]
 
 const ACTION_LABELS: Record<string, string> = {
   create_task: 'Task', draft_invoice: 'Invoice', add_client: 'Client',
   schedule_event: 'Event', search_jobs: 'Jobs', add_crm_contact: 'CRM', navigate_to: 'Nav',
+  read_notes: 'Notes', convert_note_to_tasks: 'Notes → Tasks', create_note: 'Note',
 }
 
 function AIAssistantInner() {

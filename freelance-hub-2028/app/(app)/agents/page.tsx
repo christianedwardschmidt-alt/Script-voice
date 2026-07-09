@@ -98,6 +98,32 @@ const ACTION_TYPES = [
 
 const EMOJI_OPTIONS = ['🤖', '⚡', '💌', '📧', '🔔', '💼', '📊', '🎯', '🚀', '✅', '💰', '📋', '🏆', '🤝', '📅', '🌟', '⏰', '🔄', '📱', '💡']
 
+function Sparkline({ values, color, id }: { values: number[]; color: string; id: string }) {
+  const w = 68, h = 24
+  const min = Math.min(...values), max = Math.max(...values)
+  const range = max - min || 1
+  const pts: [number, number][] = values.map((v, i) => [
+    (i / (values.length - 1)) * w,
+    h - ((v - min) / range) * (h - 4) - 2,
+  ])
+  const line = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
+  const fill = `${line} L${w},${h} L0,${h} Z`
+  const [lx, ly] = pts[pts.length - 1]
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', flexShrink: 0 }}>
+      <defs>
+        <linearGradient id={`asg${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={fill} fill={`url(#asg${id})`} />
+      <path d={line} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={lx.toFixed(1)} cy={ly.toFixed(1)} r={2.5} fill={color} />
+    </svg>
+  )
+}
+
 const VARIABLES = ['{{client_name}}', '{{invoice_amount}}', '{{due_date}}', '{{my_name}}', '{{company_name}}', '{{invoice_id}}']
 
 // ── Helper functions ──────────────────────────────────────────────────────────
@@ -932,10 +958,22 @@ export default function AgentsPage() {
     <div className="page-pad" style={{ maxWidth: 1100, margin: '0 auto' }}>
       <style>{`@keyframes ag-fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.ag-fade{animation:ag-fade 0.18s ease}@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}.agent-card:hover{box-shadow:0 8px 32px rgba(0,0,0,0.1)!important;transform:translateY(-1px)}.tmpl-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.1)!important;transform:translateY(-1px)}.agent-menu-item:hover{background:#F8FAFC!important}`}</style>
 
-      {/* Page title */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700, color: '#111827', margin: '0 0 6px', letterSpacing: '-0.03em' }}>AI Agents</h1>
-        <p style={{ fontSize: 15, color: '#6B7280', margin: 0, fontFamily: 'var(--font-body)' }}>Automate the repetitive parts of running your business. Build once, run forever.</p>
+      {/* Page header */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, gap: 16 }}>
+        <div>
+          <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700, color: '#111827', margin: '0 0 6px', letterSpacing: '-0.03em' }}>AI Agents</h1>
+          <p style={{ fontSize: 15, color: '#6B7280', margin: 0, fontFamily: 'var(--font-body)' }}>Automate the repetitive parts of running your business. Build once, run forever.</p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+          <button onClick={() => setActiveTab('templates')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <Sparkles size={14} /> Templates
+          </button>
+          <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('⚡'); setView('custom-builder') }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 4px rgba(22,163,74,0.35)' }}>
+            <Plus size={14} /> New Agent
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -977,66 +1015,72 @@ export default function AgentsPage() {
             </div>
           ) : (
             <>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16, gap: 8 }}>
-                <button onClick={() => setActiveTab('templates')} className="btn-outline" style={{ fontSize: 13 }}>
-                  <Sparkles size={14} /> Add from Templates
-                </button>
-                <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('⚡'); setView('custom-builder') }} className="btn-primary" style={{ fontSize: 13 }}>
-                  <Plus size={14} /> Build Custom Agent
-                </button>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
-                {agents.map(agent => (
-                  <div key={agent.id} className="agent-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #E9EBF0', padding: 20, position: 'relative', cursor: 'default', transition: 'all 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: 16 }}>
+                {agents.map(agent => {
+                  const isActive = agent.status === 'active'
+                  const runSpark = [
+                    Math.max(0, agent.run_count - 5), Math.max(0, agent.run_count - 3),
+                    Math.max(0, agent.run_count - 2), Math.max(0, agent.run_count - 1),
+                    agent.run_count, agent.run_count,
+                  ]
+                  return (
+                  <div key={agent.id} className="agent-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, position: 'relative', cursor: 'default', transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', borderTop: `3px solid ${isActive ? '#16A34A' : '#E5E7EB'}` }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontSize: 28 }}>{agent.icon}</span>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(22,163,74,0.08)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+                          {agent.icon}
+                        </div>
                         <div>
-                          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)' }}>{agent.name}</div>
-                          <div style={{ fontSize: 11, color: agent.status === 'active' ? '#16A34A' : '#9CA3AF', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
-                            ● {agent.status === 'active' ? 'Active' : 'Paused'}
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em' }}>{agent.name}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: isActive ? '#16A34A' : '#D1D5DB', display: 'inline-block', flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, color: isActive ? '#16A34A' : '#9CA3AF', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
+                              {isActive ? 'Active' : 'Paused'}
+                            </span>
                           </div>
                         </div>
                       </div>
-                      {/* Status toggle */}
-                      <button onClick={() => toggleStatus(agent)} title={agent.status === 'active' ? 'Pause agent' : 'Activate agent'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                        {agent.status === 'active'
-                          ? <ToggleRight size={26} color="#16A34A" />
-                          : <ToggleLeft size={26} color="#D1D5DB" />}
+                      <button onClick={() => toggleStatus(agent)} title={isActive ? 'Pause agent' : 'Activate agent'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, flexShrink: 0 }}>
+                        {isActive ? <ToggleRight size={26} color="#16A34A" /> : <ToggleLeft size={26} color="#D1D5DB" />}
                       </button>
                     </div>
 
-                    <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 14px', fontFamily: 'var(--font-body)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <p style={{ fontSize: 12, color: '#6B7280', margin: '0 0 14px', fontFamily: 'var(--font-body)', lineHeight: 1.55, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {agent.description}
                     </p>
 
-                    <div style={{ display: 'flex', gap: 14, marginBottom: 14 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-                        <Timer size={12} /> Last run: {relativeTime(agent.last_run)}
+                    {/* Stats row with sparkline */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 14, background: '#F8FAFC', borderRadius: 10, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, padding: '8px 12px', borderRight: '1px solid #F3F4F6' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Runs</div>
+                        <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#111827', lineHeight: 1.1 }}>{agent.run_count}</div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-                        <Activity size={12} /> {agent.run_count} runs
+                      <div style={{ flex: 1, padding: '8px 12px', borderRight: '1px solid #F3F4F6' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Last Run</div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.1, marginTop: 2 }}>{relativeTime(agent.last_run)}</div>
+                      </div>
+                      <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center' }}>
+                        <Sparkline values={runSpark} color={isActive ? '#16A34A' : '#D1D5DB'} id={`a${agent.id}`} />
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => router.push(`/agents/${agent.id}`)}
-                        style={{ flex: 1, padding: '7px 0', borderRadius: 8, border: '1px solid #E5E7EB', background: '#fff', fontSize: 12, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                        style={{ flex: 1, padding: '8px 0', borderRadius: 9, border: '1px solid #E5E7EB', background: '#fff', fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'background 0.12s' }}>
                         View
                       </button>
-                      <button onClick={() => runNow(agent)} disabled={runningId === agent.id || agent.status === 'paused'}
-                        style={{ flex: 1, padding: '7px 0', borderRadius: 8, border: 'none', background: agent.status === 'paused' ? '#F3F4F6' : '#16A34A', color: agent.status === 'paused' ? '#9CA3AF' : '#fff', fontSize: 12, fontWeight: 600, cursor: agent.status === 'paused' ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                      <button onClick={() => runNow(agent)} disabled={runningId === agent.id || !isActive}
+                        style={{ flex: 1, padding: '8px 0', borderRadius: 9, border: 'none', background: !isActive ? '#F3F4F6' : '#16A34A', color: !isActive ? '#9CA3AF' : '#fff', fontSize: 12, fontWeight: 600, cursor: !isActive ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'opacity 0.12s' }}>
                         {runningId === agent.id ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Play size={12} fill="currentColor" />}
                         Run Now
                       </button>
-                      {/* Three-dot menu */}
                       <div style={{ position: 'relative' }}>
                         <button onClick={e => { e.stopPropagation(); setAgentMenuId(agentMenuId === agent.id ? null : agent.id) }}
-                          style={{ padding: '7px 10px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                          style={{ padding: '8px 10px', borderRadius: 9, border: '1px solid #E5E7EB', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                           <Ellipsis size={15} color="#6B7280" />
                         </button>
                         {agentMenuId === agent.id && (
-                          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: '100%', right: 0, marginBottom: 4, background: '#fff', border: '1px solid #E9EBF0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: 150, overflow: 'hidden', zIndex: 50 }}>
+                          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', bottom: '100%', right: 0, marginBottom: 4, background: '#fff', border: '1px solid #E9EBF0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: 155, overflow: 'hidden', zIndex: 50 }}>
                             <button className="agent-menu-item" onClick={() => { router.push(`/agents/${agent.id}`); setAgentMenuId(null) }}
                               style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '9px 14px', border: 'none', background: 'transparent', fontSize: 13, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' }}>
                               <Activity size={13} color="#6B7280" /> View History
@@ -1051,7 +1095,8 @@ export default function AgentsPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </>
           )}
@@ -1071,29 +1116,21 @@ export default function AgentsPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
                   {templates.map(t => (
-                    <div key={t.id} className="tmpl-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #E9EBF0', padding: 20, transition: 'all 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div key={t.id} className="tmpl-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 14, borderLeft: `3px solid ${cc.accent}`, position: 'relative', overflow: 'hidden' }}>
+                      {t.popular && (
+                        <div style={{ position: 'absolute', top: 14, right: 14, fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(22,163,74,0.1)', color: '#15803D', fontWeight: 700, fontFamily: 'var(--font-body)', letterSpacing: '0.04em' }}>POPULAR</div>
+                      )}
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{t.icon}</div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                            <span style={{ fontSize: 14, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)' }}>{t.name}</span>
-                            {t.popular && (
-                              <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 6, background: 'rgba(22,163,74,0.1)', color: '#15803D', fontWeight: 700, fontFamily: 'var(--font-body)', flexShrink: 0 }}>Most Popular</span>
-                            )}
-                          </div>
-                          <p style={{ fontSize: 12, color: '#6B7280', margin: 0, lineHeight: 1.4, fontFamily: 'var(--font-body)' }}>{t.desc}</p>
+                        <div style={{ width: 46, height: 46, borderRadius: 12, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0, border: `1px solid ${cc.accent}20` }}>{t.icon}</div>
+                        <div style={{ flex: 1, minWidth: 0, paddingRight: t.popular ? 64 : 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', marginBottom: 4 }}>{t.name}</div>
+                          <p style={{ fontSize: 12, color: '#6B7280', margin: 0, lineHeight: 1.5, fontFamily: 'var(--font-body)' }}>{t.desc}</p>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <button onClick={() => openTemplateSetup(t)}
-                          style={{ flex: 1, padding: '8px 0', borderRadius: 8, background: cc.accent, color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-                          Use Template
-                        </button>
-                        <button onClick={() => openTemplateSetup(t)}
-                          style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'transparent', color: '#6B7280', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-                          Preview
-                        </button>
-                      </div>
+                      <button onClick={() => openTemplateSetup(t)}
+                        style={{ width: '100%', padding: '9px 0', borderRadius: 9, background: cc.accent, color: '#fff', border: 'none', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                        Use Template <ChevronRight size={13} />
+                      </button>
                     </div>
                   ))}
                 </div>

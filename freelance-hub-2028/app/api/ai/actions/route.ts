@@ -97,6 +97,53 @@ const tools: Anthropic.Tool[] = [
     },
   },
   {
+    name: 'read_notes',
+    description: 'Read the user\'s notes to find relevant content, todos, or information. Use when the user asks about their notes, wants to see note content, or wants to convert notes to tasks.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', description: 'Optional keyword to filter notes by title or content' },
+      },
+      required: [],
+    },
+  },
+  {
+    name: 'convert_note_to_tasks',
+    description: 'Convert bullet points or items from a note into real tasks in the task list. Use when the user says "turn my notes into tasks", "make tasks from my note", "convert this note", or similar. Always call read_notes first to see what notes exist.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        note_title: { type: 'string', description: 'Title of the source note (for the confirmation message)' },
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string', description: 'Task title extracted from the note' },
+              priority: { type: 'string', enum: ['high', 'medium', 'low'], description: 'Inferred priority' },
+            },
+            required: ['title'],
+          },
+          description: 'Array of task items to create — extract actionable items from the note content',
+        },
+      },
+      required: ['items'],
+    },
+  },
+  {
+    name: 'create_note',
+    description: 'Create a new note in the Notes section',
+    input_schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', description: 'Note title' },
+        content: { type: 'string', description: 'Note body content' },
+        tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags' },
+      },
+      required: ['title'],
+    },
+  },
+  {
     name: 'navigate_to',
     description: 'Navigate the user to a specific page in the app. Use when the user asks to go to, open, show, or view a section.',
     input_schema: {
@@ -104,7 +151,7 @@ const tools: Anthropic.Tool[] = [
       properties: {
         page: {
           type: 'string',
-          enum: ['dashboard', 'tasks', 'clients', 'crm', 'invoicing', 'calendar', 'ai-assistant', 'settings', 'profile', 'jobs', 'education', 'integrations', 'tax', 'community', 'contact'],
+          enum: ['dashboard', 'tasks', 'clients', 'crm', 'invoicing', 'calendar', 'ai-assistant', 'settings', 'profile', 'jobs', 'education', 'integrations', 'tax', 'community', 'contact', 'notes', 'agents', 'transcriptions'],
           description: 'The page to navigate to',
         },
       },
@@ -182,12 +229,61 @@ async function executeTool(name: string, input: AnyRecord, userId: number): Prom
     return { summary: `CRM contact added: ${name} at ${company} (${stage})`, data: { id: r.lastInsertRowid, name, company, stage, value } }
   }
 
+  if (name === 'read_notes') {
+    const { search = '' } = input
+    const notes = await queryAll(
+      `SELECT id, title, content, tags, pinned, updated_at FROM notes WHERE user_id = ? ORDER BY pinned DESC, updated_at DESC LIMIT 10`,
+      [userId]
+    ) as AnyRecord[]
+    const filtered = search
+      ? notes.filter(n => n.title?.toLowerCase().includes(search.toLowerCase()) || n.content?.toLowerCase().includes(search.toLowerCase()))
+      : notes
+    const noteList = filtered.map(n => ({
+      id: n.id, title: n.title, preview: String(n.content ?? '').slice(0, 300),
+      tags: (() => { try { return JSON.parse(n.tags ?? '[]') } catch { return [] } })(),
+      pinned: Boolean(n.pinned), updated_at: n.updated_at,
+    }))
+    return {
+      summary: `Found ${noteList.length} note${noteList.length !== 1 ? 's' : ''}${search ? ` matching "${search}"` : ''}`,
+      data: { notes: noteList },
+    }
+  }
+
+  if (name === 'convert_note_to_tasks') {
+    const { items = [], note_title = 'note' } = input
+    const created: string[] = []
+    for (const item of items as AnyRecord[]) {
+      const title = String(item.title ?? '').trim()
+      if (!title) continue
+      await execute(
+        `INSERT INTO tasks (user_id, title, description, priority, status, dueDate, project, integrations, checked) VALUES (?,?,?,?,?,?,?,?,?)`,
+        [userId, title, `From note: ${note_title}`, item.priority ?? 'medium', 'todo', '', '', '[]', 0]
+      )
+      created.push(title)
+    }
+    return {
+      summary: `Created ${created.length} task${created.length !== 1 ? 's' : ''} from "${note_title}"`,
+      data: { tasks: created },
+    }
+  }
+
+  if (name === 'create_note') {
+    const { title, content = '', tags = [] } = input
+    const now = new Date().toISOString()
+    const r = await execute(
+      `INSERT INTO notes (user_id, title, content, pinned, linked_client, tags, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)`,
+      [userId, title, content, 0, '', JSON.stringify(tags), now, now]
+    )
+    return { summary: `Note created: "${title}"`, data: { id: r.lastInsertRowid, title, content } }
+  }
+
   if (name === 'navigate_to') {
     const routes: Record<string, string> = {
       dashboard: '/dashboard', tasks: '/tasks', clients: '/clients', crm: '/crm',
       invoicing: '/invoicing', calendar: '/calendar', 'ai-assistant': '/ai-assistant',
       settings: '/settings', profile: '/profile', jobs: '/jobs', education: '/education',
       integrations: '/integrations', tax: '/tax', community: '/community', contact: '/contact',
+      notes: '/notes', agents: '/agents', transcriptions: '/transcriptions',
     }
     const { page } = input
     const url = routes[page] ?? '/dashboard'
@@ -196,6 +292,7 @@ async function executeTool(name: string, input: AnyRecord, userId: number): Prom
       invoicing: 'Invoicing', calendar: 'Calendar', 'ai-assistant': 'AI Assistant',
       settings: 'Settings', profile: 'Profile', jobs: 'Job Board', education: 'Education',
       integrations: 'Integrations', tax: 'Tax Center', community: 'Community', contact: 'Contact',
+      notes: 'Notes', agents: 'AI Agents', transcriptions: 'Transcriptions',
     }
     return { summary: `Opening ${labels[page] ?? page}`, data: { url, page } }
   }
@@ -209,23 +306,28 @@ export async function POST(req: Request) {
 
   const { messages } = await req.json()
 
-  const [profile, clients, tasks] = await Promise.all([
+  const [profile, clients, tasks, notes] = await Promise.all([
     queryOne(`SELECT displayName, skills, headline FROM profile WHERE user_id = ?`, [user.id]),
     queryAll(`SELECT name, company FROM clients WHERE user_id = ? LIMIT 6`, [user.id]),
     queryAll(`SELECT title, status FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 5`, [user.id]),
+    queryAll(`SELECT id, title, content FROM notes WHERE user_id = ? ORDER BY pinned DESC, updated_at DESC LIMIT 6`, [user.id]),
   ])
 
   const p = profile as AnyRecord | null
   const today = new Date().toISOString().split('T')[0]
+  const notesSummary = (notes as AnyRecord[]).map(n => `"${n.title}"`).join(', ') || 'none'
 
   const systemPrompt = `You are GuildWire AI — an intelligent assistant that both answers questions AND takes real actions inside this freelance workspace.
 
 User: ${p?.displayName ?? user.name} | Skills: ${p?.skills ?? 'Design, Development'}
 Clients: ${(clients as AnyRecord[]).map(c => c.name).join(', ') || 'none yet'}
 Open tasks: ${(tasks as AnyRecord[]).map(t => t.title).join(', ') || 'none'}
+Recent notes: ${notesSummary}
 Today: ${today}
 
 When the user asks you to create, add, schedule, draft, find, or do something concrete — use the available tools to actually do it. After using tools, confirm in 1–2 short sentences what you did. For questions, advice, and drafting text content (emails, proposals), respond directly without using tools.
+
+Notes cross-pollination: When the user asks to "turn notes into tasks", "make a task list from my notes", or similar — call read_notes first to get the note content, then call convert_note_to_tasks with the actionable items extracted. When the user asks "what's in my notes" or "show me my notes" — use read_notes and summarize them. You can also create notes from conversations.
 
 Navigation rule: when the user says "go to", "open", "show", "take me to", or similar for any section — call navigate_to ONCE with the exact destination page. Never use ai-assistant as an intermediate step. Navigate directly to the page the user named.`
 
