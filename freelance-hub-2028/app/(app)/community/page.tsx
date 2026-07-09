@@ -96,7 +96,7 @@ export default function CommunityPage() {
     : postData
 
   return (
-    <div style={{ padding: '40px 32px 52px', minHeight: '100vh', background: '#F8FAFC' }}>
+    <div className="page-pad" style={{ padding: '40px 32px 52px', minHeight: '100vh', background: '#F8FAFC' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
