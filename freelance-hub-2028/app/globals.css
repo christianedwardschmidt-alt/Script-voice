@@ -306,23 +306,9 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 767px) {
   .app-main   { margin-left: 0 !important; }
   .app-header { height: 52px !important; padding: 0 14px !important; }
-  .sidebar-aside {
-    position: fixed !important;
-    left: -240px;
-    top: 0;
-    height: 100dvh;
-    z-index: 200;
-    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .sidebar-aside.sidebar-open {
-    left: 0;
-    box-shadow: 4px 0 32px rgba(0,0,0,0.3);
-  }
-  .sidebar-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5); z-index: 199; display: none;
-  }
-  .sidebar-backdrop.sidebar-open { display: block; }
+  /* hide sidebar + backdrop entirely on mobile — bottom nav handles navigation */
+  .sidebar-aside    { display: none !important; }
+  .sidebar-backdrop { display: none !important; }
   .hide-mobile { display: none !important; }
   .search-input { font-size: 15px; }
   /* hide desktop search bar; keep only hamburger + avatar in header */
