@@ -296,6 +296,32 @@ async function runInit() {
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS agents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        name TEXT NOT NULL DEFAULT '',
+        icon TEXT DEFAULT '🤖',
+        description TEXT DEFAULT '',
+        status TEXT DEFAULT 'active',
+        trigger_type TEXT DEFAULT '',
+        trigger_config TEXT DEFAULT '{}',
+        conditions TEXT DEFAULT '[]',
+        actions TEXT DEFAULT '[]',
+        template_id TEXT DEFAULT '',
+        run_count INTEGER DEFAULT 0,
+        last_run TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS agent_runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        status TEXT DEFAULT 'success',
+        trigger_event TEXT DEFAULT '',
+        action_taken TEXT DEFAULT '',
+        ran_at TEXT NOT NULL
+      )`,
     ],
     'write'
   )
@@ -346,6 +372,7 @@ async function runInit() {
     await seedIntegrations(demoId)
     await seedPosts(demoId)
     await seedNotes(demoId)
+    await seedAgents(demoId)
     await client.execute({
       sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
       args: [demoId, 'Alex Rivera', DEMO_EMAIL, 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding'],
@@ -555,6 +582,40 @@ async function seedTaxDocuments(userId: number) {
     { sql, args: [userId,'2023 Tax Return','Filed','Apr 12','210 KB','Prior Year Returns'] },
     { sql, args: [userId,'W-9 Form (Emma Thompson)','Filed','Mar 1','28 KB','W-9s Collected'] },
     { sql, args: [userId,'Q1 2026 Estimated Payment Receipt','Received','Apr 15','14 KB','Quarterly Payment Receipts'] },
+  ], 'write')
+}
+
+async function seedAgents(userId: number) {
+  const now = new Date()
+  const d = (h: number) => new Date(now.getTime() - h * 3600000).toISOString()
+  const agentSql = `INSERT INTO agents (user_id,name,icon,description,status,trigger_type,trigger_config,conditions,actions,template_id,run_count,last_run,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  const a1 = await client.execute({
+    sql: agentSql,
+    args: [userId,'Follow-up Email Agent','✉️','Sends a follow-up email to prospects who haven\'t responded in 3 days','active','schedule','{"frequency":"daily","time":"09:00"}','[]','[{"type":"send-email","to":"client"}]','followup-email',47,d(2),d(72*3),d(2)],
+  })
+  const a2 = await client.execute({
+    sql: agentSql,
+    args: [userId,'Invoice Reminder','🔔','Sends polite payment reminders when invoices are overdue by 7 days','active','trigger','{"event":"invoice-overdue","days":7}','[]','[{"type":"send-email","to":"client"}]','invoice-reminder',12,d(18),d(72*7),d(18)],
+  })
+  const a3 = await client.execute({
+    sql: agentSql,
+    args: [userId,'Weekly Revenue Report','📊','Sends a weekly revenue summary every Monday at 8am','paused','schedule','{"frequency":"weekly","day":"Monday","time":"08:00"}','[]','[{"type":"send-email","to":"me"}]','weekly-revenue-report',8,d(72*4),d(72*14),d(72*14)],
+  })
+  const id1 = Number(a1.lastInsertRowid)
+  const id2 = Number(a2.lastInsertRowid)
+  const id3 = Number(a3.lastInsertRowid)
+  const runSql = `INSERT INTO agent_runs (agent_id,user_id,status,trigger_event,action_taken,ran_at) VALUES (?,?,?,?,?,?)`
+  await client.batch([
+    { sql: runSql, args: [id1,userId,'success','Daily schedule triggered','Sent follow-up email to Sarah Chen (Acme Corp)',d(2)] },
+    { sql: runSql, args: [id1,userId,'success','Daily schedule triggered','Sent follow-up email to Raj Patel (TechFlow)',d(26)] },
+    { sql: runSql, args: [id1,userId,'failed','Daily schedule triggered','Email delivery failed — invalid address',d(50)] },
+    { sql: runSql, args: [id1,userId,'success','Daily schedule triggered','Sent follow-up email to James Park (Hencewood)',d(74)] },
+    { sql: runSql, args: [id1,userId,'success','Daily schedule triggered','Sent follow-up email to Sophie Laurent (NovaBuild)',d(98)] },
+    { sql: runSql, args: [id2,userId,'success','Invoice INV-088 overdue by 7 days','Sent payment reminder to DataSync ($9,800)',d(18)] },
+    { sql: runSql, args: [id2,userId,'success','Invoice INV-089 overdue by 7 days','Sent payment reminder to NovaBuild ($6,200)',d(42)] },
+    { sql: runSql, args: [id2,userId,'success','Invoice INV-087 overdue by 7 days','Sent payment reminder to Acme Corp ($8,400)',d(66)] },
+    { sql: runSql, args: [id3,userId,'success','Monday 8:00am schedule','Generated and emailed weekly revenue report',d(72*4)] },
+    { sql: runSql, args: [id3,userId,'success','Monday 8:00am schedule','Generated and emailed weekly revenue report',d(72*11)] },
   ], 'write')
 }
 

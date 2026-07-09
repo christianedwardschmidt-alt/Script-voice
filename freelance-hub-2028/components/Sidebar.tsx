@@ -229,6 +229,19 @@ function IconMic({ size = 18, color = 'currentColor' }: { size?: number; color?:
   )
 }
 
+function IconAgents({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="10" rx="2"/>
+      <path d="M12 11V8"/>
+      <circle cx="12" cy="6" r="2"/>
+      <circle cx="8.5" cy="16" r="1"/>
+      <circle cx="15.5" cy="16" r="1"/>
+      <path d="M9 19.5h6"/>
+    </svg>
+  )
+}
+
 function IconNote({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -256,6 +269,7 @@ const NAV_GROUPS = [
     label: 'TOOLS',
     items: [
       { label: 'AI Companion', href: '/ai-assistant', Icon: IconAI,       key: undefined },
+      { label: 'AI Agents',   href: '/agents',        Icon: IconAgents,   key: undefined },
       { label: 'Analytics',    href: '/insights',     Icon: IconBarChart,  key: undefined },
       { label: 'Calendar',     href: '/calendar',     Icon: IconCalendar,  key: '2' },
       { label: 'Tasks',          href: '/tasks',          Icon: IconCheckSquare, key: '3' },
