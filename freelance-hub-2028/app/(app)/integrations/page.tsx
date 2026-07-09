@@ -318,7 +318,7 @@ export default function IntegrationsPage() {
   )
 
   return (
-    <div style={{ padding: '32px', background: 'var(--bg)', minHeight: '100dvh' }}>
+    <div className="page-pad" style={{ padding: '32px', background: 'var(--bg)', minHeight: '100dvh' }}>
 
       {/* Header */}
       <div style={{ marginBottom: 36 }}>
@@ -341,7 +341,7 @@ export default function IntegrationsPage() {
             </p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="g-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {connectedList.map(integ => (
               <div key={integ.id} className="card" style={{ padding: '20px 24px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
                 <IntegIcon icon={integ.icon} color={integ.iconColor} bg={integ.iconBg} border={integ.iconBorder} />
@@ -372,7 +372,7 @@ export default function IntegrationsPage() {
       {/* ── Available ──────────────────────────────────────────────────────────── */}
       <div>
         {sectionLabel('Available Integrations')}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div className="g-3col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {availableList.map(integ => (
             <div key={integ.id} className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
 
