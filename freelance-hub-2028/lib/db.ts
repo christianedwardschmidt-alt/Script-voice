@@ -344,6 +344,7 @@ async function runInit() {
         action_taken TEXT DEFAULT '',
         human_readable_summary TEXT,
         technical_log TEXT,
+        branch_taken TEXT,
         ran_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS marketplace_agents (
@@ -622,6 +623,7 @@ async function runInit() {
     `ALTER TABLE agents ADD COLUMN marketplace_agent_id INTEGER`,
     `ALTER TABLE agents ADD COLUMN cloned_at TEXT`,
     `ALTER TABLE agents ADD COLUMN custom_time_estimate INTEGER DEFAULT 15`,
+    `ALTER TABLE agent_runs ADD COLUMN branch_taken TEXT`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
@@ -921,6 +923,9 @@ async function seedMarketplaceAgents() {
   const d = (days: number) => new Date(now.getTime() - days * 86400000).toISOString()
   const cfg = (icon: string, trigger_type: string, conditions: unknown[], actions: unknown[]) =>
     JSON.stringify({ icon, trigger_type, conditions, actions })
+  const act = (id: string, type: string, config: Record<string, string> = {}) => ({ id, type, config })
+  const rule = (conditionType: string, operator: string, value: string, ifActions: unknown[], elseActions: unknown[]) =>
+    ({ id: 'rule1', type: 'rule', rule: { conditionType, operator, value, ifActions, elseActions } })
 
   const sql = `INSERT INTO marketplace_agents
     (name,slug,description,category,configuration,submitted_by_user_id,submitted_by_profession,clone_count,average_rating,rating_count,approved,featured,created_at,approved_at)
@@ -929,41 +934,62 @@ async function seedMarketplaceAgents() {
   const agents = [
     {
       name: 'Get paid faster',
-      description: 'Sends a payment reminder 3 days before invoice due date.',
+      description: 'Sends a payment reminder 3 days before invoice due date — formal for large invoices, friendly for the rest.',
       category: 'Invoicing',
-      configuration: cfg('Bell', 'schedule', [], [{ type: 'send-email', config: {} }]),
+      configuration: cfg('Bell', 'schedule', [], [
+        rule('invoice-amount', 'gt', '5000',
+          [act('if1', 'send-email', { tone: 'formal', note: 'Includes payment plan option' })],
+          [act('else1', 'send-email', { tone: 'friendly' })]),
+      ]),
       profession: 'Independent Consultant',
       clones: 312, rating: 4.8, ratings: 94, age: 118,
     },
     {
       name: 'Never lose a client to silence',
-      description: 'Flags clients quiet for 30 days and creates a follow-up task.',
+      description: 'Flags clients quiet for 30 days and creates a follow-up task — escalates if it drags past 60.',
       category: 'Client Relations',
-      configuration: cfg('UserPlus', 'schedule', [{ id: 'c1', type: 'inactive-days', value: '30' }], [{ type: 'create-task', config: {} }]),
+      configuration: cfg('UserPlus', 'schedule', [{ id: 'c1', type: 'inactive-days', value: '30' }], [
+        rule('days-since-contact', 'gt', '60',
+          [act('if1', 'notify-me', { urgency: 'high' })],
+          [act('else1', 'create-task', {})]),
+      ]),
       profession: 'Freelance Designer',
       clones: 189, rating: 4.6, ratings: 61, age: 95,
     },
     {
       name: 'Tax-ready every month',
-      description: 'Logs paid invoices to Tax Center on the 1st monthly.',
+      description: 'Logs paid invoices to Tax Center on the 1st monthly — flags you if anything is overdue first.',
       category: 'Tax',
-      configuration: cfg('FileText', 'schedule', [], [{ type: 'generate-report', config: {} }]),
+      configuration: cfg('FileText', 'schedule', [], [
+        rule('invoice-status', 'eq', 'Overdue',
+          [act('if1', 'generate-report', {}), act('if2', 'notify-me', {})],
+          [act('else1', 'generate-report', {})]),
+      ]),
       profession: 'Solo Bookkeeper',
       clones: 247, rating: 4.9, ratings: 88, age: 140,
     },
     {
       name: 'Proposal momentum',
-      description: 'Follows up on proposals viewed but unanswered after 5 days.',
+      description: 'Follows up on viewed-but-unanswered proposals after 5 days, nudges you to check in on the rest.',
       category: 'Proposals',
-      configuration: cfg('Send', 'proposal-sent', [], [{ type: 'send-email', config: {} }, { type: 'notify-me', config: {} }]),
+      configuration: cfg('Send', 'proposal-sent', [], [
+        rule('proposal-status', 'eq', 'Viewed',
+          [act('if1', 'send-email', {})],
+          [act('else1', 'notify-me', {})]),
+      ]),
       profession: 'Freelance Copywriter',
       clones: 156, rating: 4.5, ratings: 47, age: 72,
     },
     {
       name: 'Weekly business pulse',
-      description: "Creates a Monday review task and emails last week's activity summary.",
+      description: "Creates a Monday review task and emails last week's activity summary — flags VIP clients for extra attention.",
       category: 'Productivity',
-      configuration: cfg('BarChart2', 'schedule', [], [{ type: 'create-task', config: {} }, { type: 'send-email', config: {} }]),
+      configuration: cfg('BarChart2', 'schedule', [], [
+        rule('client-tag', 'eq', 'VIP',
+          [act('if1', 'notify-me', {}), act('if2', 'create-task', {})],
+          [act('else1', 'create-task', {})]),
+        act('a2', 'send-email', {}),
+      ]),
       profession: 'Independent Developer',
       clones: 203, rating: 4.7, ratings: 69, age: 103,
     },

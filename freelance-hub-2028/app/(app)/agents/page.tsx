@@ -9,9 +9,11 @@ import {
   ToggleLeft, ToggleRight, Timer, TrendingUp, Star,
   UserPlus, Users, FileText, Award, BarChart2, AlertCircle,
   DollarSign, CheckSquare, Mic, Calendar, Clock, Cpu,
-  Shield, Layers, Target, Database, Globe, Link, Search, Edit3,
+  Shield, Layers, Target, Database, Globe, Link, Search, Edit3, GitBranch,
 } from 'lucide-react'
 import MarketplaceTab, { type MarketplaceAgentConfig } from './MarketplaceTab'
+import RuleEditor, { defaultRuleConfig } from './RuleEditor'
+import { findEmptyIfLaneError, type RuleConfig } from '@/lib/ruleUtils'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -40,6 +42,7 @@ interface BuilderAction {
   id: string
   type: string
   config: Record<string, string>
+  rule?: RuleConfig
 }
 
 type ViewType = 'home' | 'template-setup' | 'custom-builder'
@@ -118,6 +121,7 @@ const ACTION_TYPES = [
   { value: 'update-status',       label: 'Update client status',      icon: 'RefreshCw'  },
   { value: 'generate-report',     label: 'Generate a report',         icon: 'BarChart2'  },
   { value: 'wait',                label: 'Wait X days then continue', icon: 'Clock'      },
+  { value: 'rule',                label: 'Add a rule',                icon: 'GitBranch'  },
 ]
 
 const COLLAB_VARIABLES = ['{{client_name}}', '{{invoice_amount}}', '{{due_date}}', '{{proposal_title}}', '{{agent_name}}']
@@ -134,7 +138,7 @@ const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
   Mail, Bell, Send, Rocket, BarChart2, TrendingUp, Activity,
   DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
   Mic, CheckSquare, AlertCircle, RefreshCw, Search, Link, Settings2, Star,
-  Edit3, Play,
+  Edit3, Play, GitBranch,
 }
 
 function AgentIcon({ icon, size = 20, color }: { icon: string; size?: number; color?: string }) {
@@ -445,6 +449,15 @@ export default function AgentsPage() {
     setBuilderActions(prev => prev.map((a, i) => i === selectedActionIdx ? { ...a, config: { ...a.config, ...patch } } : a))
   }
 
+  function updateActionRule(rule: RuleConfig) {
+    if (selectedActionIdx === null) return
+    setBuilderActions(prev => prev.map((a, i) => i === selectedActionIdx ? { ...a, rule } : a))
+  }
+
+  function handleBlockedNesting() {
+    showToast('Keep it simple — one level of branching keeps your agent reliable and easy to understand.')
+  }
+
   function insertCollabVariable(field: 'message' | 'taskTitle', v: string) {
     if (selectedActionIdx === null) return
     const current = builderActions[selectedActionIdx]?.config[field] || ''
@@ -483,6 +496,11 @@ export default function AgentsPage() {
   async function saveBuilderAgent() {
     if (!builderTrigger || builderActions.length === 0) {
       showToast('Add a trigger and at least one action')
+      return
+    }
+    const ruleError = findEmptyIfLaneError(builderActions)
+    if (ruleError) {
+      showToast(ruleError)
       return
     }
     setSavingBuilder(true)
@@ -680,19 +698,20 @@ export default function AgentsPage() {
                 {builderActions.map((action, idx) => {
                   const at = ACTION_TYPES.find(a => a.value === action.type)
                   const isCollab = action.type === 'notify-collaborator'
-                  const accent = isCollab ? '#7C3AED' : '#0EA5E9'
+                  const isRule = action.type === 'rule'
+                  const accent = isCollab ? '#7C3AED' : isRule ? '#CA8A04' : '#0EA5E9'
                   const selected = selectedActionIdx === idx
                   return (
                     <div key={action.id} className="act-row" style={{ position: 'relative' }}>
                       <button onClick={() => setSelectedActionIdx(idx === selectedActionIdx ? null : idx)}
                         style={{
                           width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10,
-                          border: selected ? `1.5px solid ${accent}` : isCollab ? '1.5px solid rgba(124,58,237,0.3)' : '1.5px solid #E9EBF0',
-                          borderLeft: isCollab ? '3px solid #7C3AED' : undefined,
-                          background: selected ? `${accent}0F` : isCollab ? 'rgba(124,58,237,0.04)' : '#F8FAFC',
+                          border: selected ? `1.5px solid ${accent}` : isCollab ? '1.5px solid rgba(124,58,237,0.3)' : isRule ? '1px solid rgba(202,138,4,0.2)' : '1.5px solid #E9EBF0',
+                          borderLeft: isCollab ? '3px solid #7C3AED' : isRule ? '4px solid #CA8A04' : undefined,
+                          background: selected ? `${accent}0F` : isCollab ? 'rgba(124,58,237,0.04)' : isRule ? 'rgba(202,138,4,0.06)' : '#F8FAFC',
                           cursor: 'pointer', textAlign: 'left',
                         }}>
-                        <span style={{ display: 'flex' }}><AgentIcon icon={at?.icon || 'Settings2'} size={15} color={isCollab ? '#7C3AED' : '#6B7280'} /></span>
+                        <span style={{ display: 'flex' }}><AgentIcon icon={at?.icon || 'Settings2'} size={15} color={isCollab ? '#7C3AED' : isRule ? '#CA8A04' : '#6B7280'} /></span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {action.type ? (
                             <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)' }}>{at?.label || action.type}</span>
@@ -728,7 +747,7 @@ export default function AgentsPage() {
                 {ACTION_TYPES.map(at => (
                   <button key={at.value} onClick={() => {
                     if (selectedActionIdx !== null) {
-                      setBuilderActions(prev => prev.map((a, i) => i === selectedActionIdx ? { ...a, type: at.value, config: {} } : a))
+                      setBuilderActions(prev => prev.map((a, i) => i === selectedActionIdx ? { ...a, type: at.value, config: {}, rule: at.value === 'rule' ? (a.rule || defaultRuleConfig()) : a.rule } : a))
                     }
                   }}
                     className="action-chip"
@@ -737,6 +756,20 @@ export default function AgentsPage() {
                   </button>
                 ))}
               </div>
+
+              {/* Rule (conditional branching) */}
+              {selectedAction?.type === 'rule' && selectedAction.rule && (
+                <div className="ag-fade">
+                  <RuleEditor
+                    rule={selectedAction.rule}
+                    onChange={updateActionRule}
+                    depth={0}
+                    collaborators={collaborators}
+                    collabDocs={collabDocs}
+                    onBlockedNesting={handleBlockedNesting}
+                  />
+                </div>
+              )}
 
               {/* Email composer */}
               {selectedAction?.type === 'send-email' && (

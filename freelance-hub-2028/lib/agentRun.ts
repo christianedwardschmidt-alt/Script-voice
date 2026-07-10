@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { queryAll, queryOne, execute } from '@/lib/db'
+import type { RuleConfig, SimpleAction } from '@/lib/ruleUtils'
 
 const anthropic = new Anthropic()
 
@@ -7,6 +8,7 @@ export interface RunOutcome {
   status: 'success' | 'failed' | 'partial'
   actionTaken: string
   technicalLog: Record<string, unknown>
+  branchTaken?: string | null
 }
 
 export type SimAgent = {
@@ -240,6 +242,170 @@ async function notifyCollaborator(
   }
 }
 
+async function pickMostRecentInvoice(userId: number): Promise<InvoiceRow | null> {
+  const rows = await queryAll<InvoiceRow>(`SELECT * FROM invoices WHERE user_id = ? ORDER BY rowid DESC LIMIT 1`, [userId])
+  return rows[0] ?? null
+}
+
+async function pickMostRecentClient(userId: number): Promise<{ name: string; company: string; tags: string | null; lastContact: string | null } | null> {
+  const rows = await queryAll<{ name: string; company: string; tags: string | null; lastContact: string | null }>(
+    `SELECT name, company, tags, lastContact FROM crm_clients WHERE user_id = ? ORDER BY rowid DESC LIMIT 1`, [userId]
+  )
+  return rows[0] ?? null
+}
+
+async function pickMostRecentProposal(userId: number): Promise<{ title: string; client_name: string; status: string; view_count: number } | null> {
+  const rows = await queryAll<{ title: string; client_name: string; status: string; view_count: number }>(
+    `SELECT title, client_name, status, view_count FROM proposals WHERE user_id = ? ORDER BY rowid DESC LIMIT 1`, [userId]
+  )
+  return rows[0] ?? null
+}
+
+function daysSinceContact(lastContact: string | null): number {
+  if (!lastContact) return 0
+  const d = new Date(lastContact)
+  if (isNaN(d.getTime())) return 0
+  return Math.max(0, Math.round((Date.now() - d.getTime()) / 86400000))
+}
+
+function invoiceStatusLabel(inv: InvoiceRow): string {
+  if (inv.status === 'Paid') return 'Paid'
+  const due = new Date(inv.due)
+  if (!isNaN(due.getTime()) && due.getTime() < Date.now()) return 'Overdue'
+  return 'Pending'
+}
+
+function proposalStatusLabel(status: string, viewCount: number): string {
+  if (status === 'accepted') return 'Accepted'
+  if (status === 'declined') return 'Declined'
+  if (status === 'viewed' || (status === 'sent' && viewCount > 0)) return 'Viewed'
+  if (status === 'sent') return 'Not Viewed'
+  return 'Sent'
+}
+
+async function evaluateCondition(rule: RuleConfig, userId: number): Promise<{ matched: boolean; concreteReason: string }> {
+  switch (rule.conditionType) {
+    case 'invoice-amount': {
+      const inv = await pickMostRecentInvoice(userId)
+      if (!inv) return { matched: false, concreteReason: 'No invoices found to check against your rule.' }
+      const threshold = Number(rule.value || 0)
+      const matched = rule.operator === 'gt' ? inv.amount > threshold : inv.amount < threshold
+      return {
+        matched,
+        concreteReason: `Invoice from ${inv.client} was ${money(inv.amount)} — ${matched ? (rule.operator === 'gt' ? 'above' : 'below') : (rule.operator === 'gt' ? 'not above' : 'not below')} your ${money(threshold)} threshold`,
+      }
+    }
+    case 'days-since-contact': {
+      const c = await pickMostRecentClient(userId)
+      if (!c) return { matched: false, concreteReason: 'No clients found to check against your rule.' }
+      const days = daysSinceContact(c.lastContact)
+      const threshold = Number(rule.value || 0)
+      const matched = rule.operator === 'gt' ? days > threshold : days < threshold
+      return {
+        matched,
+        concreteReason: `${c.name} was last contacted ${days} day${days === 1 ? '' : 's'} ago — ${matched ? '' : 'not '}${rule.operator === 'gt' ? 'more' : 'less'} than your ${threshold}-day threshold`,
+      }
+    }
+    case 'client-tag': {
+      const c = await pickMostRecentClient(userId)
+      if (!c) return { matched: false, concreteReason: 'No clients found to check against your rule.' }
+      let tags: string[] = []
+      try { tags = c.tags ? JSON.parse(c.tags) : [] } catch { tags = [] }
+      const matched = tags.some(t => t.toLowerCase() === (rule.value || '').toLowerCase())
+      return { matched, concreteReason: `${c.name} ${matched ? 'has' : "doesn't have"} the tag "${rule.value}"` }
+    }
+    case 'proposal-status': {
+      const p = await pickMostRecentProposal(userId)
+      if (!p) return { matched: false, concreteReason: 'No proposals found to check against your rule.' }
+      const label = proposalStatusLabel(p.status, p.view_count)
+      const matched = label === rule.value
+      return { matched, concreteReason: `The proposal "${p.title}" for ${p.client_name} is ${label}` }
+    }
+    case 'invoice-status': {
+      const inv = await pickMostRecentInvoice(userId)
+      if (!inv) return { matched: false, concreteReason: 'No invoices found to check against your rule.' }
+      const label = invoiceStatusLabel(inv)
+      const matched = label === rule.value
+      return { matched, concreteReason: `Invoice from ${inv.client} is ${label}` }
+    }
+    case 'day-of-week': {
+      const days = rule.value ? rule.value.split(',').filter(Boolean) : []
+      const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
+      const matched = days.includes(today)
+      return { matched, concreteReason: `Today is ${today}` }
+    }
+    case 'time-of-day': {
+      const [start, end] = (rule.value || '').split('-')
+      const now = new Date()
+      const nowMinutes = now.getHours() * 60 + now.getMinutes()
+      const toMinutes = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
+      const matched = !!start && !!end && nowMinutes >= toMinutes(start) && nowMinutes <= toMinutes(end)
+      const timeLabel = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      return { matched, concreteReason: `It's currently ${timeLabel}` }
+    }
+    default:
+      return { matched: false, concreteReason: 'The rule could not be evaluated.' }
+  }
+}
+
+const ACTION_PAST_TENSE: Record<string, string> = {
+  'send-email': 'sent an email',
+  'notify-me': 'sent yourself a notification',
+  'notify-collaborator': 'notified a collaborator',
+  'create-task': 'created a task',
+  'add-note': 'added a note to the client',
+  'update-status': 'updated the client status',
+  'generate-report': 'generated a report',
+  'wait': 'waited then continued',
+  'rule': 'checked another rule',
+}
+
+async function processActionSequence(
+  actions: SimpleAction[],
+  agent: SimAgent,
+  userId: number,
+  runId: number | undefined
+): Promise<{ descriptions: string[]; steps: Record<string, unknown>[]; branchTaken: string | null }> {
+  const descriptions: string[] = []
+  const steps: Record<string, unknown>[] = []
+  let branchTaken: string | null = null
+
+  for (const action of actions) {
+    if (action.type === 'rule' && action.rule) {
+      const { matched, concreteReason } = await evaluateCondition(action.rule, userId)
+      branchTaken = matched ? 'if' : 'else'
+      const branchActions = (matched ? action.rule.ifActions : action.rule.elseActions) || []
+
+      if (branchActions.length === 0) {
+        descriptions.push(`${concreteReason} — so I did nothing (no actions set for this branch).`)
+      } else {
+        const verbs = branchActions.map(a => ACTION_PAST_TENSE[a.type] || a.type)
+        descriptions.push(`${concreteReason} — so I ${verbs.join(' and ')}.`)
+        for (const na of branchActions) {
+          if (na.type === 'notify-collaborator' && na.config) {
+            const result = await notifyCollaborator(na.config, agent, userId, runId)
+            if (result) steps.push(result.log)
+          }
+        }
+      }
+      steps.push({
+        rule: { condition_type: action.rule.conditionType, operator: action.rule.operator, value: action.rule.value },
+        branch_taken: branchTaken,
+      })
+    } else if (action.type === 'notify-collaborator' && action.config) {
+      const result = await notifyCollaborator(action.config, agent, userId, runId)
+      if (result) {
+        descriptions.push(result.summary)
+        steps.push(result.log)
+      }
+    } else if (action.type) {
+      descriptions.push(ACTION_PAST_TENSE[action.type] ? `I ${ACTION_PAST_TENSE[action.type]}` : `Ran ${action.type}`)
+    }
+  }
+
+  return { descriptions, steps, branchTaken }
+}
+
 export async function simulateAgentRun(agent: SimAgent, userId: number, triggerEvent: string, runId?: number): Promise<RunOutcome> {
   const base = { agent: agent.name, trigger: triggerEvent }
 
@@ -352,18 +518,26 @@ export async function simulateAgentRun(agent: SimAgent, userId: number, triggerE
     }
 
     default: {
-      const actions = (agent.actions || []) as { type?: string; config?: Record<string, string> }[]
-      const collabAction = actions.find(a => a.type === 'notify-collaborator')
+      const actions = (agent.actions || []) as SimpleAction[]
+      const hasRule = actions.some(a => a.type === 'rule' && a.rule)
+      const hasCollaborator = actions.some(a => a.type === 'notify-collaborator')
 
-      if (collabAction) {
-        const result = await notifyCollaborator(collabAction.config || {}, agent, userId, runId)
-        if (result) {
-          return { status: 'success', actionTaken: result.summary, technicalLog: { ...base, ...result.log } }
+      if (hasRule || hasCollaborator) {
+        const { descriptions, steps, branchTaken } = await processActionSequence(actions, agent, userId, runId)
+        if (descriptions.length === 0) {
+          return {
+            status: 'partial',
+            actionTaken: hasRule ? 'Tried to evaluate a rule, but it was missing a collaborator or action to run.' : 'Tried to notify a collaborator, but none was selected for this action.',
+            technicalLog: { ...base, reason: 'incomplete_configuration' },
+            branchTaken,
+          }
         }
+        const involvedCollaborator = steps.some(s => s.involved_collaborator === true)
         return {
-          status: 'partial',
-          actionTaken: 'Tried to notify a collaborator, but none was selected for this action.',
-          technicalLog: { ...base, reason: 'no_collaborator_selected' },
+          status: 'success',
+          actionTaken: descriptions.join(' '),
+          technicalLog: { ...base, steps, ...(involvedCollaborator ? { involved_collaborator: true } : {}) },
+          branchTaken,
         }
       }
 
@@ -378,6 +552,7 @@ export async function simulateAgentRun(agent: SimAgent, userId: number, triggerE
         status,
         actionTaken: c ? `${desc} for ${c.name} (${c.company}).` : `${desc}.`,
         technicalLog: { ...base, actions: agent.actions, client: c },
+        branchTaken: null,
       }
     }
   }

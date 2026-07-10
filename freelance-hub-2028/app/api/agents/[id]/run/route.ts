@@ -50,8 +50,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
 
   const completedAt = new Date().toISOString()
   await execute(
-    `UPDATE agent_runs SET status = ?, action_taken = ?, technical_log = ?, ran_at = ? WHERE id = ?`,
-    [outcome.status, outcome.actionTaken, JSON.stringify(outcome.technicalLog), completedAt, runId]
+    `UPDATE agent_runs SET status = ?, action_taken = ?, technical_log = ?, branch_taken = ?, ran_at = ? WHERE id = ?`,
+    [outcome.status, outcome.actionTaken, JSON.stringify(outcome.technicalLog), outcome.branchTaken ?? null, completedAt, runId]
   )
   await execute(
     `UPDATE agents SET run_count = run_count + 1, last_run = ?, updated_at = ? WHERE id = ? AND user_id = ?`,

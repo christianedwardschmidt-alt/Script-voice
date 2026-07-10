@@ -38,6 +38,10 @@ const CATEGORY_COLORS: Record<string, string> = {
   Community: '#14B8A6',
 }
 
+function hasConditionalLogic(config: MarketplaceAgentConfig): boolean {
+  return Array.isArray(config?.actions) && config.actions.some(a => !!a && typeof a === 'object' && (a as { type?: string }).type === 'rule')
+}
+
 function StarRow({ rating }: { rating: number }) {
   const rounded = Math.round(rating)
   return (
@@ -172,6 +176,7 @@ export default function MarketplaceTab({
         <div className="mkt-grid" style={{ opacity: visible ? 1 : 0, transition: 'opacity 150ms ease' }}>
           {filtered.map(agent => {
             const color = CATEGORY_COLORS[agent.category] ?? '#16A34A'
+            const isSmart = hasConditionalLogic(agent.configuration)
             return (
               <div
                 key={agent.id}
@@ -197,6 +202,16 @@ export default function MarketplaceTab({
                   }}>
                     {agent.category}
                   </span>
+                  {isSmart && (
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 11, fontWeight: 600,
+                      padding: '2px 9px 2px 7px', borderRadius: 20, marginLeft: 6,
+                      background: 'rgba(202,138,4,0.12)', color: '#92650A', fontFamily: 'var(--font-body)',
+                    }}>
+                      <Sparkles size={10} color="#CA8A04" fill="#CA8A04" />
+                      Smart Agent
+                    </span>
+                  )}
                 </div>
 
                 {agent.featured && (
