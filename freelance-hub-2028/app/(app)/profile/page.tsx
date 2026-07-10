@@ -8,6 +8,7 @@ interface Profile {
   email: string
   headline: string
   skills: string
+  years_experience: number
 }
 
 export default function ProfilePage() {
@@ -70,6 +71,23 @@ export default function ProfilePage() {
               />
             </div>
           ))}
+          <div>
+            <label style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+              Years of Independent Experience
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={60}
+              className="search-input"
+              style={{ paddingLeft: 12, fontFamily: 'var(--font-body)', maxWidth: 140 }}
+              value={profile.years_experience ?? 0}
+              onChange={e => setProfile({ ...profile, years_experience: Number(e.target.value) || 0 })}
+            />
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#9CA3AF', marginTop: 6 }}>
+              Helps the AI Companion calibrate how much context to include when explaining its actions.
+            </p>
+          </div>
         </div>
         <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }}>
           {saved && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#16A34A', fontWeight: 500 }}>Saved!</span>}

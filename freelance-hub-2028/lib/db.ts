@@ -240,7 +240,8 @@ async function runInit() {
       )`,
       `CREATE TABLE IF NOT EXISTS profile (
         user_id INTEGER PRIMARY KEY,
-        displayName TEXT, email TEXT, headline TEXT, skills TEXT
+        displayName TEXT, email TEXT, headline TEXT, skills TEXT,
+        years_experience INTEGER DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS settings (
         user_id INTEGER PRIMARY KEY,
@@ -514,6 +515,12 @@ async function runInit() {
         date_received TEXT NOT NULL,
         created_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS why_click_analytics (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        action_type TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )`,
     ],
     'write'
   )
@@ -543,6 +550,7 @@ async function runInit() {
     `ALTER TABLE invoices ADD COLUMN late_fee_waived INTEGER DEFAULT 0`,
     `ALTER TABLE invoices ADD COLUMN recurring_template_id INTEGER`,
     `ALTER TABLE invoices ADD COLUMN awaiting_amount INTEGER DEFAULT 0`,
+    `ALTER TABLE profile ADD COLUMN years_experience INTEGER DEFAULT 0`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 

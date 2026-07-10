@@ -175,6 +175,19 @@ const tools: Anthropic.Tool[] = [
     },
   },
   {
+    name: 'calculate_late_fee',
+    description: 'Look up an overdue invoice and calculate/apply any late fee based on the member\'s late fee settings. Use when the member asks about a late fee, asks you to calculate or apply a late fee, or asks why a fee was added to an invoice.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        invoice_id: { type: 'string', description: 'Exact invoice ID if known, e.g. INV-4-102' },
+        client: { type: 'string', description: 'Client name — used to find their most overdue invoice if invoice_id is not known' },
+        ...confidenceFields,
+      },
+      required: [],
+    },
+  },
+  {
     name: 'navigate_to',
     description: 'Navigate the user to a specific page in the app. Use when the user asks to go to, open, show, or view a section.',
     input_schema: {
@@ -311,6 +324,48 @@ async function executeTool(name: string, input: AnyRecord, userId: number): Prom
     return { summary: `Note created: "${title}"`, data: { id: r.lastInsertRowid, title, content } }
   }
 
+  if (name === 'calculate_late_fee') {
+    const { invoice_id, client } = input
+    let inv: AnyRecord | null = null
+    if (invoice_id) {
+      inv = await queryOne(`SELECT * FROM invoices WHERE id = ? AND user_id = ?`, [invoice_id, userId])
+    } else if (client) {
+      inv = await queryOne(`SELECT * FROM invoices WHERE user_id = ? AND client = ? AND status != 'Paid' ORDER BY due ASC LIMIT 1`, [userId, client])
+    } else {
+      inv = await queryOne(`SELECT * FROM invoices WHERE user_id = ? AND status = 'Overdue' ORDER BY due ASC LIMIT 1`, [userId])
+    }
+    if (!inv) return { summary: 'No matching overdue invoice found.', data: {} }
+
+    const dueDate = new Date(inv.due as string)
+    const daysPastDue = Math.max(0, Math.floor((Date.now() - dueDate.getTime()) / 86400000))
+    const graceDays = Number(inv.late_fee_grace_days ?? 30)
+    const pct = Number(inv.late_fee_percentage ?? 1.5)
+    const amount = Number(inv.amount ?? 0)
+
+    if (!inv.late_fee_enabled) {
+      return {
+        summary: `Late fees aren't enabled on invoice ${inv.id} for ${inv.client}.`,
+        data: { invoiceId: inv.id, client: inv.client, lateFeeEnabled: false },
+      }
+    }
+    if (daysPastDue < graceDays) {
+      return {
+        summary: `Invoice ${inv.id} for ${inv.client} is ${daysPastDue} day${daysPastDue === 1 ? '' : 's'} past due — no late fee yet (grace period is ${graceDays} days).`,
+        data: { invoiceId: inv.id, client: inv.client, originalAmount: amount, dueDate: inv.due, daysPastDue, graceDays, feePercentage: pct, feeAmount: 0 },
+      }
+    }
+
+    const feeAmount = Math.round(amount * (pct / 100) * 100) / 100
+    await execute(`UPDATE invoices SET late_fee_applied = 1, late_fee_amount = ? WHERE id = ? AND user_id = ?`, [feeAmount, inv.id, userId])
+    return {
+      summary: `Late fee applied to invoice ${inv.id} for ${inv.client} — $${feeAmount.toLocaleString()} added (${daysPastDue} days past due)`,
+      data: {
+        invoiceId: inv.id, client: inv.client, originalAmount: amount, dueDate: inv.due,
+        daysPastDue, feePercentage: pct, graceDays, feeAmount, newTotal: Math.round((amount + feeAmount) * 100) / 100,
+      },
+    }
+  }
+
   if (name === 'navigate_to') {
     const routes: Record<string, string> = {
       dashboard: '/dashboard', tasks: '/tasks', clients: '/clients', crm: '/crm',
@@ -382,6 +437,8 @@ When the user asks you to create, add, schedule, draft, find, or do something co
 Notes cross-pollination: When the user asks to "turn notes into tasks", "make a task list from my notes", or similar — call read_notes first to get the note content, then call convert_note_to_tasks with the actionable items extracted. When the user asks "what's in my notes" or "show me my notes" — use read_notes and summarize them. You can also create notes from conversations.
 
 Navigation rule: when the user says "go to", "open", "show", "take me to", or similar for any section — call navigate_to ONCE with the exact destination page. Never use ai-assistant as an intermediate step. Navigate directly to the page the user named.
+
+Late fees: when the user asks about a late fee, asks you to calculate or apply one, or asks why a fee showed up on an invoice — call calculate_late_fee with the invoice_id or client name they mentioned.
 
 CONFIDENCE RULES — apply for every request that could trigger an action tool:
 • confidence "high": all required information was fully explicit in the member's message — client name stated, amounts stated, dates stated. No guessing. Use this for clear, complete requests.

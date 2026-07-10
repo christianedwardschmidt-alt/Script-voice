@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import {
   Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator,
   Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, Code, Globe,
-  NotebookPen, Zap, ChevronDown, ChevronUp,
+  NotebookPen, Zap, ChevronDown, ChevronUp, HelpCircle, X,
 } from 'lucide-react'
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -67,6 +67,7 @@ const ACTION_LABELS: Record<string, string> = {
   create_task: 'Task', draft_invoice: 'Invoice', add_client: 'Client',
   schedule_event: 'Event', search_jobs: 'Jobs', add_crm_contact: 'CRM', navigate_to: 'Nav',
   read_notes: 'Notes', convert_note_to_tasks: 'Notes → Tasks', create_note: 'Note',
+  calculate_late_fee: 'Late Fee',
 }
 
 // ── Confidence Badge ───────────────────────────────────────────────────────
@@ -97,6 +98,101 @@ function ConfidenceBadge({ confidence, needsClarification }: { confidence?: stri
     )
   }
   return null
+}
+
+// ── Why? Explain Mode ──────────────────────────────────────────────────────
+
+function ActionExplain({ action, originalMessage, onAskFocus }: { action: Action; originalMessage: string; onAskFocus: () => void }) {
+  const [expanded, setExpanded] = useState(false)
+  const [hover, setHover] = useState(false)
+  const [explanation, setExplanation] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [panelHeight, setPanelHeight] = useState(0)
+
+  useEffect(() => {
+    if (expanded && contentRef.current) setPanelHeight(contentRef.current.scrollHeight)
+    else setPanelHeight(0)
+  }, [expanded, explanation, loading, error])
+
+  const track = () => {
+    fetch('/api/analytics/why-click', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ actionType: action.name }),
+    }).catch(() => {})
+  }
+
+  const toggle = async () => {
+    track()
+    if (expanded) { setExpanded(false); return }
+    setExpanded(true)
+    if (explanation || loading) return
+    setLoading(true)
+    setError(false)
+    try {
+      const res = await fetch('/api/ai/explain', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actionName: action.name, actionSummary: action.summary,
+          actionData: action.data ?? {}, originalMessage,
+        }),
+      })
+      if (!res.ok) throw new Error('failed')
+      const data = await res.json()
+      setExplanation(data.explanation)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div>
+      <button
+        onClick={toggle}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+          marginTop: 6, fontSize: 12, fontFamily: 'var(--font-body)',
+          color: hover ? '#16A34A' : '#9CA3AF', transition: 'color 0.15s',
+        }}
+      >
+        <HelpCircle size={12} color={hover ? '#16A34A' : '#9CA3AF'} />
+        Why did you do that?
+      </button>
+
+      <div style={{ maxHeight: panelHeight, overflow: 'hidden', transition: 'max-height 200ms ease' }}>
+        <div
+          ref={contentRef}
+          style={{
+            background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A',
+            borderRadius: '0 8px 8px 0', padding: '14px 16px', marginTop: 8, marginLeft: 8,
+            position: 'relative',
+          }}
+        >
+          <button
+            onClick={() => setExpanded(false)}
+            style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', display: 'flex', padding: 2 }}
+          >
+            <X size={13} />
+          </button>
+          <div style={{ paddingRight: 22, fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.75, minHeight: 18 }}>
+            {loading ? 'Thinking…' : error ? "Sorry, I couldn't generate an explanation right now." : explanation}
+          </div>
+          <p
+            onClick={onAskFocus}
+            style={{ fontSize: 12, fontStyle: 'italic', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 10, marginBottom: 0, cursor: 'pointer' }}
+          >
+            Questions? Just ask me.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ── Voice Mode Overlay ─────────────────────────────────────────────────────
@@ -809,7 +905,11 @@ function AIAssistantInner() {
             )}
 
             {/* Message bubbles */}
-            {messages.map(msg => (
+            {messages.map((msg, msgIdx) => {
+            const precedingUserMsg = msg.role === 'assistant'
+              ? [...messages.slice(0, msgIdx)].reverse().find(m => m.role === 'user')?.content ?? ''
+              : ''
+            return (
               <div key={msg.id} style={{
                 display: 'flex', gap: 12,
                 flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
@@ -824,11 +924,14 @@ function AIAssistantInner() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {msg.actions && msg.actions.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {msg.actions.map((a, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 9, background: '#F0FDF4', border: '1px solid #BBF7D0', fontSize: 12 }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: '#15803D', background: '#DCFCE7', padding: '2px 6px', borderRadius: 5, fontFamily: 'var(--font-body)', flexShrink: 0 }}>{ACTION_LABELS[a.name] ?? 'AI'}</span>
-                          <span style={{ color: '#15803D', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
+                        <div key={i}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 9, background: '#F0FDF4', border: '1px solid #BBF7D0', fontSize: 12 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: '#15803D', background: '#DCFCE7', padding: '2px 6px', borderRadius: 5, fontFamily: 'var(--font-body)', flexShrink: 0 }}>{ACTION_LABELS[a.name] ?? 'AI'}</span>
+                            <span style={{ color: '#15803D', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
+                          </div>
+                          <ActionExplain action={a} originalMessage={precedingUserMsg} onAskFocus={() => inputRef.current?.focus()} />
                         </div>
                       ))}
                       <ConfidenceBadge confidence="high" />
@@ -888,7 +991,7 @@ function AIAssistantInner() {
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
 
             {(thinking || greetingLoading) && (
               <div style={{ display: 'flex', gap: 12, maxWidth: '78%' }}>
