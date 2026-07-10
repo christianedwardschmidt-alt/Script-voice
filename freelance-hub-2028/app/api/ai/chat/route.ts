@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const user = await getUser()
   if (!user) return new Response('Unauthorized', { status: 401 })
 
-  const { messages } = await req.json()
+  const { messages, voiceMode } = await req.json()
 
   // Fetch supporting context for instructions; member identity built by buildMemberContext
   const [tasks, invoices, memberContext] = await Promise.all([
@@ -36,6 +36,10 @@ export async function POST(req: Request) {
     .map(i => `• ${i.id}: ${i.client} — $${Number(i.amount).toLocaleString()} (${i.status})`)
     .join('\n') || '(none)'
 
+  const voiceModeInstruction = voiceMode
+    ? `\n\nVOICE MODE: The member is using voice mode. Keep all responses to 2–4 sentences maximum. Be conversational and natural. Avoid lists, bullet points, headers, asterisks, or any formatting that does not translate to spoken audio. Speak as you would in a natural conversation — never as written prose.`
+    : `\n- Format responses clearly: use **Bold Headers** for sections, • bullet points for lists.`
+
   const systemPrompt = `${memberContext}
 
 ---
@@ -53,9 +57,8 @@ Today: ${today}
 Instructions:
 - Be direct, specific, and actionable. Reference this freelancer's actual clients and projects when relevant.
 - When drafting documents (proposals, emails, contracts), write the full professional document, not an outline.
-- Format responses clearly: use **Bold Headers** for sections, • bullet points for lists.
 - For financial questions, give real numbers and calculations.
-- Keep responses focused and practical — no generic filler.`
+- Keep responses focused and practical — no generic filler.${voiceModeInstruction}`
 
   const stream = anthropic.messages.stream({
     model: 'claude-opus-4-8',
