@@ -4,13 +4,14 @@ import React, { use, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Play, Settings2, Activity, Timer,
-  ToggleLeft, ToggleRight, CheckCircle, XCircle,
+  ToggleLeft, ToggleRight,
   RefreshCw, Zap, TrendingUp,
   Bot, Cpu, Database, Globe, Layers, Shield, Target,
   Mail, Bell, Send, Rocket, BarChart2, AlertCircle,
   DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
   Mic, CheckSquare, Search, Link, Star, Edit3,
 } from 'lucide-react'
+import ActivityFeed from './ActivityFeed'
 
 const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
   Bot, Zap, Cpu, Database, Globe, Layers, Shield, Target,
@@ -63,12 +64,6 @@ function relativeTime(iso: string | null): string {
   return `${days}d ago`
 }
 
-function formatDate(iso: string): string {
-  const d = new Date(iso)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
-    ' · ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-}
-
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -79,6 +74,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
   const [toggling, setToggling] = useState(false)
   const [running, setRunning] = useState(false)
   const [toast, setToast] = useState('')
+  const [activityTick, setActivityTick] = useState(0)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -126,6 +122,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
       if (res.ok) {
         showToast('Agent ran successfully')
         await load()
+        setActivityTick(t => t + 1)
       }
     } finally {
       setRunning(false)
@@ -144,8 +141,9 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
   if (!agent) return null
 
   const isActive = agent.status === 'active'
-  const successCount = runs.filter(r => r.status === 'success').length
-  const successRate = runs.length > 0 ? Math.round((successCount / runs.length) * 100) : 100
+  const finishedRuns = runs.filter(r => r.status !== 'running')
+  const successCount = finishedRuns.filter(r => r.status === 'success').length
+  const successRate = finishedRuns.length > 0 ? Math.round((successCount / finishedRuns.length) * 100) : 100
 
   const statCards = [
     { label: 'Total Runs', value: agent.run_count, icon: Activity, color: '#6366f1' },
@@ -158,7 +156,6 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-        .run-row:hover { background: var(--hover) !important; }
         .action-btn:hover { opacity: 0.85; }
       `}</style>
 
@@ -290,84 +287,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
         ))}
       </div>
 
-      {/* Run history */}
-      <div style={{
-        background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden',
-      }}>
-        <div style={{
-          padding: '16px 20px', borderBottom: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}>
-          <Activity size={16} color="var(--text-3)" />
-          <span style={{ fontWeight: 600, fontSize: 15, color: 'var(--text-1)' }}>Run History</span>
-          {runs.length > 0 && (
-            <span style={{
-              marginLeft: 'auto', fontSize: 12, background: 'var(--bg-2)',
-              padding: '2px 8px', borderRadius: 20, color: 'var(--text-3)',
-            }}>{runs.length} runs</span>
-          )}
-        </div>
-
-        {runs.length === 0 ? (
-          <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text-3)' }}>
-            <Activity size={32} style={{ marginBottom: 12, opacity: 0.3 }} />
-            <p style={{ margin: 0, fontSize: 14 }}>No runs yet — click "Run Now" to test this agent</p>
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: 'var(--bg-2)' }}>
-                  {['Date', 'Trigger', 'Status', 'Action Taken'].map(h => (
-                    <th key={h} style={{
-                      padding: '10px 16px', textAlign: 'left', fontWeight: 600,
-                      color: 'var(--text-3)', fontSize: 12, whiteSpace: 'nowrap',
-                      borderBottom: '1px solid var(--border)',
-                    }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {runs.map((run, i) => (
-                  <tr
-                    key={run.id}
-                    className="run-row"
-                    style={{
-                      borderBottom: i < runs.length - 1 ? '1px solid var(--border)' : 'none',
-                      transition: 'background 0.1s',
-                    }}
-                  >
-                    <td style={{ padding: '12px 16px', color: 'var(--text-2)', whiteSpace: 'nowrap' }}>
-                      {formatDate(run.ran_at)}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-2)' }}>
-                      {run.trigger_event}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 5,
-                        padding: '3px 9px', borderRadius: 20, fontSize: 12, fontWeight: 600,
-                        background: run.status === 'success' ? 'rgba(22,163,74,0.12)' : 'rgba(239,68,68,0.12)',
-                        color: run.status === 'success' ? '#16a34a' : '#ef4444',
-                      }}>
-                        {run.status === 'success'
-                          ? <><CheckCircle size={11} />Success</>
-                          : <><XCircle size={11} />Failed</>
-                        }
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-2)', maxWidth: 280 }}>
-                      <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {run.action_taken}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* Activity feed */}
+      <ActivityFeed agentId={id} agentActive={isActive} refreshSignal={activityTick} />
     </div>
   )
 }

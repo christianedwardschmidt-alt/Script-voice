@@ -339,6 +339,8 @@ async function runInit() {
         status TEXT DEFAULT 'success',
         trigger_event TEXT DEFAULT '',
         action_taken TEXT DEFAULT '',
+        human_readable_summary TEXT,
+        technical_log TEXT,
         ran_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS proposals (
@@ -551,6 +553,8 @@ async function runInit() {
     `ALTER TABLE invoices ADD COLUMN recurring_template_id INTEGER`,
     `ALTER TABLE invoices ADD COLUMN awaiting_amount INTEGER DEFAULT 0`,
     `ALTER TABLE profile ADD COLUMN years_experience INTEGER DEFAULT 0`,
+    `ALTER TABLE agent_runs ADD COLUMN human_readable_summary TEXT`,
+    `ALTER TABLE agent_runs ADD COLUMN technical_log TEXT`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
