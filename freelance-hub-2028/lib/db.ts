@@ -398,6 +398,35 @@ async function runInit() {
         amount REAL NOT NULL DEFAULT 0,
         paid_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS member_behavior_patterns (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        pattern_type TEXT NOT NULL,
+        pattern_key TEXT NOT NULL DEFAULT '',
+        pattern_data TEXT DEFAULT '{}',
+        first_detected TEXT NOT NULL,
+        last_detected TEXT NOT NULL,
+        occurrence_count INTEGER DEFAULT 1,
+        suggested INTEGER DEFAULT 0,
+        suggestion_dismissed INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS agent_suggestions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        pattern_type TEXT NOT NULL DEFAULT '',
+        suggested_agent_name TEXT NOT NULL,
+        suggested_agent_description TEXT DEFAULT '',
+        suggested_agent_config TEXT DEFAULT '{}',
+        pattern_basis TEXT DEFAULT '',
+        impact_estimate TEXT DEFAULT '',
+        shown_at TEXT,
+        companion_shown_at TEXT,
+        accepted INTEGER DEFAULT 0,
+        dismissed INTEGER DEFAULT 0,
+        created_agent_id INTEGER,
+        created_at TEXT NOT NULL
+      )`,
       `CREATE TABLE IF NOT EXISTS marketplace_clone_events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         marketplace_agent_id INTEGER NOT NULL,

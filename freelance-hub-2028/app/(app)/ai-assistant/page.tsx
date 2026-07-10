@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useRef, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   Send, Bot, User, Sparkles, FileText, DollarSign, Users, Calculator,
   Mic, Paperclip, Copy, ThumbsUp, ThumbsDown, ChevronRight, Code, Globe,
   NotebookPen, Zap, ChevronDown, ChevronUp, HelpCircle, X,
 } from 'lucide-react'
+import SuggestionCard, { type AgentSuggestion } from '../agents/SuggestionCard'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -26,6 +27,7 @@ interface Message {
   fromVoice?: boolean
   pendingAction?: { name: string; input: Record<string, unknown>; interpretation: string }
   needsClarification?: boolean
+  suggestion?: AgentSuggestion
 }
 
 interface VoiceMsg {
@@ -537,6 +539,8 @@ function VoiceModeOverlay({ existingMessages, onClose }: VoiceOverlayProps) {
 
 function AIAssistantInner() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const [dismissingSuggestionId, setDismissingSuggestionId] = useState<number | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
@@ -559,9 +563,9 @@ function AIAssistantInner() {
     setGreetingLoading(true)
     fetch('/api/ai/greeting')
       .then(r => r.json())
-      .then(({ text }: { text: string }) => {
+      .then(({ text, suggestion }: { text: string; suggestion?: AgentSuggestion | null }) => {
         const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-        setMessages([{ id: Date.now(), role: 'assistant', content: text, timestamp: ts }])
+        setMessages([{ id: Date.now(), role: 'assistant', content: text, timestamp: ts, suggestion: suggestion ?? undefined }])
       })
       .catch(() => {
         const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
@@ -579,6 +583,17 @@ function AIAssistantInner() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const createFromCompanionSuggestion = (suggestion: AgentSuggestion) => {
+    router.push(`/agents?openSuggestion=${suggestion.id}`)
+  }
+
+  const dismissCompanionSuggestion = async (id: number) => {
+    setDismissingSuggestionId(id)
+    await fetch(`/api/agent-suggestions/${id}/dismiss`, { method: 'POST' }).catch(() => {})
+    setMessages(prev => prev.map(m => m.suggestion?.id === id ? { ...m, suggestion: undefined } : m))
+    setDismissingSuggestionId(null)
+  }
 
   const stopListening = () => {
     recognitionRef.current?.stop()
@@ -950,6 +965,16 @@ function AIAssistantInner() {
                       : <div>{formatContent(msg.content)}</div>
                     }
                   </div>
+                  {msg.suggestion && msg.role === 'assistant' && (
+                    <div style={{ minWidth: 340 }}>
+                      <SuggestionCard
+                        suggestion={msg.suggestion}
+                        onCreate={createFromCompanionSuggestion}
+                        onDismiss={dismissCompanionSuggestion}
+                        dismissing={dismissingSuggestionId === msg.suggestion.id}
+                      />
+                    </div>
+                  )}
                   {msg.pendingAction && msg.role === 'assistant' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                       <ConfidenceBadge confidence="medium" />

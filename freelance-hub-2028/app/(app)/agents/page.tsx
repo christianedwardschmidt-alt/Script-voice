@@ -15,6 +15,7 @@ import MarketplaceTab, { type MarketplaceAgentConfig } from './MarketplaceTab'
 import RuleEditor, { defaultRuleConfig } from './RuleEditor'
 import { findEmptyIfLaneError, type RuleConfig } from '@/lib/ruleUtils'
 import SchedulingPanel, { defaultScheduleState, type ScheduleState } from './SchedulingPanel'
+import SuggestionCard, { SuggestionEmptyState, type AgentSuggestion } from './SuggestionCard'
 import { zonedToUtc } from '@/lib/scheduling'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -330,6 +331,30 @@ export default function AgentsPage() {
   const [scheduleState, setScheduleState] = useState<ScheduleState>(() => defaultScheduleState('UTC'))
   const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false)
   const [workHours, setWorkHours] = useState({ start: '09:00', end: '18:00', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] })
+  const [suggestions, setSuggestions] = useState<AgentSuggestion[]>([])
+  const [suggestionsLoading, setSuggestionsLoading] = useState(true)
+  const [dismissingId, setDismissingId] = useState<number | null>(null)
+  const [suggestionOrigin, setSuggestionOrigin] = useState<{ id: number; name: string } | null>(null)
+
+  // Load suggestions
+  useEffect(() => {
+    fetch('/api/agent-suggestions').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setSuggestions(data)
+    }).catch(() => {}).finally(() => setSuggestionsLoading(false))
+  }, [])
+
+  // Deep link from the AI Companion: /agents?openSuggestion=<id>
+  useEffect(() => {
+    if (suggestionsLoading || suggestions.length === 0) return
+    const id = Number(new URLSearchParams(window.location.search).get('openSuggestion'))
+    if (!id) return
+    const match = suggestions.find(s => s.id === id)
+    if (match) {
+      createFromSuggestion(match)
+      window.history.replaceState(null, '', '/agents')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestionsLoading, suggestions])
 
   // Load agents
   useEffect(() => {
@@ -526,6 +551,45 @@ export default function AgentsPage() {
     setView('custom-builder')
   }
 
+  function createFromSuggestion(suggestion: AgentSuggestion) {
+    const stamp = Date.now()
+    const config = suggestion.suggested_agent_config as {
+      icon?: string; trigger_type?: string; actions?: Omit<BuilderAction, 'id'>[]
+      schedule_type?: string; recurring_config?: { frequency: ScheduleState['frequency']; time: string; days?: string[]; dayOfMonth?: number; customInterval?: number }
+      calendar_trigger_config?: { beforeAfter: ScheduleState['beforeAfter']; offsetMinutes: number; eventFilter: ScheduleState['eventFilter']; clientName?: string }
+    }
+    setBuilderConditions([])
+    setBuilderActions((config.actions || []).map((a, i) => ({ ...a, id: `${stamp}-a${i}` })))
+    setBuilderName(suggestion.suggested_agent_name)
+    setBuilderIcon(config.icon || 'Bot')
+    setSelectedActionIdx(null)
+    setClonedFrom(null)
+    setSuggestionOrigin({ id: suggestion.id, name: suggestion.suggested_agent_name })
+
+    if (config.schedule_type === 'recurring' && config.recurring_config) {
+      const rc = config.recurring_config
+      setBuilderMode('schedule')
+      setBuilderTrigger('')
+      setScheduleState(prev => ({ ...prev, scheduleType: 'recurring', frequency: rc.frequency, time: rc.time, days: rc.days || prev.days, dayOfMonth: rc.dayOfMonth || 1, customInterval: rc.customInterval || 1 }))
+    } else if (config.schedule_type === 'calendar' && config.calendar_trigger_config) {
+      const cc = config.calendar_trigger_config
+      setBuilderMode('schedule')
+      setBuilderTrigger('')
+      setScheduleState(prev => ({ ...prev, scheduleType: 'calendar', beforeAfter: cc.beforeAfter, offsetMinutes: cc.offsetMinutes, eventFilter: cc.eventFilter, clientName: cc.clientName || '' }))
+    } else {
+      setBuilderMode('event')
+      setBuilderTrigger(config.trigger_type || '')
+    }
+    setView('custom-builder')
+  }
+
+  async function dismissSuggestion(id: number) {
+    setDismissingId(id)
+    await fetch(`/api/agent-suggestions/${id}/dismiss`, { method: 'POST' }).catch(() => {})
+    setSuggestions(prev => prev.filter(s => s.id !== id))
+    setDismissingId(null)
+  }
+
   function scheduleValidationError(): string | null {
     if (builderMode !== 'schedule') return null
     const s = scheduleState
@@ -603,16 +667,19 @@ export default function AgentsPage() {
         template_id: '',
         marketplace_agent_id: clonedFrom?.marketplaceAgentId ?? null,
         cloned_at: clonedFrom ? new Date().toISOString() : null,
+        suggestion_id: suggestionOrigin?.id ?? null,
         ...(schedulePayload || {}),
       }),
     })
     if (res.ok) {
       const agent = await res.json()
       setAgents(prev => [agent, ...prev])
+      if (suggestionOrigin) setSuggestions(prev => prev.filter(s => s.id !== suggestionOrigin.id))
       showToast(`${agent.name} is now active!`)
     }
     setSavingBuilder(false)
     setClonedFrom(null)
+    setSuggestionOrigin(null)
     setView('home')
     setActiveTab('agents')
   }
@@ -649,6 +716,16 @@ export default function AgentsPage() {
             borderRadius: '0 8px 8px 0',
           }}>
             Cloned from marketplace · Customize this agent to fit your business
+          </div>
+        )}
+
+        {suggestionOrigin && (
+          <div style={{
+            margin: '14px 28px 0', padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: 13,
+            color: '#92400E', background: 'rgba(217,119,6,0.08)', borderLeft: '3px solid #D97706',
+            borderRadius: '0 8px 8px 0',
+          }}>
+            Built from your patterns · Review and activate when ready
           </div>
         )}
 
@@ -1406,6 +1483,24 @@ export default function AgentsPage() {
           </button>
         </div>
       </div>
+
+      {/* Suggested for You */}
+      {!suggestionsLoading && (
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 12 }}>
+            Suggested for You
+          </div>
+          {suggestions.length === 0 ? (
+            <SuggestionEmptyState />
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))', gap: 16 }}>
+              {suggestions.slice(0, 3).map(s => (
+                <SuggestionCard key={s.id} suggestion={s} onCreate={createFromSuggestion} onDismiss={dismissSuggestion} dismissing={dismissingId === s.id} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* KPI stat bar */}
       <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', marginBottom: 24 }}>

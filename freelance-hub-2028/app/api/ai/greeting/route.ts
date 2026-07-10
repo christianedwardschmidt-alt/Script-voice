@@ -1,8 +1,19 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getUser } from '@/lib/auth'
 import { buildMemberContext } from '@/lib/memberContext'
+import { queryOne, execute } from '@/lib/db'
 
 const anthropic = new Anthropic()
+
+interface PendingSuggestionRow {
+  id: number
+  pattern_type: string
+  suggested_agent_name: string
+  suggested_agent_description: string
+  suggested_agent_config: string
+  pattern_basis: string
+  impact_estimate: string
+}
 
 function timeSlot(hour: number, dayOfWeek: number): string {
   // dayOfWeek: 0=Sun, 1=Mon, 2=Tue … 6=Sat
@@ -44,12 +55,38 @@ export async function GET() {
   const user = await getUser()
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const memberContext = await buildMemberContext(user.id, user.name)
-
   const now = new Date()
   const hour = now.getHours()
   const day = now.getDay()
   const slot = timeSlot(hour, day)
+
+  // Monday morning: if there's a suggestion the member hasn't seen via the
+  // companion yet, lead with that instead of the usual dynamic greeting.
+  if (slot === 'monday_morning') {
+    const pending = await queryOne<PendingSuggestionRow>(
+      `SELECT id, pattern_type, suggested_agent_name, suggested_agent_description, suggested_agent_config, pattern_basis, impact_estimate
+       FROM agent_suggestions WHERE user_id = ? AND companion_shown_at IS NULL AND accepted = 0 AND dismissed = 0
+       ORDER BY created_at DESC LIMIT 1`,
+      [user.id]
+    )
+    if (pending) {
+      await execute(`UPDATE agent_suggestions SET companion_shown_at = ? WHERE id = ?`, [now.toISOString(), pending.id])
+      return Response.json({
+        text: 'I noticed something in your account that could save you time. Want to hear it?',
+        suggestion: {
+          id: pending.id,
+          pattern_type: pending.pattern_type,
+          suggested_agent_name: pending.suggested_agent_name,
+          suggested_agent_description: pending.suggested_agent_description,
+          suggested_agent_config: JSON.parse(pending.suggested_agent_config || '{}'),
+          pattern_basis: pending.pattern_basis,
+          impact_estimate: pending.impact_estimate,
+        },
+      })
+    }
+  }
+
+  const memberContext = await buildMemberContext(user.id, user.name)
   const slotInstruction = SLOT_INSTRUCTIONS[slot]
 
   const dayStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -84,5 +121,5 @@ Write a warm, professional opening message for this member's AI session. Hard ru
     msg.content.find(b => b.type === 'text')?.text?.trim() ??
     "Good to see you — what would you like to tackle today?"
 
-  return Response.json({ text })
+  return Response.json({ text, suggestion: null })
 }

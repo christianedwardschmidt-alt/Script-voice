@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const {
     name, icon, description, status, trigger_type, trigger_config, conditions, actions, template_id, marketplace_agent_id, cloned_at,
-    schedule_type, scheduled_at, recurring_config, calendar_trigger_config, smart_schedule_description,
+    schedule_type, scheduled_at, recurring_config, calendar_trigger_config, smart_schedule_description, suggestion_id,
   } = body
   const now = new Date().toISOString()
 
@@ -50,6 +50,13 @@ export async function POST(req: NextRequest) {
       now, now,
     ]
   )
+  if (suggestion_id) {
+    await execute(
+      `UPDATE agent_suggestions SET accepted = 1, created_agent_id = ? WHERE id = ? AND user_id = ?`,
+      [result.lastInsertRowid, suggestion_id, user.id]
+    )
+  }
+
   const rows = await queryAll(`SELECT * FROM agents WHERE id = ?`, [result.lastInsertRowid])
   return NextResponse.json(deserialize(rows[0] as Record<string, unknown>), { status: 201 })
 }
