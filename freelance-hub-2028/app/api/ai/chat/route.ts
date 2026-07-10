@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { queryAll, queryOne } from '@/lib/db'
 import { getUser } from '@/lib/auth'
+import { buildMemberContext } from '@/lib/memberContext'
 
 const anthropic = new Anthropic()
 
@@ -10,38 +11,36 @@ export async function POST(req: Request) {
 
   const { messages } = await req.json()
 
-  const [profile, clients, tasks, invoices] = await Promise.all([
-    queryOne(`SELECT displayName, email, headline, skills FROM profile WHERE user_id = ?`, [user.id]),
-    queryAll(`SELECT name, company, status, revenue FROM clients WHERE user_id = ? LIMIT 10`, [user.id]),
-    queryAll(`SELECT title, status, priority, dueDate, project FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 10`, [user.id]),
-    queryAll(`SELECT id, client, amount, status FROM invoices WHERE user_id = ? LIMIT 10`, [user.id]),
+  // Fetch supporting context for instructions; member identity built by buildMemberContext
+  const [tasks, invoices, memberContext] = await Promise.all([
+    queryAll(
+      `SELECT title, status, priority, dueDate, project FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 10`,
+      [user.id]
+    ),
+    queryAll(
+      `SELECT id, client, amount, status FROM invoices WHERE user_id = ? LIMIT 10`,
+      [user.id]
+    ),
+    buildMemberContext(user.id, user.name),
   ])
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 
-  const p = profile as Record<string, unknown> | null
-  const clientList = (clients as Record<string, unknown>[])
-    .map(c => `• ${c.name} at ${c.company} — ${c.status}, $${Number(c.revenue).toLocaleString()} revenue`)
-    .join('\n') || '(none yet)'
   const taskList = (tasks as Record<string, unknown>[])
     .map(t => `• ${t.title} [${t.status}, ${t.priority} priority, due ${t.dueDate}] — ${t.project}`)
     .join('\n') || '(none)'
+
   const invoiceList = (invoices as Record<string, unknown>[])
     .map(i => `• ${i.id}: ${i.client} — $${Number(i.amount).toLocaleString()} (${i.status})`)
     .join('\n') || '(none)'
 
-  const systemPrompt = `You are GuildWire AI, a highly capable business assistant for freelance professionals. You help with proposals, project pricing, contracts, client communication, tax planning, and business strategy.
+  const systemPrompt = `${memberContext}
 
-FREELANCER PROFILE:
-Name: ${p?.displayName ?? user.name}
-Skills: ${p?.skills ?? 'Design, Development'}
-Email: ${p?.email ?? user.email}
-Headline: ${p?.headline ?? ''}
+---
 
-ACTIVE CLIENTS:
-${clientList}
+You are GuildWire AI, a highly capable business assistant for freelance professionals. You help with proposals, project pricing, contracts, client communication, tax planning, and business strategy.
 
 OPEN TASKS:
 ${taskList}
