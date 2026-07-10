@@ -440,6 +440,80 @@ async function runInit() {
         updated_at TEXT DEFAULT (datetime('now')),
         PRIMARY KEY(user_id, post_id)
       )`,
+      `CREATE TABLE IF NOT EXISTS recurring_invoice_templates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        client_name TEXT NOT NULL,
+        client_email TEXT DEFAULT '',
+        project TEXT DEFAULT '',
+        line_items TEXT DEFAULT '[]',
+        subtotal REAL DEFAULT 0,
+        tax_rate REAL DEFAULT 0,
+        total REAL DEFAULT 0,
+        amount_mode TEXT NOT NULL DEFAULT 'fixed',
+        frequency TEXT NOT NULL DEFAULT 'monthly',
+        custom_interval INTEGER DEFAULT 1,
+        custom_period TEXT DEFAULT 'months',
+        start_date TEXT NOT NULL,
+        end_condition TEXT NOT NULL DEFAULT 'indefinite',
+        end_after_occurrences INTEGER,
+        end_date TEXT,
+        send_time TEXT NOT NULL DEFAULT '09:00',
+        next_send_date TEXT NOT NULL,
+        total_sends INTEGER DEFAULT 0,
+        client_notification_enabled INTEGER DEFAULT 1,
+        status TEXT NOT NULL DEFAULT 'active',
+        avatar TEXT DEFAULT '👤',
+        color TEXT DEFAULT '#16a34a',
+        last_presend_notified_date TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS recurring_invoice_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        template_id INTEGER NOT NULL,
+        invoice_id TEXT,
+        scheduled_date TEXT NOT NULL,
+        sent_at TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        error_message TEXT DEFAULT '',
+        retry_count INTEGER DEFAULT 0,
+        retry_at TEXT,
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        type TEXT NOT NULL DEFAULT '',
+        title TEXT NOT NULL DEFAULT '',
+        body TEXT NOT NULL DEFAULT '',
+        href TEXT DEFAULT '',
+        read INTEGER DEFAULT 0,
+        meta TEXT DEFAULT '{}',
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS email_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        to_email TEXT NOT NULL DEFAULT '',
+        subject TEXT NOT NULL DEFAULT '',
+        body_html TEXT NOT NULL DEFAULT '',
+        related_type TEXT DEFAULT '',
+        related_id TEXT DEFAULT '',
+        status TEXT DEFAULT 'sent',
+        sent_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS tax_income (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        source TEXT DEFAULT 'recurring_invoice',
+        category TEXT DEFAULT 'Recurring Client Income',
+        client_name TEXT DEFAULT '',
+        invoice_id TEXT DEFAULT '',
+        amount REAL DEFAULT 0,
+        date_received TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )`,
     ],
     'write'
   )
@@ -467,6 +541,8 @@ async function runInit() {
     `ALTER TABLE invoices ADD COLUMN late_fee_applied INTEGER DEFAULT 0`,
     `ALTER TABLE invoices ADD COLUMN late_fee_amount REAL DEFAULT 0`,
     `ALTER TABLE invoices ADD COLUMN late_fee_waived INTEGER DEFAULT 0`,
+    `ALTER TABLE invoices ADD COLUMN recurring_template_id INTEGER`,
+    `ALTER TABLE invoices ADD COLUMN awaiting_amount INTEGER DEFAULT 0`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 

@@ -11,6 +11,7 @@ interface QuarterlyPayment { id: number; quarter: string; year: number; paid_amo
 interface TaxDocument { id: number; name: string; status: string; date: string; size: string; category: string }
 interface Client { id: number; name: string; company: string; email: string }
 interface W9Record { id: number; client_name: string; status: string }
+interface TaxIncomeRecord { id: number; category: string; client_name: string; invoice_id: string; amount: number; date_received: string }
 interface TaxSettings { filing_status: string; state: string; entity_type: string; fiscal_year: string; accountant_email: string }
 
 const EXPENSE_CATEGORIES = [
@@ -113,6 +114,7 @@ export default function TaxPage() {
   const [documents, setDocuments] = useState<TaxDocument[]>([])
   const [clients, setClients] = useState<Client[]>([])
   const [w9Records, setW9Records] = useState<W9Record[]>([])
+  const [taxIncome, setTaxIncome] = useState<TaxIncomeRecord[]>([])
   const [taxSettings, setTaxSettings] = useState<TaxSettings>({ filing_status: 'Single', state: '', entity_type: 'Sole Proprietor', fiscal_year: 'Calendar Year', accountant_email: '' })
 
   const [showExpModal, setShowExpModal] = useState(false)
@@ -140,10 +142,11 @@ export default function TaxPage() {
       fetch('/api/clients').then(r => r.json()),
       fetch('/api/tax/w9').then(r => r.json()),
       fetch('/api/tax/settings').then(r => r.json()),
+      fetch('/api/tax/income').then(r => r.json()),
     ]).then(results => {
       const val = (i: number) => results[i].status === 'fulfilled' ? (results[i] as PromiseFulfilledResult<unknown>).value : null
       const inv = val(0), exp = val(1), mil = val(2), qtr = val(3)
-      const docs = val(4), cli = val(5), w9 = val(6), sett = val(7)
+      const docs = val(4), cli = val(5), w9 = val(6), sett = val(7), inc = val(8)
       setInvoices(Array.isArray(inv) ? inv : [])
       setExpenses(Array.isArray(exp) ? exp : [])
       setMileage(Array.isArray(mil) ? mil : [])
@@ -152,6 +155,7 @@ export default function TaxPage() {
       setClients(Array.isArray(cli) ? cli : [])
       setW9Records(Array.isArray(w9) ? w9 : [])
       if (sett && typeof sett === 'object' && !(sett as Record<string,unknown>).error) setTaxSettings(sett as TaxSettings)
+      setTaxIncome(Array.isArray(inc) ? inc : [])
     })
   }, [])
 
@@ -851,6 +855,25 @@ export default function TaxPage() {
             <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>Gross freelance income (paid invoices)</span>
             <span style={{ fontSize: 13, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-display)' }}>${ytdRevenue.toLocaleString()}</span>
           </div>
+          {taxIncome.length > 0 && (
+            <div style={{ marginTop: 12, padding: '12px 14px', background: '#F0FDF4', borderRadius: 10, border: '1px solid #BBF7D0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#15803D', fontFamily: 'var(--font-body)' }}>Recurring Client Income · auto-logged</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#15803D', fontFamily: 'var(--font-display)' }}>${taxIncome.reduce((a, c) => a + c.amount, 0).toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+                {taxIncome.slice(0, 6).map(rec => (
+                  <div key={rec.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontFamily: 'var(--font-body)' }}>
+                    <span style={{ color: '#166534' }}>{rec.client_name} · {rec.invoice_id} · {rec.date_received}</span>
+                    <span style={{ color: '#166534', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>${rec.amount.toLocaleString()}</span>
+                  </div>
+                ))}
+                {taxIncome.length > 6 && (
+                  <div style={{ fontSize: 11, color: '#16A34A', fontFamily: 'var(--font-body)' }}>+{taxIncome.length - 6} more</div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Deductions */}

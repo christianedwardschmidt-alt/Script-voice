@@ -7,6 +7,7 @@ interface InvoiceRow {
   amount: number; status: string; issued: string; due: string; avatar: string; color: string
   late_fee_enabled: number; late_fee_percentage: number; late_fee_grace_days: number
   late_fee_applied: number; late_fee_amount: number; late_fee_waived: number
+  recurring_template_id: number | null; awaiting_amount: number
 }
 
 function computeLateFee(inv: InvoiceRow): { shouldApply: boolean; feeAmount: number } {
@@ -79,6 +80,18 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
   if (body.status !== undefined && body.status !== existing.status) {
     logActivity(user.id, `Invoice ${id} marked as ${body.status}`)
+
+    // Recurring-sourced invoice paid: auto-connect to Tax Center income + CRM timeline. Automatic, cannot be disabled.
+    if (body.status === 'Paid' && existing.recurring_template_id != null) {
+      const already = await queryOne(`SELECT id FROM tax_income WHERE invoice_id = ?`, [id])
+      if (!already) {
+        await execute(
+          `INSERT INTO tax_income (user_id, source, category, client_name, invoice_id, amount, date_received, created_at) VALUES (?,?,?,?,?,?,?,?)`,
+          [user.id, 'recurring_invoice', 'Recurring Client Income', existing.client, id, existing.amount, new Date().toISOString().split('T')[0], new Date().toISOString()]
+        )
+        logActivity(user.id, `Recurring invoice ${id} paid — $${existing.amount.toLocaleString()} received`)
+      }
+    }
   }
 
   const row = await queryOne<InvoiceRow>(`SELECT * FROM invoices WHERE id = ?`, [id])

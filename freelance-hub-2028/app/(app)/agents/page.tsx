@@ -75,6 +75,7 @@ const TEMPLATE_FIELDS: Record<string, TemplateField[]> = {
 const TRIGGER_OPTIONS = [
   { value: 'invoice-paid',       label: 'When an invoice is paid',                   icon: 'DollarSign'  },
   { value: 'invoice-overdue',    label: 'When an invoice becomes overdue',            icon: 'AlertCircle' },
+  { value: 'recurring-invoice-sent', label: 'When a recurring invoice sends',        icon: 'RefreshCw'   },
   { value: 'new-client',         label: 'When a new client is added',                 icon: 'UserPlus'    },
   { value: 'proposal-sent',      label: 'When a proposal is sent',                    icon: 'Send'        },
   { value: 'proposal-accepted',  label: 'When a proposal is accepted or rejected',    icon: 'CheckSquare' },
