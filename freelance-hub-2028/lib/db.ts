@@ -6,6 +6,17 @@ const client = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN || undefined,
 })
 
+// ── Pipeline stage defaults ──────────────────────────────────────────────────
+
+export const DEFAULT_PIPELINE_STAGES = JSON.stringify([
+  { id: 'lead',        name: 'Lead',        color: '#6B7280', order: 0 },
+  { id: 'proposal',    name: 'Proposal',    color: '#16A34A', order: 1 },
+  { id: 'negotiation', name: 'Negotiation', color: '#D97706', order: 2 },
+  { id: 'active',      name: 'Active',      color: '#22C55E', order: 3 },
+  { id: 'completed',   name: 'Completed',   color: '#14B8A6', order: 4 },
+  { id: 'lost',        name: 'Lost',        color: '#EF4444', order: 5 },
+])
+
 // ── Row conversion ───────────────────────────────────────────────────────────
 
 function rowToObj(columns: string[], row: Row): Record<string, unknown> {
@@ -78,8 +89,8 @@ export async function createUserDefaults(userId: number, name: string, email: st
     args: [userId, name, email, 'Freelancer', ''],
   })
   await client.execute({
-    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
-    args: [userId, 'My Studio'],
+    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName,pipeline_stages) VALUES (?,1,0,0,1,1,?,?)`,
+    args: [userId, 'My Studio', DEFAULT_PIPELINE_STAGES],
   })
   await client.execute({
     sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
@@ -124,8 +135,8 @@ export async function seedUserData(userId: number, name: string, email: string):
     args: [userId, name, email, 'Freelance Designer & Developer', 'Figma, React, Next.js, TypeScript'],
   })
   await client.execute({
-    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
-    args: [userId, 'My Studio'],
+    sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName,pipeline_stages) VALUES (?,1,0,0,1,1,?,?)`,
+    args: [userId, 'My Studio', DEFAULT_PIPELINE_STAGES],
   })
   await client.execute({
     sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
@@ -229,7 +240,8 @@ async function runInit() {
         user_id INTEGER PRIMARY KEY,
         notifications INTEGER DEFAULT 1, twoFactor INTEGER DEFAULT 0,
         darkMode INTEGER DEFAULT 0, invoiceAutoSend INTEGER DEFAULT 1,
-        weeklyDigest INTEGER DEFAULT 1, workspaceName TEXT DEFAULT 'My Studio'
+        weeklyDigest INTEGER DEFAULT 1, workspaceName TEXT DEFAULT 'My Studio',
+        pipeline_stages TEXT
       )`,
       `CREATE TABLE IF NOT EXISTS contact_info (
         user_id INTEGER PRIMARY KEY,
@@ -437,6 +449,7 @@ async function runInit() {
     `ALTER TABLE activity_log ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE calendar_events ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE settings ADD COLUMN workspaceName TEXT DEFAULT 'My Studio'`,
+    `ALTER TABLE settings ADD COLUMN pipeline_stages TEXT`,
     `ALTER TABLE jobs ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE courses ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE integrations ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
@@ -487,8 +500,8 @@ async function runInit() {
       args: [demoId, 'Alex Rivera', DEMO_EMAIL, 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding'],
     })
     await client.execute({
-      sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName) VALUES (?,1,0,0,1,1,?)`,
-      args: [demoId, 'My Studio'],
+      sql: `INSERT OR IGNORE INTO settings (user_id,notifications,twoFactor,darkMode,invoiceAutoSend,weeklyDigest,workspaceName,pipeline_stages) VALUES (?,1,0,0,1,1,?,?)`,
+      args: [demoId, 'My Studio', DEFAULT_PIPELINE_STAGES],
     })
     await client.execute({
       sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,

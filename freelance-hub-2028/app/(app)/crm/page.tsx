@@ -1,33 +1,69 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import {
   Search, Plus, MoreHorizontal, Mail, Phone, Globe,
   Star, StarOff, DollarSign, MessageSquare, Calendar,
-  ArrowRight, X, Trash2,
+  ArrowRight, X, Trash2, Settings, GripVertical,
 } from 'lucide-react'
 
-type PipelineStage = 'Lead' | 'Proposal' | 'Negotiation' | 'Active' | 'Completed'
-const pipelineStages: PipelineStage[] = ['Lead', 'Proposal', 'Negotiation', 'Active', 'Completed']
-const stageColors: Record<PipelineStage, string> = {
-  Lead: '#6B7280', Proposal: '#16A34A', Negotiation: '#D97706',
-  Active: '#22C55E', Completed: '#14B8A6',
+// ── Types ────────────────────────────────────────────────────────────────────
+
+interface StageObj { id: string; name: string; color: string; order: number }
+
+interface Client {
+  id: number; name: string; company: string; email: string; phone: string
+  website: string; stage: string; value: number; avatar: string
+  avatarBg: string; tags: string[]; lastContact: string; starred: boolean
+  rating: number; notes: string
 }
+
+// ── Defaults ─────────────────────────────────────────────────────────────────
+
+const DEFAULT_STAGES: StageObj[] = [
+  { id: 'lead',        name: 'Lead',        color: '#6B7280', order: 0 },
+  { id: 'proposal',    name: 'Proposal',    color: '#16A34A', order: 1 },
+  { id: 'negotiation', name: 'Negotiation', color: '#D97706', order: 2 },
+  { id: 'active',      name: 'Active',      color: '#22C55E', order: 3 },
+  { id: 'completed',   name: 'Completed',   color: '#14B8A6', order: 4 },
+  { id: 'lost',        name: 'Lost',        color: '#EF4444', order: 5 },
+]
+
+const SWATCH_COLORS = [
+  '#16A34A','#22C55E','#14B8A6','#3B82F6','#7C3AED',
+  '#6366F1','#D97706','#EF4444','#F97316','#EC4899',
+  '#6B7280','#374151',
+]
+
 const tagColors: Record<string, string> = {
   Design: '#16A34A', Development: '#22C55E', Marketing: '#D97706',
   Content: '#D97706', API: '#14B8A6', Data: '#14B8A6',
   Retainer: '#16A34A', Premium: '#D97706', Enterprise: '#22C55E',
   New: '#16A34A', Completed: '#6B7280',
 }
-const avatarBgs = ['#16A34A', '#22C55E', '#D97706', '#14B8A6', '#6B7280', '#3B82F6']
+
+const avatarBgs = ['#16A34A','#22C55E','#D97706','#14B8A6','#6B7280','#3B82F6']
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '', value: '', notes: '' }
 
-interface Client {
-  id: number; name: string; company: string; email: string; phone: string
-  website: string; stage: PipelineStage; value: number; avatar: string
-  avatarBg: string; tags: string[]; lastContact: string; starred: boolean
-  rating: number; notes: string
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function stageColor(stages: StageObj[], stageName: string): string {
+  return stages.find(s => s.name.toLowerCase() === (stageName ?? '').toLowerCase())?.color ?? '#6B7280'
 }
+
+// Map an old stage name to the closest current stage (case-insensitive exact, then partial, then first)
+function resolveStage(stages: StageObj[], stageName: string): string {
+  if (!stageName || !stages.length) return stages[0]?.name ?? stageName
+  const exact = stages.find(s => s.name.toLowerCase() === stageName.toLowerCase())
+  if (exact) return exact.name
+  const partial = stages.find(s =>
+    stageName.toLowerCase().includes(s.name.toLowerCase()) ||
+    s.name.toLowerCase().includes(stageName.toLowerCase())
+  )
+  return partial?.name ?? stages[0].name
+}
+
+// ── Sparkline ────────────────────────────────────────────────────────────────
 
 function Sparkline({ values, color, id }: { values: number[]; color: string; id: number }) {
   const w = 72, h = 26
@@ -55,6 +91,222 @@ function Sparkline({ values, color, id }: { values: number[]; color: string; id:
   )
 }
 
+// ── Pipeline Settings Panel ───────────────────────────────────────────────────
+
+function PipelineSettingsPanel({
+  stages,
+  onSave,
+  onClose,
+}: {
+  stages: StageObj[]
+  onSave: (s: StageObj[]) => Promise<void>
+  onClose: () => void
+}) {
+  const [local, setLocal] = useState<StageObj[]>([...stages].sort((a, b) => a.order - b.order))
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [colorPickerId, setColorPickerId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const dragIdx = useRef<number | null>(null)
+  const [dragOver, setDragOver] = useState<number | null>(null)
+
+  function update(id: string, changes: Partial<StageObj>) {
+    setLocal(prev => prev.map(s => s.id === id ? { ...s, ...changes } : s))
+  }
+
+  function addStage() {
+    const id = `stage_${Date.now()}`
+    const newStage: StageObj = { id, name: 'New Stage', color: '#6B7280', order: local.length }
+    setLocal(prev => [...prev, newStage])
+    setEditingId(id)
+  }
+
+  function deleteStage(id: string) {
+    if (local.length <= 1) return
+    setLocal(prev => prev.filter(s => s.id !== id).map((s, i) => ({ ...s, order: i })))
+  }
+
+  function onDragStart(idx: number) { dragIdx.current = idx }
+
+  function onDragOver(e: React.DragEvent, idx: number) {
+    e.preventDefault()
+    setDragOver(idx)
+  }
+
+  function onDrop(idx: number) {
+    const from = dragIdx.current
+    if (from === null || from === idx) { dragIdx.current = null; setDragOver(null); return }
+    const arr = [...local]
+    const [moved] = arr.splice(from, 1)
+    arr.splice(idx, 0, moved)
+    setLocal(arr.map((s, i) => ({ ...s, order: i })))
+    dragIdx.current = null
+    setDragOver(null)
+  }
+
+  async function handleSave() {
+    setSaving(true)
+    const ordered = local.map((s, i) => ({ ...s, order: i }))
+    await onSave(ordered)
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => { setSaved(false); onClose() }, 700)
+  }
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: 'white', borderRadius: 18, width: 500, maxHeight: '88vh', overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.22)', display: 'flex', flexDirection: 'column' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ padding: '22px 24px 18px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>Customize Pipeline</div>
+            <div style={{ fontSize: 13, color: '#9CA3AF', marginTop: 2, fontFamily: 'var(--font-body)' }}>Drag to reorder · Click name to edit · Pick a color</div>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 4, borderRadius: 6 }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Stage list */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px' }}>
+          {local.map((stage, idx) => (
+            <div key={stage.id}>
+              {/* Drop indicator */}
+              {dragOver === idx && (
+                <div style={{ height: 2, background: '#16A34A', borderRadius: 2, margin: '2px 0', transition: 'all 0.1s' }} />
+              )}
+              <div
+                draggable
+                onDragStart={() => onDragStart(idx)}
+                onDragOver={e => onDragOver(e, idx)}
+                onDrop={() => onDrop(idx)}
+                onDragEnd={() => { dragIdx.current = null; setDragOver(null) }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
+                  borderRadius: 10, marginBottom: 4, background: dragOver === idx ? '#F9FAFB' : 'white',
+                  border: '1px solid #F3F4F6', cursor: 'grab', transition: 'background 0.1s',
+                }}
+              >
+                {/* Grip */}
+                <GripVertical size={14} color="#D1D5DB" style={{ flexShrink: 0, cursor: 'grab' }} />
+
+                {/* Color swatch / picker trigger */}
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <button
+                    onClick={() => setColorPickerId(colorPickerId === stage.id ? null : stage.id)}
+                    style={{
+                      width: 28, height: 28, borderRadius: 8, background: stage.color,
+                      border: '2px solid rgba(0,0,0,0.1)', cursor: 'pointer', flexShrink: 0,
+                      outline: colorPickerId === stage.id ? `2px solid ${stage.color}` : 'none',
+                      outlineOffset: 2,
+                    }}
+                    title="Change color"
+                  />
+                  {colorPickerId === stage.id && (
+                    <div
+                      style={{ position: 'absolute', left: 0, top: 36, background: 'white', border: '1px solid #F3F4F6', borderRadius: 12, padding: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 10, width: 200 }}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6,1fr)', gap: 6, marginBottom: 10 }}>
+                        {SWATCH_COLORS.map(c => (
+                          <button
+                            key={c}
+                            onClick={() => { update(stage.id, { color: c }); setColorPickerId(null) }}
+                            style={{
+                              width: 24, height: 24, borderRadius: 6, background: c, border: stage.color === c ? '2px solid #111827' : '2px solid transparent',
+                              cursor: 'pointer', padding: 0,
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <label style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Custom</label>
+                        <input
+                          type="color"
+                          value={stage.color}
+                          onChange={e => update(stage.id, { color: e.target.value })}
+                          style={{ width: '100%', height: 28, borderRadius: 6, border: '1px solid #E5E7EB', cursor: 'pointer', padding: 2 }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Name */}
+                {editingId === stage.id ? (
+                  <input
+                    autoFocus
+                    value={stage.name}
+                    onChange={e => update(stage.id, { name: e.target.value })}
+                    onBlur={() => setEditingId(null)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Escape') setEditingId(null) }}
+                    style={{ flex: 1, fontSize: 14, fontWeight: 600, color: '#111827', border: 'none', borderBottom: `2px solid ${stage.color}`, background: 'transparent', outline: 'none', fontFamily: 'var(--font-body)', padding: '1px 0' }}
+                  />
+                ) : (
+                  <span
+                    onClick={() => setEditingId(stage.id)}
+                    style={{ flex: 1, fontSize: 14, fontWeight: 600, color: '#111827', cursor: 'text', fontFamily: 'var(--font-body)', borderBottom: '2px solid transparent', padding: '1px 0' }}
+                    title="Click to rename"
+                  >
+                    {stage.name}
+                  </span>
+                )}
+
+                {/* Delete */}
+                <button
+                  onClick={() => deleteStage(stage.id)}
+                  disabled={local.length <= 1}
+                  title={local.length <= 1 ? 'Cannot delete last stage' : 'Delete stage'}
+                  style={{ background: 'none', border: 'none', cursor: local.length <= 1 ? 'not-allowed' : 'pointer', color: local.length <= 1 ? '#E5E7EB' : '#EF4444', padding: 4, borderRadius: 6, flexShrink: 0, opacity: local.length <= 1 ? 0.4 : 1 }}
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Final drop zone */}
+          {dragOver === local.length && (
+            <div style={{ height: 2, background: '#16A34A', borderRadius: 2, margin: '2px 0' }} />
+          )}
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: '14px 16px', borderTop: '1px solid #F3F4F6', display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
+          <button
+            onClick={addStage}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', border: '1.5px dashed #D1D5DB', borderRadius: 9, background: 'white', color: '#6B7280', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+          >
+            <Plus size={13} /> Add Stage
+          </button>
+          <div style={{ flex: 1 }} />
+          <button
+            onClick={onClose}
+            style={{ padding: '9px 18px', border: '1.5px solid #E5E7EB', borderRadius: 9, background: 'white', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            style={{ padding: '9px 22px', border: 'none', borderRadius: 9, background: saved ? '#14B8A6' : '#16A34A', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', minWidth: 80 }}
+          >
+            {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Main Page ────────────────────────────────────────────────────────────────
+
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '9px 12px',
   background: '#F9FAFB', border: '1px solid #F3F4F6',
@@ -63,18 +315,28 @@ const inputStyle: React.CSSProperties = {
 }
 
 export default function CRMPage() {
+  const [stages, setStages] = useState<StageObj[]>(DEFAULT_STAGES)
   const [data, setData] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [selectedStage, setSelectedStage] = useState<string>('All')
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [showPipelineSettings, setShowPipelineSettings] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
 
   useEffect(() => {
-    fetch('/api/crm-clients').then(r => r.json())
-      .then(rows => { setData(Array.isArray(rows) ? rows : []); setLoading(false) })
+    Promise.all([
+      fetch('/api/settings').then(r => r.json()),
+      fetch('/api/crm-clients').then(r => r.json()),
+    ]).then(([settings, rows]) => {
+      if (settings?.pipeline_stages && Array.isArray(settings.pipeline_stages)) {
+        setStages(settings.pipeline_stages.sort((a: StageObj, b: StageObj) => a.order - b.order))
+      }
+      setData(Array.isArray(rows) ? rows : [])
+      setLoading(false)
+    })
   }, [])
 
   useEffect(() => {
@@ -85,15 +347,23 @@ export default function CRMPage() {
     return () => document.removeEventListener('mousedown', close)
   }, [])
 
+  // If the selected stage no longer exists in updated stages, reset filter
+  useEffect(() => {
+    if (selectedStage !== 'All' && !stages.find(s => s.name === selectedStage)) {
+      setSelectedStage('All')
+    }
+  }, [stages, selectedStage])
+
   const filtered = data.filter(c => {
     const q = search.toLowerCase()
     const matchSearch = !q || c.name.toLowerCase().includes(q) || c.company.toLowerCase().includes(q)
-    const matchStage = selectedStage === 'All' || c.stage === selectedStage
+    const matchStage = selectedStage === 'All' || resolveStage(stages, c.stage) === selectedStage
     return matchSearch && matchStage
   })
 
   const totalValue = data.reduce((a, c) => a + c.value, 0)
-  const activeCount = data.filter(c => c.stage === 'Active').length
+  const firstStageName = stages[0]?.name ?? 'Lead'
+  const activeCount = data.filter(c => resolveStage(stages, c.stage) === firstStageName).length
   const avgValue = data.length ? Math.round(totalValue / data.length) : 0
   const starredCount = data.filter(c => c.starred).length
 
@@ -109,7 +379,7 @@ export default function CRMPage() {
     })
   }
 
-  const changeStage = async (id: number, stage: PipelineStage) => {
+  const changeStage = async (id: number, stage: string) => {
     setData(prev => prev.map(c => c.id === id ? { ...c, stage } : c))
     if (selectedClient?.id === id) setSelectedClient(prev => prev ? { ...prev, stage } : prev)
     await fetch(`/api/crm-clients/${id}`, {
@@ -132,7 +402,8 @@ export default function CRMPage() {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         ...form, value: Number(form.value) || 0,
-        stage: 'Lead', avatar: form.name.charAt(0).toUpperCase(),
+        stage: stages[0]?.name ?? 'Lead',
+        avatar: form.name.charAt(0).toUpperCase(),
         avatarBg, tags: ['New'], lastContact: 'just now', starred: false, rating: 0,
       }),
     })
@@ -141,12 +412,24 @@ export default function CRMPage() {
     setForm(emptyForm); setShowModal(false)
   }
 
+  const savePipelineStages = async (newStages: StageObj[]) => {
+    await fetch('/api/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pipeline_stages: newStages }),
+    })
+    setStages(newStages)
+  }
+
   const stats = [
     { label: 'Total Pipeline', value: `$${(totalValue / 1000).toFixed(1)}k`, trend: '+18% this quarter', up: true, spark: [40, 52, 48, 61, 58, Math.max(totalValue / 1000, 1)] },
     { label: 'Active Clients', value: String(activeCount), trend: '+12% vs last month', up: true, spark: [3, 5, 4, 6, 5, Math.max(activeCount, 1)] },
     { label: 'Avg Deal Size',  value: `$${(avgValue / 1000).toFixed(1)}k`, trend: '+7% vs last month', up: true, spark: [3, 4.2, 3.8, 5.1, 4.6, Math.max(avgValue / 1000, 1)] },
     { label: 'Starred',       value: String(starredCount), trend: 'High-priority accounts', up: true, spark: [1, 2, 2, 3, 3, Math.max(starredCount, 1)] },
   ]
+
+  const colCount = Math.min(stages.length, 6)
+  const gridCols = `repeat(${colCount}, 1fr)`
 
   return (
     <div style={{ padding: '40px 32px 52px', minHeight: '100vh', background: '#F8FAFC' }}>
@@ -169,7 +452,7 @@ export default function CRMPage() {
         </button>
       </div>
 
-      {/* Stats bar — matching dashboard layout */}
+      {/* Stats bar */}
       <div className="g-4col kpi-bar" style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', marginBottom: 20 }}>
         {stats.map((stat, i) => (
           <div key={stat.label} style={{ padding: '24px 28px', borderRight: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
@@ -187,34 +470,41 @@ export default function CRMPage() {
       <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 24px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE STAGES</div>
-          <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{data.length} total clients</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{data.length} total clients</div>
+            <button
+              onClick={() => setShowPipelineSettings(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px', border: '1.5px solid #E5E7EB', borderRadius: 7, background: 'white', color: '#6B7280', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+            >
+              <Settings size={12} /> Customize
+            </button>
+          </div>
         </div>
-        <div className="g-5col" style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 12 }}>
-          {pipelineStages.map(stage => {
-            const stageClients = data.filter(c => c.stage === stage)
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: 10, overflowX: 'auto' }}>
+          {stages.map(stage => {
+            const stageClients = data.filter(c => resolveStage(stages, c.stage) === stage.name)
             const stageValue = stageClients.reduce((a, c) => a + c.value, 0)
-            const color = stageColors[stage]
             const pct = data.length ? Math.round((stageClients.length / data.length) * 100) : 0
-            const isActive = selectedStage === stage
+            const isActive = selectedStage === stage.name
             return (
               <div
-                key={stage}
-                onClick={() => setSelectedStage(isActive ? 'All' : stage)}
+                key={stage.id}
+                onClick={() => setSelectedStage(isActive ? 'All' : stage.name)}
                 style={{
-                  padding: '14px 16px', borderRadius: 12,
-                  background: isActive ? `${color}0D` : '#F9FAFB',
-                  border: `1px solid ${isActive ? color + '40' : '#F3F4F6'}`,
+                  padding: '14px 16px', borderRadius: 12, minWidth: 0,
+                  background: isActive ? `${stage.color}0D` : '#F9FAFB',
+                  border: `1px solid ${isActive ? stage.color + '40' : '#F3F4F6'}`,
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700, color, fontFamily: 'var(--font-body)' }}>{stage}</span>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-display)' }}>{stageClients.length}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: stage.color, fontFamily: 'var(--font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 90 }}>{stage.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-display)', flexShrink: 0 }}>{stageClients.length}</span>
                 </div>
                 <div style={{ height: 3, background: '#E5E7EB', borderRadius: 99, overflow: 'hidden', marginBottom: 10 }}>
-                  <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 99, transition: 'width 0.6s ease' }} />
+                  <div style={{ width: `${pct}%`, height: '100%', background: stage.color, borderRadius: 99, transition: 'width 0.6s ease' }} />
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>
                   ${stageValue.toLocaleString()}
                 </div>
               </div>
@@ -236,7 +526,9 @@ export default function CRMPage() {
         </div>
         <span style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginLeft: 'auto' }}>
           {filtered.length} {filtered.length === 1 ? 'client' : 'clients'}
-          {selectedStage !== 'All' && <span style={{ color: stageColors[selectedStage as PipelineStage], fontWeight: 600 }}> · {selectedStage}</span>}
+          {selectedStage !== 'All' && (
+            <span style={{ color: stageColor(stages, selectedStage), fontWeight: 600 }}> · {selectedStage}</span>
+          )}
         </span>
         {selectedStage !== 'All' && (
           <button
@@ -267,76 +559,80 @@ export default function CRMPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map(client => (
-                    <tr
-                      key={client.id}
-                      onClick={() => setSelectedClient(selectedClient?.id === client.id ? null : client)}
-                      style={{ borderBottom: '1px solid #F3F4F6', cursor: 'pointer', background: selectedClient?.id === client.id ? 'rgba(22,163,74,0.04)' : 'transparent', transition: 'background 0.1s' }}
-                      onMouseEnter={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = '#F9FAFB' }}
-                      onMouseLeave={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
-                    >
-                      <td style={{ padding: '13px 20px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
-                          <div style={{ width: 36, height: 36, borderRadius: 10, background: `${client.avatarBg}18`, border: `1.5px solid ${client.avatarBg}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: client.avatarBg, flexShrink: 0, fontFamily: 'var(--font-display)' }}>
-                            {(client.avatar || client.name || '?').charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{client.name}</div>
-                            <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>{client.company}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ padding: '13px 20px' }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: stageColors[client.stage], background: `${stageColors[client.stage]}12`, padding: '3px 10px', borderRadius: 20, fontFamily: 'var(--font-body)' }}>
-                          {client.stage}
-                        </span>
-                      </td>
-                      <td style={{ padding: '13px 20px' }}>
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#16A34A', fontVariantNumeric: 'tabular-nums' }}>
-                          ${client.value.toLocaleString()}
-                        </span>
-                      </td>
-                      <td style={{ padding: '13px 20px' }}>
-                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                          {client.tags.slice(0, 2).map(tag => (
-                            <span key={tag} style={{ fontSize: 10, fontWeight: 600, color: tagColors[tag] || '#16A34A', background: `${tagColors[tag] || '#16A34A'}12`, padding: '2px 7px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td style={{ padding: '13px 20px', fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{client.lastContact}</td>
-                      <td style={{ padding: '13px 20px' }}>
-                        <div style={{ display: 'flex', gap: 3, position: 'relative' }} data-menu>
-                          <button
-                            onClick={e => { e.stopPropagation(); toggleStar(client.id) }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, borderRadius: 6, color: client.starred ? '#D97706' : '#D1D5DB' }}
-                          >
-                            {client.starred ? <Star size={14} fill="#D97706" stroke="none" /> : <StarOff size={14} />}
-                          </button>
-                          <button
-                            onClick={e => { e.stopPropagation(); setOpenMenuId(openMenuId === client.id ? null : client.id) }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, borderRadius: 6, color: '#9CA3AF' }}
-                          >
-                            <MoreHorizontal size={14} />
-                          </button>
-                          {openMenuId === client.id && (
-                            <div
-                              onClick={e => e.stopPropagation()}
-                              style={{ position: 'absolute', right: 0, top: 28, background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 20, minWidth: 130, overflow: 'hidden' }}
-                            >
-                              <button
-                                onClick={() => deleteClient(client.id)}
-                                style={{ display: 'flex', alignItems: 'center', gap: 7, width: '100%', padding: '9px 14px', background: 'none', border: 'none', cursor: 'pointer', color: '#DC2626', fontSize: 13, fontFamily: 'var(--font-body)' }}
-                              >
-                                <Trash2 size={13} /> Delete
-                              </button>
+                  {filtered.map(client => {
+                    const resolvedStage = resolveStage(stages, client.stage)
+                    const color = stageColor(stages, resolvedStage)
+                    return (
+                      <tr
+                        key={client.id}
+                        onClick={() => setSelectedClient(selectedClient?.id === client.id ? null : client)}
+                        style={{ borderBottom: '1px solid #F3F4F6', cursor: 'pointer', background: selectedClient?.id === client.id ? 'rgba(22,163,74,0.04)' : 'transparent', transition: 'background 0.1s' }}
+                        onMouseEnter={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = '#F9FAFB' }}
+                        onMouseLeave={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
+                      >
+                        <td style={{ padding: '13px 20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+                            <div style={{ width: 36, height: 36, borderRadius: 10, background: `${client.avatarBg}18`, border: `1.5px solid ${client.avatarBg}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: client.avatarBg, flexShrink: 0, fontFamily: 'var(--font-display)' }}>
+                              {(client.avatar || client.name || '?').charAt(0).toUpperCase()}
                             </div>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{client.name}</div>
+                              <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>{client.company}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '13px 20px' }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color, background: `${color}12`, padding: '3px 10px', borderRadius: 20, fontFamily: 'var(--font-body)' }}>
+                            {resolvedStage}
+                          </span>
+                        </td>
+                        <td style={{ padding: '13px 20px' }}>
+                          <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#16A34A', fontVariantNumeric: 'tabular-nums' }}>
+                            ${client.value.toLocaleString()}
+                          </span>
+                        </td>
+                        <td style={{ padding: '13px 20px' }}>
+                          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {client.tags.slice(0, 2).map(tag => (
+                              <span key={tag} style={{ fontSize: 10, fontWeight: 600, color: tagColors[tag] || '#16A34A', background: `${tagColors[tag] || '#16A34A'}12`, padding: '2px 7px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td style={{ padding: '13px 20px', fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{client.lastContact}</td>
+                        <td style={{ padding: '13px 20px' }}>
+                          <div style={{ display: 'flex', gap: 3, position: 'relative' }} data-menu>
+                            <button
+                              onClick={e => { e.stopPropagation(); toggleStar(client.id) }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, borderRadius: 6, color: client.starred ? '#D97706' : '#D1D5DB' }}
+                            >
+                              {client.starred ? <Star size={14} fill="#D97706" stroke="none" /> : <StarOff size={14} />}
+                            </button>
+                            <button
+                              onClick={e => { e.stopPropagation(); setOpenMenuId(openMenuId === client.id ? null : client.id) }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 5, borderRadius: 6, color: '#9CA3AF' }}
+                            >
+                              <MoreHorizontal size={14} />
+                            </button>
+                            {openMenuId === client.id && (
+                              <div
+                                onClick={e => e.stopPropagation()}
+                                style={{ position: 'absolute', right: 0, top: 28, background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 20, minWidth: 130, overflow: 'hidden' }}
+                              >
+                                <button
+                                  onClick={() => deleteClient(client.id)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: 7, width: '100%', padding: '9px 14px', background: 'none', border: 'none', cursor: 'pointer', color: '#DC2626', fontSize: 13, fontFamily: 'var(--font-body)' }}
+                                >
+                                  <Trash2 size={13} /> Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                   {filtered.length === 0 && (
                     <tr>
                       <td colSpan={6} style={{ padding: '48px 20px', textAlign: 'center', color: '#9CA3AF', fontSize: 14, fontFamily: 'var(--font-body)' }}>
@@ -378,11 +674,11 @@ export default function CRMPage() {
               <div style={{ marginBottom: 18 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: 7, fontFamily: 'var(--font-body)' }}>Stage</div>
                 <select
-                  value={selectedClient.stage}
-                  onChange={e => changeStage(selectedClient.id, e.target.value as PipelineStage)}
+                  value={resolveStage(stages, selectedClient.stage)}
+                  onChange={e => changeStage(selectedClient.id, e.target.value)}
                   style={{ width: '100%', padding: '9px 12px', background: '#F9FAFB', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 13, color: '#111827', outline: 'none', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
                 >
-                  {pipelineStages.map(s => <option key={s} value={s}>{s}</option>)}
+                  {stages.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
                 </select>
               </div>
 
@@ -441,14 +737,22 @@ export default function CRMPage() {
                   value={form[key]} onChange={e => setForm({ ...form, [key]: e.target.value })} style={inputStyle} />
               ))}
               <input type="number" placeholder="Deal value ($)" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} style={inputStyle} />
-              <textarea placeholder="Notes (optional)" rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })
-              } style={{ ...inputStyle, resize: 'vertical' }} />
+              <textarea placeholder="Notes (optional)" rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: 'vertical' }} />
               <button onClick={createClient} style={{ width: '100%', padding: 11, background: '#16A34A', color: 'white', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', marginTop: 4 }}>
                 Add Client
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Pipeline Settings Panel */}
+      {showPipelineSettings && (
+        <PipelineSettingsPanel
+          stages={stages}
+          onSave={savePipelineStages}
+          onClose={() => setShowPipelineSettings(false)}
+        />
       )}
     </div>
   )
