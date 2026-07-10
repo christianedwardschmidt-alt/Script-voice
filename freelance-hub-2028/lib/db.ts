@@ -322,6 +322,45 @@ async function runInit() {
         action_taken TEXT DEFAULT '',
         ran_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS proposals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        title TEXT NOT NULL DEFAULT 'Untitled Proposal',
+        client_id INTEGER,
+        client_name TEXT DEFAULT '',
+        client_email TEXT DEFAULT '',
+        project_type TEXT DEFAULT 'Consulting',
+        status TEXT NOT NULL DEFAULT 'draft',
+        valid_until TEXT,
+        share_token TEXT UNIQUE,
+        view_count INTEGER DEFAULT 0,
+        last_viewed_at TEXT,
+        introduction TEXT DEFAULT '',
+        problem TEXT DEFAULT '',
+        solution TEXT DEFAULT '',
+        deliverables TEXT DEFAULT '[]',
+        milestones TEXT DEFAULT '[]',
+        line_items TEXT DEFAULT '[]',
+        payment_terms TEXT DEFAULT 'upon_completion',
+        about_me TEXT DEFAULT '',
+        terms TEXT DEFAULT '',
+        subtotal REAL DEFAULT 0,
+        discount REAL DEFAULT 0,
+        total REAL DEFAULT 0,
+        sent_at TEXT,
+        accepted_at TEXT,
+        declined_at TEXT,
+        accepted_by TEXT DEFAULT '',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      )`,
+      `CREATE TABLE IF NOT EXISTS proposal_views (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        proposal_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL DEFAULT 0,
+        viewed_at TEXT DEFAULT (datetime('now')),
+        time_spent INTEGER DEFAULT 0
+      )`,
     ],
     'write'
   )
@@ -373,6 +412,7 @@ async function runInit() {
     await seedPosts(demoId)
     await seedNotes(demoId)
     await seedAgents(demoId)
+    await seedProposals(demoId)
     await client.execute({
       sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
       args: [demoId, 'Alex Rivera', DEMO_EMAIL, 'Product Designer & Full-Stack Developer', 'Figma, React, Next.js, TypeScript, UI/UX, Branding'],
@@ -635,6 +675,129 @@ async function seedNotes(userId: number) {
     { sql, args: [userId, 'TechFlow Discovery Questions', '## Discovery Call Prep — Jul 14\n\nClient: TechFlow Inc (Raj Patel)\nBudget: ~$58k | Timeline: 4 months\n\n### Questions to ask\n1. What does your current analytics stack look like?\n2. Who are the primary users — data analysts or executives?\n3. What are the biggest pain points with your current dashboard?\n4. What integrations are must-haves (Snowflake, BigQuery, dbt)?\n5. Do you have an existing design system or starting from scratch?\n6. What does success look like at the 90-day mark?\n\n### Research notes\n- TechFlow is a Series B SaaS (~200 employees)\n- Their current analytics tool is a legacy Tableau setup\n- Referral from Carlos Mendez — warm intro\n- Recent LinkedIn post about "data democratization" — good angle\n\n### Rate & scope estimate\n- $14,500/month × 4 months = $58,000\n- Includes: discovery, design system, 3 dashboard views, handoff docs', 0, 'TechFlow Inc', JSON.stringify(['Discovery', 'SaaS', 'Prep']), d(18), d(5)] },
     { sql, args: [userId, 'Q3 Goals & Focus Areas', '# Q3 2026 — Personal Goals\n\n## Revenue target: $48,000\n\nCurrent pipeline:\n- Acme Corp retainer: $8,400/mo ✓\n- DataSync v2: $9,800 (due Aug)\n- TechFlow (if closes): $14,500/mo\n- NovaBuild Phase 2: $6,200\n\n## Focus areas\n\n### 1. Niche deeper into SaaS dashboards\nStop taking brand identity work. Every hour on brand is an hour not on the $150/hr dashboard work.\n\n### 2. Productize the discovery process\nCreate a repeatable 2-week discovery sprint I can sell for $4,500. Reduces scope creep massively.\n\n### 3. Raise retainer rate to $9,500/mo\nCurrent: $8,400 with Acme. Renewal is in September — perfect time.\n\n## Non-negotiables\n- No calls before 10am\n- Friday afternoons are protected (portfolio + learning)\n- 3 weeks vacation in Q4', 1, '', JSON.stringify(['Goals', 'Personal', 'Q3']), d(72), d(24)] },
     { sql, args: [userId, 'Invoice Follow-up Scripts', '## Client Communication Templates\n\nUse these when invoices go past due.\n\n---\n\n### 3 days overdue — friendly\n\nSubject: Quick check-in on INV-XXX\n\nHi [Name], just wanted to make sure INV-XXX ($X,XXX) landed in the right place — payment was due [date]. Let me know if you need anything from my end. Happy to resend if needed!\n\n---\n\n### 10 days overdue — firm\n\nSubject: Following up on overdue invoice\n\nHi [Name], I wanted to follow up on INV-XXX ($X,XXX) which is now 10 days past due. Could you let me know the expected payment date? I\'d appreciate getting this sorted.\n\n---\n\n### Notes\n- Always CC yourself\n- Never apologize for following up — it\'s a business transaction\n- If no response after 2 follow-ups, call them directly', 0, '', JSON.stringify(['Templates', 'Finance']), d(96), d(96)] },
+  ], 'write')
+}
+
+async function seedProposals(userId: number) {
+  const now = new Date()
+  const d = (h: number) => new Date(now.getTime() - h * 3600000).toISOString()
+  const dateStr = (h: number) => new Date(now.getTime() - h * 3600000).toISOString().split('T')[0]
+  const sql = `INSERT INTO proposals (user_id,title,client_name,client_email,project_type,status,valid_until,share_token,view_count,last_viewed_at,introduction,problem,solution,deliverables,milestones,line_items,payment_terms,subtotal,total,sent_at,accepted_at,about_me,terms,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  const defaultTerms = `1. All work product created under this proposal becomes the property of the client upon receipt of final payment.\n2. The client may request up to 2 rounds of revisions. Additional revisions are billed at the hourly rate.\n3. Either party may cancel this agreement with 14 days written notice. Work completed to date will be invoiced.\n4. Late payments incur a 1.5% monthly service fee after 30 days.\n5. This proposal is valid for 30 days from the date sent.`
+  const about = `I'm a freelance product designer and developer specializing in B2B SaaS dashboards and data-heavy interfaces. I've helped 30+ startups and scale-ups transform complex data into clean, actionable UX.\n\nRecent work includes analytics platforms at Series B companies, enterprise design systems, and mobile-first web applications. I bring both the design sensibility and technical depth to deliver work that ships — not just looks good in Figma.`
+  await client.batch([
+    { sql, args: [userId,
+      'Analytics Dashboard Redesign', 'TechFlow Inc', 'raj@techflow.io', 'Design', 'accepted',
+      dateStr(24*30), 'prop_techflow_001', 3, d(24*4),
+      "Dear Raj,\n\nThank you for the opportunity to redesign TechFlow's analytics dashboard. After our discovery calls, I'm confident we can create something that not only looks exceptional but meaningfully improves how your team understands and acts on data.\n\nThis proposal outlines my approach, deliverables, timeline, and investment. I'm excited to bring TechFlow's data to life.",
+      "TechFlow's current Tableau-based dashboard was built for a team of 5 data analysts. With 200+ employees now needing daily data access — including executives and non-technical stakeholders — the tool creates friction rather than clarity. Key issues: slow load times, no mobile experience, complex filters that confuse non-technical users, and no way to highlight the metrics that actually matter.",
+      "I'll redesign TechFlow's core analytics experience from the ground up using a modern component-based approach. The new dashboard will load instantly, work beautifully on mobile, and surface the right metric to the right person automatically. I'll establish a scalable design system so your internal team can maintain and extend it independently.",
+      JSON.stringify([
+        { id:'d1', name:'UX Audit & Research', description:'Heuristic audit of current tool, 5 user interviews, affinity mapping', included:true },
+        { id:'d2', name:'Design System', description:'Color, typography, spacing tokens + 40+ reusable components in Figma', included:true },
+        { id:'d3', name:'3 Dashboard Views', description:'Executive summary, analyst deep-dive, and team performance views', included:true },
+        { id:'d4', name:'Mobile Responsive', description:'Full mobile layout for all three views', included:true },
+        { id:'d5', name:'Handoff Documentation', description:'Component specs, interaction notes, and dev handoff in Figma', included:true },
+        { id:'d6', name:'1 Month Support', description:'Bug fixes and minor tweaks after development begins', included:true },
+      ]),
+      JSON.stringify([
+        { id:'m1', name:'Kickoff & Discovery', date: dateStr(24*20), description:'Project kickoff call, stakeholder interviews, current-state audit' },
+        { id:'m2', name:'Design System', date: dateStr(24*14), description:'Component library complete, reviewed and approved' },
+        { id:'m3', name:'Dashboard Designs', date: dateStr(24*7), description:'All three dashboard views designed and prototyped' },
+        { id:'m4', name:'Final Handoff', date: dateStr(24*2), description:'Dev handoff complete, documentation delivered' },
+      ]),
+      JSON.stringify([
+        { id:'li1', name:'UX Research & Audit', qty:1, rate:2500, total:2500 },
+        { id:'li2', name:'Design System (Figma)', qty:1, rate:4500, total:4500 },
+        { id:'li3', name:'Dashboard Design (3 views)', qty:3, rate:2000, total:6000 },
+        { id:'li4', name:'Mobile Responsive Design', qty:1, rate:1500, total:1500 },
+      ]),
+      '50_upfront', 14500, 14500,
+      d(24*6), d(24*4), about, defaultTerms, d(24*8), d(24*4),
+    ]},
+    { sql, args: [userId,
+      'Brand Identity Package', 'Luminary Coffee', 'hello@luminarycoffee.com', 'Design', 'sent',
+      dateStr(24*14), 'prop_luminary_001', 1, d(24*1),
+      "Hi Maya,\n\nIt was great connecting at the Portland makers market last week. Luminary Coffee has a story worth telling visually — the single-origin sourcing, the roasting process, the community-first ethos. This proposal is my vision for translating all of that into a brand identity that makes people feel something before they've taken a sip.",
+      "Luminary Coffee has exceptional product quality and a genuine story, but the current visual identity doesn't do it justice. Generic packaging, an inconsistent color palette, and a logo that could belong to any coffee company mean you're competing on price rather than brand. Independent coffee is having a moment — now is the time to own your identity.",
+      "I'll create a full brand identity system that captures the craft, warmth, and intentionality behind Luminary Coffee. Every element — from the primary logo to the packaging patterns to the typography — will feel cohesive, distinctive, and ownable. The deliverable will be a brand book your team can use to stay consistent across every touchpoint.",
+      JSON.stringify([
+        { id:'d1', name:'Logo Suite', description:'Primary, secondary, and icon marks in all formats (SVG, PNG, PDF)', included:true },
+        { id:'d2', name:'Color Palette', description:'Primary, secondary, and neutral palettes with CMYK/RGB/HEX values', included:true },
+        { id:'d3', name:'Typography System', description:'Primary and secondary typefaces with usage guidelines', included:true },
+        { id:'d4', name:'Brand Patterns', description:'2 custom patterns for packaging and collateral use', included:true },
+        { id:'d5', name:'Brand Book (PDF)', description:'Complete brand guidelines document', included:true },
+        { id:'d6', name:'Social Media Templates', description:'Canva templates for 4 post formats', included:false },
+      ]),
+      JSON.stringify([
+        { id:'m1', name:'Brand Discovery', date: dateStr(24*10), description:'Brand questionnaire, mood board session, competitive audit' },
+        { id:'m2', name:'Concept Presentation', date: dateStr(24*3), description:'3 initial logo directions presented for feedback' },
+        { id:'m3', name:'Refinement', date: dateStr(-24*4), description:'Selected direction refined, full system developed' },
+        { id:'m4', name:'Final Delivery', date: dateStr(-24*10), description:'All files delivered, brand book complete' },
+      ]),
+      JSON.stringify([
+        { id:'li1', name:'Brand Strategy & Discovery', qty:1, rate:800, total:800 },
+        { id:'li2', name:'Logo Design (3 concepts → 1 refined)', qty:1, rate:1800, total:1800 },
+        { id:'li3', name:'Full Brand System', qty:1, rate:1200, total:1200 },
+        { id:'li4', name:'Brand Guidelines PDF', qty:1, rate:400, total:400 },
+      ]),
+      'upon_completion', 4200, 4200,
+      d(24*3), null, about, defaultTerms, d(24*5), d(24*3),
+    ]},
+    { sql, args: [userId,
+      'E-commerce Platform Build', 'Hencewood Digital', 'james@hencewood.com', 'Development', 'viewed',
+      dateStr(24*7), 'prop_hencewood_001', 4, d(36),
+      "Hi James,\n\nThank you for the detailed brief on the Hencewood e-commerce expansion. After reviewing your current Shopify setup and the requirements for the custom B2B portal, I can see a clear path to a solution that will serve your wholesale clients significantly better than the current workarounds.",
+      "Hencewood's wholesale clients are currently navigating a consumer-facing Shopify store that wasn't designed for B2B purchasing. Custom pricing, volume discounts, NET-30 invoicing, and multi-location ordering aren't supported — leading to manual work for your team and frustration for buyers. You're leaving revenue on the table and burning team time on order management.",
+      "I'll build a custom B2B portal integrated with your existing Shopify store. Wholesale clients will have their own login, see their custom pricing, place orders with volume discounts applied automatically, and receive NET-30 invoices via email. Your team will have an admin dashboard to manage accounts, approve credit terms, and view order analytics.",
+      JSON.stringify([
+        { id:'d1', name:'B2B Customer Portal', description:'Login, custom pricing display, order history, account management', included:true },
+        { id:'d2', name:'Shopify Integration', description:'Real-time sync with existing product catalog and inventory', included:true },
+        { id:'d3', name:'Custom Pricing Engine', description:'Per-account pricing rules, volume discounts, tiered rates', included:true },
+        { id:'d4', name:'Automated Invoicing', description:'NET-30 invoices generated automatically and emailed to buyers', included:true },
+        { id:'d5', name:'Admin Dashboard', description:'Account management, order analytics, credit approval workflow', included:true },
+        { id:'d6', name:'Mobile Responsive', description:'Full mobile support for buyers ordering from the floor', included:true },
+      ]),
+      JSON.stringify([
+        { id:'m1', name:'Technical Discovery', date: dateStr(24*14), description:'Architecture review, API mapping, environment setup' },
+        { id:'m2', name:'Core Portal MVP', date: dateStr(-24*14), description:'Login, catalog, cart, and checkout complete' },
+        { id:'m3', name:'Pricing & Invoicing', date: dateStr(-24*28), description:'Custom pricing engine and automated invoicing live' },
+        { id:'m4', name:'Admin Dashboard', date: dateStr(-24*42), description:'Full admin tools and analytics delivered' },
+        { id:'m5', name:'QA & Launch', date: dateStr(-24*49), description:'Testing, bug fixes, and production deployment' },
+      ]),
+      JSON.stringify([
+        { id:'li1', name:'Technical Discovery & Architecture', qty:1, rate:1500, total:1500 },
+        { id:'li2', name:'B2B Portal Development', qty:1, rate:5500, total:5500 },
+        { id:'li3', name:'Shopify Integration & Pricing Engine', qty:1, rate:1800, total:1800 },
+        { id:'li4', name:'Admin Dashboard', qty:1, rate:800, total:800 },
+        { id:'li5', name:'QA, Deployment & Documentation', qty:1, rate:200, total:200 },
+      ]),
+      'milestone', 9800, 9800,
+      d(24*8), null, about, defaultTerms, d(24*10), d(24*8),
+    ]},
+    { sql, args: [userId,
+      'Content Strategy & Copywriting Q4', 'NovaBuild', 'sophie@novabuild.io', 'Writing', 'draft',
+      dateStr(-24*14), 'prop_novabuild_001', 0, null,
+      '', '', '',
+      JSON.stringify([
+        { id:'d1', name:'Content Audit', description:'Review all existing web copy and blog content', included:true },
+        { id:'d2', name:'Content Strategy', description:'Topics, cadence, SEO keywords, and editorial calendar', included:true },
+        { id:'d3', name:'Website Copywriting', description:'Homepage, About, Services, and 3 case studies', included:true },
+        { id:'d4', name:'Blog Articles', description:'4 long-form articles (1,500–2,000 words each)', included:true },
+      ]),
+      JSON.stringify([
+        { id:'m1', name:'Audit & Strategy', date: dateStr(-24*28), description:'Content audit complete, strategy presented' },
+        { id:'m2', name:'Web Copy', date: dateStr(-24*35), description:'All website pages delivered for review' },
+        { id:'m3', name:'Blog Articles', date: dateStr(-24*49), description:'4 articles delivered' },
+      ]),
+      JSON.stringify([
+        { id:'li1', name:'Content Audit & Strategy', qty:1, rate:1200, total:1200 },
+        { id:'li2', name:'Website Copywriting (5 pages)', qty:5, rate:350, total:1750 },
+        { id:'li3', name:'Blog Articles', qty:4, rate:450, total:1800 },
+      ]),
+      'upon_completion', 4750, 4750,
+      null, null, about, defaultTerms, d(24*2), d(24*2),
+    ]},
   ], 'write')
 }
 
