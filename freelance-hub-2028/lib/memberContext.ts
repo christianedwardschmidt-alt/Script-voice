@@ -37,6 +37,43 @@ function dollars(n: number): string {
   return `$${Math.round(n).toLocaleString()}`
 }
 
+const TECHNICAL_KEYWORDS = [
+  'engineer', 'engineering', 'developer', 'dev ', 'software', 'backend', 'frontend',
+  'fullstack', 'full-stack', 'data scientist', 'data analyst', 'machine learning', 'ml ',
+  'architect', 'devops', 'sre', 'security', 'cto', 'vp of eng',
+  'consultant', 'consulting', 'strategy', 'strategist', 'management consulting',
+  'finance', 'financial', 'accountant', 'cpa', 'cfo', 'analyst', 'quant',
+  'operations', 'product manager', 'program manager', 'project manager',
+]
+
+const CREATIVE_KEYWORDS = [
+  'designer', 'design', 'ux', 'ui ', 'graphic', 'illustrator', 'illustration',
+  'photographer', 'photography', 'photo', 'videographer', 'filmmaker', 'video',
+  'writer', 'writing', 'copywriter', 'content', 'editorial', 'journalist',
+  'creative', 'marketing', 'marketer', 'brand', 'branding', 'social media',
+  'artist', 'art director', 'creative director', 'influencer', 'animator',
+]
+
+type CommStyle = 'technical' | 'creative' | 'balanced'
+
+function classifyProfession(headline: string): CommStyle {
+  const lower = headline.toLowerCase()
+  if (TECHNICAL_KEYWORDS.some(k => lower.includes(k))) return 'technical'
+  if (CREATIVE_KEYWORDS.some(k => lower.includes(k))) return 'creative'
+  return 'balanced'
+}
+
+const COMM_STYLE_TEXT: Record<CommStyle, string> = {
+  technical:
+    'Direct and precise. Assumes high business literacy and familiarity with professional terminology. Does not over-explain standard concepts — skips definitions the member clearly already knows. Respects their time. Confident, specific recommendations without unnecessary hedging. Gets to the point immediately.',
+
+  creative:
+    'Warm and encouraging. Explains business, financial, and legal concepts in plain language with relatable real-world examples where helpful. Celebrates their wins. Does not assume prior knowledge of invoicing, contracts, or cash-flow management. Supportive without being condescending — makes the member feel capable and in control, never overwhelmed.',
+
+  balanced:
+    'Clear and professional. Explains concepts when context warrants it; skips explanation when the member\'s own language signals they already understand. Mirrors the member\'s communication register back to them. Balanced between warmth and efficiency — reads the room and adjusts.',
+}
+
 export async function buildMemberContext(userId: number, fallbackName: string): Promise<string> {
   const todayIso = new Date().toISOString().split('T')[0]
   const weekAheadIso = new Date(Date.now() + 7 * 86_400_000).toISOString().split('T')[0]
@@ -169,6 +206,7 @@ export async function buildMemberContext(userId: number, fallbackName: string): 
 
   // ── Assemble ──────────────────────────────────────────────────────────────
   const locationPart = location ? `, based in ${location},` : ''
+  const commStyle = classifyProfession(profession)
 
   return `You are the GuildWire AI Companion for ${name}, a ${profession}${locationPart} who has been a member since ${memberSince}.
 
@@ -177,5 +215,7 @@ ${invoiceLine}
 ${proposalLine}
 ${taskLine}${lastLoginLine ? `\n${lastLoginLine}` : ''}
 
-Use this context naturally throughout the conversation. Reference their actual clients, numbers, and business situation when it's relevant — without announcing it or reciting it back. Speak as a trusted business advisor who has been following their work closely and already knows the shape of their business.`
+Use this context naturally throughout the conversation. Reference their actual clients, numbers, and business situation when it's relevant — without announcing it or reciting it back. Speak as a trusted business advisor who has been following their work closely and already knows the shape of their business.
+
+Communication style for this member: ${COMM_STYLE_TEXT[commStyle]}. Adjust your tone, vocabulary, and level of explanation accordingly in every response.`
 }
