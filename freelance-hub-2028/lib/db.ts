@@ -390,6 +390,38 @@ async function runInit() {
         topics TEXT DEFAULT '[]',
         updated_at TEXT DEFAULT (datetime('now'))
       )`,
+      `CREATE TABLE IF NOT EXISTS blog_posts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL DEFAULT '',
+        slug TEXT NOT NULL UNIQUE,
+        category TEXT NOT NULL DEFAULT 'Practical',
+        excerpt TEXT DEFAULT '',
+        content TEXT NOT NULL DEFAULT '',
+        featured INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'draft',
+        publish_date TEXT,
+        meta_title TEXT DEFAULT '',
+        meta_description TEXT DEFAULT '',
+        read_time INTEGER DEFAULT 5,
+        author_name TEXT DEFAULT 'Christian Monteiro',
+        author_title TEXT DEFAULT 'Founder of GuildWire',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      )`,
+      `CREATE TABLE IF NOT EXISTS blog_bookmarks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        UNIQUE(user_id, post_id)
+      )`,
+      `CREATE TABLE IF NOT EXISTS blog_reading_progress (
+        user_id INTEGER NOT NULL,
+        post_id INTEGER NOT NULL,
+        progress REAL DEFAULT 0,
+        updated_at TEXT DEFAULT (datetime('now')),
+        PRIMARY KEY(user_id, post_id)
+      )`,
     ],
     'write'
   )
@@ -416,6 +448,10 @@ async function runInit() {
   // Seed global news articles (not per-user) once
   const hasNews = await client.execute({ sql: `SELECT id FROM news_articles LIMIT 1`, args: [] })
   if (!hasNews.rows.length) await seedNewsArticles()
+
+  // Seed blog posts once
+  const hasBlog = await client.execute({ sql: `SELECT id FROM blog_posts LIMIT 1`, args: [] })
+  if (!hasBlog.rows.length) await seedBlogPosts()
 
   // Ensure demo user exists and has data
   const DEMO_EMAIL = 'demo@guildwire.io'
@@ -906,4 +942,189 @@ For finance: the IRS dropped new guidance on home office deductions and software
     sql: `INSERT OR IGNORE INTO news_briefings (date, content) VALUES (?, ?)`,
     args: [todayStr, briefing],
   })
+}
+
+async function seedBlogPosts() {
+  const posts = [
+    {
+      title: `You're Not a Freelancer. You're a Micro-Business Owner.`,
+      slug: 'youre-not-a-freelancer-youre-a-micro-business-owner',
+      category: 'Opinion',
+      excerpt: `The label you use for yourself changes everything — how you price, how you present yourself, and how clients treat you. It's time to upgrade the vocabulary.`,
+      featured: 1,
+      status: 'published',
+      publish_date: new Date(Date.now() - 2 * 86400000).toISOString(),
+      read_time: 4,
+      meta_title: `You're Not a Freelancer. You're a Micro-Business Owner. | GuildWire Blog`,
+      meta_description: `The label you use changes how clients treat you and how you treat yourself. Here's why the mindset shift from freelancer to business owner is the most important upgrade you'll make.`,
+      content: `<p>The word "freelancer" has baggage. It implies someone who picks up gigs between real jobs, someone whose work is fundamentally disposable. And the way most independents carry themselves — apologetically, always available, discounting to close — suggests they've internalized that label too deeply.</p>
+
+<p>You are not a freelancer. You are the founder, CEO, head of sales, lead delivery person, and CFO of a micro-business. Upgrading that vocabulary is the first step to upgrading everything else.</p>
+
+<h2>The Language We Use Shapes How We Think</h2>
+
+<p>When you call yourself a freelancer, you invite certain expectations. Clients expect you to be infinitely flexible, to fit into their processes, and to price by the hour like a commodity. When you describe yourself as a consultant, an independent studio, or a specialist firm — the same person doing the same work — the conversation shifts entirely.</p>
+
+<blockquote>The most successful independents I know don't use the word "freelancer" when describing what they do. It's a category that implies a ceiling.</blockquote>
+
+<p>This isn't about pretense. It's about framing. A business owner doesn't apologize for their rates. A business owner doesn't respond to every email the same day out of fear they'll lose the client. A business owner fires clients who don't fit.</p>
+
+<h2>What Changes When You Make the Shift</h2>
+
+<h3>1. How you price</h3>
+<p>Freelancers bill time. Business owners price for outcomes. When you start thinking of yourself as a business, you stop asking "how many hours will this take?" and start asking "what is the outcome worth to this client?" That shift alone can double your effective hourly rate without a single conversation about rates.</p>
+
+<h3>2. How you structure your day</h3>
+<p>Freelancers are reactive. They respond to whatever comes in. Business owners schedule deep work, protect mornings for high-leverage activities, and build systems so that not every client question requires their direct attention. The systems are what give you leverage.</p>
+
+<h3>3. How you handle difficult conversations</h3>
+<p>When a client asks for scope outside the agreement, a freelancer often says yes to avoid conflict. A business owner refers to the contract, explains the impact, and asks for approval on additional budget. Not adversarially — professionally. Because that's how businesses operate.</p>
+
+<h2>The Practical Starting Point</h2>
+
+<p>Start with how you introduce yourself. Instead of "I'm a freelance designer," try "I run an independent design studio focused on SaaS product interfaces." Same work. Completely different positioning.</p>
+
+<p>Then look at your systems: Do you have a clear onboarding process? A contract that actually protects you? A way of scoping work that prevents budget overruns? These aren't nice-to-haves for a business — they're the baseline.</p>
+
+<p>GuildWire exists because I wanted a platform that treated independent professionals like the business owners they are. Not a gig marketplace. Not a freelancer directory. A proper operating system for serious independents.</p>
+
+<p>The label is just the beginning. The mindset is the whole game.</p>`,
+    },
+    {
+      title: `The 5-Step Scoping System That Eliminated Scope Creep in My Business`,
+      slug: '5-step-scoping-system-eliminate-scope-creep',
+      category: 'Practical',
+      excerpt: `After getting burned on three projects in six months, I built a scoping process that hasn't failed me since. Here's the exact system.`,
+      featured: 0,
+      status: 'published',
+      publish_date: new Date(Date.now() - 7 * 86400000).toISOString(),
+      read_time: 5,
+      meta_title: `The 5-Step Project Scoping System That Eliminates Scope Creep | GuildWire Blog`,
+      meta_description: `Scope creep is a systems problem, not a client problem. Here's the exact 5-step scoping process I use to protect every project from budget overruns.`,
+      content: `<p>Scope creep cost me three projects in six months. Not in a dramatic blow-up-and-lose-the-client way — worse. It cost me quietly, in unpaid hours, in eroded margins, in the specific exhaustion of knowing you're underpaid and not knowing how to fix it mid-engagement.</p>
+
+<p>The system I built after that hasn't failed once. Here it is.</p>
+
+<h2>Step 1: The Outcome Frame</h2>
+
+<p>Before you scope any work, get crystal clear on the single measurable outcome the client actually cares about. Not what they've asked for — what they're trying to achieve. This is a conversation, not a form. Ask: "If this project succeeds completely, what does success look like in a year?"</p>
+
+<p>This frame does two things: it grounds every decision that follows in business value, and it surfaces the real project — which is often different from the stated project.</p>
+
+<h2>Step 2: The Scope Document</h2>
+
+<p>Write a scope document before any contract. One page, maximum. It includes: what's in scope, what's explicitly out of scope, and the number of revision rounds included. The out-of-scope list is the most important part. You cannot close a scope that isn't bounded.</p>
+
+<blockquote>The best scope documents I've written have longer "out of scope" sections than "in scope" sections. The client doesn't care what you're not doing — but you do.</blockquote>
+
+<h2>Step 3: Price to the Scope, Not the Time</h2>
+
+<p>Once you have the scope document, price it as a fixed deliverable. Don't say "this will take 40 hours at $150." Say "this engagement is $8,000, delivered by [date], with two rounds of revisions." You're removing your time from the equation and anchoring to output.</p>
+
+<p>If you genuinely can't estimate, use a paid discovery phase to get to a fixed price. A 5-hour paid discovery at $750 that leads to a $12,000 project is better than guessing and absorbing overruns.</p>
+
+<h2>Step 4: The Change Order Process</h2>
+
+<p>When a client requests something outside scope — and they will — you have a process. Not a confrontation, a process. "That's a great addition. It falls outside our current scope, so I'll put together a change order for your approval before we proceed." A change order is a one-page document: what's being added, what it costs, and a signature field.</p>
+
+<p>Most clients don't push back on change orders when they're professional and clear. The change order is also your protection if they do.</p>
+
+<h2>Step 5: The Retrospective</h2>
+
+<p>After every project, before you close the final invoice, answer three questions: Did the project come in at scope? If not, where did scope expand and why? What would I do differently next time?</p>
+
+<p>Scope creep isn't a client problem. It's a system problem. Build a better system.</p>`,
+    },
+    {
+      title: `Building GuildWire While Running Client Projects: What Actually Happened`,
+      slug: 'building-guildwire-while-running-client-projects',
+      category: 'Personal',
+      excerpt: `Everyone makes it sound clean. Build in public, ship fast, be transparent. Here's the reality of building a product while keeping the lights on through client work.`,
+      featured: 0,
+      status: 'published',
+      publish_date: new Date(Date.now() - 14 * 86400000).toISOString(),
+      read_time: 4,
+      meta_title: `Building GuildWire While Running Client Projects | GuildWire Blog`,
+      meta_description: `The honest story of building a product while still billing clients, including every mistake and the systems that eventually made it work.`,
+      content: `<p>The narrative version goes: I had an insight, I built the product, I shipped it, and now here we are. That's not what happened.</p>
+
+<p>What actually happened is that I spent eight months building GuildWire in the margins of a full client schedule, made every mistake possible, nearly quit three times, and learned more about product development and my own limits than I had in the previous five years of consulting combined.</p>
+
+<h2>The First Six Months Were Part-Time</h2>
+
+<p>I was billing around $14,000 a month when I started building GuildWire. Not enough to feel financially safe quitting client work, but enough to feel guilty about splitting my attention. The result was that I gave clients 60% and the product 25%, and the remaining 15% went to anxiety about both.</p>
+
+<p>The turning point wasn't a financial milestone — it was a time architecture decision. I blocked Tuesday and Thursday mornings, 7am to noon, as non-negotiable product time. Client work happened around that block. Within six weeks, my client communications got more efficient because I had less time for them, and my product work got more focused because I had less time for it too.</p>
+
+<blockquote>Constraints aren't the enemy of creative work. They're the structure that makes creative work possible.</blockquote>
+
+<h2>What I Got Wrong</h2>
+
+<p>I tried to build too much before talking to users. The first version of GuildWire had eight features, four of which I've since removed. I built based on my own problems as a consultant, which is a reasonable starting point, but I needed to validate assumptions much earlier than I did.</p>
+
+<p>I also underestimated how long it would take to go from "working" to "good." The gap between something that technically functions and something you'd be proud to show to a serious professional is enormous. I shipped three versions that I now find embarrassing.</p>
+
+<h2>What Kept Me Going</h2>
+
+<p>The users who showed up even when the product was rough. The freelancer who told me they'd sent their first professional proposal and closed a client in the same week. The consultant who started treating their business like a business after reading a post I wrote. Those moments make the rest of it worth it.</p>
+
+<p>Building something people actually use is different from building something people say is interesting. I chased "interesting" for too long. "Useful" is the only metric that matters.</p>
+
+<h2>Where We Are Now</h2>
+
+<p>GuildWire is still early. There are rough edges and features I want to add and things that don't work as well as I'd like. But it's real, it's used, and it makes a genuine difference for the independents who rely on it. That's the only bar that mattered.</p>
+
+<p>If you're building something on the side right now: keep going. The version you ship in month two is better than the idea you protected in month one.</p>`,
+    },
+    {
+      title: `The Referral Playbook: Getting 80% of Work Through Warm Introductions`,
+      slug: 'referral-playbook-warm-introductions',
+      category: 'Practical',
+      excerpt: `Cold outreach is a slot machine. Referrals are a system you can engineer. Here's exactly how I built one that consistently fills my pipeline without a single cold email.`,
+      featured: 0,
+      status: 'published',
+      publish_date: new Date(Date.now() - 21 * 86400000).toISOString(),
+      read_time: 5,
+      meta_title: `The Referral Playbook: Getting 80% of Work Through Warm Introductions | GuildWire Blog`,
+      meta_description: `A step-by-step system for engineering a referral pipeline that keeps filling itself — including the exact words to use when asking for introductions.`,
+      content: `<p>Cold outreach has a place. But it's a slot machine — you pull the handle, spend the tokens, and occasionally get lucky. Referrals are a different kind of machine entirely. They're a system you can engineer, repeat, and improve. I get over 80% of my projects through warm introductions, and it's not an accident.</p>
+
+<h2>The Fundamental Misconception</h2>
+
+<p>Most independents treat referrals as something that happens to them. Someone they know happens to recommend them, and they're grateful, and then they wait for it to happen again. This is passive referral dependency. It feels like referrals but it's really just luck with a branding problem.</p>
+
+<p>An intentional referral system is something you build and actively operate. The difference is significant.</p>
+
+<h2>The Three Components</h2>
+
+<h3>1. A referable positioning statement</h3>
+<p>You cannot be referred effectively if the person referring you can't explain what you do in a single sentence. "He's really talented" doesn't get meetings. "She's the person who helps B2B SaaS companies rewrite their onboarding and double their 30-day retention" gets meetings.</p>
+
+<p>Your positioning statement needs to be specific enough that when someone in your referrer's network has that exact problem, your name is the only name that comes to mind.</p>
+
+<h3>2. The end-of-project ask</h3>
+<p>The best moment to ask for a referral is at the peak of client satisfaction — which is typically right after a major milestone or at project completion, before the invoice is paid and before they've had time to move on to the next thing.</p>
+
+<p>The script is simple: "This has been a great engagement. The kind of client I work best with is [description]. If anyone in your network comes to mind, I'd genuinely appreciate an introduction." That's it. No forms, no referral programs, just a direct ask at the right moment.</p>
+
+<blockquote>The ask has to be specific. "Let me know if you know anyone" gets no introductions. "If you know any early-stage SaaS founders working on growth" gets introductions.</blockquote>
+
+<h3>3. The follow-through system</h3>
+<p>When someone says "I'll think about it," put them in a 30-day follow-up. Not automated — a handwritten note or a direct message. "Hey, just following up on our conversation about introductions. No pressure at all — just wanted to make sure I didn't drop the thread." Most referrals happen on the follow-up, not the original ask.</p>
+
+<h2>The Compound Effect</h2>
+
+<p>Referral systems compound in a way cold outreach never does. Every satisfied client is a potential referrer. Every referral that turns into a client is a new potential referrer. Over time, your network becomes self-reinforcing, and the quality of inbound leads continuously improves because people refer people who are similar to themselves.</p>
+
+<p>Build the system. Work the system. Then watch it work for you.</p>`,
+    },
+  ]
+
+  for (const post of posts) {
+    await client.execute({
+      sql: `INSERT INTO blog_posts (title, slug, category, excerpt, content, featured, status, publish_date, meta_title, meta_description, read_time, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+      args: [post.title, post.slug, post.category, post.excerpt, post.content, post.featured, post.status, post.publish_date, post.meta_title, post.meta_description, post.read_time],
+    })
+  }
 }
