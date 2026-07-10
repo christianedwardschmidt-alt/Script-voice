@@ -20,6 +20,8 @@ interface Invoice {
   id: string; client: string; project: string
   amount: number; status: Status
   issued: string; due: string; avatar: string; color: string
+  late_fee_enabled: boolean; late_fee_percentage: number; late_fee_grace_days: number
+  late_fee_applied: boolean; late_fee_amount: number; late_fee_waived: boolean
 }
 interface LineItem { description: string; qty: number; rate: number }
 
@@ -27,6 +29,9 @@ const COLORS = ['#16A34A', '#EC4899', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6'
 function fmt(n: number) { return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }
 function todayIso() { return new Date().toISOString().split('T')[0] }
 function emptyLine(): LineItem { return { description: '', qty: 1, rate: 0 } }
+function effectiveTotal(inv: Invoice) {
+  return inv.late_fee_applied && !inv.late_fee_waived ? inv.amount + inv.late_fee_amount : inv.amount
+}
 
 function Sparkline({ values, color, id }: { values: number[]; color: string; id: number }) {
   const w = 72, h = 26
@@ -71,11 +76,15 @@ export default function BillingPage() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const [openStatusId, setOpenSt]   = useState<string | null>(null)
 
-  const [fClient, setFClient] = useState('')
-  const [fIssued, setFIssued] = useState(todayIso())
-  const [fDue,    setFDue]    = useState('')
-  const [fNotes,  setFNotes]  = useState('')
-  const [lines,   setLines]   = useState<LineItem[]>([emptyLine()])
+  const [fClient, setFClient]     = useState('')
+  const [fIssued, setFIssued]     = useState(todayIso())
+  const [fDue,    setFDue]        = useState('')
+  const [fNotes,  setFNotes]      = useState('')
+  const [lines,   setLines]       = useState<LineItem[]>([emptyLine()])
+
+  const [fLateFeeEnabled,    setFLateFeeEnabled]    = useState(false)
+  const [fLateFeePercentage, setFLateFeePercentage] = useState(1.5)
+  const [fLateFeeDays,       setFLateFeeDays]       = useState(30)
 
   useEffect(() => {
     fetch('/api/invoices').then(r => r.json())
@@ -106,7 +115,11 @@ export default function BillingPage() {
   })
 
   const subtotal = lines.reduce((s, l) => s + l.qty * l.rate, 0)
-  function resetForm() { setFClient(''); setFIssued(todayIso()); setFDue(''); setFNotes(''); setLines([emptyLine()]) }
+
+  function resetForm() {
+    setFClient(''); setFIssued(todayIso()); setFDue(''); setFNotes(''); setLines([emptyLine()])
+    setFLateFeeEnabled(false); setFLateFeePercentage(1.5); setFLateFeeDays(30)
+  }
 
   async function createInvoice(status: Status) {
     if (!fClient.trim() || subtotal <= 0) return
@@ -115,7 +128,12 @@ export default function BillingPage() {
     const color   = COLORS[invoices.length % COLORS.length]
     const res = await fetch('/api/invoices', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ client: fClient, project, amount: subtotal, status, issued: fIssued, due: fDue, avatar, color }),
+      body: JSON.stringify({
+        client: fClient, project, amount: subtotal, status, issued: fIssued, due: fDue, avatar, color,
+        late_fee_enabled: fLateFeeEnabled,
+        late_fee_percentage: fLateFeePercentage,
+        late_fee_grace_days: fLateFeeDays,
+      }),
     })
     const created = await res.json()
     setInvoices(prev => [created, ...prev])
@@ -140,6 +158,16 @@ export default function BillingPage() {
     setInvoices(prev => prev.filter(i => i.id !== id))
     if (preview?.id === id) setPreview(null)
     await fetch(`/api/invoices/${id}`, { method: 'DELETE' })
+  }
+
+  async function waiveLateFee(inv: Invoice) {
+    const res = await fetch(`/api/invoices/${inv.id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ late_fee_waived: true }),
+    })
+    const updated = await res.json()
+    setInvoices(prev => prev.map(i => i.id === inv.id ? updated : i))
+    if (preview?.id === inv.id) setPreview(updated)
   }
 
   function updateLine(idx: number, field: keyof LineItem, val: string | number) {
@@ -169,7 +197,7 @@ export default function BillingPage() {
         </button>
       </div>
 
-      {/* KPI row — matching dashboard stat bar style */}
+      {/* KPI row */}
       <div className="inv-kpi kpi-bar" style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
         {kpis.map(({ label, value, Icon, accent, spark, trend, up }, i) => (
           <div key={label} style={{ padding: '24px 28px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none', borderTop: `2px solid ${accent}` }}>
@@ -261,7 +289,16 @@ export default function BillingPage() {
                     </td>
                     <td style={{ padding: '12px 16px', fontSize: 12, color: '#6B7280', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{inv.project}</td>
                     <td style={{ padding: '12px 16px' }}>
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: inv.status === 'Overdue' ? '#DC2626' : '#111827', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>${fmt(inv.amount)}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'flex-start' }}>
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: inv.late_fee_applied && !inv.late_fee_waived ? '#EF4444' : inv.status === 'Overdue' ? '#DC2626' : '#111827', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                          ${fmt(effectiveTotal(inv))}
+                        </span>
+                        {inv.late_fee_applied && !inv.late_fee_waived && (
+                          <span style={{ fontSize: 9.5, fontWeight: 700, color: '#EF4444', background: '#EF444410', padding: '2px 7px', borderRadius: 99, letterSpacing: '0.04em', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', border: '1px solid #FECACA' }}>
+                            Late Fee Added
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: '12px 16px' }}>
                       <div data-dropdown style={{ position: 'relative', display: 'inline-block' }}>
@@ -377,14 +414,51 @@ export default function BillingPage() {
                 ))}
               </div>
 
-              {/* Amount */}
-              <div style={{ background: '#F9FAFB', borderRadius: 12, padding: '18px 20px', border: '1px solid #F3F4F6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {/* Amount — reflects late fee total when applicable */}
+              <div style={{ background: '#F9FAFB', borderRadius: 12, padding: '18px 20px', border: `1px solid ${preview.late_fee_applied && !preview.late_fee_waived ? '#FECACA' : '#F3F4F6'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: 6, fontFamily: 'var(--font-body)' }}>Total Due</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', color: '#111827', fontVariantNumeric: 'tabular-nums' }}>${fmt(preview.amount)}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', color: preview.late_fee_applied && !preview.late_fee_waived ? '#EF4444' : '#111827', fontVariantNumeric: 'tabular-nums' }}>
+                    ${fmt(effectiveTotal(preview))}
+                  </div>
                 </div>
                 <div style={{ width: 52, height: 52, borderRadius: 14, background: `${preview.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: preview.color, fontFamily: 'var(--font-display)' }}>{preview.avatar}</div>
               </div>
+
+              {/* Late Fee section */}
+              {preview.late_fee_applied && !preview.late_fee_waived && (
+                <div style={{ background: '#FFF5F5', borderRadius: 12, padding: '16px 18px', border: '1px solid #FECACA' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: '#EF4444', marginBottom: 12, fontFamily: 'var(--font-body)' }}>Late Payment Fee</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+                      <span>Original Total</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>${fmt(preview.amount)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#EF4444', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
+                      <span>Late Fee ({preview.late_fee_percentage}%)</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>+${fmt(preview.late_fee_amount)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 700, color: '#EF4444', borderTop: '1px solid #FECACA', paddingTop: 9, marginTop: 2, fontFamily: 'var(--font-display)', fontVariantNumeric: 'tabular-nums' }}>
+                      <span>New Total</span>
+                      <span>${fmt(preview.amount + preview.late_fee_amount)}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => waiveLateFee(preview)}
+                    style={{ marginTop: 12, background: 'none', border: 'none', cursor: 'pointer', color: '#16A34A', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-body)', padding: 0, textDecoration: 'underline', textUnderlineOffset: 3 }}
+                  >
+                    Waive Fee
+                  </button>
+                </div>
+              )}
+
+              {/* Late fee waived confirmation */}
+              {preview.late_fee_waived && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 10 }}>
+                  <CheckCircle size={13} color="#16A34A" />
+                  <span style={{ fontSize: 12.5, color: '#16A34A', fontWeight: 600, fontFamily: 'var(--font-body)' }}>Late fee waived</span>
+                </div>
+              )}
 
               {/* Status change */}
               <div>
@@ -445,6 +519,7 @@ export default function BillingPage() {
                 ))}
               </div>
 
+              {/* Line Items */}
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: 8, fontFamily: 'var(--font-body)' }}>Line Items</div>
                 <div style={{ border: '1px solid #F3F4F6', borderRadius: 10, overflow: 'hidden' }}>
@@ -485,6 +560,7 @@ export default function BillingPage() {
                 </button>
               </div>
 
+              {/* Notes */}
               <div>
                 <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9CA3AF', display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)' }}>Notes / Payment Terms</label>
                 <textarea
@@ -494,6 +570,57 @@ export default function BillingPage() {
                 />
               </div>
 
+              {/* Late Fees */}
+              <div style={{ border: '1px solid #F3F4F6', borderRadius: 12, padding: '16px 18px', background: fLateFeeEnabled ? '#FAFAFA' : 'transparent' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: fLateFeeEnabled ? 16 : 0 }}>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 2 }}>Late Payment Fees</div>
+                    <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Auto-charge a fee if payment is overdue</div>
+                  </div>
+                  {/* Toggle switch */}
+                  <button
+                    onClick={() => setFLateFeeEnabled(v => !v)}
+                    style={{ width: 44, height: 24, borderRadius: 99, background: fLateFeeEnabled ? '#16A34A' : '#D1D5DB', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.18s', flexShrink: 0 }}
+                    aria-pressed={fLateFeeEnabled}
+                  >
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: fLateFeeEnabled ? 23 : 3, transition: 'left 0.18s', boxShadow: '0 1px 3px rgba(0,0,0,0.25)' }} />
+                  </button>
+                </div>
+                {fLateFeeEnabled && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9CA3AF', display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)' }}>Fee Percentage</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type="number" min="0.1" max="25" step="0.1"
+                          value={fLateFeePercentage}
+                          onChange={e => setFLateFeePercentage(parseFloat(e.target.value) || 1.5)}
+                          style={{ ...inputStyle, paddingRight: 30 }}
+                        />
+                        <span style={{ position: 'absolute', right: 11, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: '#9CA3AF', pointerEvents: 'none', fontFamily: 'var(--font-body)' }}>%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#9CA3AF', display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)' }}>Grace Period</label>
+                      <select
+                        value={fLateFeeDays}
+                        onChange={e => setFLateFeeDays(Number(e.target.value))}
+                        style={{ ...inputStyle, cursor: 'pointer' }}
+                      >
+                        <option value={15}>15 days</option>
+                        <option value={30}>30 days</option>
+                        <option value={45}>45 days</option>
+                        <option value={60}>60 days</option>
+                      </select>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1', fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>
+                      A {fLateFeePercentage}% fee will be added automatically if payment is not received within {fLateFeeDays} days of the due date.
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Totals */}
               <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
                 <div style={{ width: 200 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 12.5, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
@@ -507,6 +634,7 @@ export default function BillingPage() {
                 </div>
               </div>
 
+              {/* Actions */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
                 <button
                   onClick={() => createInvoice('Draft')}

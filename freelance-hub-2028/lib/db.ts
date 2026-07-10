@@ -200,7 +200,13 @@ async function runInit() {
         id TEXT PRIMARY KEY,
         user_id INTEGER NOT NULL DEFAULT 0,
         client TEXT NOT NULL, project TEXT,
-        amount INTEGER DEFAULT 0, status TEXT, issued TEXT, due TEXT, avatar TEXT, color TEXT
+        amount REAL DEFAULT 0, status TEXT, issued TEXT, due TEXT, avatar TEXT, color TEXT,
+        late_fee_enabled INTEGER DEFAULT 0,
+        late_fee_percentage REAL DEFAULT 1.5,
+        late_fee_grace_days INTEGER DEFAULT 30,
+        late_fee_applied INTEGER DEFAULT 0,
+        late_fee_amount REAL DEFAULT 0,
+        late_fee_waived INTEGER DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS jobs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -455,6 +461,12 @@ async function runInit() {
     `ALTER TABLE integrations ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE posts ADD COLUMN user_id INTEGER NOT NULL DEFAULT 0`,
     `ALTER TABLE tax_documents ADD COLUMN category TEXT DEFAULT 'Other Tax Documents'`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_enabled INTEGER DEFAULT 0`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_percentage REAL DEFAULT 1.5`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_grace_days INTEGER DEFAULT 30`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_applied INTEGER DEFAULT 0`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_amount REAL DEFAULT 0`,
+    `ALTER TABLE invoices ADD COLUMN late_fee_waived INTEGER DEFAULT 0`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
