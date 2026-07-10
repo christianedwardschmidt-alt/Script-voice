@@ -28,9 +28,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
   if (body.tags !== undefined) next.tags = JSON.stringify(body.tags)
   if (body.starred !== undefined) next.starred = body.starred ? 1 : 0
+  const lastContactAt = new Date().toISOString()
   await execute(
-    `UPDATE crm_clients SET name=?,company=?,email=?,phone=?,website=?,stage=?,value=?,avatar=?,avatarBg=?,tags=?,lastContact=?,starred=?,rating=?,notes=? WHERE id=? AND user_id=?`,
-    [next.name, next.company, next.email, next.phone, next.website, next.stage, next.value, next.avatar, next.avatarBg, next.tags, next.lastContact, next.starred, next.rating, next.notes, id, user.id]
+    `UPDATE crm_clients SET name=?,company=?,email=?,phone=?,website=?,stage=?,value=?,avatar=?,avatarBg=?,tags=?,lastContact=?,last_contact_at=?,starred=?,rating=?,notes=? WHERE id=? AND user_id=?`,
+    [next.name, next.company, next.email, next.phone, next.website, next.stage, next.value, next.avatar, next.avatarBg, next.tags, next.lastContact, lastContactAt, next.starred, next.rating, next.notes, id, user.id]
   )
   if (body.stage !== undefined && body.stage !== existing.stage) {
     logActivity(user.id, `Moved ${existing.name} to ${body.stage} stage`)

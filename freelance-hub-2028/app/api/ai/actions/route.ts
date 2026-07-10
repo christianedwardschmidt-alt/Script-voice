@@ -270,8 +270,8 @@ async function executeTool(name: string, input: AnyRecord, userId: number): Prom
   if (name === 'add_crm_contact') {
     const { name, company, email = '', stage = 'Lead', value = 0, notes = '' } = input
     const r = await execute(
-      `INSERT INTO crm_clients (user_id, name, company, email, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-      [userId, name, company, email, stage, value, '👤', '#78716c', '[]', 'Just added', 0, 0, notes]
+      `INSERT INTO crm_clients (user_id, name, company, email, stage, value, avatar, avatarBg, tags, lastContact, last_contact_at, starred, rating, notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      [userId, name, company, email, stage, value, '👤', '#78716c', '[]', 'Just added', new Date().toISOString(), 0, 0, notes]
     )
     return { summary: `CRM contact added: ${name} at ${company} (${stage})`, data: { id: r.lastInsertRowid, name, company, stage, value } }
   }

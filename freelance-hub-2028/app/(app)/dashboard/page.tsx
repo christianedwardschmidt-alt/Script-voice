@@ -6,6 +6,7 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { Mic, Plus, ChevronDown } from 'lucide-react'
+import WatchdogPanel from './WatchdogPanel'
 
 const revenueData = [
   { month: 'Jan', income: 7200,  expenses: 2100 },
@@ -228,91 +229,94 @@ export default function DashboardPage() {
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
+  const standardHeader = (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
+      <div>
+        <h1 style={{
+          fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700,
+          color: '#111827', letterSpacing: '-0.02em', marginBottom: 6,
+        }}>
+          {greeting}, {userName}.
+        </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6B7280' }}>
+          Here&apos;s what&apos;s happening with your business.
+        </p>
+      </div>
+
+      {/* Quick-create dropdown */}
+      <div ref={newMenuRef} style={{ position: 'relative' }}>
+        <button
+          onClick={() => setShowNewMenu(v => !v)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 7,
+            padding: '10px 16px', background: '#16A34A', color: 'white',
+            border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600,
+            cursor: 'pointer', fontFamily: 'var(--font-body)',
+            boxShadow: '0 1px 4px rgba(22,163,74,0.35)',
+          }}
+        >
+          <Plus size={14} /> New <ChevronDown size={12} style={{ opacity: 0.7 }} />
+        </button>
+
+        {showNewMenu && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+            background: 'white', border: '1px solid #F3F4F6',
+            borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            zIndex: 50, minWidth: 200, overflow: 'hidden',
+          }}>
+            <div style={{ padding: '10px 14px 6px', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Create</div>
+            {[
+              { icon: '🧾', label: 'Invoice',   href: '/invoicing', desc: 'Bill a client' },
+              { icon: '📋', label: 'Proposal',  href: '/invoicing', desc: 'Send a proposal' },
+              { icon: '💰', label: 'Quote',     href: '/invoicing', desc: 'Quick estimate' },
+              { icon: '✅', label: 'Task',       href: '/tasks',    desc: 'Add to your list' },
+              { icon: '👤', label: 'Client',    href: '/clients',  desc: 'Add contact' },
+              { icon: '📅', label: 'Event',     href: '/calendar', desc: 'Schedule time' },
+            ].map(item => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setShowNewMenu(false)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '9px 14px', textDecoration: 'none',
+                  transition: 'background 0.1s',
+                }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F9FAFB'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+              >
+                <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{item.desc}</div>
+                </div>
+              </a>
+            ))}
+            <div style={{ height: 1, background: '#F3F4F6', margin: '4px 0' }} />
+            <a
+              href="/ai-assistant"
+              onClick={() => setShowNewMenu(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 14px', textDecoration: 'none', background: 'transparent', transition: 'background 0.1s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F0FDF4'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+            >
+              <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>⚡</span>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--font-body)' }}>Ask AI to create</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Just describe it</div>
+              </div>
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
   return (
     <div style={{ padding: '40px 32px 52px', minHeight: '100vh' }}>
 
-      {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
-        <div>
-          <h1 style={{
-            fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700,
-            color: '#111827', letterSpacing: '-0.02em', marginBottom: 6,
-          }}>
-            {greeting}, {userName}.
-          </h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6B7280' }}>
-            Here&apos;s what&apos;s happening with your business.
-          </p>
-        </div>
-
-        {/* Quick-create dropdown */}
-        <div ref={newMenuRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowNewMenu(v => !v)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              padding: '10px 16px', background: '#16A34A', color: 'white',
-              border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600,
-              cursor: 'pointer', fontFamily: 'var(--font-body)',
-              boxShadow: '0 1px 4px rgba(22,163,74,0.35)',
-            }}
-          >
-            <Plus size={14} /> New <ChevronDown size={12} style={{ opacity: 0.7 }} />
-          </button>
-
-          {showNewMenu && (
-            <div style={{
-              position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-              background: 'white', border: '1px solid #F3F4F6',
-              borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              zIndex: 50, minWidth: 200, overflow: 'hidden',
-            }}>
-              <div style={{ padding: '10px 14px 6px', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Create</div>
-              {[
-                { icon: '🧾', label: 'Invoice',   href: '/invoicing', desc: 'Bill a client' },
-                { icon: '📋', label: 'Proposal',  href: '/invoicing', desc: 'Send a proposal' },
-                { icon: '💰', label: 'Quote',     href: '/invoicing', desc: 'Quick estimate' },
-                { icon: '✅', label: 'Task',       href: '/tasks',    desc: 'Add to your list' },
-                { icon: '👤', label: 'Client',    href: '/clients',  desc: 'Add contact' },
-                { icon: '📅', label: 'Event',     href: '/calendar', desc: 'Schedule time' },
-              ].map(item => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setShowNewMenu(false)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '9px 14px', textDecoration: 'none',
-                    transition: 'background 0.1s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F9FAFB'}
-                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-                >
-                  <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{item.label}</div>
-                    <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{item.desc}</div>
-                  </div>
-                </a>
-              ))}
-              <div style={{ height: 1, background: '#F3F4F6', margin: '4px 0' }} />
-              <a
-                href="/ai-assistant"
-                onClick={() => setShowNewMenu(false)}
-                style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 14px', textDecoration: 'none', background: 'transparent', transition: 'background 0.1s' }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F0FDF4'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
-              >
-                <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>⚡</span>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--font-body)' }}>Ask AI to create</div>
-                  <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Just describe it</div>
-                </div>
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
+      <WatchdogPanel userName={userName} standardHeader={standardHeader} />
 
       {/* Stats row — unified bar */}
       <div style={{

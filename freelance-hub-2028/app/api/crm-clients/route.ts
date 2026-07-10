@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { name, company, email, phone, website, stage, value, avatar, avatarBg, tags, lastContact, starred, rating, notes } = body
   const result = await execute(
-    `INSERT INTO crm_clients (user_id,name,company,email,phone,website,stage,value,avatar,avatarBg,tags,lastContact,starred,rating,notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [user.id, name, company, email ?? null, phone ?? null, website ?? null, stage ?? 'Lead', value ?? 0, avatar ?? '👤', avatarBg ?? '#16a34a', JSON.stringify(tags ?? []), lastContact ?? 'just now', starred ? 1 : 0, rating ?? 0, notes ?? '']
+    `INSERT INTO crm_clients (user_id,name,company,email,phone,website,stage,value,avatar,avatarBg,tags,lastContact,last_contact_at,starred,rating,notes) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [user.id, name, company, email ?? null, phone ?? null, website ?? null, stage ?? 'Lead', value ?? 0, avatar ?? '👤', avatarBg ?? '#16a34a', JSON.stringify(tags ?? []), lastContact ?? 'just now', new Date().toISOString(), starred ? 1 : 0, rating ?? 0, notes ?? '']
   )
   logActivity(user.id, `Added new CRM lead: ${name}`)
   const row = await queryOne(`SELECT * FROM crm_clients WHERE id = ?`, [result.lastInsertRowid])

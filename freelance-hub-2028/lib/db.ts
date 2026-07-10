@@ -188,7 +188,7 @@ async function runInit() {
         user_id INTEGER NOT NULL DEFAULT 0,
         name TEXT NOT NULL, company TEXT NOT NULL, email TEXT, phone TEXT, website TEXT,
         stage TEXT, value INTEGER DEFAULT 0, avatar TEXT, avatarBg TEXT,
-        tags TEXT, lastContact TEXT, starred INTEGER DEFAULT 0, rating INTEGER DEFAULT 0, notes TEXT
+        tags TEXT, lastContact TEXT, last_contact_at TEXT, starred INTEGER DEFAULT 0, rating INTEGER DEFAULT 0, notes TEXT
       )`,
       `CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -251,7 +251,8 @@ async function runInit() {
         pipeline_stages TEXT,
         work_start TEXT DEFAULT '09:00', work_end TEXT DEFAULT '18:00',
         work_days TEXT DEFAULT '["Monday","Tuesday","Wednesday","Thursday","Friday"]',
-        google_calendar_connected INTEGER DEFAULT 0
+        google_calendar_connected INTEGER DEFAULT 0,
+        annual_revenue_goal INTEGER DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS contact_info (
         user_id INTEGER PRIMARY KEY,
@@ -425,6 +426,32 @@ async function runInit() {
         accepted INTEGER DEFAULT 0,
         dismissed INTEGER DEFAULT 0,
         created_agent_id INTEGER,
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS watchdog_runs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        run_date TEXT NOT NULL,
+        items_generated INTEGER DEFAULT 0,
+        items_shown INTEGER DEFAULT 0,
+        items_resolved INTEGER DEFAULT 0,
+        items_dismissed INTEGER DEFAULT 0,
+        panel_dismissed INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS watchdog_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        watchdog_run_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        category TEXT NOT NULL,
+        priority_score INTEGER DEFAULT 0,
+        priority_color TEXT DEFAULT 'amber',
+        alert_text TEXT NOT NULL,
+        action_type TEXT NOT NULL,
+        action_data TEXT DEFAULT '{}',
+        resolved INTEGER DEFAULT 0,
+        dismissed INTEGER DEFAULT 0,
+        resolved_at TEXT,
         created_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS marketplace_clone_events (
@@ -681,6 +708,9 @@ async function runInit() {
     `ALTER TABLE settings ADD COLUMN work_end TEXT DEFAULT '18:00'`,
     `ALTER TABLE settings ADD COLUMN work_days TEXT DEFAULT '["Monday","Tuesday","Wednesday","Thursday","Friday"]'`,
     `ALTER TABLE settings ADD COLUMN google_calendar_connected INTEGER DEFAULT 0`,
+    `ALTER TABLE settings ADD COLUMN annual_revenue_goal INTEGER DEFAULT 0`,
+    `ALTER TABLE crm_clients ADD COLUMN last_contact_at TEXT`,
+    `UPDATE crm_clients SET last_contact_at = datetime('now') WHERE last_contact_at IS NULL`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
