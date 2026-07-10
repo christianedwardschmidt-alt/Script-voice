@@ -7,7 +7,31 @@ const anthropic = new Anthropic()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyRecord = Record<string, any>
 
+// Shared confidence fields added to every mutating tool
+const confidenceFields = {
+  confidence: {
+    type: 'string' as const,
+    enum: ['high', 'medium'] as const,
+    description: 'Your confidence interpreting this request. high=all information was explicit in the message; medium=you inferred at least one key detail (client, amount, date). If the request is too vague to interpret safely use request_clarification instead.',
+  },
+  confidence_reason: {
+    type: 'string' as const,
+    description: 'Required for medium confidence: exactly what you inferred and from what context (e.g. "I interpreted \'my biggest client\' as Apex Creative based on their $12,400 in revenue this year").',
+  },
+}
+
 const tools: Anthropic.Tool[] = [
+  {
+    name: 'request_clarification',
+    description: 'Call this — instead of any action tool — when the member\'s request is genuinely too vague to act on safely. Ask one specific question. Do not guess or proceed.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string', description: 'One specific clarifying question' },
+      },
+      required: ['question'],
+    },
+  },
   {
     name: 'create_task',
     description: 'Add a new task to the workspace task list',
@@ -19,6 +43,7 @@ const tools: Anthropic.Tool[] = [
         dueDate: { type: 'string', description: 'Due date e.g. "Jan 20", "Friday"' },
         project: { type: 'string', description: 'Project or client name' },
         description: { type: 'string', description: 'Optional additional detail' },
+        ...confidenceFields,
       },
       required: ['title'],
     },
@@ -33,6 +58,7 @@ const tools: Anthropic.Tool[] = [
         project: { type: 'string', description: 'Project description' },
         amount: { type: 'number', description: 'Invoice amount in dollars' },
         dueDate: { type: 'string', description: 'Due date e.g. "Jan 30"' },
+        ...confidenceFields,
       },
       required: ['client', 'amount'],
     },
@@ -47,6 +73,7 @@ const tools: Anthropic.Tool[] = [
         company: { type: 'string' },
         email: { type: 'string' },
         phone: { type: 'string' },
+        ...confidenceFields,
       },
       required: ['name', 'company'],
     },
@@ -64,6 +91,7 @@ const tools: Anthropic.Tool[] = [
         type: { type: 'string', enum: ['meeting', 'deadline', 'task'] },
         client: { type: 'string', description: 'Associated client name, optional' },
         description: { type: 'string' },
+        ...confidenceFields,
       },
       required: ['title', 'date'],
     },
@@ -92,6 +120,7 @@ const tools: Anthropic.Tool[] = [
         stage: { type: 'string', enum: ['Lead', 'Proposal', 'Negotiation', 'Active', 'Completed'] },
         value: { type: 'number', description: 'Estimated deal value in dollars' },
         notes: { type: 'string' },
+        ...confidenceFields,
       },
       required: ['name', 'company'],
     },
@@ -126,6 +155,7 @@ const tools: Anthropic.Tool[] = [
           },
           description: 'Array of task items to create — extract actionable items from the note content',
         },
+        ...confidenceFields,
       },
       required: ['items'],
     },
@@ -139,6 +169,7 @@ const tools: Anthropic.Tool[] = [
         title: { type: 'string', description: 'Note title' },
         content: { type: 'string', description: 'Note body content' },
         tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags' },
+        ...confidenceFields,
       },
       required: ['title'],
     },
@@ -159,6 +190,9 @@ const tools: Anthropic.Tool[] = [
     },
   },
 ]
+
+// Non-mutating tools don't need confidence indicators
+const NO_CONFIDENCE_TOOLS = new Set(['search_jobs', 'read_notes', 'navigate_to', 'request_clarification'])
 
 async function executeTool(name: string, input: AnyRecord, userId: number): Promise<{ summary: string; data?: AnyRecord }> {
   if (name === 'create_task') {
@@ -304,11 +338,26 @@ export async function POST(req: Request) {
   const user = await getUser()
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { messages } = await req.json()
+  const { messages, confirmPendingAction } = await req.json()
+
+  // ── Confirmed pending action: execute directly, skip AI ───────────────────
+  if (confirmPendingAction && confirmPendingAction.name !== 'request_clarification') {
+    const result = await executeTool(
+      confirmPendingAction.name,
+      confirmPendingAction.input as AnyRecord,
+      user.id
+    )
+    return Response.json({
+      text: result.summary,
+      actions: [{ name: confirmPendingAction.name, summary: result.summary, confidence: 'high', data: result.data }],
+      pendingAction: null,
+      needsClarification: false,
+    })
+  }
 
   const [profile, clients, tasks, notes] = await Promise.all([
     queryOne(`SELECT displayName, skills, headline FROM profile WHERE user_id = ?`, [user.id]),
-    queryAll(`SELECT name, company FROM clients WHERE user_id = ? LIMIT 6`, [user.id]),
+    queryAll(`SELECT name, company, revenue FROM clients WHERE user_id = ? ORDER BY revenue DESC LIMIT 6`, [user.id]),
     queryAll(`SELECT title, status FROM tasks WHERE user_id = ? AND checked = 0 LIMIT 5`, [user.id]),
     queryAll(`SELECT id, title, content FROM notes WHERE user_id = ? ORDER BY pinned DESC, updated_at DESC LIMIT 6`, [user.id]),
   ])
@@ -316,11 +365,14 @@ export async function POST(req: Request) {
   const p = profile as AnyRecord | null
   const today = new Date().toISOString().split('T')[0]
   const notesSummary = (notes as AnyRecord[]).map(n => `"${n.title}"`).join(', ') || 'none'
+  const clientsSummary = (clients as AnyRecord[])
+    .map(c => `${c.name} ($${Number(c.revenue ?? 0).toLocaleString()})`)
+    .join(', ') || 'none yet'
 
   const systemPrompt = `You are GuildWire AI — an intelligent assistant that both answers questions AND takes real actions inside this freelance workspace.
 
 User: ${p?.displayName ?? user.name} | Skills: ${p?.skills ?? 'Design, Development'}
-Clients: ${(clients as AnyRecord[]).map(c => c.name).join(', ') || 'none yet'}
+Clients (by revenue): ${clientsSummary}
 Open tasks: ${(tasks as AnyRecord[]).map(t => t.title).join(', ') || 'none'}
 Recent notes: ${notesSummary}
 Today: ${today}
@@ -329,9 +381,16 @@ When the user asks you to create, add, schedule, draft, find, or do something co
 
 Notes cross-pollination: When the user asks to "turn notes into tasks", "make a task list from my notes", or similar — call read_notes first to get the note content, then call convert_note_to_tasks with the actionable items extracted. When the user asks "what's in my notes" or "show me my notes" — use read_notes and summarize them. You can also create notes from conversations.
 
-Navigation rule: when the user says "go to", "open", "show", "take me to", or similar for any section — call navigate_to ONCE with the exact destination page. Never use ai-assistant as an intermediate step. Navigate directly to the page the user named.`
+Navigation rule: when the user says "go to", "open", "show", "take me to", or similar for any section — call navigate_to ONCE with the exact destination page. Never use ai-assistant as an intermediate step. Navigate directly to the page the user named.
 
-  // First call with tools
+CONFIDENCE RULES — apply for every request that could trigger an action tool:
+• confidence "high": all required information was fully explicit in the member's message — client name stated, amounts stated, dates stated. No guessing. Use this for clear, complete requests.
+• confidence "medium": you had to infer at least one key field (which client, what amount, what date) from context data. Set confidence_reason to a precise explanation: "I interpreted 'my biggest client' as Apex Creative based on their $12,400 in revenue this year." The member will be shown your interpretation and asked to confirm — do NOT execute until confirmed. In your text response explain the interpretation naturally: "I interpreted this as [X] because [Y]. Is that right?"
+• Request is too vague (you cannot interpret safely): call request_clarification with ONE specific question. Do NOT call any action tool. Do not infer. Do not proceed. Your text response should be the clarifying question.
+
+When a tool returns status "pending_confirmation": explain your interpretation to the member naturally and ask them to confirm.`
+
+  // ── First AI call ─────────────────────────────────────────────────────────
   const first = await anthropic.messages.create({
     model: 'claude-opus-4-8',
     max_tokens: 1024,
@@ -342,21 +401,59 @@ Navigation rule: when the user says "go to", "open", "show", "take me to", or si
     messages: messages.map((m: AnyRecord) => ({ role: m.role, content: m.content })),
   })
 
-  // Execute any tool calls
   const toolResults: Anthropic.ToolResultBlockParam[] = []
-  const actionsPerformed: { name: string; summary: string; data?: AnyRecord }[] = []
+  const actionsPerformed: { name: string; summary: string; data?: AnyRecord; confidence: string }[] = []
+  let pendingAction: { name: string; input: AnyRecord; interpretation: string } | null = null
+  let needsClarification = false
 
   for (const block of first.content) {
-    if (block.type === 'tool_use') {
-      const result = await executeTool(block.name, block.input as AnyRecord, user.id)
+    if (block.type !== 'tool_use') continue
+
+    // ── Clarification requested ─────────────────────────────────────────────
+    if (block.name === 'request_clarification') {
+      needsClarification = true
+      toolResults.push({
+        type: 'tool_result',
+        tool_use_id: block.id,
+        content: JSON.stringify({ acknowledged: true, instruction: 'State your clarifying question directly as your text response — one sentence.' }),
+      })
+      continue
+    }
+
+    const input = block.input as AnyRecord
+    const confidence = String(input.confidence ?? 'high')
+
+    // ── Medium confidence: hold for confirmation ─────────────────────────────
+    if (confidence === 'medium' && !NO_CONFIDENCE_TOOLS.has(block.name)) {
+      pendingAction = {
+        name: block.name,
+        input,
+        interpretation: String(input.confidence_reason ?? 'I made some inferences about your request.'),
+      }
+      toolResults.push({
+        type: 'tool_result',
+        tool_use_id: block.id,
+        content: JSON.stringify({
+          status: 'pending_confirmation',
+          interpretation: input.confidence_reason,
+          instruction: 'Explain your interpretation to the member and ask them to confirm. Be specific about what you inferred.',
+        }),
+      })
+    } else {
+      // ── High confidence: execute immediately ────────────────────────────────
+      const result = await executeTool(block.name, input, user.id)
       toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify(result) })
-      actionsPerformed.push({ name: block.name, summary: result.summary, data: result.data })
+      if (!NO_CONFIDENCE_TOOLS.has(block.name)) {
+        actionsPerformed.push({ name: block.name, summary: result.summary, confidence: 'high', data: result.data })
+      } else {
+        actionsPerformed.push({ name: block.name, summary: result.summary, data: result.data, confidence: 'high' })
+      }
     }
   }
 
   let finalText = first.content.find(b => b.type === 'text')?.text ?? ''
 
-  // If tools were used, get the confirmation response
+  // ── Second AI call if tools were used ────────────────────────────────────
   if (toolResults.length > 0) {
     const second = await anthropic.messages.create({
       model: 'claude-opus-4-8',
@@ -374,5 +471,18 @@ Navigation rule: when the user says "go to", "open", "show", "take me to", or si
     finalText = second.content.find(b => b.type === 'text')?.text ?? ''
   }
 
-  return Response.json({ text: finalText, actions: actionsPerformed })
+  // Fallback text for clarification if AI didn't generate text
+  if (needsClarification && !finalText) {
+    const clarBlock = first.content.find(b => b.type === 'tool_use' && b.name === 'request_clarification') as Anthropic.ToolUseBlock | undefined
+    finalText = clarBlock
+      ? String((clarBlock.input as AnyRecord).question ?? 'Could you clarify what you mean?')
+      : 'Could you clarify what you mean?'
+  }
+
+  return Response.json({
+    text: finalText,
+    actions: actionsPerformed,
+    pendingAction,
+    needsClarification,
+  })
 }

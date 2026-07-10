@@ -13,6 +13,7 @@ import {
 interface Action {
   name: string
   summary: string
+  confidence?: 'high' | 'medium' | 'low'
   data?: Record<string, unknown>
 }
 
@@ -23,6 +24,8 @@ interface Message {
   timestamp: string
   actions?: Action[]
   fromVoice?: boolean
+  pendingAction?: { name: string; input: Record<string, unknown>; interpretation: string }
+  needsClarification?: boolean
 }
 
 interface VoiceMsg {
@@ -64,6 +67,36 @@ const ACTION_LABELS: Record<string, string> = {
   create_task: 'Task', draft_invoice: 'Invoice', add_client: 'Client',
   schedule_event: 'Event', search_jobs: 'Jobs', add_crm_contact: 'CRM', navigate_to: 'Nav',
   read_notes: 'Notes', convert_note_to_tasks: 'Notes → Tasks', create_note: 'Note',
+}
+
+// ── Confidence Badge ───────────────────────────────────────────────────────
+
+function ConfidenceBadge({ confidence, needsClarification }: { confidence?: string; needsClarification?: boolean }) {
+  if (needsClarification) {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 24, borderRadius: 12, padding: '0 10px', background: '#FEF2F2', border: '1px solid #FECACA' }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', flexShrink: 0 }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#DC2626', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Needs clarification</span>
+      </div>
+    )
+  }
+  if (confidence === 'medium') {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 24, borderRadius: 12, padding: '0 10px', background: '#FFFBEB', border: '1px solid #FDE68A' }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#CA8A04', flexShrink: 0 }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#92400E', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Check my interpretation</span>
+      </div>
+    )
+  }
+  if (confidence === 'high') {
+    return (
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 24, borderRadius: 12, padding: '0 10px', background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#15803D', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>High confidence</span>
+      </div>
+    )
+  }
+  return null
 }
 
 // ── Voice Mode Overlay ─────────────────────────────────────────────────────
@@ -417,6 +450,7 @@ function AIAssistantInner() {
   const [voiceActive, setVoiceActive] = useState(false)
   const [voiceSummary, setVoiceSummary] = useState<VoiceSummary | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const didAutoSend = useRef(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null)
@@ -525,6 +559,48 @@ function AIAssistantInner() {
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
   }
 
+  const confirmAction = async (
+    pendingAction: { name: string; input: Record<string, unknown>; interpretation: string },
+    msgId: number
+  ) => {
+    if (thinking) return
+    const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    const userMsg: Message = { id: Date.now(), role: 'user', content: 'Yes, do it', timestamp: ts }
+    const updatedMessages = messages
+      .map(m => m.id === msgId ? { ...m, pendingAction: undefined } : m)
+      .concat(userMsg)
+    setMessages(updatedMessages)
+    setThinking(true)
+    const assistantId = Date.now() + 1
+    const ts2 = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    try {
+      const res = await fetch('/api/ai/actions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
+          confirmPendingAction: { name: pendingAction.name, input: pendingAction.input },
+        }),
+      })
+      if (!res.ok) throw new Error('failed')
+      const data = await res.json()
+      setThinking(false)
+      setMessages(p => [...p, {
+        id: assistantId, role: 'assistant', content: data.text, timestamp: ts2,
+        actions: data.actions, pendingAction: data.pendingAction, needsClarification: data.needsClarification,
+      }])
+      const navAction = (data.actions?.filter((a: Action) => a.name === 'navigate_to') ?? []).at(-1)
+      if (navAction?.data?.url) setTimeout(() => { window.location.href = navAction.data!.url as string }, 1500)
+    } catch {
+      setThinking(false)
+      setMessages(p => [...p, { id: assistantId, role: 'assistant', content: 'Sorry, I ran into an issue processing that action.', timestamp: ts2 }])
+    }
+  }
+
+  const changeAction = (msgId: number) => {
+    setMessages(p => p.map(m => m.id === msgId ? { ...m, pendingAction: undefined } : m))
+    inputRef.current?.focus()
+  }
+
   const send = async (content?: string) => {
     const text = content || input.trim()
     if (!text || thinking) return
@@ -547,7 +623,10 @@ function AIAssistantInner() {
       if (!res.ok) throw new Error('failed')
       const data = await res.json()
       setThinking(false)
-      setMessages(p => [...p, { id: assistantId, role: 'assistant', content: data.text, timestamp: ts, actions: data.actions }])
+      setMessages(p => [...p, {
+        id: assistantId, role: 'assistant', content: data.text, timestamp: ts,
+        actions: data.actions, pendingAction: data.pendingAction, needsClarification: data.needsClarification,
+      }])
       const navAction = (data.actions?.filter((a: Action) => a.name === 'navigate_to') ?? []).at(-1)
       if (navAction?.data?.url) setTimeout(() => { window.location.href = navAction.data!.url as string }, 1500)
     } catch {
@@ -752,6 +831,7 @@ function AIAssistantInner() {
                           <span style={{ color: '#15803D', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
                         </div>
                       ))}
+                      <ConfidenceBadge confidence="high" />
                     </div>
                   )}
                   <div style={{
@@ -767,6 +847,30 @@ function AIAssistantInner() {
                       : <div>{formatContent(msg.content)}</div>
                     }
                   </div>
+                  {msg.pendingAction && msg.role === 'assistant' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <ConfidenceBadge confidence="medium" />
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => confirmAction(msg.pendingAction!, msg.id)}
+                          disabled={thinking}
+                          style={{ background: thinking ? '#86EFAC' : '#16A34A', color: 'white', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600, cursor: thinking ? 'default' : 'pointer', transition: 'background 0.15s' }}
+                        >
+                          Yes, do it
+                        </button>
+                        <button
+                          onClick={() => changeAction(msg.id)}
+                          disabled={thinking}
+                          style={{ background: 'transparent', border: '1px solid #D1D5DB', color: '#374151', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600, cursor: thinking ? 'default' : 'pointer' }}
+                        >
+                          Change something
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {msg.needsClarification && msg.role === 'assistant' && (
+                    <ConfidenceBadge needsClarification={true} />
+                  )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 2 }}>
                     {msg.fromVoice && (
                       <Mic size={10} color="#16A34A" />
@@ -820,6 +924,7 @@ function AIAssistantInner() {
             }}>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', marginBottom: 2, padding: 2 }}><Paperclip size={16} /></button>
               <textarea
+                ref={inputRef}
                 value={listening && interimText ? interimText : input}
                 onChange={e => { if (!listening) setInput(e.target.value) }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
