@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { ChevronDown, ChevronRight, Clock, Play } from 'lucide-react'
+import { ChevronDown, ChevronRight, Clock, Play, Users } from 'lucide-react'
 
 interface AgentRun {
   id: number
@@ -222,6 +222,7 @@ function RunningEntry({ isLast }: { isLast: boolean }) {
 function Entry({ run, isLast, expanded, onToggle, flash }: { run: AgentRun; isLast: boolean; expanded: boolean; onToggle: () => void; flash: boolean }) {
   const color = statusColor(run.status)
   const primaryText = run.human_readable_summary || run.action_taken || 'No summary available.'
+  const involvedCollaborator = !!(run.technical_log && (run.technical_log as Record<string, unknown>).involved_collaborator)
   const [detailHeight, setDetailHeight] = useState(0)
   const detailRef = useRef<HTMLDivElement>(null)
 
@@ -240,8 +241,22 @@ function Entry({ run, isLast, expanded, onToggle, flash }: { run: AgentRun; isLa
       <div style={{ flex: 1, paddingBottom: 20, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#111827', lineHeight: 1.5 }}>
-              {primaryText}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+              {involvedCollaborator && (
+                <span
+                  title="A collaborator was notified"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 18, height: 18, borderRadius: '50%', background: 'rgba(124,58,237,0.12)',
+                    flexShrink: 0, marginTop: 1,
+                  }}
+                >
+                  <Users size={11} color="#7C3AED" />
+                </span>
+              )}
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#111827', lineHeight: 1.5 }}>
+                {primaryText}
+              </div>
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginTop: 3 }}>
               {relativeTime(run.ran_at)}

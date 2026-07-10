@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { queryAll, execute } from '@/lib/db'
+import { queryAll, queryOne, execute } from '@/lib/db'
 
 const anthropic = new Anthropic()
 
@@ -20,10 +20,12 @@ export type SimAgent = {
 type ClientRow = { name: string; company: string; email: string }
 type InvoiceRow = { id: string; client: string; amount: number; status: string; due: string; issued: string }
 type ProposalRow = { title: string; client_name: string; total: number; sent_at: string | null; status: string }
+type CollaboratorRow = { id: number; collaborator_name: string; collaborator_email: string; collaborator_user_id: number | null }
 
 const ACTION_LABELS: Record<string, string> = {
   'send-email': 'Sent an email',
   'notify-me': 'Sent a notification',
+  'notify-collaborator': 'Notified a collaborator',
   'create-task': 'Created a task',
   'add-note': 'Added a note',
   'update-status': 'Updated client status',
@@ -83,7 +85,162 @@ async function pickProposal(userId: number, status: string): Promise<ProposalRow
   return rows[0] ?? null
 }
 
-export async function simulateAgentRun(agent: SimAgent, userId: number, triggerEvent: string): Promise<RunOutcome> {
+function relativeDueDays(rel: string): number {
+  if (rel.includes('week')) return 7
+  if (rel.includes('1 day')) return 1
+  return 3
+}
+
+function buildCollaboratorEmail(params: {
+  ownerName: string
+  collaboratorName: string
+  notificationType: 'message' | 'task' | 'document'
+  message: string
+  taskTitle: string
+  taskDueLabel: string
+  taskPriority: string
+  documentLabel: string
+  showConversionPrompt: boolean
+}): { subject: string; html: string } {
+  const { ownerName, collaboratorName, notificationType, message, taskTitle, taskDueLabel, taskPriority, documentLabel, showConversionPrompt } = params
+
+  const bodyContent = notificationType === 'task'
+    ? `<p style="margin:0 0 6px;font-size:15px;color:#111827;line-height:1.6;"><strong>${taskTitle}</strong></p><p style="margin:0;font-size:14px;color:#4B5563;">Due: ${taskDueLabel} &middot; Priority: ${taskPriority}</p>`
+    : notificationType === 'document'
+      ? `<p style="margin:0;font-size:15px;color:#111827;line-height:1.6;">${ownerName} shared ${documentLabel} with you.</p>`
+      : `<p style="margin:0;font-size:15px;color:#111827;line-height:1.6;">${message}</p>`
+
+  const conversionBlock = showConversionPrompt
+    ? `<p style="margin:20px 0 0;font-size:13px;color:#6B7280;line-height:1.6;border-top:1px solid #E5E7EB;padding-top:16px;">You&rsquo;ve been collaborating with ${ownerName} through GuildWire. Want to manage your own independent practice here too? 30 days free.</p>`
+    : ''
+
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;">
+  <div style="background:#14532D;padding:22px 28px;border-radius:12px 12px 0 0;">
+    <span style="font-size:20px;font-weight:700;color:#fff;">Guild<span style="color:#4ADE80;">Wire</span></span>
+  </div>
+  <div style="background:#fff;padding:28px;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 12px 12px;">
+    <p style="margin:0 0 16px;font-size:13px;color:#6B7280;">Hi ${collaboratorName},</p>
+    ${bodyContent}
+    ${conversionBlock}
+    <p style="margin:24px 0 0;font-size:12px;color:#9CA3AF;line-height:1.6;">GuildWire helps independent professionals manage their business &mdash; learn more at guildwire.io</p>
+  </div>
+</div>`
+
+  return { subject: `${ownerName} shared something with you via GuildWire`, html }
+}
+
+async function notifyCollaborator(
+  actionConfig: Record<string, string>,
+  agent: SimAgent,
+  userId: number,
+  runId: number | undefined
+): Promise<{ summary: string; log: Record<string, unknown> } | null> {
+  const collaboratorId = Number(actionConfig.collaboratorId)
+  if (!collaboratorId) return null
+
+  const collab = await queryOne<CollaboratorRow>(
+    `SELECT id, collaborator_name, collaborator_email, collaborator_user_id FROM collaborators WHERE id = ? AND owner_user_id = ?`,
+    [collaboratorId, userId]
+  )
+  if (!collab) return null
+
+  const [owner, client, invoice, proposal] = await Promise.all([
+    queryOne<{ name: string }>(`SELECT name FROM users WHERE id = ?`, [userId]),
+    pickClient(userId),
+    pickInvoice(userId, true),
+    pickProposal(userId, 'sent'),
+  ])
+  const ownerName = owner?.name || 'A GuildWire member'
+
+  const vars: Record<string, string> = {
+    '{{client_name}}': client?.name ?? 'a client',
+    '{{invoice_amount}}': invoice ? money(invoice.amount) : '$0',
+    '{{due_date}}': invoice?.due ?? 'soon',
+    '{{proposal_title}}': proposal?.title ?? 'the proposal',
+    '{{agent_name}}': agent.name,
+  }
+  const substitute = (text: string) => Object.entries(vars).reduce((t, [k, v]) => t.split(k).join(v), text)
+
+  const notificationType = ((actionConfig.notificationType || 'message') as 'message' | 'task' | 'document')
+  const isMember = !!collab.collaborator_user_id
+
+  let message = ''
+  let taskTitle = ''
+  let taskDueDate: string | null = null
+  let taskDueLabel = ''
+  let taskPriority = ''
+  let documentLabel = 'a document'
+  let summary = ''
+
+  if (notificationType === 'task') {
+    taskTitle = substitute(actionConfig.taskTitle || `Follow up regarding ${agent.name}`)
+    taskPriority = actionConfig.taskPriority || 'Medium'
+    if ((actionConfig.taskDueType || 'relative') === 'specific' && actionConfig.taskDueDate) {
+      taskDueDate = actionConfig.taskDueDate
+      taskDueLabel = new Date(actionConfig.taskDueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    } else {
+      const rel = actionConfig.taskDueRelative || 'in 3 days'
+      const due = new Date(Date.now() + relativeDueDays(rel) * 86400000)
+      taskDueDate = due.toISOString().slice(0, 10)
+      taskDueLabel = rel
+    }
+    summary = `Notified ${collab.collaborator_name} and assigned them "${taskTitle}" due ${taskDueLabel}.`
+  } else if (notificationType === 'document') {
+    documentLabel = actionConfig.documentRef?.startsWith('proposal-') ? 'a proposal' : actionConfig.documentRef?.startsWith('note-') ? 'a note' : 'a document'
+    summary = `Notified ${collab.collaborator_name} and shared ${documentLabel} with them.`
+  } else {
+    message = substitute(actionConfig.message || `An update from ${agent.name}.`)
+    const short = message.length > 70 ? message.slice(0, 67) + '…' : message
+    summary = `Notified ${collab.collaborator_name} about "${short}"`
+  }
+
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
+  const priorCount = await queryOne<{ cnt: number }>(
+    `SELECT COUNT(*) as cnt FROM collaborator_notifications WHERE collaborator_id = ? AND created_at >= ?`,
+    [collab.id, thirtyDaysAgo]
+  )
+  const showConversionPrompt = !isMember && Number(priorCount?.cnt ?? 0) >= 3
+
+  const { subject, html } = buildCollaboratorEmail({
+    ownerName, collaboratorName: collab.collaborator_name, notificationType, message, taskTitle, taskDueLabel, taskPriority, documentLabel, showConversionPrompt,
+  })
+
+  const now = new Date().toISOString()
+  await execute(
+    `INSERT INTO email_log (user_id,to_email,subject,body_html,related_type,related_id,status,sent_at) VALUES (?,?,?,?,?,?,?,?)`,
+    [userId, collab.collaborator_email, subject, html, 'collaborator_notification', String(collab.id), 'sent', now]
+  )
+
+  let deliveryMethod: 'email' | 'both' = 'email'
+  if (isMember && collab.collaborator_user_id) {
+    deliveryMethod = 'both'
+    await execute(
+      `INSERT INTO notifications (user_id,type,title,body,href,created_at) VALUES (?,?,?,?,?,?)`,
+      [collab.collaborator_user_id, 'collaborator_notification', subject, notificationType === 'task' ? taskTitle : (message || `${ownerName} shared ${documentLabel} with you.`), '/notifications', now]
+    )
+  }
+
+  await execute(
+    `INSERT INTO collaborator_notifications (agent_run_id,collaborator_id,notification_type,message,task_title,task_due_date,task_priority,delivered_at,delivery_method,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)`,
+    [runId ?? null, collab.id, notificationType, message, taskTitle, taskDueDate, taskPriority, now, deliveryMethod, now]
+  )
+
+  return {
+    summary,
+    log: {
+      involved_collaborator: true,
+      collaborator_notified: collab.collaborator_name,
+      notification_type: notificationType,
+      delivery_method: deliveryMethod,
+      ...(notificationType === 'message' ? { message } : {}),
+      ...(notificationType === 'task' ? { task_title: taskTitle, task_due: taskDueLabel, task_priority: taskPriority } : {}),
+      ...(notificationType === 'document' ? { document: documentLabel } : {}),
+      conversion_prompt_included: showConversionPrompt,
+    },
+  }
+}
+
+export async function simulateAgentRun(agent: SimAgent, userId: number, triggerEvent: string, runId?: number): Promise<RunOutcome> {
   const base = { agent: agent.name, trigger: triggerEvent }
 
   switch (agent.template_id) {
@@ -195,10 +352,25 @@ export async function simulateAgentRun(agent: SimAgent, userId: number, triggerE
     }
 
     default: {
+      const actions = (agent.actions || []) as { type?: string; config?: Record<string, string> }[]
+      const collabAction = actions.find(a => a.type === 'notify-collaborator')
+
+      if (collabAction) {
+        const result = await notifyCollaborator(collabAction.config || {}, agent, userId, runId)
+        if (result) {
+          return { status: 'success', actionTaken: result.summary, technicalLog: { ...base, ...result.log } }
+        }
+        return {
+          status: 'partial',
+          actionTaken: 'Tried to notify a collaborator, but none was selected for this action.',
+          technicalLog: { ...base, reason: 'no_collaborator_selected' },
+        }
+      }
+
       const c = await pickClient(userId)
       const status = weighted(0.75, 0.12)
-      const labels = (agent.actions || [])
-        .map(a => (a as { type?: string })?.type)
+      const labels = actions
+        .map(a => a.type)
         .filter((t): t is string => !!t)
         .map(t => ACTION_LABELS[t] || t)
       const desc = labels.length ? labels.join(' — ') : `Ran "${agent.name}"`

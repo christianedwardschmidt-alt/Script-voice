@@ -49,6 +49,19 @@ interface ClonedFrom {
   name: string
 }
 
+interface Collaborator {
+  id: number
+  collaborator_name: string
+  collaborator_email: string
+  relationship: string
+  is_guildwire_member: boolean
+}
+
+interface DocRef {
+  id: string
+  title: string
+}
+
 // ── Static data ───────────────────────────────────────────────────────────────
 
 const TEMPLATES = [
@@ -97,14 +110,17 @@ const CONDITION_TYPES = [
 ]
 
 const ACTION_TYPES = [
-  { value: 'send-email',      label: 'Send an email',             icon: 'Mail'       },
-  { value: 'notify-me',       label: 'Send me a notification',    icon: 'Bell'       },
-  { value: 'create-task',     label: 'Create a task in CRM',      icon: 'CheckSquare'},
-  { value: 'add-note',        label: 'Add a note to client',      icon: 'Edit3'      },
-  { value: 'update-status',   label: 'Update client status',      icon: 'RefreshCw'  },
-  { value: 'generate-report', label: 'Generate a report',         icon: 'BarChart2'  },
-  { value: 'wait',            label: 'Wait X days then continue', icon: 'Clock'      },
+  { value: 'send-email',          label: 'Send an email',             icon: 'Mail'       },
+  { value: 'notify-me',           label: 'Send me a notification',    icon: 'Bell'       },
+  { value: 'notify-collaborator', label: 'Notify a Collaborator',     icon: 'Users'      },
+  { value: 'create-task',         label: 'Create a task in CRM',      icon: 'CheckSquare'},
+  { value: 'add-note',            label: 'Add a note to client',      icon: 'Edit3'      },
+  { value: 'update-status',       label: 'Update client status',      icon: 'RefreshCw'  },
+  { value: 'generate-report',     label: 'Generate a report',         icon: 'BarChart2'  },
+  { value: 'wait',                label: 'Wait X days then continue', icon: 'Clock'      },
 ]
+
+const COLLAB_VARIABLES = ['{{client_name}}', '{{invoice_amount}}', '{{due_date}}', '{{proposal_title}}', '{{agent_name}}']
 
 const ICON_OPTIONS = [
   'Bot', 'Zap', 'Cpu', 'Database', 'Globe', 'Layers', 'Shield', 'Target',
@@ -299,12 +315,29 @@ export default function AgentsPage() {
   const [emailTo, setEmailTo] = useState('client')
   const [savingBuilder, setSavingBuilder] = useState(false)
   const [clonedFrom, setClonedFrom] = useState<ClonedFrom | null>(null)
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([])
+  const [collabDocs, setCollabDocs] = useState<DocRef[]>([])
 
   // Load agents
   useEffect(() => {
     fetch('/api/agents').then(r => r.json()).then(data => {
       if (Array.isArray(data)) setAgents(data)
     }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
+
+  // Load collaborators + notes/proposals (for the Notify a Collaborator action)
+  useEffect(() => {
+    fetch('/api/collaborators').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setCollaborators(data)
+    }).catch(() => {})
+    Promise.all([
+      fetch('/api/notes').then(r => r.json()).catch(() => []),
+      fetch('/api/proposals').then(r => r.json()).catch(() => []),
+    ]).then(([notes, proposals]) => {
+      const noteDocs: DocRef[] = (Array.isArray(notes) ? notes : []).map((n: { id: number; title: string }) => ({ id: `note-${n.id}`, title: n.title || 'Untitled note' }))
+      const proposalDocs: DocRef[] = (Array.isArray(proposals) ? proposals : []).map((p: { id: number; title: string }) => ({ id: `proposal-${p.id}`, title: p.title || 'Untitled proposal' }))
+      setCollabDocs([...noteDocs, ...proposalDocs])
+    }).catch(() => {})
   }, [])
 
   // Close agent menu on outside click
@@ -405,6 +438,17 @@ export default function AgentsPage() {
   function removeAction(idx: number) {
     setBuilderActions(prev => prev.filter((_, i) => i !== idx))
     if (selectedActionIdx === idx) setSelectedActionIdx(null)
+  }
+
+  function updateActionConfig(patch: Record<string, string>) {
+    if (selectedActionIdx === null) return
+    setBuilderActions(prev => prev.map((a, i) => i === selectedActionIdx ? { ...a, config: { ...a.config, ...patch } } : a))
+  }
+
+  function insertCollabVariable(field: 'message' | 'taskTitle', v: string) {
+    if (selectedActionIdx === null) return
+    const current = builderActions[selectedActionIdx]?.config[field] || ''
+    updateActionConfig({ [field]: current + (current ? ' ' : '') + v })
   }
 
   async function aiWriteEmail() {
@@ -635,11 +679,20 @@ export default function AgentsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
                 {builderActions.map((action, idx) => {
                   const at = ACTION_TYPES.find(a => a.value === action.type)
+                  const isCollab = action.type === 'notify-collaborator'
+                  const accent = isCollab ? '#7C3AED' : '#0EA5E9'
+                  const selected = selectedActionIdx === idx
                   return (
                     <div key={action.id} className="act-row" style={{ position: 'relative' }}>
                       <button onClick={() => setSelectedActionIdx(idx === selectedActionIdx ? null : idx)}
-                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10, border: selectedActionIdx === idx ? '1.5px solid #0EA5E9' : '1.5px solid #E9EBF0', background: selectedActionIdx === idx ? 'rgba(14,165,233,0.06)' : '#F8FAFC', cursor: 'pointer', textAlign: 'left' }}>
-                        <span style={{ display: 'flex' }}><AgentIcon icon={at?.icon || 'Settings2'} size={15} color="#6B7280" /></span>
+                        style={{
+                          width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10,
+                          border: selected ? `1.5px solid ${accent}` : isCollab ? '1.5px solid rgba(124,58,237,0.3)' : '1.5px solid #E9EBF0',
+                          borderLeft: isCollab ? '3px solid #7C3AED' : undefined,
+                          background: selected ? `${accent}0F` : isCollab ? 'rgba(124,58,237,0.04)' : '#F8FAFC',
+                          cursor: 'pointer', textAlign: 'left',
+                        }}>
+                        <span style={{ display: 'flex' }}><AgentIcon icon={at?.icon || 'Settings2'} size={15} color={isCollab ? '#7C3AED' : '#6B7280'} /></span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           {action.type ? (
                             <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)' }}>{at?.label || action.type}</span>
@@ -724,6 +777,160 @@ export default function AgentsPage() {
                       <Sparkles size={13} /> {aiEmailLoading ? 'Writing…' : 'AI Write This Email'}
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* Notify a Collaborator config */}
+              {selectedAction?.type === 'notify-collaborator' && (
+                <div className="ag-fade">
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Collaborator</label>
+                    {collaborators.length === 0 ? (
+                      <div style={{ fontSize: 13, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+                        No collaborators yet.{' '}
+                        <a href="/settings" style={{ color: '#7C3AED', fontWeight: 600, textDecoration: 'underline' }}>Add a collaborator in Settings</a>
+                      </div>
+                    ) : (
+                      <select
+                        value={selectedAction.config.collaboratorId || ''}
+                        onChange={e => updateActionConfig({ collaboratorId: e.target.value })}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none' }}
+                      >
+                        <option value="">Choose a collaborator…</option>
+                        {collaborators.map(c => (
+                          <option key={c.id} value={c.id}>{c.collaborator_name} — {c.relationship}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 7, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notification type</label>
+                    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+                      {([['message', 'Send a message'], ['task', 'Assign a task'], ['document', 'Share a document']] as const).map(([val, label]) => (
+                        <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>
+                          <input
+                            type="radio"
+                            name="collab-notif-type"
+                            checked={(selectedAction.config.notificationType || 'message') === val}
+                            onChange={() => updateActionConfig({ notificationType: val })}
+                            style={{ accentColor: '#7C3AED', cursor: 'pointer' }}
+                          />
+                          {label}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {(selectedAction.config.notificationType || 'message') === 'message' && (
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Message</label>
+                      <textarea
+                        value={selectedAction.config.message || ''}
+                        onChange={e => updateActionConfig({ message: e.target.value })}
+                        rows={4}
+                        placeholder="e.g. Please follow up with {{client_name}} about their invoice…"
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: 'var(--font-body)', resize: 'none', outline: 'none', marginBottom: 8, boxSizing: 'border-box' }}
+                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Insert:</span>
+                        {COLLAB_VARIABLES.map(v => (
+                          <button key={v} onClick={() => insertCollabVariable('message', v)}
+                            style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F8FAFC', cursor: 'pointer', color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+                            {v}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedAction.config.notificationType === 'task' && (
+                    <div>
+                      <div style={{ marginBottom: 10 }}>
+                        <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Task Title</label>
+                        <input
+                          value={selectedAction.config.taskTitle || ''}
+                          onChange={e => updateActionConfig({ taskTitle: e.target.value })}
+                          placeholder="e.g. Follow up with {{client_name}}"
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box', marginBottom: 8 }}
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Insert:</span>
+                          {COLLAB_VARIABLES.map(v => (
+                            <button key={v} onClick={() => insertCollabVariable('taskTitle', v)}
+                              style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, border: '1px solid #E5E7EB', background: '#F8FAFC', cursor: 'pointer', color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+                              {v}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Due</label>
+                          <select
+                            value={selectedAction.config.taskDueType || 'relative'}
+                            onChange={e => updateActionConfig({ taskDueType: e.target.value })}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none' }}
+                          >
+                            <option value="relative">Relative</option>
+                            <option value="specific">Specific date</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>&nbsp;</label>
+                          {(selectedAction.config.taskDueType || 'relative') === 'specific' ? (
+                            <input
+                              type="date"
+                              value={selectedAction.config.taskDueDate || ''}
+                              onChange={e => updateActionConfig({ taskDueDate: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }}
+                            />
+                          ) : (
+                            <select
+                              value={selectedAction.config.taskDueRelative || 'in 3 days'}
+                              onChange={e => updateActionConfig({ taskDueRelative: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none' }}
+                            >
+                              <option value="in 1 day">In 1 day</option>
+                              <option value="in 3 days">In 3 days</option>
+                              <option value="in 1 week">In 1 week</option>
+                            </select>
+                          )}
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Priority</label>
+                          <select
+                            value={selectedAction.config.taskPriority || 'Medium'}
+                            onChange={e => updateActionConfig({ taskPriority: e.target.value })}
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none' }}
+                          >
+                            <option>Low</option><option>Medium</option><option>High</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedAction.config.notificationType === 'document' && (
+                    <div>
+                      <label style={{ fontSize: 11, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 5, fontFamily: 'var(--font-body)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Document</label>
+                      {collabDocs.length === 0 ? (
+                        <div style={{ fontSize: 13, color: '#6B7280', fontFamily: 'var(--font-body)' }}>No notes or proposals to share yet.</div>
+                      ) : (
+                        <select
+                          value={selectedAction.config.documentRef || ''}
+                          onChange={e => updateActionConfig({ documentRef: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 13, fontFamily: 'var(--font-body)', background: '#fff', outline: 'none' }}
+                        >
+                          <option value="">Choose a document…</option>
+                          {collabDocs.map(d => (
+                            <option key={d.id} value={d.id}>{d.title}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 

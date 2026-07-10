@@ -44,7 +44,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
       actions: agentRow.actions ? JSON.parse(agentRow.actions as string) : [],
     },
     user.id,
-    triggerEvent
+    triggerEvent,
+    runId
   )
 
   const completedAt = new Date().toISOString()

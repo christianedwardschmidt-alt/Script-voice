@@ -377,6 +377,28 @@ async function runInit() {
         user_id INTEGER,
         created_at TEXT NOT NULL
       )`,
+      `CREATE TABLE IF NOT EXISTS collaborators (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        owner_user_id INTEGER NOT NULL,
+        collaborator_name TEXT NOT NULL,
+        collaborator_email TEXT NOT NULL,
+        collaborator_user_id INTEGER,
+        relationship TEXT NOT NULL DEFAULT 'Other',
+        created_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS collaborator_notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent_run_id INTEGER,
+        collaborator_id INTEGER NOT NULL,
+        notification_type TEXT NOT NULL DEFAULT 'message',
+        message TEXT DEFAULT '',
+        task_title TEXT DEFAULT '',
+        task_due_date TEXT,
+        task_priority TEXT DEFAULT '',
+        delivered_at TEXT,
+        delivery_method TEXT DEFAULT 'email',
+        created_at TEXT NOT NULL
+      )`,
       `CREATE TABLE IF NOT EXISTS proposals (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL DEFAULT 0,

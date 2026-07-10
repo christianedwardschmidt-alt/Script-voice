@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import CollaboratorsPanel from './CollaboratorsPanel'
 
 interface Settings {
   id: number
@@ -20,6 +21,7 @@ const items: { key: keyof Omit<Settings, 'id'>; title: string; desc: string }[] 
 ]
 
 export default function SettingsPage() {
+  const [tab, setTab] = useState<'general' | 'people'>('general')
   const [settings, setSettings] = useState<Settings | null>(null)
   const [clearing, setClearing] = useState(false)
   const [cleared, setCleared] = useState(false)
@@ -112,7 +114,29 @@ export default function SettingsPage() {
   return (
     <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: '#111827', marginBottom: 6, letterSpacing: '-0.02em' }}>Settings</h1>
-      <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginBottom: 28 }}>Configure your account preferences</p>
+      <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginBottom: 20 }}>Configure your account preferences</p>
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid var(--border)' }}>
+        {(['general', 'people'] as const).map(t => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            style={{
+              padding: '9px 16px', borderRadius: '8px 8px 0 0', border: 'none', background: 'none',
+              fontSize: 14, fontWeight: tab === t ? 700 : 500, color: tab === t ? '#111827' : '#6B7280',
+              cursor: 'pointer', fontFamily: 'var(--font-body)',
+              borderBottom: tab === t ? '2px solid #16A34A' : '2px solid transparent',
+              marginBottom: -1, transition: 'all 0.15s',
+            }}
+          >
+            {t === 'general' ? 'General' : 'People'}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'people' && <CollaboratorsPanel />}
+
+      {tab === 'general' && (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, maxWidth: 560 }}>
         {items.map(({ key, title, desc }) => {
           const on = settings[key]
@@ -264,6 +288,7 @@ export default function SettingsPage() {
           <button style={{ padding: '8px 16px', border: '1px solid #fecaca', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#ef4444', cursor: 'pointer', fontWeight: 500 }}>Delete Account</button>
         </div>
       </div>
+      )}
     </div>
   )
 }
