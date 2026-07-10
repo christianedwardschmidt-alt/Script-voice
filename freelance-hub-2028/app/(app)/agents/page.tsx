@@ -14,6 +14,8 @@ import {
 import MarketplaceTab, { type MarketplaceAgentConfig } from './MarketplaceTab'
 import RuleEditor, { defaultRuleConfig } from './RuleEditor'
 import { findEmptyIfLaneError, type RuleConfig } from '@/lib/ruleUtils'
+import SchedulingPanel, { defaultScheduleState, type ScheduleState } from './SchedulingPanel'
+import { zonedToUtc } from '@/lib/scheduling'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -101,10 +103,13 @@ const TRIGGER_OPTIONS = [
   { value: 'new-client',         label: 'When a new client is added',                 icon: 'UserPlus'    },
   { value: 'proposal-sent',      label: 'When a proposal is sent',                    icon: 'Send'        },
   { value: 'proposal-accepted',  label: 'When a proposal is accepted or rejected',    icon: 'CheckSquare' },
-  { value: 'schedule',           label: 'On a schedule (daily / weekly / monthly)',   icon: 'Calendar'    },
   { value: 'transcription-done', label: 'When a transcription is completed',          icon: 'Mic'         },
   { value: 'manual',             label: 'Manually (run on demand)',                   icon: 'Play'        },
 ]
+
+const CARD_LABELS: Record<string, string> = {
+  once: 'Run Once', recurring: 'Recurring schedule', calendar: 'Calendar Trigger', smart: 'Smart Schedule',
+}
 
 const CONDITION_TYPES = [
   { value: 'client-tag',      label: 'Client has tag',                  suffix: '', placeholder: 'VIP, Prospect…' },
@@ -321,6 +326,10 @@ export default function AgentsPage() {
   const [clonedFrom, setClonedFrom] = useState<ClonedFrom | null>(null)
   const [collaborators, setCollaborators] = useState<Collaborator[]>([])
   const [collabDocs, setCollabDocs] = useState<DocRef[]>([])
+  const [builderMode, setBuilderMode] = useState<'event' | 'schedule'>('event')
+  const [scheduleState, setScheduleState] = useState<ScheduleState>(() => defaultScheduleState('UTC'))
+  const [googleCalendarConnected, setGoogleCalendarConnected] = useState(false)
+  const [workHours, setWorkHours] = useState({ start: '09:00', end: '18:00', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] })
 
   // Load agents
   useEffect(() => {
@@ -341,6 +350,21 @@ export default function AgentsPage() {
       const noteDocs: DocRef[] = (Array.isArray(notes) ? notes : []).map((n: { id: number; title: string }) => ({ id: `note-${n.id}`, title: n.title || 'Untitled note' }))
       const proposalDocs: DocRef[] = (Array.isArray(proposals) ? proposals : []).map((p: { id: number; title: string }) => ({ id: `proposal-${p.id}`, title: p.title || 'Untitled proposal' }))
       setCollabDocs([...noteDocs, ...proposalDocs])
+    }).catch(() => {})
+  }, [])
+
+  // Load timezone + working hours + Google Calendar connection (for the Scheduling panel)
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/settings').then(r => r.json()).catch(() => null),
+      fetch('/api/contact').then(r => r.json()).catch(() => null),
+    ]).then(([settings, contact]) => {
+      if (settings) {
+        setWorkHours({ start: settings.work_start || '09:00', end: settings.work_end || '18:00', days: settings.work_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] })
+        setGoogleCalendarConnected(!!settings.google_calendar_connected)
+      }
+      const tz = contact?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+      setScheduleState(prev => ({ ...prev, timezone: tz }))
     }).catch(() => {})
   }, [])
 
@@ -479,7 +503,6 @@ export default function AgentsPage() {
 
   function cloneFromMarketplace(config: MarketplaceAgentConfig, name: string, marketplaceAgentId: number) {
     const stamp = Date.now()
-    setBuilderTrigger(config.trigger_type || '')
     setBuilderConditions(
       (config.conditions as Omit<BuilderCondition, 'id'>[] || []).map((c, i) => ({ ...c, id: `${stamp}-c${i}` }))
     )
@@ -490,12 +513,69 @@ export default function AgentsPage() {
     setBuilderIcon(config.icon || 'Bot')
     setSelectedActionIdx(null)
     setClonedFrom({ marketplaceAgentId, name })
+
+    if (config.schedule_type === 'recurring' && config.recurring_config) {
+      const rc = config.recurring_config
+      setBuilderMode('schedule')
+      setBuilderTrigger('')
+      setScheduleState(prev => ({ ...prev, scheduleType: 'recurring', frequency: rc.frequency, time: rc.time, days: rc.days || prev.days, dayOfMonth: rc.dayOfMonth || 1, customInterval: rc.customInterval || 1 }))
+    } else {
+      setBuilderMode('event')
+      setBuilderTrigger(config.trigger_type || '')
+    }
     setView('custom-builder')
   }
 
+  function scheduleValidationError(): string | null {
+    if (builderMode !== 'schedule') return null
+    const s = scheduleState
+    if (!s.scheduleType) return 'Choose how this agent should be scheduled.'
+    if (s.scheduleType === 'once' && !s.onceDate) return 'Pick a date and time for this agent to run.'
+    if (s.scheduleType === 'calendar' && !googleCalendarConnected) return 'Connect Google Calendar in Integrations to use this trigger.'
+    if (s.scheduleType === 'recurring' && s.frequency === 'weekly' && s.days.length === 0) return 'Pick at least one day of the week.'
+    return null
+  }
+
+  function buildSchedulePayload() {
+    const s = scheduleState
+    if (s.scheduleType === 'once') {
+      const [y, mo, d] = s.onceDate.split('-').map(Number)
+      const [hh, mm] = s.onceTime.split(':').map(Number)
+      return {
+        schedule_type: 'once', scheduled_at: zonedToUtc(y, mo, d, hh, mm, s.timezone).toISOString(),
+        recurring_config: null, calendar_trigger_config: null, smart_schedule_description: null,
+      }
+    }
+    if (s.scheduleType === 'recurring' || s.scheduleType === 'smart') {
+      return {
+        schedule_type: s.scheduleType, scheduled_at: null,
+        recurring_config: { frequency: s.frequency, time: s.time, days: s.days, dayOfMonth: s.dayOfMonth, customInterval: s.customInterval, timezone: s.timezone },
+        calendar_trigger_config: null,
+        smart_schedule_description: s.scheduleType === 'smart' ? s.smartDescription : null,
+      }
+    }
+    if (s.scheduleType === 'calendar') {
+      return {
+        schedule_type: 'calendar', scheduled_at: null, recurring_config: null,
+        calendar_trigger_config: { beforeAfter: s.beforeAfter, offsetMinutes: s.offsetMinutes, eventFilter: s.eventFilter, clientName: s.clientName },
+        smart_schedule_description: null,
+      }
+    }
+    return { schedule_type: null, scheduled_at: null, recurring_config: null, calendar_trigger_config: null, smart_schedule_description: null }
+  }
+
   async function saveBuilderAgent() {
-    if (!builderTrigger || builderActions.length === 0) {
+    if (builderMode === 'event' && !builderTrigger) {
       showToast('Add a trigger and at least one action')
+      return
+    }
+    if (builderActions.length === 0) {
+      showToast('Add a trigger and at least one action')
+      return
+    }
+    const scheduleError = scheduleValidationError()
+    if (scheduleError) {
+      showToast(scheduleError)
       return
     }
     const ruleError = findEmptyIfLaneError(builderActions)
@@ -504,21 +584,26 @@ export default function AgentsPage() {
       return
     }
     setSavingBuilder(true)
+    const schedulePayload = builderMode === 'schedule' ? buildSchedulePayload() : null
+    const triggerLabel = builderMode === 'schedule'
+      ? (CARD_LABELS[scheduleState.scheduleType || ''] || 'On a schedule')
+      : (TRIGGER_OPTIONS.find(t => t.value === builderTrigger)?.label || builderTrigger)
     const res = await fetch('/api/agents', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: builderName || 'Custom Agent',
         icon: builderIcon,
-        description: `Triggered: ${TRIGGER_OPTIONS.find(t => t.value === builderTrigger)?.label || builderTrigger}`,
+        description: `Triggered: ${triggerLabel}`,
         status: 'active',
-        trigger_type: builderTrigger,
+        trigger_type: builderMode === 'schedule' ? 'schedule' : builderTrigger,
         trigger_config: {},
         conditions: builderConditions,
         actions: builderActions,
         template_id: '',
         marketplace_agent_id: clonedFrom?.marketplaceAgentId ?? null,
         cloned_at: clonedFrom ? new Date().toISOString() : null,
+        ...(schedulePayload || {}),
       }),
     })
     if (res.ok) {
@@ -587,9 +672,35 @@ export default function AgentsPage() {
             </div>
           </div>
 
+          {/* How should this run? — event trigger vs. scheduling intelligence */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            {([['event', 'Triggered by an event'], ['schedule', 'Run on a schedule']] as const).map(([mode, label]) => (
+              <button key={mode} onClick={() => setBuilderMode(mode)}
+                style={{
+                  padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                  border: builderMode === mode ? '1.5px solid #16A34A' : '1.5px solid #E5E7EB',
+                  background: builderMode === mode ? 'rgba(22,163,74,0.08)' : '#fff', color: builderMode === mode ? '#15803D' : '#6B7280',
+                }}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {builderMode === 'schedule' && (
+            <SchedulingPanel
+              value={scheduleState}
+              onChange={setScheduleState}
+              googleCalendarConnected={googleCalendarConnected}
+              workStart={workHours.start}
+              workEnd={workHours.end}
+              workDays={workHours.days}
+            />
+          )}
+
           {/* 3-column builder */}
           <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start' }}>
             {/* Column 1: Trigger */}
+            {builderMode === 'event' && (
             <div className={`builder-col${builderTrigger ? ' selected' : ''}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(22,163,74,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -613,7 +724,9 @@ export default function AgentsPage() {
               </div>
             </div>
 
-            {/* Arrow 1→2 */}
+            )}
+            {builderMode === 'event' && (
+            /* Arrow 1→2 */
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 8px', paddingTop: 50 }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg, rgba(22,163,74,0.3), rgba(22,163,74,0.6))', borderRadius: 1 }} />
@@ -621,6 +734,7 @@ export default function AgentsPage() {
               </div>
               <span style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 4 }}>then</span>
             </div>
+            )}
 
             {/* Column 2: Conditions */}
             <div className="builder-col">
@@ -1017,11 +1131,17 @@ export default function AgentsPage() {
           {/* Save button */}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24, gap: 10 }}>
             <button onClick={() => setView('home')} style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #E5E7EB', background: '#fff', color: '#374151', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Cancel</button>
-            <button onClick={saveBuilderAgent} disabled={savingBuilder || !builderTrigger || builderActions.length === 0}
-              style={{ padding: '10px 24px', borderRadius: 10, background: !builderTrigger || builderActions.length === 0 ? '#E5E7EB' : '#16A34A', color: !builderTrigger || builderActions.length === 0 ? '#9CA3AF' : '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: !builderTrigger || builderActions.length === 0 ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 6 }}>
-              {savingBuilder ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={14} />}
-              {savingBuilder ? 'Saving…' : 'Activate Agent'}
-            </button>
+            {(() => {
+              const hasTriggerOrSchedule = builderMode === 'schedule' ? !!scheduleState.scheduleType : !!builderTrigger
+              const canSave = hasTriggerOrSchedule && builderActions.length > 0
+              return (
+                <button onClick={saveBuilderAgent} disabled={savingBuilder || !canSave}
+                  style={{ padding: '10px 24px', borderRadius: 10, background: !canSave ? '#E5E7EB' : '#16A34A', color: !canSave ? '#9CA3AF' : '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: !canSave ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {savingBuilder ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={14} />}
+                  {savingBuilder ? 'Saving…' : 'Activate Agent'}
+                </button>
+              )
+            })()}
           </div>
         </div>
       </div>

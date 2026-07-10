@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 
 // ── Abstract icon components (36×36, stroke-based) ────────────────────────────
@@ -301,12 +301,31 @@ export default function IntegrationsPage() {
   const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set())
   const [modalId, setModalId] = useState<string | null>(null)
 
+  // Google Calendar is the one integration with a real, persisted connection —
+  // it gates the Calendar Trigger schedule type in the AI Agent builder.
+  useEffect(() => {
+    fetch('/api/settings').then(r => r.json()).then(s => {
+      if (s?.google_calendar_connected) setConnectedIds(prev => new Set([...prev, 'google-calendar']))
+    }).catch(() => {})
+  }, [])
+
   const connectedList = INTEGRATIONS.filter(i => connectedIds.has(i.id))
   const availableList = INTEGRATIONS.filter(i => !connectedIds.has(i.id))
   const modal = modalId ? INTEGRATIONS.find(i => i.id === modalId) ?? null : null
 
-  function connect(id: string) { setConnectedIds(prev => new Set([...prev, id])); setModalId(null) }
-  function disconnect(id: string) { setConnectedIds(prev => { const s = new Set(prev); s.delete(id); return s }) }
+  function connect(id: string) {
+    setConnectedIds(prev => new Set([...prev, id]))
+    setModalId(null)
+    if (id === 'google-calendar') {
+      fetch('/api/settings', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ google_calendar_connected: true }) }).catch(() => {})
+    }
+  }
+  function disconnect(id: string) {
+    setConnectedIds(prev => { const s = new Set(prev); s.delete(id); return s })
+    if (id === 'google-calendar') {
+      fetch('/api/settings', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ google_calendar_connected: false }) }).catch(() => {})
+    }
+  }
 
   const sectionLabel = (text: string, badge?: number) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>

@@ -10,7 +10,12 @@ interface Settings {
   darkMode: boolean
   invoiceAutoSend: boolean
   weeklyDigest: boolean
+  work_start: string
+  work_end: string
+  work_days: string[]
 }
+
+const ALL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 const items: { key: keyof Omit<Settings, 'id'>; title: string; desc: string }[] = [
   { key: 'notifications', title: 'Notifications', desc: 'Email and push notification preferences' },
@@ -103,6 +108,23 @@ export default function SettingsPage() {
     })
   }
 
+  const updateWorkingHours = async (patch: Partial<Pick<Settings, 'work_start' | 'work_end' | 'work_days'>>) => {
+    if (!settings) return
+    const next = { ...settings, ...patch }
+    setSettings(next)
+    await fetch('/api/settings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    })
+  }
+
+  const toggleWorkDay = (day: string) => {
+    if (!settings) return
+    const days = settings.work_days.includes(day) ? settings.work_days.filter(d => d !== day) : [...settings.work_days, day]
+    updateWorkingHours({ work_days: days })
+  }
+
   if (!settings) {
     return (
       <div className="page-pad" style={{ padding: '28px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
@@ -155,6 +177,33 @@ export default function SettingsPage() {
             </div>
           )
         })}
+        <div className="card" style={{ padding: 18 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Working Hours</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 14 }}>Scheduled agents respect these hours — GuildWire will check before running anything outside them.</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>Active from</span>
+            <input type="time" value={settings.work_start} onChange={e => updateWorkingHours({ work_start: e.target.value })}
+              style={{ padding: '7px 10px', borderRadius: 8, border: '1.5px solid rgba(0,0,0,0.1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', background: 'var(--bg)', color: 'var(--text)' }} />
+            <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>to</span>
+            <input type="time" value={settings.work_end} onChange={e => updateWorkingHours({ work_end: e.target.value })}
+              style={{ padding: '7px 10px', borderRadius: 8, border: '1.5px solid rgba(0,0,0,0.1)', fontSize: 13, fontFamily: 'inherit', outline: 'none', background: 'var(--bg)', color: 'var(--text)' }} />
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {ALL_DAYS.map(day => {
+              const on = settings.work_days.includes(day)
+              return (
+                <button key={day} onClick={() => toggleWorkDay(day)} type="button"
+                  style={{
+                    padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+                    border: on ? '1.5px solid #16A34A' : '1.5px solid rgba(0,0,0,0.1)', background: on ? 'rgba(22,163,74,0.1)' : 'var(--bg)', color: on ? '#16A34A' : '#6B7280',
+                  }}>
+                  {day.slice(0, 3)}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
         <div className="card" style={{ padding: 18 }}>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Change Password</div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 16 }}>Update your account password. You&apos;ll stay logged in after changing it.</div>

@@ -10,6 +10,8 @@ export interface MarketplaceAgentConfig {
   trigger_type: string
   conditions: unknown[]
   actions: unknown[]
+  schedule_type?: string
+  recurring_config?: { frequency: 'daily' | 'weekly' | 'monthly' | 'custom'; time: string; days?: string[]; dayOfMonth?: number; customInterval?: number }
 }
 
 interface MarketplaceAgent {

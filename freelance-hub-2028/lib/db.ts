@@ -248,7 +248,10 @@ async function runInit() {
         notifications INTEGER DEFAULT 1, twoFactor INTEGER DEFAULT 0,
         darkMode INTEGER DEFAULT 0, invoiceAutoSend INTEGER DEFAULT 1,
         weeklyDigest INTEGER DEFAULT 1, workspaceName TEXT DEFAULT 'My Studio',
-        pipeline_stages TEXT
+        pipeline_stages TEXT,
+        work_start TEXT DEFAULT '09:00', work_end TEXT DEFAULT '18:00',
+        work_days TEXT DEFAULT '["Monday","Tuesday","Wednesday","Thursday","Friday"]',
+        google_calendar_connected INTEGER DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS contact_info (
         user_id INTEGER PRIMARY KEY,
@@ -332,8 +335,23 @@ async function runInit() {
         marketplace_agent_id INTEGER,
         cloned_at TEXT,
         custom_time_estimate INTEGER DEFAULT 15,
+        schedule_type TEXT,
+        scheduled_at TEXT,
+        recurring_config TEXT,
+        calendar_trigger_config TEXT,
+        smart_schedule_description TEXT,
+        next_run_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS agent_schedule_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        agent_id INTEGER NOT NULL,
+        scheduled_for TEXT NOT NULL,
+        ran_at TEXT,
+        status TEXT NOT NULL DEFAULT 'pending',
+        skipped_reason TEXT,
+        created_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS agent_runs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -624,6 +642,16 @@ async function runInit() {
     `ALTER TABLE agents ADD COLUMN cloned_at TEXT`,
     `ALTER TABLE agents ADD COLUMN custom_time_estimate INTEGER DEFAULT 15`,
     `ALTER TABLE agent_runs ADD COLUMN branch_taken TEXT`,
+    `ALTER TABLE agents ADD COLUMN schedule_type TEXT`,
+    `ALTER TABLE agents ADD COLUMN scheduled_at TEXT`,
+    `ALTER TABLE agents ADD COLUMN recurring_config TEXT`,
+    `ALTER TABLE agents ADD COLUMN calendar_trigger_config TEXT`,
+    `ALTER TABLE agents ADD COLUMN smart_schedule_description TEXT`,
+    `ALTER TABLE agents ADD COLUMN next_run_at TEXT`,
+    `ALTER TABLE settings ADD COLUMN work_start TEXT DEFAULT '09:00'`,
+    `ALTER TABLE settings ADD COLUMN work_end TEXT DEFAULT '18:00'`,
+    `ALTER TABLE settings ADD COLUMN work_days TEXT DEFAULT '["Monday","Tuesday","Wednesday","Thursday","Friday"]'`,
+    `ALTER TABLE settings ADD COLUMN google_calendar_connected INTEGER DEFAULT 0`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
@@ -921,17 +949,28 @@ function slugify(name: string): string {
 async function seedMarketplaceAgents() {
   const now = new Date()
   const d = (days: number) => new Date(now.getTime() - days * 86400000).toISOString()
-  const cfg = (icon: string, trigger_type: string, conditions: unknown[], actions: unknown[]) =>
-    JSON.stringify({ icon, trigger_type, conditions, actions })
+  const cfg = (icon: string, trigger_type: string, conditions: unknown[], actions: unknown[], schedule?: { schedule_type: string; recurring_config: Record<string, unknown> }) =>
+    JSON.stringify({ icon, trigger_type, conditions, actions, ...(schedule || {}) })
   const act = (id: string, type: string, config: Record<string, string> = {}) => ({ id, type, config })
   const rule = (conditionType: string, operator: string, value: string, ifActions: unknown[], elseActions: unknown[]) =>
     ({ id: 'rule1', type: 'rule', rule: { conditionType, operator, value, ifActions, elseActions } })
 
   const sql = `INSERT INTO marketplace_agents
     (name,slug,description,category,configuration,submitted_by_user_id,submitted_by_profession,clone_count,average_rating,rating_count,approved,featured,created_at,approved_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,1,0,?,?)`
+    VALUES (?,?,?,?,?,?,?,?,?,?,1,?,?,?)`
 
   const agents = [
+    {
+      name: 'Monday morning briefing',
+      description: 'Your Monday morning briefing. Ready before you are — pipeline, outstanding invoices, overdue follow-ups, and upcoming deadlines in one email, every Monday at 8 AM.',
+      category: 'Productivity',
+      configuration: cfg('BarChart2', '', [], [
+        act('a1', 'generate-report', {}),
+        act('a2', 'send-email', { tone: 'summary' }),
+      ], { schedule_type: 'recurring', recurring_config: { frequency: 'weekly', time: '08:00', days: ['Monday'], timezone: 'America/New_York' } }),
+      profession: 'Independent Consultant',
+      clones: 428, rating: 4.9, ratings: 137, age: 62, featured: true,
+    },
     {
       name: 'Get paid faster',
       description: 'Sends a payment reminder 3 days before invoice due date — formal for large invoices, friendly for the rest.',
@@ -1000,7 +1039,7 @@ async function seedMarketplaceAgents() {
       sql,
       args: [
         a.name, slugify(a.name), a.description, a.category, a.configuration,
-        null, a.profession, a.clones, a.rating, a.ratings, d(a.age), d(a.age - 1),
+        null, a.profession, a.clones, a.rating, a.ratings, ('featured' in a && a.featured) ? 1 : 0, d(a.age), d(a.age - 1),
       ],
     })),
     'write'

@@ -15,6 +15,7 @@ import ActivityFeed from './ActivityFeed'
 import PerformanceCard from './PerformanceCard'
 import SubmitModal from './SubmitModal'
 import RatingPrompt from './RatingPrompt'
+import UpcomingRunsCard from './UpcomingRunsCard'
 
 const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
   Bot, Zap, Cpu, Database, Globe, Layers, Shield, Target,
@@ -45,6 +46,11 @@ type Agent = {
   marketplace_agent_id: number | null
   cloned_at: string | null
   created_at: string
+  schedule_type: string | null
+  scheduled_at: string | null
+  recurring_config: { frequency: 'daily' | 'weekly' | 'monthly' | 'custom'; time: string; days?: string[]; dayOfMonth?: number; customInterval?: number; timezone: string } | null
+  calendar_trigger_config: { beforeAfter: 'before' | 'after'; offsetMinutes: number; eventFilter: 'all' | 'client' | 'meetings' | 'deadlines'; clientName?: string } | null
+  smart_schedule_description: string | null
 }
 
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -58,6 +64,13 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
   const [toast, setToast] = useState('')
   const [activityTick, setActivityTick] = useState(0)
   const [showSubmitModal, setShowSubmitModal] = useState(false)
+  const [timezone, setTimezone] = useState('UTC')
+
+  useEffect(() => {
+    fetch('/api/contact').then(r => r.json()).then(c => {
+      setTimezone(c?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC')
+    }).catch(() => {})
+  }, [])
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -239,6 +252,20 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Performance */}
       <PerformanceCard agentId={id} />
+
+      {/* Upcoming Runs (scheduled agents only) */}
+      <UpcomingRunsCard
+        agentId={id}
+        scheduleFields={{
+          schedule_type: agent.schedule_type,
+          scheduled_at: agent.scheduled_at,
+          recurring_config: agent.recurring_config,
+          calendar_trigger_config: agent.calendar_trigger_config,
+          smart_schedule_description: agent.smart_schedule_description,
+        }}
+        timezone={timezone}
+        onScheduleUpdated={load}
+      />
 
       {/* Activity feed */}
       <ActivityFeed agentId={id} agentActive={isActive} refreshSignal={activityTick} />
