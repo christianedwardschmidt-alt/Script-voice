@@ -329,6 +329,8 @@ async function runInit() {
         template_id TEXT DEFAULT '',
         run_count INTEGER DEFAULT 0,
         last_run TEXT,
+        marketplace_agent_id INTEGER,
+        cloned_at TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )`,
@@ -342,6 +344,38 @@ async function runInit() {
         human_readable_summary TEXT,
         technical_log TEXT,
         ran_at TEXT NOT NULL
+      )`,
+      `CREATE TABLE IF NOT EXISTS marketplace_agents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        original_agent_id INTEGER,
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE NOT NULL,
+        description TEXT NOT NULL DEFAULT '',
+        category TEXT NOT NULL DEFAULT 'Productivity',
+        configuration TEXT NOT NULL DEFAULT '{}',
+        submitted_by_user_id INTEGER,
+        submitted_by_profession TEXT DEFAULT '',
+        clone_count INTEGER DEFAULT 0,
+        average_rating REAL DEFAULT 0,
+        rating_count INTEGER DEFAULT 0,
+        approved INTEGER DEFAULT 0,
+        featured INTEGER DEFAULT 0,
+        created_at TEXT NOT NULL,
+        approved_at TEXT
+      )`,
+      `CREATE TABLE IF NOT EXISTS marketplace_ratings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        marketplace_agent_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        rating INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        UNIQUE(marketplace_agent_id, user_id)
+      )`,
+      `CREATE TABLE IF NOT EXISTS marketplace_clone_events (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        marketplace_agent_id INTEGER NOT NULL,
+        user_id INTEGER,
+        created_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS proposals (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -555,6 +589,8 @@ async function runInit() {
     `ALTER TABLE profile ADD COLUMN years_experience INTEGER DEFAULT 0`,
     `ALTER TABLE agent_runs ADD COLUMN human_readable_summary TEXT`,
     `ALTER TABLE agent_runs ADD COLUMN technical_log TEXT`,
+    `ALTER TABLE agents ADD COLUMN marketplace_agent_id INTEGER`,
+    `ALTER TABLE agents ADD COLUMN cloned_at TEXT`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 
@@ -565,6 +601,10 @@ async function runInit() {
   // Seed blog posts once
   const hasBlog = await client.execute({ sql: `SELECT id FROM blog_posts LIMIT 1`, args: [] })
   if (!hasBlog.rows.length) await seedBlogPosts()
+
+  // Seed marketplace agents once
+  const hasMarketplace = await client.execute({ sql: `SELECT id FROM marketplace_agents LIMIT 1`, args: [] })
+  if (!hasMarketplace.rows.length) await seedMarketplaceAgents()
 
   // Ensure demo user exists and has data
   const DEMO_EMAIL = 'demo@guildwire.io'
@@ -839,6 +879,75 @@ async function seedAgents(userId: number) {
     { sql: runSql, args: [id3,userId,'success','Monday 8:00am schedule','Generated and emailed weekly revenue report',d(72*4)] },
     { sql: runSql, args: [id3,userId,'success','Monday 8:00am schedule','Generated and emailed weekly revenue report',d(72*11)] },
   ], 'write')
+}
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+}
+
+async function seedMarketplaceAgents() {
+  const now = new Date()
+  const d = (days: number) => new Date(now.getTime() - days * 86400000).toISOString()
+  const cfg = (icon: string, trigger_type: string, conditions: unknown[], actions: unknown[]) =>
+    JSON.stringify({ icon, trigger_type, conditions, actions })
+
+  const sql = `INSERT INTO marketplace_agents
+    (name,slug,description,category,configuration,submitted_by_user_id,submitted_by_profession,clone_count,average_rating,rating_count,approved,featured,created_at,approved_at)
+    VALUES (?,?,?,?,?,?,?,?,?,?,1,0,?,?)`
+
+  const agents = [
+    {
+      name: 'Get paid faster',
+      description: 'Sends a payment reminder 3 days before invoice due date.',
+      category: 'Invoicing',
+      configuration: cfg('Bell', 'schedule', [], [{ type: 'send-email', config: {} }]),
+      profession: 'Independent Consultant',
+      clones: 312, rating: 4.8, ratings: 94, age: 118,
+    },
+    {
+      name: 'Never lose a client to silence',
+      description: 'Flags clients quiet for 30 days and creates a follow-up task.',
+      category: 'Client Relations',
+      configuration: cfg('UserPlus', 'schedule', [{ id: 'c1', type: 'inactive-days', value: '30' }], [{ type: 'create-task', config: {} }]),
+      profession: 'Freelance Designer',
+      clones: 189, rating: 4.6, ratings: 61, age: 95,
+    },
+    {
+      name: 'Tax-ready every month',
+      description: 'Logs paid invoices to Tax Center on the 1st monthly.',
+      category: 'Tax',
+      configuration: cfg('FileText', 'schedule', [], [{ type: 'generate-report', config: {} }]),
+      profession: 'Solo Bookkeeper',
+      clones: 247, rating: 4.9, ratings: 88, age: 140,
+    },
+    {
+      name: 'Proposal momentum',
+      description: 'Follows up on proposals viewed but unanswered after 5 days.',
+      category: 'Proposals',
+      configuration: cfg('Send', 'proposal-sent', [], [{ type: 'send-email', config: {} }, { type: 'notify-me', config: {} }]),
+      profession: 'Freelance Copywriter',
+      clones: 156, rating: 4.5, ratings: 47, age: 72,
+    },
+    {
+      name: 'Weekly business pulse',
+      description: "Creates a Monday review task and emails last week's activity summary.",
+      category: 'Productivity',
+      configuration: cfg('BarChart2', 'schedule', [], [{ type: 'create-task', config: {} }, { type: 'send-email', config: {} }]),
+      profession: 'Independent Developer',
+      clones: 203, rating: 4.7, ratings: 69, age: 103,
+    },
+  ]
+
+  await client.batch(
+    agents.map(a => ({
+      sql,
+      args: [
+        a.name, slugify(a.name), a.description, a.category, a.configuration,
+        null, a.profession, a.clones, a.rating, a.ratings, d(a.age), d(a.age - 1),
+      ],
+    })),
+    'write'
+  )
 }
 
 async function seedActivityLog(userId: number) {

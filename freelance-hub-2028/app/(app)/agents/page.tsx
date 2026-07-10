@@ -11,6 +11,7 @@ import {
   DollarSign, CheckSquare, Mic, Calendar, Clock, Cpu,
   Shield, Layers, Target, Database, Globe, Link, Search, Edit3,
 } from 'lucide-react'
+import MarketplaceTab, { type MarketplaceAgentConfig } from './MarketplaceTab'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,11 @@ interface BuilderAction {
 }
 
 type ViewType = 'home' | 'template-setup' | 'custom-builder'
+
+interface ClonedFrom {
+  marketplaceAgentId: number
+  name: string
+}
 
 // ── Static data ───────────────────────────────────────────────────────────────
 
@@ -259,7 +265,7 @@ const CATEGORY_COLORS: Record<string, { accent: string; bg: string }> = {
 export default function AgentsPage() {
   const router = useRouter()
   const [view, setView] = useState<ViewType>('home')
-  const [activeTab, setActiveTab] = useState<'agents' | 'templates'>('agents')
+  const [activeTab, setActiveTab] = useState<'agents' | 'templates' | 'marketplace'>('agents')
   const [agents, setAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
   const [agentMenuId, setAgentMenuId] = useState<number | null>(null)
@@ -292,6 +298,7 @@ export default function AgentsPage() {
   const [emailBody, setEmailBody] = useState('')
   const [emailTo, setEmailTo] = useState('client')
   const [savingBuilder, setSavingBuilder] = useState(false)
+  const [clonedFrom, setClonedFrom] = useState<ClonedFrom | null>(null)
 
   // Load agents
   useEffect(() => {
@@ -413,6 +420,22 @@ export default function AgentsPage() {
     setEmailBody(prev => prev + ' ' + v)
   }
 
+  function cloneFromMarketplace(config: MarketplaceAgentConfig, name: string, marketplaceAgentId: number) {
+    const stamp = Date.now()
+    setBuilderTrigger(config.trigger_type || '')
+    setBuilderConditions(
+      (config.conditions as Omit<BuilderCondition, 'id'>[] || []).map((c, i) => ({ ...c, id: `${stamp}-c${i}` }))
+    )
+    setBuilderActions(
+      (config.actions as Omit<BuilderAction, 'id'>[] || []).map((a, i) => ({ ...a, id: `${stamp}-a${i}` }))
+    )
+    setBuilderName(name)
+    setBuilderIcon(config.icon || 'Bot')
+    setSelectedActionIdx(null)
+    setClonedFrom({ marketplaceAgentId, name })
+    setView('custom-builder')
+  }
+
   async function saveBuilderAgent() {
     if (!builderTrigger || builderActions.length === 0) {
       showToast('Add a trigger and at least one action')
@@ -432,6 +455,8 @@ export default function AgentsPage() {
         conditions: builderConditions,
         actions: builderActions,
         template_id: '',
+        marketplace_agent_id: clonedFrom?.marketplaceAgentId ?? null,
+        cloned_at: clonedFrom ? new Date().toISOString() : null,
       }),
     })
     if (res.ok) {
@@ -440,6 +465,7 @@ export default function AgentsPage() {
       showToast(`${agent.name} is now active!`)
     }
     setSavingBuilder(false)
+    setClonedFrom(null)
     setView('home')
     setActiveTab('agents')
   }
@@ -462,12 +488,22 @@ export default function AgentsPage() {
 
         {/* Header */}
         <div style={{ padding: '18px 28px 0', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-          <button onClick={() => setView('home')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, background: '#fff', border: '1px solid #E5E7EB', cursor: 'pointer', fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>
+          <button onClick={() => { setClonedFrom(null); setView('home') }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, background: '#fff', border: '1px solid #E5E7EB', cursor: 'pointer', fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>
             ← Back
           </button>
           <span style={{ color: '#9CA3AF', fontSize: 13 }}>/</span>
           <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>Custom Agent Builder</span>
         </div>
+
+        {clonedFrom && (
+          <div style={{
+            margin: '14px 28px 0', padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: 13,
+            color: '#CA8A04', background: 'rgba(202,138,4,0.08)', borderLeft: '3px solid #CA8A04',
+            borderRadius: '0 8px 8px 0',
+          }}>
+            Cloned from marketplace · Customize this agent to fit your business
+          </div>
+        )}
 
         <div style={{ padding: '16px 28px 40px' }}>
           {/* Agent name + icon row */}
@@ -1004,7 +1040,7 @@ export default function AgentsPage() {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', color: '#374151', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
             <Sparkles size={14} /> Templates
           </button>
-          <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setView('custom-builder') }}
+          <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setClonedFrom(null); setView('custom-builder') }}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 4px rgba(22,163,74,0.35)' }}>
             <Plus size={14} /> New Agent
           </button>
@@ -1026,10 +1062,10 @@ export default function AgentsPage() {
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: '1px solid #E9EBF0', paddingBottom: 0 }}>
-        {(['agents', 'templates'] as const).map(tab => (
+        {(['agents', 'templates', 'marketplace'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             style={{ padding: '9px 16px', borderRadius: '8px 8px 0 0', border: 'none', background: 'none', fontSize: 14, fontWeight: activeTab === tab ? 700 : 500, color: activeTab === tab ? '#111827' : '#6B7280', cursor: 'pointer', fontFamily: 'var(--font-body)', borderBottom: activeTab === tab ? '2px solid #16A34A' : '2px solid transparent', marginBottom: -1, transition: 'all 0.15s' }}>
-            {tab === 'agents' ? 'My Agents' : 'Templates'}
+            {tab === 'agents' ? 'My Agents' : tab === 'templates' ? 'Templates' : 'Marketplace'}
             {tab === 'agents' && agents.length > 0 && (
               <span style={{ marginLeft: 6, fontSize: 11, padding: '2px 6px', borderRadius: 10, background: '#F3F4F6', color: '#6B7280' }}>{agents.length}</span>
             )}
@@ -1056,7 +1092,7 @@ export default function AgentsPage() {
                 <button onClick={() => setActiveTab('templates')} className="btn-primary" style={{ fontSize: 13 }}>
                   <Sparkles size={14} /> Browse Templates
                 </button>
-                <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setView('custom-builder') }} className="btn-outline" style={{ fontSize: 13 }}>
+                <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setClonedFrom(null); setView('custom-builder') }} className="btn-outline" style={{ fontSize: 13 }}>
                   <Plus size={14} /> Build Custom Agent
                 </button>
               </div>
@@ -1186,6 +1222,14 @@ export default function AgentsPage() {
             )
           })}
         </div>
+      )}
+
+      {/* ── MARKETPLACE TAB ──────────────────────────────────────────────── */}
+      {activeTab === 'marketplace' && (
+        <MarketplaceTab
+          onClone={cloneFromMarketplace}
+          onGoToMyAgents={() => setActiveTab('agents')}
+        />
       )}
 
       {/* Toast */}

@@ -2,11 +2,23 @@ import { NextRequest, NextResponse } from 'next/server'
 import { queryOne, execute } from '@/lib/db'
 import { getUser } from '@/lib/auth'
 
+async function isMarketplaceContributor(userId: number): Promise<boolean> {
+  const row = await queryOne<{ id: number }>(
+    `SELECT id FROM marketplace_agents WHERE submitted_by_user_id = ? AND approved = 1 LIMIT 1`,
+    [userId]
+  )
+  return !!row
+}
+
 export async function GET() {
   const user = await getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const row = await queryOne(`SELECT * FROM profile WHERE user_id = ?`, [user.id])
-  return NextResponse.json(row ?? { displayName: user.name, email: user.email, headline: '', skills: '', years_experience: 0 })
+  const is_marketplace_contributor = await isMarketplaceContributor(user.id)
+  return NextResponse.json({
+    ...(row ?? { displayName: user.name, email: user.email, headline: '', skills: '', years_experience: 0 }),
+    is_marketplace_contributor,
+  })
 }
 
 export async function PATCH(request: NextRequest) {
@@ -27,5 +39,6 @@ export async function PATCH(request: NextRequest) {
   }
 
   const row = await queryOne(`SELECT * FROM profile WHERE user_id = ?`, [user.id])
-  return NextResponse.json(row)
+  const is_marketplace_contributor = await isMarketplaceContributor(user.id)
+  return NextResponse.json({ ...row, is_marketplace_contributor })
 }

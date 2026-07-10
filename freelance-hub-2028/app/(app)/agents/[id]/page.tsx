@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation'
 import {
   ArrowLeft, Play, Settings2, Activity, Timer,
   ToggleLeft, ToggleRight,
-  RefreshCw, Zap, TrendingUp,
+  RefreshCw, Zap, TrendingUp, Share2,
   Bot, Cpu, Database, Globe, Layers, Shield, Target,
   Mail, Bell, Send, Rocket, BarChart2, AlertCircle,
   DollarSign, FileText, Award, UserPlus, Users, Calendar, Clock,
   Mic, CheckSquare, Search, Link, Star, Edit3,
 } from 'lucide-react'
 import ActivityFeed from './ActivityFeed'
+import SubmitModal from './SubmitModal'
+import RatingPrompt from './RatingPrompt'
 
 const ICON_MAP: Record<string, React.FC<{ size?: number; color?: string }>> = {
   Bot, Zap, Cpu, Database, Globe, Layers, Shield, Target,
@@ -49,6 +51,8 @@ type Agent = {
   actions: unknown[]
   run_count: number
   last_run: string | null
+  marketplace_agent_id: number | null
+  cloned_at: string | null
   created_at: string
 }
 
@@ -75,6 +79,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
   const [running, setRunning] = useState(false)
   const [toast, setToast] = useState('')
   const [activityTick, setActivityTick] = useState(0)
+  const [showSubmitModal, setShowSubmitModal] = useState(false)
 
   const showToast = (msg: string) => {
     setToast(msg)
@@ -289,6 +294,35 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
       {/* Activity feed */}
       <ActivityFeed agentId={id} agentActive={isActive} refreshSignal={activityTick} />
+
+      {/* Rating prompt — cloned agents, 7+ days in, not yet rated */}
+      {agent.marketplace_agent_id && agent.cloned_at &&
+        (Date.now() - new Date(agent.cloned_at).getTime()) > 7 * 86400000 && (
+        <div style={{ marginTop: 20 }}>
+          <RatingPrompt marketplaceAgentId={agent.marketplace_agent_id} />
+        </div>
+      )}
+
+      {/* Share to marketplace */}
+      {agent.run_count > 10 && (
+        <div style={{ marginTop: 20, textAlign: 'center' }}>
+          <button
+            onClick={() => setShowSubmitModal(true)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 16px',
+              borderRadius: 8, border: '1px solid #16A34A', background: 'transparent', color: '#16A34A',
+              fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
+            }}
+          >
+            <Share2 size={14} />
+            Share to Marketplace
+          </button>
+        </div>
+      )}
+
+      {showSubmitModal && (
+        <SubmitModal agentId={agent.id} agentName={agent.name} onClose={() => setShowSubmitModal(false)} />
+      )}
     </div>
   )
 }

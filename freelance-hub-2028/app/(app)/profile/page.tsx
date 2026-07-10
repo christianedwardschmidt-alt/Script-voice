@@ -9,6 +9,7 @@ interface Profile {
   headline: string
   skills: string
   years_experience: number
+  is_marketplace_contributor?: boolean
 }
 
 export default function ProfilePage() {
@@ -52,7 +53,18 @@ export default function ProfilePage() {
             {profile.displayName?.charAt(0)?.toUpperCase() ?? '?'}
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>{profile.displayName}</div>
+              {profile.is_marketplace_contributor && (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-body)',
+                  fontSize: 11, fontWeight: 600, color: '#CA8A04', background: 'rgba(202,138,4,0.1)',
+                  padding: '3px 9px', borderRadius: 20,
+                }}>
+                  ★ Marketplace Contributor
+                </span>
+              )}
+            </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', marginTop: 2 }}>{profile.email}</div>
             <button style={{ marginTop: 8, padding: '5px 14px', border: '1px solid #E5E7EB', borderRadius: 'var(--radius-md)', background: 'white', fontSize: 12, cursor: 'pointer', color: '#374151', fontFamily: 'var(--font-body)', fontWeight: 500, transition: 'all 0.2s ease' }}>Change Photo</button>
           </div>

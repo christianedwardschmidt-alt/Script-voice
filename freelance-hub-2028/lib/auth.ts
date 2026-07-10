@@ -49,3 +49,9 @@ export async function getUser(): Promise<SessionUser | null> {
 
 export const SESSION_COOKIE = 'gw_session'
 export const SESSION_DAYS = 30
+
+export function isAdmin(user: SessionUser | null): boolean {
+  if (!user) return false
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'christianedwardschmidt@gmail.com'
+  return user.email === adminEmail
+}
