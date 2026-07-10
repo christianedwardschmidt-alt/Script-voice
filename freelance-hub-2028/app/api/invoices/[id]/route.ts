@@ -81,6 +81,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (body.status !== undefined && body.status !== existing.status) {
     logActivity(user.id, `Invoice ${id} marked as ${body.status}`)
 
+    if (body.status === 'Paid') {
+      await execute(
+        `INSERT INTO invoice_payments (invoice_id, user_id, amount, paid_at) VALUES (?,?,?,?)`,
+        [id, user.id, existing.amount, new Date().toISOString()]
+      )
+    }
+
     // Recurring-sourced invoice paid: auto-connect to Tax Center income + CRM timeline. Automatic, cannot be disabled.
     if (body.status === 'Paid' && existing.recurring_template_id != null) {
       const already = await queryOne(`SELECT id FROM tax_income WHERE invoice_id = ?`, [id])

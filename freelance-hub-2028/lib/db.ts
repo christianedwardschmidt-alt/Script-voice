@@ -331,6 +331,7 @@ async function runInit() {
         last_run TEXT,
         marketplace_agent_id INTEGER,
         cloned_at TEXT,
+        custom_time_estimate INTEGER DEFAULT 15,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       )`,
@@ -370,6 +371,13 @@ async function runInit() {
         rating INTEGER NOT NULL,
         created_at TEXT NOT NULL,
         UNIQUE(marketplace_agent_id, user_id)
+      )`,
+      `CREATE TABLE IF NOT EXISTS invoice_payments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        invoice_id TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        amount REAL NOT NULL DEFAULT 0,
+        paid_at TEXT NOT NULL
       )`,
       `CREATE TABLE IF NOT EXISTS marketplace_clone_events (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -613,6 +621,7 @@ async function runInit() {
     `ALTER TABLE agent_runs ADD COLUMN technical_log TEXT`,
     `ALTER TABLE agents ADD COLUMN marketplace_agent_id INTEGER`,
     `ALTER TABLE agents ADD COLUMN cloned_at TEXT`,
+    `ALTER TABLE agents ADD COLUMN custom_time_estimate INTEGER DEFAULT 15`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
 

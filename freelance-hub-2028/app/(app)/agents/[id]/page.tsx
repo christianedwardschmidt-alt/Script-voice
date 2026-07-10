@@ -3,7 +3,7 @@
 import React, { use, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowLeft, Play, Settings2, Activity, Timer,
+  ArrowLeft, Play, Settings2, Activity,
   ToggleLeft, ToggleRight,
   RefreshCw, Zap, TrendingUp, Share2,
   Bot, Cpu, Database, Globe, Layers, Shield, Target,
@@ -12,6 +12,7 @@ import {
   Mic, CheckSquare, Search, Link, Star, Edit3,
 } from 'lucide-react'
 import ActivityFeed from './ActivityFeed'
+import PerformanceCard from './PerformanceCard'
 import SubmitModal from './SubmitModal'
 import RatingPrompt from './RatingPrompt'
 
@@ -27,16 +28,6 @@ function AgentIcon({ icon, size = 20, color }: { icon: string; size?: number; co
   const Comp = ICON_MAP[icon]
   if (Comp) return <Comp size={size} color={color} />
   return <span style={{ fontSize: size * 0.9, lineHeight: 1 }}>{icon}</span>
-}
-
-type AgentRun = {
-  id: number
-  agent_id: number
-  user_id: number
-  status: string
-  trigger_event: string
-  action_taken: string
-  ran_at: string
 }
 
 type Agent = {
@@ -56,24 +47,11 @@ type Agent = {
   created_at: string
 }
 
-function relativeTime(iso: string | null): string {
-  if (!iso) return 'Never'
-  const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'Just now'
-  if (mins < 60) return `${mins}m ago`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
-  const days = Math.floor(hrs / 24)
-  return `${days}d ago`
-}
-
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
 
   const [agent, setAgent] = useState<Agent | null>(null)
-  const [runs, setRuns] = useState<AgentRun[]>([])
   const [loading, setLoading] = useState(true)
   const [toggling, setToggling] = useState(false)
   const [running, setRunning] = useState(false)
@@ -92,7 +70,6 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
       if (!res.ok) { router.push('/agents'); return }
       const data = await res.json()
       setAgent(data.agent)
-      setRuns(data.runs || [])
     } finally {
       setLoading(false)
     }
@@ -146,15 +123,6 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
   if (!agent) return null
 
   const isActive = agent.status === 'active'
-  const finishedRuns = runs.filter(r => r.status !== 'running')
-  const successCount = finishedRuns.filter(r => r.status === 'success').length
-  const successRate = finishedRuns.length > 0 ? Math.round((successCount / finishedRuns.length) * 100) : 100
-
-  const statCards = [
-    { label: 'Total Runs', value: agent.run_count, icon: Activity, color: '#6366f1' },
-    { label: 'Success Rate', value: `${successRate}%`, icon: TrendingUp, color: '#16a34a' },
-    { label: 'Last Run', value: relativeTime(agent.last_run), icon: Timer, color: '#f59e0b' },
-  ]
 
   return (
     <div className="page-pad" style={{ maxWidth: 860, margin: '0 auto', paddingTop: 24, paddingBottom: 80 }}>
@@ -269,28 +237,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
         )}
       </div>
 
-      {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 32 }}>
-        {statCards.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} style={{
-            background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 14,
-            padding: '18px 20px', display: 'flex', gap: 14, alignItems: 'center',
-          }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 10, background: color + '18',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <Icon size={18} color={color} />
-            </div>
-            <div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-1)', fontFamily: 'var(--font-syne)', lineHeight: 1 }}>
-                {value}
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 3 }}>{label}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Performance */}
+      <PerformanceCard agentId={id} />
 
       {/* Activity feed */}
       <ActivityFeed agentId={id} agentActive={isActive} refreshSignal={activityTick} />

@@ -45,6 +45,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if ('trigger_config' in body) { updates.push('trigger_config = ?'); args.push(JSON.stringify(body.trigger_config)) }
   if ('conditions' in body) { updates.push('conditions = ?'); args.push(JSON.stringify(body.conditions)) }
   if ('actions' in body) { updates.push('actions = ?'); args.push(JSON.stringify(body.actions)) }
+  if ('custom_time_estimate' in body) { updates.push('custom_time_estimate = ?'); args.push(Number(body.custom_time_estimate) || 15) }
 
   updates.push('updated_at = ?')
   args.push(new Date().toISOString())
