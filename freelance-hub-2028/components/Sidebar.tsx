@@ -264,6 +264,17 @@ function IconNote({ size = 18, color = 'currentColor' }: { size?: number; color?
   )
 }
 
+function IconNewspaper({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
+      <line x1="18" y1="14" x2="12" y2="14"/>
+      <line x1="18" y1="18" x2="12" y2="18"/>
+      <rect x="12" y="6" width="6" height="4"/>
+    </svg>
+  )
+}
+
 // ── Nav structure ─────────────────────────────────────────────────────────────
 
 const NAV_GROUPS = [
@@ -286,6 +297,12 @@ const NAV_GROUPS = [
       { label: 'Tasks',          href: '/tasks',          Icon: IconCheckSquare, key: '3' },
       { label: 'Notes',          href: '/notes',          Icon: IconNote,        key: undefined },
       { label: 'Transcriptions', href: '/transcriptions', Icon: IconMic,         key: undefined },
+    ],
+  },
+  {
+    label: 'DISCOVER',
+    items: [
+      { label: 'Industry News', href: '/news', Icon: IconNewspaper, key: undefined },
     ],
   },
   {

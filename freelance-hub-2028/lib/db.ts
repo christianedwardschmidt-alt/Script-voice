@@ -361,6 +361,35 @@ async function runInit() {
         viewed_at TEXT DEFAULT (datetime('now')),
         time_spent INTEGER DEFAULT 0
       )`,
+      `CREATE TABLE IF NOT EXISTS news_articles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        summary TEXT NOT NULL DEFAULT '',
+        source TEXT NOT NULL DEFAULT '',
+        source_url TEXT DEFAULT '',
+        category TEXT NOT NULL DEFAULT 'Freelancing',
+        published_at TEXT NOT NULL,
+        read_time INTEGER DEFAULT 3
+      )`,
+      `CREATE TABLE IF NOT EXISTS news_briefings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL UNIQUE,
+        content TEXT NOT NULL DEFAULT '',
+        generated_at TEXT DEFAULT (datetime('now'))
+      )`,
+      `CREATE TABLE IF NOT EXISTS news_bookmarks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        article_id INTEGER NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        UNIQUE(user_id, article_id)
+      )`,
+      `CREATE TABLE IF NOT EXISTS news_preferences (
+        user_id INTEGER PRIMARY KEY,
+        industries TEXT DEFAULT '[]',
+        topics TEXT DEFAULT '[]',
+        updated_at TEXT DEFAULT (datetime('now'))
+      )`,
     ],
     'write'
   )
@@ -383,6 +412,10 @@ async function runInit() {
     `ALTER TABLE tax_documents ADD COLUMN category TEXT DEFAULT 'Other Tax Documents'`,
   ]
   for (const m of migrations) await client.execute(m).catch(() => {})
+
+  // Seed global news articles (not per-user) once
+  const hasNews = await client.execute({ sql: `SELECT id FROM news_articles LIMIT 1`, args: [] })
+  if (!hasNews.rows.length) await seedNewsArticles()
 
   // Ensure demo user exists and has data
   const DEMO_EMAIL = 'demo@guildwire.io'
@@ -819,4 +852,58 @@ async function seedCalendarEvents(userId: number) {
     { sql, args: [userId,'Portfolio update', d(20),null,null,'task',null,'Add 3 new case studies to personal site','#00b857'] },
     { sql, args: [userId,'Year-end review call', d(28),'15:00','16:00','meeting',null,'Internal review of year performance and goals','#16a34a'] },
   ], 'write')
+}
+
+async function seedNewsArticles() {
+  const today = new Date()
+  const d = (offset: number) => {
+    const dt = new Date(today)
+    dt.setDate(dt.getDate() - offset)
+    return dt.toISOString()
+  }
+
+  const articles = [
+    // Freelancing
+    ['The Rise of AI-Augmented Freelancers: How Independents Are Staying Ahead', 'A new wave of independent professionals is using AI tools not to replace their work but to dramatically expand their capacity. Freelancers who integrate AI into their workflows are taking on 40% more projects while maintaining the same quality, according to a survey of 2,400 independent workers. The key is using AI for the scaffolding — research, first drafts, data analysis — while reserving deep expertise for client-facing work.', 'Fast Company', 'https://fastcompany.com', 'Freelancing', d(0), 4],
+    ['Upwork\'s 2026 Freelance Index Shows 18% YoY Growth in Six-Figure Earners', 'The number of freelancers earning over $100,000 annually grew 18% year-over-year, with the largest gains in software development, strategic consulting, and AI integration roles. The platform\'s annual index highlights that experienced independents who specialize in high-value niches are consistently outpacing their salaried counterparts in total compensation.', 'Upwork Research', 'https://upwork.com', 'Freelancing', d(1), 3],
+    ['Client Survey: 67% Prefer Freelancers Who Use Professional Proposal Tools', 'A survey of 1,800 business buyers reveals that nearly two-thirds prefer working with independents who send professional digital proposals over those who email PDFs or Google Docs. Buyers cited faster decision-making, clearer scope documentation, and built-in e-signature as the top reasons. Freelancers using proposal software reported a 31% higher acceptance rate.', 'Fiverr Business', 'https://business.fiverr.com', 'Freelancing', d(2), 3],
+    // AI & Tools
+    ['Anthropic Releases Tool Runner Beta — Freelance Devs Can Now Build Personal Agents', 'Anthropic\'s new Tool Runner beta allows developers to define custom tools using Python decorators or TypeScript Zod schemas, with the SDK handling the entire agentic loop automatically. For freelancers, this opens up powerful possibilities: automated client communication workflows, invoice processing agents, and code review pipelines that run without supervision.', 'Anthropic Blog', 'https://anthropic.com', 'AI & Tools', d(0), 5],
+    ['Claude 4.8 Brings Adaptive Thinking to Complex Reasoning Tasks', 'Anthropic\'s Claude Opus 4.8 introduces adaptive thinking — a capability that automatically decides when extended reasoning is needed and adjusts compute accordingly. Early benchmarks show significant improvements on multi-step planning tasks, which has direct implications for freelancers using AI to scope projects, generate proposals, and analyze client requirements.', 'TechCrunch', 'https://techcrunch.com', 'AI & Tools', d(1), 4],
+    ['Figma\'s New AI Features Are Reshaping How Designers Scope Projects', 'Figma\'s latest AI release includes intelligent component generation, auto-layout suggestions, and a natural language design search that speeds up the handoff process dramatically. Independent designers are reporting that AI-assisted workflows cut their scoping and estimation time by half — though clients need to be educated on what this means for project timelines and pricing.', 'The Verge', 'https://theverge.com', 'AI & Tools', d(3), 4],
+    // Business
+    ['Harvard Study: Freelancers Who Set Boundaries Earn 40% More', 'A longitudinal study from Harvard Business School tracked 600 independent professionals over three years and found a consistent pattern: those who established clear working hours, scope boundaries, and revision limits earned 40% more per hour than those who remained perpetually available. The research suggests that scarcity signals expertise, and expertise commands premium rates.', 'Harvard Business Review', 'https://hbr.org', 'Business', d(1), 5],
+    ['The Referral Playbook: How Top Freelancers Win 80% of Work Through Introductions', 'The most successful independent professionals don\'t chase leads — they engineer referral systems. A detailed analysis of 300 six-figure freelancers found that 80% of their work came through introductions. The common thread: they made it easy to refer them by having a clear niche, a memorable positioning statement, and a habit of asking for introductions at project completion rather than waiting.', 'Morning Brew', 'https://morningbrew.com', 'Business', d(2), 6],
+    // Finance
+    ['IRS Issues New Guidance on Freelancer Home Office Deductions for 2026', 'The IRS released updated guidance clarifying the home office deduction rules for independent contractors, including new safe harbor calculations for shared-use spaces and remote-first hybrid setups. The guidance also addresses deductions for AI software subscriptions, cloud services, and professional development tools — all increasingly common expenses for modern freelancers.', 'Forbes', 'https://forbes.com', 'Finance', d(0), 5],
+    ['Stripe Express Adds Automatic Tax Withholding for US Freelancers', 'Stripe\'s Express platform now offers optional automatic tax withholding for US-based independent contractors, calculating estimated quarterly tax obligations in real time and setting funds aside automatically. Early users report dramatically less anxiety around tax season and fewer underpayment penalties. The feature supports both federal and state obligations.', 'Stripe Blog', 'https://stripe.com', 'Finance', d(2), 3],
+    // Remote Work
+    ['Async-First Companies See 23% Higher Freelancer Retention, Report Shows', 'Organizations that adopt async-first communication practices retain their freelance talent 23% longer than those relying on synchronous meetings, according to a new workplace research report. Freelancers cite reduced context-switching, clearer written briefs, and respect for deep work blocks as the primary reasons they prefer async-first clients. The finding has significant implications for how independents should qualify prospects.', 'Fast Company', 'https://fastcompany.com', 'Remote Work', d(1), 4],
+    // Tech
+    ['Next.js 17 Ships with Built-in Edge AI Runtime for Serverless Functions', 'Next.js 17 introduces a native Edge AI runtime that allows serverless functions to run lightweight AI models — including embeddings and classification — directly at the edge with zero cold starts. For freelance developers, this eliminates a common architectural headache: deploying separate AI inference infrastructure for client projects that use AI features.', 'Hacker News', 'https://news.ycombinator.com', 'Tech', d(0), 4],
+    ['Vercel Announces Free Tier Expansion for Independent Developers', 'Vercel has significantly expanded its free tier, doubling bandwidth allowances and removing the previous 100GB limit on Edge Network caching. The platform also added free team collaboration seats for solo developers who bring in external stakeholders. For freelancers, this means more client projects can run on Vercel without hitting billing thresholds during development.', 'Vercel Blog', 'https://vercel.com', 'Tech', d(3), 3],
+    // Consulting
+    ['McKinsey Report: 38% of Enterprise Projects Now Use Independent Consultants', 'McKinsey\'s annual workforce study finds that 38% of enterprise transformation projects now include at least one independent consultant in a key role — up from 24% three years ago. The trend is driven by the speed advantage of engaging specialists over hiring permanent staff. The report notes that independents who can show ROI on previous engagements command significantly higher rates.', 'Wall Street Journal', 'https://wsj.com', 'Consulting', d(1), 6],
+    ['The $200/Hour Threshold: Positioning Yourself as a Senior Independent Expert', 'Breaking through the $200/hour ceiling requires a fundamental shift in how you position your services — moving from deliverable-based to outcomes-based pricing. Consultants who charge premium rates share three traits: a narrow, specific niche; documented results from previous engagements; and a willingness to walk away from clients who don\'t value expertise. The article breaks down the exact language shifts that justify premium positioning.', 'LinkedIn', 'https://linkedin.com', 'Consulting', d(4), 7],
+  ]
+
+  for (const [title, summary, source, source_url, category, published_at, read_time] of articles) {
+    await client.execute({
+      sql: `INSERT INTO news_articles (title, summary, source, source_url, category, published_at, read_time) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [title, summary, source, source_url, category, published_at, read_time],
+    })
+  }
+
+  // Seed today's briefing
+  const todayStr = new Date().toISOString().split('T')[0]
+  const briefing = `Today's big story: Anthropic released the Tool Runner beta, making it dramatically easier for developers to build personal automation agents — a major win for freelancers who want to automate follow-up emails, invoice reminders, and client onboarding without writing complex orchestration code.
+
+On the business side, a Harvard study confirms what top earners already know: setting firm boundaries on availability and scope isn't just professional — it's the single biggest lever for increasing hourly rates, with adherents earning 40% more than always-available peers.
+
+For finance: the IRS dropped new guidance on home office deductions and software subscriptions that will affect most independents' 2026 returns. Read this one before you file. Quick hit: Vercel expanded its free tier, cutting infrastructure costs for freelance developers shipping client projects.`
+
+  await client.execute({
+    sql: `INSERT OR IGNORE INTO news_briefings (date, content) VALUES (?, ?)`,
+    args: [todayStr, briefing],
+  })
 }
