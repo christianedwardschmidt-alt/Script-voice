@@ -44,11 +44,10 @@ const ACTION_LABELS: Record<string, string> = {
 
 function AIAssistantInner() {
   const searchParams = useSearchParams()
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: 'assistant', content: "Hi! I'm your GuildWire AI assistant. I can answer questions AND take real actions in your workspace — try telling me to add a task, draft an invoice, schedule a meeting, search jobs, or add a client. What would you like to do?", timestamp: '12:00 PM' },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
+  const [greetingLoading, setGreetingLoading] = useState(false)
   const [listening, setListening] = useState(false)
   const [interimText, setInterimText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -56,7 +55,26 @@ function AIAssistantInner() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null)
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, greetingLoading])
+
+  // Fetch time-aware greeting on mount — skip if ?q= is present (auto-send handles that case)
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q) return
+    setGreetingLoading(true)
+    fetch('/api/ai/greeting')
+      .then(r => r.json())
+      .then(({ text }: { text: string }) => {
+        const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        setMessages([{ id: Date.now(), role: 'assistant', content: text, timestamp: ts }])
+      })
+      .catch(() => {
+        const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        setMessages([{ id: Date.now(), role: 'assistant', content: "Good to see you — what would you like to tackle today?", timestamp: ts }])
+      })
+      .finally(() => setGreetingLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const q = searchParams.get('q')
@@ -201,8 +219,8 @@ function AIAssistantInner() {
 
         {/* Messages */}
         <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Suggestions shown with first message only */}
-          {messages.length === 1 && (
+          {/* Suggestions shown after greeting, before any user reply */}
+          {messages.length === 1 && messages[0].role === 'assistant' && !thinking && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, maxWidth: 600, margin: '0 auto 12px', width: '100%' }}>
               {suggestions.map(({ icon: Icon, label, prompt }) => (
                 <button
@@ -279,7 +297,7 @@ function AIAssistantInner() {
             </div>
           ))}
 
-          {thinking && (
+          {(thinking || greetingLoading) && (
             <div style={{ display: 'flex', gap: 12, maxWidth: '78%' }}>
               <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #14532D, #16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Bot size={15} color="#fff" />
