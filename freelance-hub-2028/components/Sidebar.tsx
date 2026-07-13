@@ -464,7 +464,7 @@ export default function Sidebar() {
             <span style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.09em', lineHeight: 1.45, marginLeft: -3, display: 'block' }}>Work for yourself.<span style={{ display: 'block' }}>Never by yourself.</span></span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.015em', lineHeight: 1, marginLeft: -3, display: 'block', whiteSpace: 'nowrap' }}>Work for yourself. Never by yourself.</span>
           </Link>
         </div>
 
