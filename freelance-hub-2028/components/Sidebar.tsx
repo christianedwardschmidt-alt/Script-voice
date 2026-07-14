@@ -28,6 +28,33 @@ function measureInkStartOffset(char: string, font: string): number {
   return 0
 }
 
+// Mirror of measureInkStartOffset for the trailing edge — a period has
+// almost no ink and a lot of right-side bearing in its advance box, so
+// matching two text runs' *box* widths still leaves a visible gap between
+// where one glyph's ink ends and the next's actually starts.
+function measureInkEndOffset(char: string, font: string): number {
+  if (typeof document === 'undefined') return 0
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return 0
+  const padding = 24
+  canvas.width = 120
+  canvas.height = 64
+  ctx.font = font
+  ctx.textBaseline = 'alphabetic'
+  ctx.textAlign = 'right'
+  ctx.fillStyle = '#000'
+  const boxRight = canvas.width - padding
+  ctx.fillText(char, boxRight, 44)
+  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  for (let x = canvas.width - 1; x >= 0; x--) {
+    for (let y = 0; y < canvas.height; y++) {
+      if (data[(y * canvas.width + x) * 4 + 3] > 10) return boxRight - x
+    }
+  }
+  return 0
+}
+
 // ── SVG icon components ──────────────────────────────────────────────────────
 
 function IconDashboard({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -394,24 +421,40 @@ export default function Sidebar() {
 
       const logoWidth = logoEl.getBoundingClientRect().width
 
-      // Neutralize any previously-applied scale before measuring the
-      // tagline's true natural width, so this stays correct across repeat
+      // Neutralize any previously-applied scale/shift before measuring the
+      // tagline's true natural box, so this stays correct across repeat
       // calls (e.g. the fonts.ready re-measurement below).
       const prevTransform = taglineEl.style.transform
+      const prevMarginLeft = taglineEl.style.marginLeft
       taglineEl.style.transform = 'none'
+      taglineEl.style.marginLeft = '0px'
       const naturalWidth = taglineEl.getBoundingClientRect().width
       taglineEl.style.transform = prevTransform
+      taglineEl.style.marginLeft = prevMarginLeft
       if (!logoWidth || !naturalWidth) return
-      const scaleX = logoWidth / naturalWidth
 
       const logoCS = getComputedStyle(logoEl)
       const taglineCS = getComputedStyle(taglineEl)
       const logoFont = `${logoCS.fontStyle} ${logoCS.fontWeight} ${logoCS.fontSize} ${logoCS.fontFamily}`
       const taglineFont = `${taglineCS.fontStyle} ${taglineCS.fontWeight} ${taglineCS.fontSize} ${taglineCS.fontFamily}`
-      const logoInk = measureInkStartOffset((logoEl.textContent || 'G')[0], logoFont)
-      const taglineInk = measureInkStartOffset((taglineEl.textContent || 'W')[0], taglineFont)
 
-      setTaglineAdjust({ scaleX, marginLeft: logoInk - taglineInk })
+      const logoText = logoEl.textContent || 'GuildWire'
+      const taglineText = taglineEl.textContent || ''
+      const logoInkStart = measureInkStartOffset(logoText[0], logoFont)
+      const logoInkEnd = measureInkEndOffset(logoText.slice(-1), logoFont)
+      const taglineInkStart = measureInkStartOffset(taglineText[0], taglineFont)
+      const taglineInkEnd = measureInkEndOffset(taglineText.slice(-1), taglineFont)
+
+      // Solve for the scale + shift that lines up ink-to-ink on both edges,
+      // not just box-to-box — a trailing period sits well inside its own
+      // character box, so box-matching alone still leaves a visible gap.
+      const logoInkSpan = logoWidth - logoInkStart - logoInkEnd
+      const taglineInkSpan = naturalWidth - taglineInkStart - taglineInkEnd
+      if (logoInkSpan <= 0 || taglineInkSpan <= 0) return
+      const scaleX = logoInkSpan / taglineInkSpan
+      const marginLeft = logoInkStart - taglineInkStart * scaleX
+
+      setTaglineAdjust({ scaleX, marginLeft })
     }
     measure()
     document.fonts?.ready?.then(measure)
