@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
-export default function MarketingNav() {
+export default function MarketingNav({ brand = 'guildwire' }: { brand?: 'guildwire' | 'veruno' }) {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -12,7 +12,13 @@ export default function MarketingNav() {
         {/* Logo */}
         <Link href="/" className="mkt-logo" style={{ marginLeft: 120 }}>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em' }}>
-            <span style={{ color: 'white' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+            {brand === 'veruno' ? (
+              <span style={{ color: 'white' }}>Veruno</span>
+            ) : (
+              <>
+                <span style={{ color: 'white' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+              </>
+            )}
           </span>
         </Link>
 
