@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { BRAND_PREVIEW_EVENT, getBrandPreview } from '@/lib/brandPreview'
 
 // ── SVG icon components ──────────────────────────────────────────────────────
 
@@ -354,6 +355,21 @@ export default function Sidebar() {
   const logoRef = useRef<HTMLSpanElement>(null)
   const taglineRef = useRef<HTMLSpanElement>(null)
   const [taglineAdjust, setTaglineAdjust] = useState({ scaleX: 1 })
+  const [showVeruno, setShowVeruno] = useState(false)
+
+  // Admin-only, this-browser-only brand preview toggle (set from
+  // /admin/sandbox) — persists across client-side navigation instead of
+  // being tied to one route, since Sidebar itself never unmounts.
+  useEffect(() => {
+    function sync() { setShowVeruno(getBrandPreview()) }
+    sync()
+    window.addEventListener(BRAND_PREVIEW_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(BRAND_PREVIEW_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
 
   // Scales the tagline so its rendered width matches the GuildWire
   // wordmark's width exactly, measured live in the browser rather than
@@ -385,7 +401,7 @@ export default function Sidebar() {
     }
     measure()
     document.fonts?.ready?.then(measure)
-  }, [])
+  }, [showVeruno])
 
   useEffect(() => {
     function toggle() { setIsMobileOpen(v => !v) }
@@ -496,8 +512,8 @@ export default function Sidebar() {
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: pathname === '/admin/sandbox' ? 53 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
-              {pathname === '/admin/sandbox' ? (
+            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 53 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+              {showVeruno ? (
                 <span style={{ color: '#111827' }}>Veruno</span>
               ) : (
                 <>
