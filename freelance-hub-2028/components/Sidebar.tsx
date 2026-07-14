@@ -4,75 +4,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-// Scans a canvas render of a single glyph to find where its visible ink
-// actually starts, since different fonts/sizes have different left-side
-// bearing and getBoundingClientRect only reports the box edge, not the ink.
-function measureInkStartOffset(char: string, font: string): number {
-  if (typeof document === 'undefined') return 0
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return 0
-  const padding = 24
-  canvas.width = 120
-  canvas.height = 64
-  ctx.font = font
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillStyle = '#000'
-  ctx.fillText(char, padding, 44)
-  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  for (let x = 0; x < canvas.width; x++) {
-    for (let y = 0; y < canvas.height; y++) {
-      if (data[(y * canvas.width + x) * 4 + 3] > 10) return x - padding
-    }
-  }
-  return 0
-}
-
-// Mirror of measureInkStartOffset for the trailing edge — a period has
-// almost no ink and a lot of right-side bearing in its advance box, so
-// matching two text runs' *box* widths still leaves a visible gap between
-// where one glyph's ink ends and the next's actually starts.
-function measureInkEndOffset(char: string, font: string): number {
-  if (typeof document === 'undefined') return 0
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return 0
-  const padding = 24
-  canvas.width = 120
-  canvas.height = 64
-  ctx.font = font
-  ctx.textBaseline = 'alphabetic'
-  ctx.textAlign = 'right'
-  ctx.fillStyle = '#000'
-  const boxRight = canvas.width - padding
-  ctx.fillText(char, boxRight, 44)
-  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
-  for (let x = canvas.width - 1; x >= 0; x--) {
-    for (let y = 0; y < canvas.height; y++) {
-      if (data[(y * canvas.width + x) * 4 + 3] > 10) return boxRight - x
-    }
-  }
-  return 0
-}
-
-// Splits off trailing punctuation (e.g. the "." after "yourself") so
-// alignment can target the last *letter* rather than the last character —
-// hanging the punctuation past the alignment point, the way a period
-// naturally hangs past a margin in typeset text, rather than treating its
-// mostly-empty character box as part of what should line up.
-function splitTrailingPunctuation(text: string, font: string): { core: string; trailingWidth: number } {
-  const match = text.match(/[.,!?;:]+$/)
-  if (!match) return { core: text, trailingWidth: 0 }
-  const punctuation = match[0]
-  const core = text.slice(0, text.length - punctuation.length)
-  if (typeof document === 'undefined') return { core, trailingWidth: 0 }
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return { core, trailingWidth: 0 }
-  ctx.font = font
-  return { core, trailingWidth: ctx.measureText(punctuation).width }
-}
-
 // ── SVG icon components ──────────────────────────────────────────────────────
 
 function IconDashboard({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -422,15 +353,12 @@ export default function Sidebar() {
   const userMenuRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLSpanElement>(null)
   const taglineRef = useRef<HTMLSpanElement>(null)
-  const [taglineAdjust, setTaglineAdjust] = useState({ scaleX: 1, marginLeft: -3 })
+  const [taglineAdjust, setTaglineAdjust] = useState({ scaleX: 1 })
 
-  // Aligns the tagline's box to the GuildWire wordmark's actual rendered
-  // width and ink position, measured live in the browser rather than
+  // Scales the tagline so its rendered width matches the GuildWire
+  // wordmark's width exactly, measured live in the browser rather than
   // hard-coded — font metrics vary enough across OS/browser rendering that
   // a fixed pixel offset tuned to one environment won't hold on another.
-  // Uses a scaleX transform (not letter-spacing) to hit the target width
-  // exactly, since letter-spacing's per-character contribution to layout
-  // width isn't consistent enough across browsers to reverse-engineer.
   useLayoutEffect(() => {
     function measure() {
       const logoEl = logoRef.current
@@ -439,48 +367,21 @@ export default function Sidebar() {
 
       const logoWidth = logoEl.getBoundingClientRect().width
 
-      // Neutralize any previously-applied scale/shift before measuring the
-      // tagline's true natural box, so this stays correct across repeat
+      // Neutralize any previously-applied scale before measuring the
+      // tagline's true natural width, so this stays correct across repeat
       // calls (e.g. the fonts.ready re-measurement below).
       const prevTransform = taglineEl.style.transform
-      const prevMarginLeft = taglineEl.style.marginLeft
       taglineEl.style.transform = 'none'
-      taglineEl.style.marginLeft = '0px'
       const naturalWidth = taglineEl.getBoundingClientRect().width
       taglineEl.style.transform = prevTransform
-      taglineEl.style.marginLeft = prevMarginLeft
       if (!logoWidth || !naturalWidth) return
 
-      const logoCS = getComputedStyle(logoEl)
-      const taglineCS = getComputedStyle(taglineEl)
-      const logoFont = `${logoCS.fontStyle} ${logoCS.fontWeight} ${logoCS.fontSize} ${logoCS.fontFamily}`
-      const taglineFont = `${taglineCS.fontStyle} ${taglineCS.fontWeight} ${taglineCS.fontSize} ${taglineCS.fontFamily}`
-
-      const logoText = logoEl.textContent || 'GuildWire'
-      const taglineText = taglineEl.textContent || ''
-      const logoInkStart = measureInkStartOffset(logoText[0], logoFont)
-      const taglineInkStart = measureInkStartOffset(taglineText[0], taglineFont)
-
-      // Align to the last *letter* ("f" in "yourself"), not the trailing
-      // period — the period should hang past the alignment point rather
-      // than have its mostly-empty character box treated as the edge to
-      // match, the way trailing punctuation hangs past a margin in
-      // typeset text.
-      const { core: logoCore, trailingWidth: logoTrailingWidth } = splitTrailingPunctuation(logoText, logoFont)
-      const { core: taglineCore, trailingWidth: taglineTrailingWidth } = splitTrailingPunctuation(taglineText, taglineFont)
-      const logoInkEnd = measureInkEndOffset(logoCore.slice(-1), logoFont) + logoTrailingWidth
-      const taglineInkEnd = measureInkEndOffset(taglineCore.slice(-1), taglineFont) + taglineTrailingWidth
-
-      // Solve for the scale + shift that lines up ink-to-ink on both edges,
-      // not just box-to-box — a trailing period sits well inside its own
-      // character box, so box-matching alone still leaves a visible gap.
-      const logoInkSpan = logoWidth - logoInkStart - logoInkEnd
-      const taglineInkSpan = naturalWidth - taglineInkStart - taglineInkEnd
-      if (logoInkSpan <= 0 || taglineInkSpan <= 0) return
-      const scaleX = logoInkSpan / taglineInkSpan
-      const marginLeft = logoInkStart - taglineInkStart * scaleX
-
-      setTaglineAdjust({ scaleX, marginLeft })
+      // Scale the tagline's box so its width matches the wordmark's width
+      // exactly — both start at the same left edge (siblings in the same
+      // flex column), so a left-anchored scaleX makes both the left and
+      // right edges land in the same place.
+      const scaleX = logoWidth / naturalWidth
+      setTaglineAdjust({ scaleX })
     }
     measure()
     document.fonts?.ready?.then(measure)
@@ -603,7 +504,6 @@ export default function Sidebar() {
               style={{
                 fontSize: 11, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
                 display: 'block', whiteSpace: 'nowrap',
-                marginLeft: taglineAdjust.marginLeft,
                 transform: `scaleX(${taglineAdjust.scaleX})`,
                 transformOrigin: 'left',
               }}
