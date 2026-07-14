@@ -377,12 +377,15 @@ export default function Sidebar() {
   const userMenuRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLSpanElement>(null)
   const taglineRef = useRef<HTMLSpanElement>(null)
-  const [taglineAdjust, setTaglineAdjust] = useState({ letterSpacing: 0, marginLeft: -3 })
+  const [taglineAdjust, setTaglineAdjust] = useState({ scaleX: 1, marginLeft: -3 })
 
   // Aligns the tagline's box to the GuildWire wordmark's actual rendered
   // width and ink position, measured live in the browser rather than
   // hard-coded — font metrics vary enough across OS/browser rendering that
   // a fixed pixel offset tuned to one environment won't hold on another.
+  // Uses a scaleX transform (not letter-spacing) to hit the target width
+  // exactly, since letter-spacing's per-character contribution to layout
+  // width isn't consistent enough across browsers to reverse-engineer.
   useLayoutEffect(() => {
     function measure() {
       const logoEl = logoRef.current
@@ -390,13 +393,16 @@ export default function Sidebar() {
       if (!logoEl || !taglineEl) return
 
       const logoWidth = logoEl.getBoundingClientRect().width
-      const renderedWidth = taglineEl.getBoundingClientRect().width
-      const text = taglineEl.textContent || ''
-      const gaps = Math.max(1, text.length - 1)
-      const currentLetterSpacingPx = parseFloat(getComputedStyle(taglineEl).letterSpacing) || 0
-      const naturalWidth = renderedWidth - currentLetterSpacingPx * gaps
+
+      // Neutralize any previously-applied scale before measuring the
+      // tagline's true natural width, so this stays correct across repeat
+      // calls (e.g. the fonts.ready re-measurement below).
+      const prevTransform = taglineEl.style.transform
+      taglineEl.style.transform = 'none'
+      const naturalWidth = taglineEl.getBoundingClientRect().width
+      taglineEl.style.transform = prevTransform
       if (!logoWidth || !naturalWidth) return
-      const extraPerGap = (logoWidth - naturalWidth) / gaps
+      const scaleX = logoWidth / naturalWidth
 
       const logoCS = getComputedStyle(logoEl)
       const taglineCS = getComputedStyle(taglineEl)
@@ -405,7 +411,7 @@ export default function Sidebar() {
       const logoInk = measureInkStartOffset((logoEl.textContent || 'G')[0], logoFont)
       const taglineInk = measureInkStartOffset((taglineEl.textContent || 'W')[0], taglineFont)
 
-      setTaglineAdjust({ letterSpacing: extraPerGap, marginLeft: logoInk - taglineInk })
+      setTaglineAdjust({ scaleX, marginLeft: logoInk - taglineInk })
     }
     measure()
     document.fonts?.ready?.then(measure)
@@ -528,8 +534,9 @@ export default function Sidebar() {
               style={{
                 fontSize: 11, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
                 display: 'block', whiteSpace: 'nowrap',
-                letterSpacing: `${taglineAdjust.letterSpacing}px`,
                 marginLeft: taglineAdjust.marginLeft,
+                transform: `scaleX(${taglineAdjust.scaleX})`,
+                transformOrigin: 'left',
               }}
             >
               Work for yourself. Never by yourself.
