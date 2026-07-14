@@ -2,7 +2,31 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+
+// Scans a canvas render of a single glyph to find where its visible ink
+// actually starts, since different fonts/sizes have different left-side
+// bearing and getBoundingClientRect only reports the box edge, not the ink.
+function measureInkStartOffset(char: string, font: string): number {
+  if (typeof document === 'undefined') return 0
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return 0
+  const padding = 24
+  canvas.width = 120
+  canvas.height = 64
+  ctx.font = font
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillStyle = '#000'
+  ctx.fillText(char, padding, 44)
+  const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  for (let x = 0; x < canvas.width; x++) {
+    for (let y = 0; y < canvas.height; y++) {
+      if (data[(y * canvas.width + x) * 4 + 3] > 10) return x - padding
+    }
+  }
+  return 0
+}
 
 // ── SVG icon components ──────────────────────────────────────────────────────
 
@@ -351,6 +375,41 @@ export default function Sidebar() {
   const [isDemo, setIsDemo] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLSpanElement>(null)
+  const taglineRef = useRef<HTMLSpanElement>(null)
+  const [taglineAdjust, setTaglineAdjust] = useState({ letterSpacing: 0, marginLeft: -3 })
+
+  // Aligns the tagline's box to the GuildWire wordmark's actual rendered
+  // width and ink position, measured live in the browser rather than
+  // hard-coded — font metrics vary enough across OS/browser rendering that
+  // a fixed pixel offset tuned to one environment won't hold on another.
+  useLayoutEffect(() => {
+    function measure() {
+      const logoEl = logoRef.current
+      const taglineEl = taglineRef.current
+      if (!logoEl || !taglineEl) return
+
+      const logoWidth = logoEl.getBoundingClientRect().width
+      const renderedWidth = taglineEl.getBoundingClientRect().width
+      const text = taglineEl.textContent || ''
+      const gaps = Math.max(1, text.length - 1)
+      const currentLetterSpacingPx = parseFloat(getComputedStyle(taglineEl).letterSpacing) || 0
+      const naturalWidth = renderedWidth - currentLetterSpacingPx * gaps
+      if (!logoWidth || !naturalWidth) return
+      const extraPerGap = (logoWidth - naturalWidth) / gaps
+
+      const logoCS = getComputedStyle(logoEl)
+      const taglineCS = getComputedStyle(taglineEl)
+      const logoFont = `${logoCS.fontStyle} ${logoCS.fontWeight} ${logoCS.fontSize} ${logoCS.fontFamily}`
+      const taglineFont = `${taglineCS.fontStyle} ${taglineCS.fontWeight} ${taglineCS.fontSize} ${taglineCS.fontFamily}`
+      const logoInk = measureInkStartOffset((logoEl.textContent || 'G')[0], logoFont)
+      const taglineInk = measureInkStartOffset((taglineEl.textContent || 'W')[0], taglineFont)
+
+      setTaglineAdjust({ letterSpacing: extraPerGap, marginLeft: logoInk - taglineInk })
+    }
+    measure()
+    document.fonts?.ready?.then(measure)
+  }, [])
 
   useEffect(() => {
     function toggle() { setIsMobileOpen(v => !v) }
@@ -461,10 +520,20 @@ export default function Sidebar() {
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
             </span>
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#9CA3AF', letterSpacing: '0.015em', lineHeight: 1, marginLeft: -3, display: 'block', whiteSpace: 'nowrap' }}>Work for yourself. Never by yourself.</span>
+            <span
+              ref={taglineRef}
+              style={{
+                fontSize: 11, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
+                display: 'block', whiteSpace: 'nowrap',
+                letterSpacing: `${taglineAdjust.letterSpacing}px`,
+                marginLeft: taglineAdjust.marginLeft,
+              }}
+            >
+              Work for yourself. Never by yourself.
+            </span>
           </Link>
         </div>
 
