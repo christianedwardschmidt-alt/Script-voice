@@ -55,6 +55,24 @@ function measureInkEndOffset(char: string, font: string): number {
   return 0
 }
 
+// Splits off trailing punctuation (e.g. the "." after "yourself") so
+// alignment can target the last *letter* rather than the last character —
+// hanging the punctuation past the alignment point, the way a period
+// naturally hangs past a margin in typeset text, rather than treating its
+// mostly-empty character box as part of what should line up.
+function splitTrailingPunctuation(text: string, font: string): { core: string; trailingWidth: number } {
+  const match = text.match(/[.,!?;:]+$/)
+  if (!match) return { core: text, trailingWidth: 0 }
+  const punctuation = match[0]
+  const core = text.slice(0, text.length - punctuation.length)
+  if (typeof document === 'undefined') return { core, trailingWidth: 0 }
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return { core, trailingWidth: 0 }
+  ctx.font = font
+  return { core, trailingWidth: ctx.measureText(punctuation).width }
+}
+
 // ── SVG icon components ──────────────────────────────────────────────────────
 
 function IconDashboard({ size = 18, color = 'currentColor' }: { size?: number; color?: string }) {
@@ -441,9 +459,17 @@ export default function Sidebar() {
       const logoText = logoEl.textContent || 'GuildWire'
       const taglineText = taglineEl.textContent || ''
       const logoInkStart = measureInkStartOffset(logoText[0], logoFont)
-      const logoInkEnd = measureInkEndOffset(logoText.slice(-1), logoFont)
       const taglineInkStart = measureInkStartOffset(taglineText[0], taglineFont)
-      const taglineInkEnd = measureInkEndOffset(taglineText.slice(-1), taglineFont)
+
+      // Align to the last *letter* ("f" in "yourself"), not the trailing
+      // period — the period should hang past the alignment point rather
+      // than have its mostly-empty character box treated as the edge to
+      // match, the way trailing punctuation hangs past a margin in
+      // typeset text.
+      const { core: logoCore, trailingWidth: logoTrailingWidth } = splitTrailingPunctuation(logoText, logoFont)
+      const { core: taglineCore, trailingWidth: taglineTrailingWidth } = splitTrailingPunctuation(taglineText, taglineFont)
+      const logoInkEnd = measureInkEndOffset(logoCore.slice(-1), logoFont) + logoTrailingWidth
+      const taglineInkEnd = measureInkEndOffset(taglineCore.slice(-1), taglineFont) + taglineTrailingWidth
 
       // Solve for the scale + shift that lines up ink-to-ink on both edges,
       // not just box-to-box — a trailing period sits well inside its own
