@@ -511,8 +511,8 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
-          <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 53 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+          <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 60 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               {showVeruno ? (
                 <span style={{ color: '#111827' }}>Veruno</span>
               ) : (
