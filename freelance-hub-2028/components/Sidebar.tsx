@@ -496,8 +496,14 @@ export default function Sidebar() {
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
-              <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: pathname === '/admin/sandbox' ? 53 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+              {pathname === '/admin/sandbox' ? (
+                <span style={{ color: '#111827' }}>Veruno</span>
+              ) : (
+                <>
+                  <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+                </>
+              )}
             </span>
             <span
               ref={taglineRef}

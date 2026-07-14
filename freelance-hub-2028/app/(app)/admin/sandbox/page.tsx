@@ -32,21 +32,12 @@ export default function AdminSandboxPage() {
         without touching the rest of the app.
       </p>
 
-      <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9CA3AF', margin: '0 0 10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-        Mock sidebar — Veruno wordmark
-      </p>
-      <div style={{ width: 240, border: '1px solid #E5E7EB', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6' }}>
-          <span
-            id="veruno-logo"
-            style={{
-              fontFamily: 'var(--font-body)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1,
-              fontSize: 53, color: '#111827', whiteSpace: 'nowrap', display: 'block',
-            }}
-          >
-            Veruno
-          </span>
-        </div>
+      <div style={{
+        background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)',
+        padding: '20px 24px', color: '#374151', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.5,
+      }}>
+        Look at the top-left corner — the real sidebar logo reads <strong>Veruno</strong> while you're on this
+        page, sized to nearly fill the sidebar width. It reverts to GuildWire everywhere else.
       </div>
     </div>
   )
