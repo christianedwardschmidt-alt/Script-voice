@@ -11,7 +11,7 @@ export default function MarketingNav({ brand = 'guildwire' }: { brand?: 'guildwi
       <div className="mkt-nav-inner">
         {/* Logo */}
         <Link href="/" className="mkt-logo" style={{ marginLeft: 120 }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 28, fontWeight: 700, letterSpacing: '-0.03em' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: brand === 'veruno' ? 40 : 28, fontWeight: 700, letterSpacing: '-0.03em' }}>
             {brand === 'veruno' ? (
               <span style={{ color: 'white' }}>Veruno</span>
             ) : (
