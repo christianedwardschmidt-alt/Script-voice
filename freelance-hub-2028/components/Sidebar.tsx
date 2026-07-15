@@ -361,7 +361,18 @@ export default function Sidebar() {
   // /admin/sandbox) — persists across client-side navigation instead of
   // being tied to one route, since Sidebar itself never unmounts.
   useEffect(() => {
-    function sync() { setShowVeruno(getBrandPreview()) }
+    function sync() {
+      const on = getBrandPreview()
+      setShowVeruno(on)
+      // Drives the html[data-brand-preview="veruno"] CSS override in
+      // globals.css, which every var(--font-syne) usage across the app
+      // already picks up with no per-page changes needed.
+      if (on) {
+        document.documentElement.setAttribute('data-brand-preview', 'veruno')
+      } else {
+        document.documentElement.removeAttribute('data-brand-preview')
+      }
+    }
     sync()
     window.addEventListener(BRAND_PREVIEW_EVENT, sync)
     window.addEventListener('storage', sync)

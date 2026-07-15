@@ -76,6 +76,16 @@
   --shadow-modal: 0 24px 64px rgba(0,0,0,0.2);
 }
 
+/* Admin-only, this-browser-only Veruno brand preview (toggled from
+   /admin/sandbox, see lib/brandPreview.ts). Overriding --font-syne here
+   means every existing var(--font-syne) usage across the app picks this
+   up automatically with no per-file changes, and reverts to normal Syne
+   the instant the attribute is gone — so the default experience is
+   provably unaffected. */
+html[data-brand-preview="veruno"] {
+  --font-syne: var(--font-body);
+}
+
 html, body {
   font-family: var(--font-body);
   background: #F8FAFC;
