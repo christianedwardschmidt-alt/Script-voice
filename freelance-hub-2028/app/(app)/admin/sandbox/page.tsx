@@ -36,7 +36,7 @@ export default function AdminSandboxPage() {
 
   return (
     <div className="page-pad" style={{ maxWidth: 900, margin: '0 auto', padding: '32px 32px 60px' }}>
-      <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 26, fontWeight: 700, color: '#111827', margin: '0 0 6px' }}>
+      <h1 style={{ fontFamily: 'var(--font-body)', fontSize: 26, fontWeight: 700, color: '#111827', margin: '0 0 6px' }}>
         Sandbox
       </h1>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#6B7280', margin: '0 0 24px' }}>
