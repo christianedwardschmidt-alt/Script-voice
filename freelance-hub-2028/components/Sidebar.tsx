@@ -456,12 +456,46 @@ export default function Sidebar() {
     router.push('/login')
   }
 
+  // Veruno preview swaps the sidebar to a dark, structured "engineered
+  // premium" palette (deep ink + brass accent) instead of the default
+  // light/green chrome — every color below reads from this one object
+  // so nothing gets missed and left illegible on the dark background.
+  const theme = showVeruno ? {
+    bg: '#0E1420',
+    border: 'rgba(255,255,255,0.08)',
+    textPrimary: '#F5F4F1',
+    textSecondary: 'rgba(245,244,241,0.55)',
+    textTertiary: 'rgba(245,244,241,0.38)',
+    hoverBg: 'rgba(255,255,255,0.06)',
+    hoverText: '#F5F4F1',
+    hoverIconStroke: 'rgba(245,244,241,0.75)',
+    accent: '#D4A72C',
+    accentBgActive: 'rgba(212,167,44,0.14)',
+    menuBg: '#161C29',
+    menuBorder: 'rgba(255,255,255,0.10)',
+    avatarGradient: 'linear-gradient(135deg, #8A6510, #D4A72C)',
+  } : {
+    bg: '#ffffff',
+    border: '#F3F4F6',
+    textPrimary: '#111827',
+    textSecondary: '#6B7280',
+    textTertiary: '#9CA3AF',
+    hoverBg: '#F9FAFB',
+    hoverText: '#111827',
+    hoverIconStroke: '#374151',
+    accent: '#16A34A',
+    accentBgActive: 'rgba(22,163,74,0.08)',
+    menuBg: '#ffffff',
+    menuBorder: '#F3F4F6',
+    avatarGradient: 'linear-gradient(135deg, #14532D, #16A34A)',
+  }
+
   function navItem(href: string, Icon: React.ComponentType<{ size?: number; color?: string }>, label: string) {
     const active = pathname === href
-    const iconColor = active ? '#16A34A' : '#9CA3AF'
-    const labelColor = active ? '#111827' : '#6B7280'
-    const bg = active ? 'rgba(22,163,74,0.08)' : 'transparent'
-    const shadow = active ? 'inset 2px 0 0 #16A34A' : 'none'
+    const iconColor = active ? theme.accent : theme.textTertiary
+    const labelColor = active ? theme.textPrimary : theme.textSecondary
+    const bg = active ? theme.accentBgActive : 'transparent'
+    const shadow = active ? `inset 2px 0 0 ${theme.accent}` : 'none'
 
     return (
       <Link
@@ -480,18 +514,18 @@ export default function Sidebar() {
         }}
         onMouseEnter={e => {
           if (!active) {
-            e.currentTarget.style.background = '#F9FAFB'
-            e.currentTarget.style.color = '#111827'
+            e.currentTarget.style.background = theme.hoverBg
+            e.currentTarget.style.color = theme.hoverText
             const svg = e.currentTarget.querySelector('svg')
-            if (svg) svg.setAttribute('stroke', '#374151')
+            if (svg) svg.setAttribute('stroke', theme.hoverIconStroke)
           }
         }}
         onMouseLeave={e => {
           if (!active) {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#6B7280'
+            e.currentTarget.style.color = theme.textSecondary
             const svg = e.currentTarget.querySelector('svg')
-            if (svg) svg.setAttribute('stroke', '#9CA3AF')
+            if (svg) svg.setAttribute('stroke', theme.textTertiary)
           }
         }}
       >
@@ -511,8 +545,8 @@ export default function Sidebar() {
         className={`sidebar-aside${isMobileOpen ? ' sidebar-open' : ''}`}
         style={{
           width: 240, height: '100vh',
-          background: '#ffffff',
-          borderRight: '1px solid #F3F4F6',
+          background: theme.bg,
+          borderRight: `1px solid ${theme.border}`,
           display: 'flex', flexDirection: 'column',
           position: 'fixed', top: 0, left: 0,
           zIndex: 50,
@@ -521,11 +555,11 @@ export default function Sidebar() {
       >
 
         {/* Logo */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${theme.border}`, flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
             <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 47 : 28, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               {showVeruno ? (
-                <span style={{ color: '#111827' }}>Veruno</span>
+                <span style={{ color: theme.textPrimary }}>Veruno</span>
               ) : (
                 <>
                   <span style={{ color: '#111827' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
@@ -535,7 +569,7 @@ export default function Sidebar() {
             <span
               ref={taglineRef}
               style={{
-                fontSize: 9, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
+                fontSize: 9, fontWeight: 500, color: theme.textTertiary, lineHeight: 1,
                 display: 'block', whiteSpace: 'nowrap',
                 transform: `scaleX(${taglineAdjust.scaleX})`,
                 transformOrigin: 'left',
@@ -552,7 +586,7 @@ export default function Sidebar() {
             <div key={group.label} style={{ marginBottom: 8 }}>
               <div style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
-                textTransform: 'uppercase', color: '#9CA3AF',
+                textTransform: 'uppercase', color: theme.textTertiary,
                 padding: '8px 20px 4px',
                 fontFamily: 'var(--font-body)',
               }}>{group.label}</div>
@@ -565,7 +599,7 @@ export default function Sidebar() {
         {isDemo && (
           <div style={{ margin: '0 12px 10px', padding: '10px 12px', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 'var(--radius-md)' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#818CF8', marginBottom: 4, fontFamily: 'var(--font-body)' }}>Demo mode</div>
-            <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4, marginBottom: 8, fontFamily: 'var(--font-body)' }}>You&apos;re browsing read-only sample data.</div>
+            <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.4, marginBottom: 8, fontFamily: 'var(--font-body)' }}>You&apos;re browsing read-only sample data.</div>
             <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '6px 10px', background: '#6366F1', color: '#fff', borderRadius: 7, fontSize: 11, fontWeight: 700, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>
               Create free account
             </Link>
@@ -573,7 +607,7 @@ export default function Sidebar() {
         )}
 
         {/* Bottom nav items */}
-        <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 8, flexShrink: 0 }}>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8, flexShrink: 0 }}>
           {BOTTOM_NAV.map(({ label, href, Icon }) => navItem(href, Icon, label))}
 
           {/* User card */}
@@ -581,20 +615,20 @@ export default function Sidebar() {
             {showUserMenu && (
               <div style={{
                 position: 'absolute', bottom: '100%', left: 12, right: 12, marginBottom: 4,
-                background: '#ffffff', border: '1px solid #F3F4F6',
+                background: theme.menuBg, border: `1px solid ${theme.menuBorder}`,
                 borderRadius: 'var(--radius-md)', boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
                 overflow: 'hidden', zIndex: 100,
               }}>
                 <Link
                   href="/profile"
                   onClick={() => setShowUserMenu(false)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: 13, color: '#374151', fontWeight: 500, textDecoration: 'none', fontFamily: 'var(--font-body)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F9FAFB')}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', fontSize: 13, color: theme.textPrimary, fontWeight: 500, textDecoration: 'none', fontFamily: 'var(--font-body)' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = theme.hoverBg)}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <IconUser size={13} color="#9CA3AF" /> View Profile
+                  <IconUser size={13} color={theme.textTertiary} /> View Profile
                 </Link>
-                <div style={{ height: 1, background: '#F3F4F6' }} />
+                <div style={{ height: 1, background: theme.border }} />
                 <button
                   onClick={signOut}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 14px', fontSize: 13, color: '#F87171', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' }}
@@ -609,22 +643,22 @@ export default function Sidebar() {
             <button
               onClick={() => setShowUserMenu(v => !v)}
               style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '10px 20px 14px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F9FAFB')}
+              onMouseEnter={e => (e.currentTarget.style.background = theme.hoverBg)}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               <div style={{
                 width: 32, height: 32, borderRadius: '50%',
-                background: 'linear-gradient(135deg, #14532D, #16A34A)',
+                background: theme.avatarGradient,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 12, fontWeight: 700, color: '#fff', flexShrink: 0,
                 animation: 'pulse-dot 3s ease-in-out infinite',
               }}>{displayName.charAt(0).toUpperCase()}</div>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayName}</div>
-                <div style={{ fontSize: 11, color: '#9CA3AF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayEmail}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: theme.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayName}</div>
+                <div style={{ fontSize: 11, color: theme.textTertiary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{displayEmail}</div>
               </div>
               <div style={{ transform: showUserMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}>
-                <IconChevronUp size={13} color="#9CA3AF" />
+                <IconChevronUp size={13} color={theme.textTertiary} />
               </div>
             </button>
           </div>

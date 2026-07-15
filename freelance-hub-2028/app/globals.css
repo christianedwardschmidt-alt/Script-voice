@@ -85,14 +85,24 @@
 html[data-brand-preview="veruno"] {
   --font-syne: var(--font-body);
 
-  /* Softer, larger-blur, lower-opacity elevation reads as more premium
-     than the tighter default shadows — same trick as the font override,
-     every var(--shadow-*) and .card usage picks this up automatically. */
-  --shadow-sm: 0 1px 2px rgba(17,24,39,0.04), 0 6px 16px rgba(17,24,39,0.05);
-  --shadow-md: 0 2px 4px rgba(17,24,39,0.04), 0 16px 40px rgba(17,24,39,0.08);
-  --shadow-lg: 0 4px 8px rgba(17,24,39,0.05), 0 32px 72px rgba(17,24,39,0.12);
+  /* "Engineered premium" instead of "soft SaaS premium": hairline
+     structure over big soft elevation, tight corners instead of bubbly
+     ones — the opposite instinct from a rounded/shadow-heavy pass.
+     Every var(--shadow-*), var(--radius-lg)/(--radius-md), and .card
+     usage across the app already picks this up automatically. */
+  --shadow-sm: 0 1px 2px rgba(14,20,32,0.05);
+  --shadow-md: 0 1px 2px rgba(14,20,32,0.05), 0 4px 12px rgba(14,20,32,0.06);
+  --shadow-lg: 0 2px 4px rgba(14,20,32,0.06), 0 12px 32px rgba(14,20,32,0.09);
 
-  --radius-lg: 20px;
+  --radius-lg: 10px;
+  --radius-md: 8px;
+
+  /* Brass/gold replaces the generic SaaS green as the primary brand
+     accent; green stays reserved for semantic use (revenue up/down)
+     instead of doubling as both. */
+  --v-gold: #A6790F;
+  --v-gold-bright: #D4A72C;
+  --v-gold-soft: rgba(166,121,15,0.10);
 }
 
 html, body {

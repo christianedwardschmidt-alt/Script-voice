@@ -251,10 +251,10 @@ export default function DashboardPage() {
           onClick={() => setShowNewMenu(v => !v)}
           style={{
             display: 'flex', alignItems: 'center', gap: 7,
-            padding: '10px 16px', background: '#16A34A', color: 'white',
+            padding: '10px 16px', background: isVerunoPreview ? '#A6790F' : '#16A34A', color: 'white',
             border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--font-body)',
-            boxShadow: '0 1px 4px rgba(22,163,74,0.35)',
+            boxShadow: isVerunoPreview ? '0 1px 4px rgba(166,121,15,0.35)' : '0 1px 4px rgba(22,163,74,0.35)',
           }}
         >
           <Plus size={14} /> New <ChevronDown size={12} style={{ opacity: 0.7 }} />
@@ -324,6 +324,7 @@ export default function DashboardPage() {
       <div style={{
         background: 'white', borderRadius: 'var(--radius-lg)',
         boxShadow: 'var(--shadow-sm)',
+        border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : 'none',
         display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
         marginBottom: 28,
       }}
@@ -331,11 +332,16 @@ export default function DashboardPage() {
       >
         {stats.map((stat, i) => (
           <div key={stat.label} style={{
-            padding: isVerunoPreview ? '30px 32px' : '24px 28px',
-            borderRight: i < 3 ? '1px solid #F3F4F6' : 'none',
+            padding: isVerunoPreview ? '20px 24px' : '24px 28px',
+            borderRight: i < 3 ? `1px solid ${isVerunoPreview ? 'rgba(14,20,32,0.10)' : '#F3F4F6'}` : 'none',
           }}>
             <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: isVerunoPreview ? '-0.03em' : '-0.02em' }}>{stat.value}</div>
+            <div style={{
+              fontFamily: isVerunoPreview ? 'ui-monospace, "SF Mono", Menlo, monospace' : 'var(--font-display)',
+              fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6,
+              letterSpacing: isVerunoPreview ? '-0.01em' : '-0.02em',
+              fontVariantNumeric: 'tabular-nums',
+            }}>{stat.value}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
               <span style={{ fontSize: 13, color: stat.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
               <Sparkline values={stat.spark} color={stat.up ? '#16A34A' : '#EF4444'} id={i} />
