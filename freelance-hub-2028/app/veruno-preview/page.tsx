@@ -43,7 +43,7 @@ const css = `
   max-width: 1180px; margin: 0 auto; padding: 0 32px; height: 100%;
   display: flex; align-items: center; justify-content: space-between;
 }
-.vp-wordmark { font-size: 22px; font-weight: 800; letter-spacing: -0.04em; color: var(--text-0); }
+.vp-wordmark { font-size: 34px; font-weight: 800; letter-spacing: -0.04em; color: var(--text-0); }
 .vp-nav-links { display: flex; gap: 34px; align-items: center; }
 .vp-nav-link { font-size: 14px; color: var(--text-1); transition: color 0.15s; }
 .vp-nav-link:hover { color: var(--text-0); }
@@ -217,6 +217,7 @@ const css = `
 }
 @media (max-width: 640px) {
   .vp-nav-links { display: none; }
+  .vp-wordmark { font-size: 22px; }
   .vp-hero { padding: 64px 0 80px; }
   .vp-footer-grid { grid-template-columns: 1fr; }
   .vp-footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
