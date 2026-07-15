@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Search, Filter, MoreHorizontal, Calendar, Flag, X, Trash2 } from 'lucide-react'
+import { Plus, Search, Filter, MoreHorizontal, Calendar, Flag, X, Trash2, Check } from 'lucide-react'
+import { useBrandPreview } from '@/lib/brandPreview'
 
 type Priority = 'high' | 'medium' | 'low'
 type Status = 'todo' | 'in progress' | 'completed'
@@ -42,6 +43,7 @@ const tabs = ['All', 'To Do', 'In Progress', 'Completed']
 const emptyForm = { title: '', description: '', priority: 'medium' as Priority, status: 'todo' as Status, dueDate: '', project: '' }
 
 export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
+  const isVerunoPreview = useBrandPreview()
   const [tasks, setTasks] = useState<Task[]>(initialTasks)
   const [activeTab, setActiveTab] = useState('All')
   const [search, setSearch] = useState('')
@@ -106,18 +108,25 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
     <div className="page-pad" style={{ padding: '28px 28px', background: 'var(--bg)', minHeight: '100dvh' }}>
       <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: '-0.4px' }}>Tasks</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: '#1c1917', letterSpacing: isVerunoPreview ? '-0.03em' : '-0.4px' }}>Tasks</h1>
           <p style={{ color: '#78716c', fontSize: 14, marginTop: 2 }}>Manage your work and stay organized</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowModal(true)}>
+        <button
+          className="btn-primary"
+          onClick={() => setShowModal(true)}
+          style={isVerunoPreview ? { background: 'var(--accent-gold)', boxShadow: '0 1px 4px rgba(201,162,75,0.35)' } : undefined}
+        >
           <Plus size={15} />
           New Task
         </button>
       </div>
 
-      <div style={{ marginBottom: 16 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: '#1c1917' }}>{tasks.length}</span>
-        <span style={{ fontSize: 14, color: '#78716c', marginLeft: 6 }}>Total Tasks</span>
+      <div style={{ marginBottom: 16, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <span style={{ fontSize: 22, fontWeight: 700, color: '#1c1917', fontVariantNumeric: 'tabular-nums' }}>{tasks.length}</span>
+        <span style={{ fontSize: 14, color: '#78716c' }}>Total Tasks</span>
+        {isVerunoPreview && tasks.length > 0 && (
+          <span style={{ fontSize: 13, color: 'rgba(28,25,23,0.35)' }}>· {tasks.filter(t => t.checked).length} completed</span>
+        )}
       </div>
 
       <div className="g-sidebar" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 20 }}>
@@ -151,7 +160,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
             ))}
           </div>
 
-          <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="card" style={{ padding: 0, overflow: 'hidden', border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : undefined }}>
             {filtered.length === 0 && (
               <div style={{ padding: 24, fontSize: 13, color: '#78716c' }}>No tasks found.</div>
             )}
@@ -164,14 +173,36 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
                   borderBottom: i < filtered.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none',
                   background: task.checked ? 'var(--bg)' : 'var(--card)',
                   position: 'relative',
+                  transition: isVerunoPreview ? 'background 0.12s ease' : undefined,
                 }}
+                onMouseEnter={isVerunoPreview ? e => { if (!task.checked) e.currentTarget.style.background = 'rgba(14,20,32,0.015)' } : undefined}
+                onMouseLeave={isVerunoPreview ? e => { e.currentTarget.style.background = task.checked ? 'var(--bg)' : 'var(--card)' } : undefined}
               >
-                <input
-                  type="checkbox"
-                  checked={task.checked}
-                  onChange={() => toggle(task.id)}
-                  style={{ width: 16, height: 16, accentColor: 'var(--accent-brand)', marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
-                />
+                {isVerunoPreview ? (
+                  <div
+                    role="checkbox"
+                    aria-checked={task.checked}
+                    tabIndex={0}
+                    onClick={() => toggle(task.id)}
+                    onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(task.id) } }}
+                    style={{
+                      width: 18, height: 18, borderRadius: 5, flexShrink: 0, marginTop: 3, cursor: 'pointer',
+                      border: `1.5px solid ${task.checked ? 'var(--accent-brand)' : 'rgba(14,20,32,0.2)'}`,
+                      background: task.checked ? 'var(--accent-brand)' : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {task.checked && <Check size={12} color="white" strokeWidth={3} />}
+                  </div>
+                ) : (
+                  <input
+                    type="checkbox"
+                    checked={task.checked}
+                    onChange={() => toggle(task.id)}
+                    style={{ width: 16, height: 16, accentColor: 'var(--accent-brand)', marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
+                  />
+                )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: 15, fontWeight: 600,
@@ -223,7 +254,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
 
         {/* Right sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="card" style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 20, border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : undefined }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Calendar size={16} color="#6b7280" />
               <span style={{ fontWeight: 600, fontSize: 14, color: '#1c1917' }}>Upcoming Deadlines</span>
@@ -244,7 +275,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
             </div>
           </div>
 
-          <div className="card" style={{ padding: 20 }}>
+          <div className="card" style={{ padding: 20, border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : undefined }}>
             <div style={{ fontWeight: 600, fontSize: 14, color: '#1c1917', marginBottom: 14 }}>Active Projects</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {activeProjects.length === 0 && (
@@ -256,7 +287,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
                     <div style={{ fontSize: 13, fontWeight: 500, color: '#1c1917' }}>{p.name}</div>
                     <div style={{ fontSize: 12, color: '#78716c', marginTop: 2 }}>{p.tasks} active task{p.tasks > 1 ? 's' : ''}</div>
                   </div>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }} />
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: isVerunoPreview ? 'var(--accent-brand)' : '#10b981' }} />
                 </div>
               ))}
             </div>
@@ -266,7 +297,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
 
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }} onClick={() => setShowModal(false)}>
-          <div className="card modal-card" style={{ width: 440, padding: 24 }} onClick={e => e.stopPropagation()}>
+          <div className="card modal-card" style={{ width: 440, padding: 24, border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : undefined }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <span style={{ fontWeight: 700, fontSize: 17, color: '#1c1917' }}>New Task</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#78716c' }}>
@@ -292,7 +323,11 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
                 <input className="search-input" placeholder="Due date (e.g. Jan 14)" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} />
                 <input className="search-input" placeholder="Project" value={form.project} onChange={e => setForm({ ...form, project: e.target.value })} />
               </div>
-              <button className="btn-primary" style={{ justifyContent: 'center', marginTop: 4 }} onClick={createTask}>
+              <button
+                className="btn-primary"
+                style={{ justifyContent: 'center', marginTop: 4, ...(isVerunoPreview ? { background: 'var(--accent-gold)', boxShadow: '0 1px 4px rgba(201,162,75,0.35)' } : {}) }}
+                onClick={createTask}
+              >
                 Create Task
               </button>
             </div>
