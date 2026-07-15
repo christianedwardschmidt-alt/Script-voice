@@ -251,10 +251,10 @@ export default function DashboardPage() {
           onClick={() => setShowNewMenu(v => !v)}
           style={{
             display: 'flex', alignItems: 'center', gap: 7,
-            padding: '10px 16px', background: isVerunoPreview ? '#A6790F' : 'var(--accent-brand)', color: 'white',
+            padding: '10px 16px', background: isVerunoPreview ? 'var(--accent-gold)' : '#16A34A', color: 'white',
             border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--font-body)',
-            boxShadow: isVerunoPreview ? '0 1px 4px rgba(166,121,15,0.35)' : '0 1px 4px rgba(22,163,74,0.35)',
+            boxShadow: isVerunoPreview ? '0 1px 4px rgba(201,162,75,0.35)' : '0 1px 4px rgba(22,163,74,0.35)',
           }}
         >
           <Plus size={14} /> New <ChevronDown size={12} style={{ opacity: 0.7 }} />
@@ -392,7 +392,7 @@ export default function DashboardPage() {
             </div>
             <div style={{ display: 'flex', gap: 18, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: 'var(--accent-brand)', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: isVerunoPreview ? '#1F2937' : 'var(--accent-brand)', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ width: 18, height: 2, background: '#6366F1', display: 'inline-block', borderRadius: 2 }} />Expenses
@@ -403,8 +403,8 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent-brand)" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="var(--accent-brand)" stopOpacity={0} />
+                  <stop offset="0%" stopColor={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} stopOpacity={0.18} />
+                  <stop offset="100%" stopColor={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#6366F1" stopOpacity={0.1} />
@@ -415,7 +415,7 @@ export default function DashboardPage() {
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="var(--accent-brand)" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="income"   stroke={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
               <Area type="monotone" dataKey="expenses" stroke="#6366F1" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -442,10 +442,10 @@ export default function DashboardPage() {
             ].map(s => (
               <div key={s.label}>
                 <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 4, fontFamily: 'var(--font-body)' }}>{s.label}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>{s.val}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: isVerunoPreview ? '#C9A24B' : '#fff', letterSpacing: '-0.5px' }}>{s.val}</div>
                 {s.pct !== null && (
                   <div style={{ marginTop: 6, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{ width: `${s.pct}%`, height: '100%', background: isVerunoPreview ? '#D4A72C' : 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
+                    <div style={{ width: `${s.pct}%`, height: '100%', background: isVerunoPreview ? '#C9A24B' : 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
                   </div>
                 )}
               </div>

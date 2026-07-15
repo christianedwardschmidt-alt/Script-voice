@@ -469,11 +469,15 @@ export default function Sidebar() {
     hoverBg: 'rgba(255,255,255,0.06)',
     hoverText: '#F5F4F1',
     hoverIconStroke: 'rgba(245,244,241,0.75)',
-    accent: '#D4A72C',
-    accentBgActive: 'rgba(212,167,44,0.14)',
+    // Active nav state stays neutral on purpose — a subtle fill + border
+    // rather than a colored highlight, so gold isn't scattered into every
+    // interactive element. Gold is reserved for exactly two spots
+    // elsewhere (This Week card, primary CTA), not the nav itself.
+    accent: 'rgba(245,244,241,0.85)',
+    accentBgActive: 'rgba(255,255,255,0.07)',
     menuBg: '#161C29',
     menuBorder: 'rgba(255,255,255,0.10)',
-    avatarGradient: 'linear-gradient(135deg, #8A6510, #D4A72C)',
+    avatarGradient: 'linear-gradient(135deg, #2A3345, #4B5563)',
   } : {
     bg: '#ffffff',
     border: '#F3F4F6',

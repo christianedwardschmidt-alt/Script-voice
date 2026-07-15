@@ -109,18 +109,23 @@ html[data-brand-preview="veruno"] {
   --radius-lg: 10px;
   --radius-md: 8px;
 
-  /* Brass/gold replaces the generic SaaS green as the primary brand
-     accent; green stays reserved for semantic use (revenue up/down)
-     instead of doubling as both. Every var(--accent-brand) usage
-     across the app picks this up the same way shadows/radius do. */
-  --v-gold: #A6790F;
-  --v-gold-bright: #D4A72C;
-  --v-gold-soft: rgba(166,121,15,0.10);
-  --accent-brand: #A6790F;
-  --accent-brand-dark: #8A6510;
-  --accent-brand-hover: #8F6A0D;
-  --accent-brand-soft: rgba(166,121,15,0.10);
-  --accent-brand-rgb: 166,121,15;
+  /* Gold turned out to be overused when it was the default replacement
+     for every green accent — badges, hovers, toggles, links, all of it.
+     Restraint pass: --accent-brand (still the variable ~350 call sites
+     across the app reference) now resolves to a quiet neutral gray, so
+     that entire surface area goes calm instead of gold. True gold lives
+     only in --accent-gold below, hand-wired into exactly two spots
+     (the "This Week" card and the dashboard's primary CTA) — not
+     threaded through the shared variable, on purpose, so it can't
+     silently re-spread the next time --accent-brand gets reused. */
+  --accent-brand: #6B7280;
+  --accent-brand-dark: #4B5563;
+  --accent-brand-hover: #4B5563;
+  --accent-brand-soft: rgba(107,114,128,0.08);
+  --accent-brand-rgb: 107,114,128;
+
+  --accent-gold: #C9A24B;
+  --accent-gold-rgb: 201,162,75;
 }
 
 html, body {
