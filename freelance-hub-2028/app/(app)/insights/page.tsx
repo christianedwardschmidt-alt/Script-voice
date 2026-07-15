@@ -161,8 +161,8 @@ export default function InsightsPage() {
               {k.value}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontSize: 13, color: k.up ? 'var(--accent-brand)' : '#EF4444', fontFamily: 'var(--font-body)' }}>{k.trend}</span>
-              <Sparkline values={k.spark} color={k.up ? 'var(--accent-brand)' : '#EF4444'} id={i} />
+              <span style={{ fontSize: 13, color: k.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{k.trend}</span>
+              <Sparkline values={k.spark} color={k.up ? '#16A34A' : '#EF4444'} id={i} />
             </div>
           </div>
         ))}
