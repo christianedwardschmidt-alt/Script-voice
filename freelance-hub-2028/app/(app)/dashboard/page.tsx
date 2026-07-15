@@ -7,6 +7,7 @@ import {
 } from 'recharts'
 import { Mic, Plus, ChevronDown } from 'lucide-react'
 import WatchdogPanel from './WatchdogPanel'
+import { useBrandPreview } from '@/lib/brandPreview'
 
 const revenueData = [
   { month: 'Jan', income: 7200,  expenses: 2100 },
@@ -104,6 +105,7 @@ function getDotColor(msg: string) {
 }
 
 export default function DashboardPage() {
+  const isVerunoPreview = useBrandPreview()
   const [clients, setClients]   = useState<Client[]>([])
   const [tasks, setTasks]       = useState<Task[]>([])
   const [invoices, setInvoices] = useState<Invoice[]>([])
@@ -329,11 +331,11 @@ export default function DashboardPage() {
       >
         {stats.map((stat, i) => (
           <div key={stat.label} style={{
-            padding: '24px 28px',
+            padding: isVerunoPreview ? '30px 32px' : '24px 28px',
             borderRight: i < 3 ? '1px solid #F3F4F6' : 'none',
           }}>
             <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: '-0.02em' }}>{stat.value}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: isVerunoPreview ? '-0.03em' : '-0.02em' }}>{stat.value}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
               <span style={{ fontSize: 13, color: stat.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
               <Sparkline values={stat.spark} color={stat.up ? '#16A34A' : '#EF4444'} id={i} />
