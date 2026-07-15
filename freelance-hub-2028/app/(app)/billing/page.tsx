@@ -59,7 +59,7 @@ export default function BillingPage() {
       </div>
 
       {/* Current plan banner */}
-      <div style={{ ...card, background: 'linear-gradient(135deg, #14532D 0%, #15803D 100%)', padding: '24px 28px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+      <div style={{ ...card, background: 'linear-gradient(135deg, var(--accent-brand-dark) 0%, var(--accent-brand-hover) 100%)', padding: '24px 28px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-body)' }}>Active Plan</span>
@@ -78,7 +78,7 @@ export default function BillingPage() {
           >
             <CreditCard size={14} /> Update card
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', background: '#fff', color: '#15803D', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+          <button style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', background: '#fff', color: 'var(--accent-brand-hover)', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
             <Zap size={14} /> Upgrade to Team
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function BillingPage() {
           <div style={{ ...card, padding: '20px 24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Billing History</div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: '#16A34A', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
+              <button style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--accent-brand)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
                 <Download size={12} /> Export all
               </button>
             </div>
@@ -141,7 +141,7 @@ export default function BillingPage() {
                       <td style={{ padding: '11px 12px', color: '#6B7280', whiteSpace: 'nowrap' }}>{row.date}</td>
                       <td style={{ padding: '11px 12px', fontFamily: 'var(--font-display)', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>${row.amount.toFixed(2)}</td>
                       <td style={{ padding: '11px 12px' }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '2px 8px', borderRadius: 6 }}>{row.status}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-brand)', background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '2px 8px', borderRadius: 6 }}>{row.status}</span>
                       </td>
                       <td style={{ padding: '11px 12px' }}>
                         <button style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#9CA3AF', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)' }}>
@@ -171,7 +171,7 @@ export default function BillingPage() {
               ].map(({ icon: Icon, label }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 20, height: 20, borderRadius: 6, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Icon size={11} color="#16A34A" />
+                    <Icon size={11} color="var(--accent-brand)" />
                   </div>
                   <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>{label}</span>
                 </div>
@@ -230,7 +230,7 @@ export default function BillingPage() {
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setShowCard(false)} style={{ flex: 1, padding: '11px 0', background: '#F3F4F6', border: 'none', borderRadius: 9, fontSize: 14, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Cancel</button>
-              <button onClick={() => setShowCard(false)} style={{ flex: 2, padding: '11px 0', background: '#16A34A', border: 'none', borderRadius: 9, fontSize: 14, fontWeight: 600, color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Save card</button>
+              <button onClick={() => setShowCard(false)} style={{ flex: 2, padding: '11px 0', background: 'var(--accent-brand)', border: 'none', borderRadius: 9, fontSize: 14, fontWeight: 600, color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Save card</button>
             </div>
           </div>
         </div>

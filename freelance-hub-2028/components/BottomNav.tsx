@@ -61,7 +61,7 @@ export default function BottomNav() {
           width: 58,
           height: 58,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #16a34a 0%, #10b981 100%)',
+          background: 'linear-gradient(135deg, var(--accent-brand) 0%, #10b981 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

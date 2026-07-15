@@ -71,6 +71,18 @@
   --sidebar-bg: var(--gw-dark);
   --header-bg: rgba(255,255,255,0.95);
 
+  /* Brand-decorative accent (buttons, links, active states, badges) —
+     distinct from literal green used for semantic positive/negative
+     signals like revenue trends, which stay hardcoded on purpose so
+     they don't shift meaning when this flips to gold. */
+  --accent-brand: #16A34A;
+  --accent-brand-dark: #14532D;
+  --accent-brand-hover: #15803D;
+  --accent-brand-soft: rgba(22,163,74,0.08);
+  --accent-brand-rgb: 22,163,74; /* same color as --accent-brand, as bare r,g,b so every
+                                     rgba(var(--accent-brand-rgb), X) tint/opacity variant
+                                     across the app follows it with one variable */
+
   /* Legacy shadows */
   --shadow-btn: 0 2px 8px rgba(22,163,74,0.3);
   --shadow-modal: 0 24px 64px rgba(0,0,0,0.2);
@@ -99,10 +111,16 @@ html[data-brand-preview="veruno"] {
 
   /* Brass/gold replaces the generic SaaS green as the primary brand
      accent; green stays reserved for semantic use (revenue up/down)
-     instead of doubling as both. */
+     instead of doubling as both. Every var(--accent-brand) usage
+     across the app picks this up the same way shadows/radius do. */
   --v-gold: #A6790F;
   --v-gold-bright: #D4A72C;
   --v-gold-soft: rgba(166,121,15,0.10);
+  --accent-brand: #A6790F;
+  --accent-brand-dark: #8A6510;
+  --accent-brand-hover: #8F6A0D;
+  --accent-brand-soft: rgba(166,121,15,0.10);
+  --accent-brand-rgb: 166,121,15;
 }
 
 html, body {

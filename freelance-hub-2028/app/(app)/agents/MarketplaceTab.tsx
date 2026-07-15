@@ -32,7 +32,7 @@ interface MarketplaceAgent {
 const CATEGORIES = ['All', 'Invoicing', 'Client Relations', 'Tax', 'Proposals', 'Productivity', 'Community'] as const
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Invoicing: '#16A34A',
+  Invoicing: 'var(--accent-brand)',
   'Client Relations': '#EC4899',
   Tax: '#CA8A04',
   Proposals: '#6366F1',
@@ -118,13 +118,13 @@ export default function MarketplaceTab({
   return (
     <div>
       <style>{`
-        @keyframes mkt-pulse { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,0.45); } 100% { box-shadow: 0 0 0 14px rgba(22,163,74,0); } }
+        @keyframes mkt-pulse { 0% { box-shadow: 0 0 0 0 rgba(var(--accent-brand-rgb),0.45); } 100% { box-shadow: 0 0 0 14px rgba(var(--accent-brand-rgb),0); } }
         @keyframes mkt-toast-in { from { opacity: 0; transform: translateY(8px) translateX(0); } to { opacity: 1; transform: translateY(0) translateX(0); } }
         @keyframes mkt-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         .mkt-card { transition: box-shadow 0.15s, transform 0.15s; }
         .mkt-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.08); transform: translateY(-1px); }
         .mkt-card.pulsing { animation: mkt-pulse 0.3s ease-out; }
-        .mkt-clone-btn:hover { background: #15803D !important; }
+        .mkt-clone-btn:hover { background: var(--accent-brand-hover) !important; }
         .mkt-cat-tab { transition: all 0.15s; }
         .mkt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         @media (max-width: 900px) { .mkt-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -177,7 +177,7 @@ export default function MarketplaceTab({
       ) : (
         <div className="mkt-grid" style={{ opacity: visible ? 1 : 0, transition: 'opacity 150ms ease' }}>
           {filtered.map(agent => {
-            const color = CATEGORY_COLORS[agent.category] ?? '#16A34A'
+            const color = CATEGORY_COLORS[agent.category] ?? 'var(--accent-brand)'
             const isSmart = hasConditionalLogic(agent.configuration)
             return (
               <div
@@ -242,7 +242,7 @@ export default function MarketplaceTab({
                   onClick={() => handleClone(agent)}
                   style={{
                     width: '100%', marginTop: 4, padding: '8px 16px', borderRadius: 8, border: 'none',
-                    background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                    background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                     fontFamily: 'var(--font-body)', transition: 'background 0.15s',
                   }}
                 >
@@ -274,11 +274,11 @@ function MarketplaceEmptyState({ onGoToMyAgents }: { onGoToMyAgents: () => void 
   return (
     <div style={{ padding: '64px 20px', textAlign: 'center' }}>
       <div style={{
-        width: 64, height: 64, borderRadius: '50%', background: 'rgba(22,163,74,0.08)',
+        width: 64, height: 64, borderRadius: '50%', background: 'rgba(var(--accent-brand-rgb),0.08)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
         animation: 'mkt-float 2.6s ease-in-out infinite',
       }}>
-        <Sparkles size={28} color="#16A34A" strokeWidth={1.75} />
+        <Sparkles size={28} color="var(--accent-brand)" strokeWidth={1.75} />
       </div>
       <div style={{ fontFamily: 'var(--font-syne)', fontSize: 18, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
         The marketplace grows as the guild grows.
@@ -289,7 +289,7 @@ function MarketplaceEmptyState({ onGoToMyAgents }: { onGoToMyAgents: () => void 
       <button
         onClick={onGoToMyAgents}
         style={{
-          padding: '10px 20px', borderRadius: 10, border: 'none', background: '#16A34A', color: '#fff',
+          padding: '10px 20px', borderRadius: 10, border: 'none', background: 'var(--accent-brand)', color: '#fff',
           fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
         }}
       >

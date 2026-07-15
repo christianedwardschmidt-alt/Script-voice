@@ -147,7 +147,7 @@ export default function SettingsPage() {
               padding: '9px 16px', borderRadius: '8px 8px 0 0', border: 'none', background: 'none',
               fontSize: 14, fontWeight: tab === t ? 700 : 500, color: tab === t ? '#111827' : '#6B7280',
               cursor: 'pointer', fontFamily: 'var(--font-body)',
-              borderBottom: tab === t ? '2px solid #16A34A' : '2px solid transparent',
+              borderBottom: tab === t ? '2px solid var(--accent-brand)' : '2px solid transparent',
               marginBottom: -1, transition: 'all 0.15s',
             }}
           >
@@ -170,7 +170,7 @@ export default function SettingsPage() {
               </div>
               <div
                 onClick={() => toggle(key)}
-                style={{ width: 44, height: 24, borderRadius: 12, background: on ? '#16a34a' : '#e5e7eb', position: 'relative', cursor: 'pointer', transition: 'background 0.15s' }}
+                style={{ width: 44, height: 24, borderRadius: 12, background: on ? 'var(--accent-brand)' : '#e5e7eb', position: 'relative', cursor: 'pointer', transition: 'background 0.15s' }}
               >
                 <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--card)', position: 'absolute', top: 3, left: on ? 23 : 3, transition: 'left 0.15s', boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }} />
               </div>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
                 <button key={day} onClick={() => toggleWorkDay(day)} type="button"
                   style={{
                     padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
-                    border: on ? '1.5px solid #16A34A' : '1.5px solid rgba(0,0,0,0.1)', background: on ? 'rgba(22,163,74,0.1)' : 'var(--bg)', color: on ? '#16A34A' : '#6B7280',
+                    border: on ? '1.5px solid var(--accent-brand)' : '1.5px solid rgba(0,0,0,0.1)', background: on ? 'rgba(var(--accent-brand-rgb),0.1)' : 'var(--bg)', color: on ? 'var(--accent-brand)' : '#6B7280',
                   }}>
                   {day.slice(0, 3)}
                 </button>
@@ -208,7 +208,7 @@ export default function SettingsPage() {
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827', marginBottom: 4 }}>Change Password</div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#6B7280', marginBottom: 16 }}>Update your account password. You&apos;ll stay logged in after changing it.</div>
           {pwStatus === 'saved' && (
-            <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500, marginBottom: 12 }}>Password updated successfully!</div>
+            <div style={{ fontSize: 13, color: 'var(--accent-brand)', fontWeight: 500, marginBottom: 12 }}>Password updated successfully!</div>
           )}
           {pwError && (
             <div style={{ fontSize: 13, color: '#dc2626', marginBottom: 12, background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 12px' }}>{pwError}</div>
@@ -241,18 +241,18 @@ export default function SettingsPage() {
               resetUrl ? (
                 <div>
                   <div style={{ fontSize: 12, color: '#78716c', marginBottom: 6 }}>No email service configured — use this link:</div>
-                  <a href={resetUrl} style={{ display: 'block', wordBreak: 'break-all', fontSize: 12, background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: '8px 10px', color: '#16a34a', textDecoration: 'none', fontFamily: 'monospace', lineHeight: 1.5 }}>{resetUrl}</a>
+                  <a href={resetUrl} style={{ display: 'block', wordBreak: 'break-all', fontSize: 12, background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: '8px 10px', color: 'var(--accent-brand)', textDecoration: 'none', fontFamily: 'monospace', lineHeight: 1.5 }}>{resetUrl}</a>
                   <div style={{ fontSize: 11, color: '#78716c', marginTop: 6 }}>Link expires in 1 hour.</div>
                 </div>
               ) : (
-                <div style={{ fontSize: 13, color: '#16a34a' }}>Reset link sent — check your email.</div>
+                <div style={{ fontSize: 13, color: 'var(--accent-brand)' }}>Reset link sent — check your email.</div>
               )
             ) : (
               <button
                 type="button"
                 onClick={sendResetLink}
                 disabled={resetStatus === 'sending'}
-                style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, color: '#16a34a', cursor: resetStatus === 'sending' ? 'not-allowed' : 'pointer', textDecoration: 'underline', fontFamily: 'inherit', opacity: resetStatus === 'sending' ? 0.6 : 1 }}
+                style={{ background: 'none', border: 'none', padding: 0, fontSize: 13, color: 'var(--accent-brand)', cursor: resetStatus === 'sending' ? 'not-allowed' : 'pointer', textDecoration: 'underline', fontFamily: 'inherit', opacity: resetStatus === 'sending' ? 0.6 : 1 }}
               >
                 {resetStatus === 'sending' ? 'Sending…' : "Don't know your current password? Send a reset link to your email"}
               </button>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
               Removes all clients, tasks, invoices, CRM contacts, posts, calendar events, and tax records. Your profile and settings are kept.
             </div>
             {cleared ? (
-              <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500 }}>All sample data cleared. Start adding your own!</div>
+              <div style={{ fontSize: 13, color: 'var(--accent-brand)', fontWeight: 500 }}>All sample data cleared. Start adding your own!</div>
             ) : confirm ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 12, color: '#78716c' }}>Are you sure?</span>
@@ -306,14 +306,14 @@ export default function SettingsPage() {
               Brings back all the original sample clients, tasks, invoices, CRM contacts, posts, calendar events, and tax records.
             </div>
             {restored ? (
-              <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 500 }}>Sample data restored!</div>
+              <div style={{ fontSize: 13, color: 'var(--accent-brand)', fontWeight: 500 }}>Sample data restored!</div>
             ) : confirmRestore ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 12, color: '#78716c' }}>This will overwrite your current data.</span>
                 <button
                   onClick={restoreSampleData}
                   disabled={restoring}
-                  style={{ padding: '6px 14px', border: 'none', borderRadius: 7, background: '#16a34a', fontSize: 12, color: '#fff', cursor: restoring ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: restoring ? 0.6 : 1 }}
+                  style={{ padding: '6px 14px', border: 'none', borderRadius: 7, background: 'var(--accent-brand)', fontSize: 12, color: '#fff', cursor: restoring ? 'not-allowed' : 'pointer', fontWeight: 600, opacity: restoring ? 0.6 : 1 }}
                 >
                   {restoring ? 'Restoring…' : 'Yes, restore'}
                 </button>
@@ -327,7 +327,7 @@ export default function SettingsPage() {
             ) : (
               <button
                 onClick={() => setConfirmRestore(true)}
-                style={{ padding: '7px 16px', border: '1px solid #bbf7d0', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: '#16a34a', cursor: 'pointer', fontWeight: 500 }}
+                style={{ padding: '7px 16px', border: '1px solid #bbf7d0', borderRadius: 8, background: 'var(--card)', fontSize: 13, color: 'var(--accent-brand)', cursor: 'pointer', fontWeight: 500 }}
               >
                 Restore sample data
               </button>

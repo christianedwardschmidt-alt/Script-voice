@@ -78,7 +78,7 @@ export default function WatchdogHistoryPage() {
               <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#9CA3AF' }}>items flagged</div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'var(--font-syne)', fontSize: 20, fontWeight: 700, color: '#16A34A' }}>{totalResolved}</div>
+              <div style={{ fontFamily: 'var(--font-syne)', fontSize: 20, fontWeight: 700, color: 'var(--accent-brand)' }}>{totalResolved}</div>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#9CA3AF' }}>resolved</div>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function WatchdogHistoryPage() {
                           {item.alert_text}
                         </div>
                         {item.resolved ? (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--font-body)', flexShrink: 0 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)', flexShrink: 0 }}>
                             <Check size={11} strokeWidth={3} /> Resolved
                           </span>
                         ) : (

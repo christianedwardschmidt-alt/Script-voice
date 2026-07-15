@@ -139,7 +139,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
     <>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        .ts-entry:hover .ts-time { color: #16A34A !important; background: rgba(22,163,74,0.08) !important; }
+        .ts-entry:hover .ts-time { color: var(--accent-brand) !important; background: rgba(var(--accent-brand-rgb),0.08) !important; }
       `}</style>
 
       <div className="page-pad" style={{ padding: '24px 32px', background: 'var(--bg)', minHeight: '100dvh' }}>
@@ -160,9 +160,9 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                   if (e.key === 'Enter') { setTitle(tempTitle); setEditingTitle(false) }
                   if (e.key === 'Escape') setEditingTitle(false)
                 }}
-                style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#111827', border: 'none', borderBottom: '2px solid #16A34A', outline: 'none', background: 'transparent', flex: 1, padding: '4px 0' }}
+                style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#111827', border: 'none', borderBottom: '2px solid var(--accent-brand)', outline: 'none', background: 'transparent', flex: 1, padding: '4px 0' }}
               />
-              <button onClick={() => { setTitle(tempTitle); setEditingTitle(false) }} style={{ height: 34, padding: '0 14px', background: '#16A34A', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', flexShrink: 0 }}>Save</button>
+              <button onClick={() => { setTitle(tempTitle); setEditingTitle(false) }} style={{ height: 34, padding: '0 14px', background: 'var(--accent-brand)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', flexShrink: 0 }}>Save</button>
               <button onClick={() => setEditingTitle(false)} style={{ height: 34, padding: '0 14px', background: '#F3F4F6', color: '#374151', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', flexShrink: 0 }}>Cancel</button>
             </div>
           ) : (
@@ -184,7 +184,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
             <span style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>45:12</span>
             <span style={{ color: '#D1D5DB' }}>·</span>
             <span style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>5,847 words</span>
-            <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: 'rgba(22,163,74,0.1)', color: '#15803D', fontFamily: 'var(--font-body)' }}>Complete</span>
+            <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: 'rgba(var(--accent-brand-rgb),0.1)', color: 'var(--accent-brand-hover)', fontFamily: 'var(--font-body)' }}>Complete</span>
           </div>
         </div>
 
@@ -201,7 +201,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                 </button>
                 <button
                   onClick={() => setIsPlaying(p => !p)}
-                  style={{ width: 40, height: 40, borderRadius: '50%', background: '#16A34A', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(22,163,74,0.35)', flexShrink: 0 }}
+                  style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--accent-brand)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(var(--accent-brand-rgb),0.35)', flexShrink: 0 }}
                 >
                   {isPlaying ? <Pause size={15} color="#fff" fill="#fff" /> : <Play size={15} color="#fff" fill="#fff" />}
                 </button>
@@ -215,8 +215,8 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                   setPlayhead(Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100)))
                 }}>
                   <div style={{ height: 4, background: '#F3F4F6', borderRadius: 2 }}>
-                    <div style={{ height: '100%', background: '#16A34A', borderRadius: 2, width: `${playhead}%`, position: 'relative' }}>
-                      <div style={{ position: 'absolute', right: -5, top: -4, width: 12, height: 12, borderRadius: '50%', background: '#16A34A', boxShadow: '0 1px 4px rgba(0,0,0,0.25)' }} />
+                    <div style={{ height: '100%', background: 'var(--accent-brand)', borderRadius: 2, width: `${playhead}%`, position: 'relative' }}>
+                      <div style={{ position: 'absolute', right: -5, top: -4, width: 12, height: 12, borderRadius: '50%', background: 'var(--accent-brand)', boxShadow: '0 1px 4px rgba(0,0,0,0.25)' }} />
                     </div>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                 {/* Speed */}
                 <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
                   {['0.75x', '1x', '1.25x', '1.5x'].map(s => (
-                    <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 6px', borderRadius: 5, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: 'none', background: speed === s ? '#16A34A' : '#F3F4F6', color: speed === s ? '#fff' : '#6B7280', fontFamily: 'var(--font-body)' }}>{s}</button>
+                    <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 6px', borderRadius: 5, fontSize: 10, fontWeight: 700, cursor: 'pointer', border: 'none', background: speed === s ? 'var(--accent-brand)' : '#F3F4F6', color: speed === s ? '#fff' : '#6B7280', fontFamily: 'var(--font-body)' }}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -306,14 +306,14 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
             {/* Action Items */}
             <div style={CARD}>
               <div style={CARD_HDR}>
-                <CheckSquare size={14} color="#16A34A" /> Action Items
+                <CheckSquare size={14} color="var(--accent-brand)" /> Action Items
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
                 {actions.map(item => (
                   <div key={item.id} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                     <button
                       onClick={() => toggleAction(item.id)}
-                      style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${item.done ? '#16A34A' : '#D1D5DB'}`, background: item.done ? '#16A34A' : 'white', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginTop: 2 }}
+                      style={{ width: 18, height: 18, borderRadius: 4, border: `2px solid ${item.done ? 'var(--accent-brand)' : '#D1D5DB'}`, background: item.done ? 'var(--accent-brand)' : 'white', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginTop: 2 }}
                     >
                       {item.done && <Check size={10} color="#fff" />}
                     </button>
@@ -333,13 +333,13 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                       onKeyDown={e => { if (e.key === 'Enter') addAction(); if (e.key === 'Escape') { setAddingAction(false); setNewAction('') } }}
                       onBlur={addAction}
                       placeholder="New action item..."
-                      style={{ flex: 1, height: 30, padding: '0 8px', fontSize: 12, border: '1.5px solid #16A34A', borderRadius: 6, outline: 'none', fontFamily: 'var(--font-body)', color: '#111827' }}
+                      style={{ flex: 1, height: 30, padding: '0 8px', fontSize: 12, border: '1.5px solid var(--accent-brand)', borderRadius: 6, outline: 'none', fontFamily: 'var(--font-body)', color: '#111827' }}
                     />
                   </div>
                 )}
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button style={{ flex: 1, height: 34, background: '#16A34A', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                <button style={{ flex: 1, height: 34, background: 'var(--accent-brand)', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                   Add to Tasks
                 </button>
                 <button onClick={() => setAddingAction(true)} style={{ width: 34, height: 34, background: '#F3F4F6', border: 'none', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -377,7 +377,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0 }}>S</div>
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>Sarah Chen</p>
-                  <Link href="/crm" style={{ fontSize: 12, color: '#16A34A', fontFamily: 'var(--font-body)', textDecoration: 'none' }}>View CRM profile →</Link>
+                  <Link href="/crm" style={{ fontSize: 12, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)', textDecoration: 'none' }}>View CRM profile →</Link>
                 </div>
               </div>
             </div>
@@ -389,10 +389,10 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {tags.map(t => (
-                  <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, background: 'rgba(22,163,74,0.1)', border: '1px solid rgba(22,163,74,0.2)', fontSize: 12, fontWeight: 600, color: '#15803D', fontFamily: 'var(--font-body)' }}>
+                  <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, background: 'rgba(var(--accent-brand-rgb),0.1)', border: '1px solid rgba(var(--accent-brand-rgb),0.2)', fontSize: 12, fontWeight: 600, color: 'var(--accent-brand-hover)', fontFamily: 'var(--font-body)' }}>
                     {t}
                     <button onClick={() => removeTag(t)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', padding: 0, lineHeight: 0 }}>
-                      <X size={10} color="#15803D" />
+                      <X size={10} color="var(--accent-brand-hover)" />
                     </button>
                   </span>
                 ))}
@@ -404,7 +404,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                     onKeyDown={e => { if (e.key === 'Enter') addTag(); if (e.key === 'Escape') { setAddingTag(false); setNewTag('') } }}
                     onBlur={addTag}
                     placeholder="Tag name..."
-                    style={{ width: 90, height: 28, padding: '0 10px', fontSize: 12, border: '1.5px solid #16A34A', borderRadius: 20, outline: 'none', fontFamily: 'var(--font-body)', color: '#111827' }}
+                    style={{ width: 90, height: 28, padding: '0 10px', fontSize: 12, border: '1.5px solid var(--accent-brand)', borderRadius: 20, outline: 'none', fontFamily: 'var(--font-body)', color: '#111827' }}
                   />
                 ) : (
                   <button onClick={() => setAddingTag(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: '#F3F4F6', border: '1px solid #E5E7EB', fontSize: 12, fontWeight: 600, color: '#9CA3AF', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
@@ -427,7 +427,7 @@ export default function TranscriptionDetailPage({ params }: { params: Params }) 
                   <button
                     key={i}
                     onClick={btn.action}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: '#F9FAFB', border: '1px solid #F3F4F6', borderRadius: 8, fontSize: 13, color: copied && btn.label.startsWith('✓') ? '#16A34A' : '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', transition: 'background 0.1s' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', background: '#F9FAFB', border: '1px solid #F3F4F6', borderRadius: 8, fontSize: 13, color: copied && btn.label.startsWith('✓') ? 'var(--accent-brand)' : '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', transition: 'background 0.1s' }}
                   >
                     {btn.icon} {btn.label}
                   </button>

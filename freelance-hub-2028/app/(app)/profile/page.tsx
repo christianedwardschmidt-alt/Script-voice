@@ -49,7 +49,7 @@ export default function ProfilePage() {
       <p style={{ fontFamily: 'var(--font-body)', color: '#6B7280', fontSize: 14, marginBottom: 28 }}>Manage your personal information</p>
       <div className="card" style={{ padding: 28, maxWidth: 560 }}>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center', marginBottom: 28 }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #14532D, #16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#fff', fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, color: '#fff', fontWeight: 700, fontFamily: 'var(--font-display)', flexShrink: 0 }}>
             {profile.displayName?.charAt(0)?.toUpperCase() ?? '?'}
           </div>
           <div>
@@ -102,7 +102,7 @@ export default function ProfilePage() {
           </div>
         </div>
         <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }}>
-          {saved && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#16A34A', fontWeight: 500 }}>Saved!</span>}
+          {saved && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--accent-brand)', fontWeight: 500 }}>Saved!</span>}
           <button className="btn-primary" onClick={update}>Update Profile</button>
         </div>
       </div>

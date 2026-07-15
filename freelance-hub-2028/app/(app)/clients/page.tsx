@@ -17,7 +17,7 @@ interface Client {
   projects: number
 }
 
-const colors = ['#16A34A', '#EC4899', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6']
+const colors = ['var(--accent-brand)', '#EC4899', '#F59E0B', '#10B981', '#06B6D4', '#8B5CF6']
 
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '' }
 

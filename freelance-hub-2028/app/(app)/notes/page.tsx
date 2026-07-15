@@ -442,16 +442,16 @@ export default function NotesPage() {
         @keyframes notes-pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
         .note-item { transition: background 0.12s; }
         .note-item:hover { background: rgba(0,0,0,0.03) !important; }
-        .note-item.active { background: rgba(22,163,74,0.07) !important; border-left-color: #16A34A !important; }
+        .note-item.active { background: rgba(var(--accent-brand-rgb),0.07) !important; border-left-color: var(--accent-brand) !important; }
         .note-item:active { background: rgba(0,0,0,0.06) !important; }
         .slash-item { transition: background 0.1s; }
-        .slash-item:hover, .slash-item.active { background: rgba(22,163,74,0.07); }
-        .tag-chip:hover { background: rgba(22,163,74,0.14) !important; }
+        .slash-item:hover, .slash-item.active { background: rgba(var(--accent-brand-rgb),0.07); }
+        .tag-chip:hover { background: rgba(var(--accent-brand-rgb),0.14) !important; }
         textarea.notes-body:focus { outline: none; }
-        textarea.notes-body { caret-color: #16A34A; }
-        textarea.notes-body::selection { background: rgba(22,163,74,0.15); }
+        textarea.notes-body { caret-color: var(--accent-brand); }
+        textarea.notes-body::selection { background: rgba(var(--accent-brand-rgb),0.15); }
         .fmt-btn:hover { background: rgba(255,255,255,0.15) !important; }
-        .ai-opt:hover { background: rgba(22,163,74,0.06) !important; }
+        .ai-opt:hover { background: rgba(var(--accent-brand-rgb),0.06) !important; }
       `}</style>
 
       <div style={{
@@ -485,7 +485,7 @@ export default function NotesPage() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     padding: '6px 10px', borderRadius: 8,
-                    background: '#16A34A', color: '#fff',
+                    background: 'var(--accent-brand)', color: '#fff',
                     fontSize: 12, fontWeight: 600,
                     border: 'none', cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
@@ -569,7 +569,7 @@ export default function NotesPage() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                    {note.pinned && <Pin size={11} color="#16A34A" strokeWidth={2} style={{ flexShrink: 0 }} />}
+                    {note.pinned && <Pin size={11} color="var(--accent-brand)" strokeWidth={2} style={{ flexShrink: 0 }} />}
                     <span style={{
                       flex: 1, fontSize: 13, fontWeight: 600, color: '#111827',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -587,7 +587,7 @@ export default function NotesPage() {
                   {note.tags.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 5, flexWrap: 'wrap' }}>
                       {note.tags.slice(0, 2).map(tag => (
-                        <span key={tag} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(22,163,74,0.08)', color: '#15803D', fontFamily: 'var(--font-body)' }}>
+                        <span key={tag} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(var(--accent-brand-rgb),0.08)', color: 'var(--accent-brand-hover)', fontFamily: 'var(--font-body)' }}>
                           {tag}
                         </span>
                       ))}
@@ -646,7 +646,7 @@ export default function NotesPage() {
 
                   {/* Saved indicator */}
                   {showSaved && (
-                    <span style={{ fontSize: 11, color: '#16A34A', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 4, animation: 'notes-fadeIn 0.2s ease' }}>
+                    <span style={{ fontSize: 11, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 4, animation: 'notes-fadeIn 0.2s ease' }}>
                       <Check size={11} strokeWidth={2.5} /> Saved
                     </span>
                   )}
@@ -657,7 +657,7 @@ export default function NotesPage() {
                   <button
                     onClick={() => handleTogglePin(activeNote.id)}
                     title={activeNote.pinned ? 'Unpin' : 'Pin'}
-                    style={{ padding: 7, borderRadius: 8, border: 'none', background: activeNote.pinned ? 'rgba(22,163,74,0.08)' : 'transparent', cursor: 'pointer', color: activeNote.pinned ? '#16A34A' : '#9CA3AF', display: 'flex', alignItems: 'center', transition: 'all 0.15s' }}
+                    style={{ padding: 7, borderRadius: 8, border: 'none', background: activeNote.pinned ? 'rgba(var(--accent-brand-rgb),0.08)' : 'transparent', cursor: 'pointer', color: activeNote.pinned ? 'var(--accent-brand)' : '#9CA3AF', display: 'flex', alignItems: 'center', transition: 'all 0.15s' }}
                   >
                     {activeNote.pinned ? <PinOff size={15} /> : <Pin size={15} />}
                   </button>
@@ -677,7 +677,7 @@ export default function NotesPage() {
                   <button
                     onClick={handleCopy}
                     title="Copy note"
-                    style={{ padding: 7, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: copied ? '#16A34A' : '#9CA3AF', display: 'flex', alignItems: 'center', transition: 'all 0.15s' }}
+                    style={{ padding: 7, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: copied ? 'var(--accent-brand)' : '#9CA3AF', display: 'flex', alignItems: 'center', transition: 'all 0.15s' }}
                     onMouseEnter={e => (e.currentTarget.style.background = '#F3F4F6')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
@@ -742,7 +742,7 @@ export default function NotesPage() {
                     {activeNote.linked_client && (
                       <>
                         <span>·</span>
-                        <span style={{ color: '#16A34A' }}>{activeNote.linked_client}</span>
+                        <span style={{ color: 'var(--accent-brand)' }}>{activeNote.linked_client}</span>
                       </>
                     )}
                   </div>
@@ -754,11 +754,11 @@ export default function NotesPage() {
                         <span
                           key={tag}
                           className="tag-chip"
-                          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(22,163,74,0.08)', color: '#15803D', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, padding: '3px 8px', borderRadius: 6, background: 'rgba(var(--accent-brand-rgb),0.08)', color: 'var(--accent-brand-hover)', fontFamily: 'var(--font-body)', cursor: 'pointer' }}
                         >
                           {tag}
                           <button onClick={() => removeTag(tag)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', lineHeight: 1 }}>
-                            <X size={10} color="#15803D" />
+                            <X size={10} color="var(--accent-brand-hover)" />
                           </button>
                         </span>
                       ))}
@@ -905,7 +905,7 @@ export default function NotesPage() {
           }}>
             <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                <Sparkles size={15} color="#16A34A" />
+                <Sparkles size={15} color="var(--accent-brand)" />
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 700, color: '#111827' }}>AI Assistant</span>
               </div>
               <button onClick={() => { setShowAiPanel(false); setAiOption(null); setAiResult('') }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 6 }}>
@@ -921,8 +921,8 @@ export default function NotesPage() {
                   onClick={() => { setAiOption(opt.label); runAiOption(opt.label) }}
                   style={{
                     width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 10,
-                    border: aiOption === opt.label ? '1px solid rgba(22,163,74,0.3)' : '1px solid #F3F4F6',
-                    background: aiOption === opt.label ? 'rgba(22,163,74,0.05)' : '#fff',
+                    border: aiOption === opt.label ? '1px solid rgba(var(--accent-brand-rgb),0.3)' : '1px solid #F3F4F6',
+                    background: aiOption === opt.label ? 'rgba(var(--accent-brand-rgb),0.05)' : '#fff',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
                     marginBottom: 6, transition: 'all 0.12s',
                   }}
@@ -937,15 +937,15 @@ export default function NotesPage() {
 
               {aiLoading && (
                 <div style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', animation: 'notes-pulse 0.8s ease-in-out infinite' }} />
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', animation: 'notes-pulse 0.8s ease-in-out 0.2s infinite' }} />
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', animation: 'notes-pulse 0.8s ease-in-out 0.4s infinite' }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', animation: 'notes-pulse 0.8s ease-in-out infinite' }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', animation: 'notes-pulse 0.8s ease-in-out 0.2s infinite' }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', animation: 'notes-pulse 0.8s ease-in-out 0.4s infinite' }} />
                   <span style={{ fontSize: 12, color: '#6B7280', fontFamily: 'var(--font-body)' }}>Working…</span>
                 </div>
               )}
 
               {aiResult && !aiLoading && (
-                <div style={{ marginTop: 8, padding: 12, borderRadius: 10, background: 'rgba(22,163,74,0.04)', border: '1px solid rgba(22,163,74,0.15)', animation: 'notes-fadeIn 0.2s ease' }}>
+                <div style={{ marginTop: 8, padding: 12, borderRadius: 10, background: 'rgba(var(--accent-brand-rgb),0.04)', border: '1px solid rgba(var(--accent-brand-rgb),0.15)', animation: 'notes-fadeIn 0.2s ease' }}>
                   <pre style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#374151', lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>{aiResult}</pre>
                   {!aiAccepted ? (
                     <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
@@ -958,7 +958,7 @@ export default function NotesPage() {
                           }
                           setAiAccepted(true)
                         }}
-                        style={{ flex: 1, padding: '7px 0', borderRadius: 8, background: '#16A34A', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-body)' }}
+                        style={{ flex: 1, padding: '7px 0', borderRadius: 8, background: 'var(--accent-brand)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-body)' }}
                       >
                         Accept
                       </button>
@@ -970,7 +970,7 @@ export default function NotesPage() {
                       </button>
                     </div>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10, color: '#16A34A', fontSize: 12, fontFamily: 'var(--font-body)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 10, color: 'var(--accent-brand)', fontSize: 12, fontFamily: 'var(--font-body)' }}>
                       <Check size={13} strokeWidth={2.5} /> Applied to note
                     </div>
                   )}
@@ -993,13 +993,13 @@ export default function NotesPage() {
             width: 48,
             height: 48,
             borderRadius: '50%',
-            background: showAiPanel ? '#15803D' : 'linear-gradient(135deg, #16A34A 0%, #10B981 100%)',
+            background: showAiPanel ? 'var(--accent-brand-hover)' : 'linear-gradient(135deg, var(--accent-brand) 0%, #10B981 100%)',
             border: 'none',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 16px rgba(22,163,74,0.4)',
+            boxShadow: '0 4px 16px rgba(var(--accent-brand-rgb),0.4)',
             zIndex: 190,
             transition: 'all 0.2s',
           }}

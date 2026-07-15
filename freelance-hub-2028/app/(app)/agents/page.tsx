@@ -71,10 +71,10 @@ interface DocRef {
 // ── Static data ───────────────────────────────────────────────────────────────
 
 const TEMPLATES = [
-  { id: 'followup-email',      name: 'Follow-up Email Agent',        desc: "Automatically sends a follow-up email to prospects who haven't responded in X days", icon: 'Mail',         category: 'COMMUNICATION', popular: true,  color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Follow-up Email Agent', defaultIcon: 'Mail' },
-  { id: 'invoice-reminder',    name: 'Invoice Reminder Agent',       desc: 'Sends polite payment reminders when invoices are overdue by X days',                icon: 'Bell',         category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Invoice Reminder',      defaultIcon: 'Bell' },
-  { id: 'new-client-welcome',  name: 'New Client Welcome Agent',     desc: 'Sends a personalized welcome email when you add a new client to your CRM',          icon: 'UserPlus',     category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'New Client Welcome',    defaultIcon: 'UserPlus' },
-  { id: 'project-kickoff',     name: 'Project Kickoff Agent',        desc: 'Sends a project kickoff message with next steps when a proposal is accepted',        icon: 'Rocket',       category: 'COMMUNICATION', popular: false, color: '#16A34A', bg: 'rgba(22,163,74,0.1)',    defaultName: 'Project Kickoff Agent', defaultIcon: 'Rocket' },
+  { id: 'followup-email',      name: 'Follow-up Email Agent',        desc: "Automatically sends a follow-up email to prospects who haven't responded in X days", icon: 'Mail',         category: 'COMMUNICATION', popular: true,  color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)',    defaultName: 'Follow-up Email Agent', defaultIcon: 'Mail' },
+  { id: 'invoice-reminder',    name: 'Invoice Reminder Agent',       desc: 'Sends polite payment reminders when invoices are overdue by X days',                icon: 'Bell',         category: 'COMMUNICATION', popular: false, color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)',    defaultName: 'Invoice Reminder',      defaultIcon: 'Bell' },
+  { id: 'new-client-welcome',  name: 'New Client Welcome Agent',     desc: 'Sends a personalized welcome email when you add a new client to your CRM',          icon: 'UserPlus',     category: 'COMMUNICATION', popular: false, color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)',    defaultName: 'New Client Welcome',    defaultIcon: 'UserPlus' },
+  { id: 'project-kickoff',     name: 'Project Kickoff Agent',        desc: 'Sends a project kickoff message with next steps when a proposal is accepted',        icon: 'Rocket',       category: 'COMMUNICATION', popular: false, color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)',    defaultName: 'Project Kickoff Agent', defaultIcon: 'Rocket' },
   { id: 'proposal-followup',   name: 'Proposal Follow-up Agent',     desc: 'Follows up on sent proposals after X days if no response',                          icon: 'FileText',     category: 'PROPOSALS',     popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)',  defaultName: 'Proposal Follow-up',    defaultIcon: 'FileText' },
   { id: 'proposal-won',        name: 'Proposal Won Celebration',     desc: 'Sends a warm congratulations to yourself and a thank you to the client when a proposal is marked Won', icon: 'Award', category: 'PROPOSALS', popular: false, color: '#6366F1', bg: 'rgba(99,102,241,0.1)', defaultName: 'Proposal Won Agent', defaultIcon: 'Award' },
   { id: 'weekly-revenue',      name: 'Weekly Revenue Report Agent',  desc: 'Sends you a weekly summary of revenue, outstanding invoices, and upcoming payments every Monday morning', icon: 'BarChart2', category: 'FINANCE', popular: false, color: '#D97706', bg: 'rgba(217,119,6,0.1)', defaultName: 'Weekly Revenue Report', defaultIcon: 'BarChart2' },
@@ -280,7 +280,7 @@ function getAiEmail(trigger: string): { subject: string; body: string } {
 }
 
 const CATEGORY_COLORS: Record<string, { accent: string; bg: string }> = {
-  COMMUNICATION: { accent: '#16A34A', bg: 'rgba(22,163,74,0.1)' },
+  COMMUNICATION: { accent: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)' },
   PROPOSALS:     { accent: '#6366F1', bg: 'rgba(99,102,241,0.1)' },
   FINANCE:       { accent: '#D97706', bg: 'rgba(217,119,6,0.1)' },
   COMMUNITY:     { accent: '#0EA5E9', bg: 'rgba(14,165,233,0.1)' },
@@ -698,7 +698,7 @@ export default function AgentsPage() {
     const selectedAction = selectedActionIdx !== null ? builderActions[selectedActionIdx] : null
     return (
       <div style={{ minHeight: 'calc(100vh - 60px)', background: '#F8FAFC' }}>
-        <style>{`@keyframes ag-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.ag-fade{animation:ag-fade 0.18s ease}.builder-col{background:#fff;border:1px solid #E9EBF0;border-radius:16px;padding:20px;flex:1;min-width:220px}.builder-col.selected{border-color:rgba(22,163,74,0.4);box-shadow:0 0 0 3px rgba(22,163,74,0.08)}.action-chip:hover{background:rgba(22,163,74,0.06)!important}.cond-row:hover .cond-del{opacity:1!important}.act-row:hover .act-del{opacity:1!important}`}</style>
+        <style>{`@keyframes ag-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.ag-fade{animation:ag-fade 0.18s ease}.builder-col{background:#fff;border:1px solid #E9EBF0;border-radius:16px;padding:20px;flex:1;min-width:220px}.builder-col.selected{border-color:rgba(var(--accent-brand-rgb),0.4);box-shadow:0 0 0 3px rgba(var(--accent-brand-rgb),0.08)}.action-chip:hover{background:rgba(var(--accent-brand-rgb),0.06)!important}.cond-row:hover .cond-del{opacity:1!important}.act-row:hover .act-del{opacity:1!important}`}</style>
 
         {/* Header */}
         <div style={{ padding: '18px 28px 0', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
@@ -732,8 +732,8 @@ export default function AgentsPage() {
         <div style={{ padding: '16px 28px 40px' }}>
           {/* Agent name + icon row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <AgentIcon icon={builderIcon} size={26} color="#16A34A" />
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(var(--accent-brand-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <AgentIcon icon={builderIcon} size={26} color="var(--accent-brand)" />
             </div>
             <div>
               <input value={builderName} onChange={e => setBuilderName(e.target.value)} placeholder="Name your agent…"
@@ -741,8 +741,8 @@ export default function AgentsPage() {
               <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
                 {ICON_OPTIONS.slice(0, 12).map(name => (
                   <button key={name} onClick={() => setBuilderIcon(name)}
-                    style={{ width: 30, height: 30, borderRadius: 8, border: builderIcon === name ? '2px solid #16A34A' : '2px solid transparent', background: builderIcon === name ? 'rgba(22,163,74,0.08)' : '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
-                    <AgentIcon icon={name} size={15} color={builderIcon === name ? '#16A34A' : '#6B7280'} />
+                    style={{ width: 30, height: 30, borderRadius: 8, border: builderIcon === name ? '2px solid var(--accent-brand)' : '2px solid transparent', background: builderIcon === name ? 'rgba(var(--accent-brand-rgb),0.08)' : '#F8FAFC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}>
+                    <AgentIcon icon={name} size={15} color={builderIcon === name ? 'var(--accent-brand)' : '#6B7280'} />
                   </button>
                 ))}
               </div>
@@ -755,8 +755,8 @@ export default function AgentsPage() {
               <button key={mode} onClick={() => setBuilderMode(mode)}
                 style={{
                   padding: '8px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
-                  border: builderMode === mode ? '1.5px solid #16A34A' : '1.5px solid #E5E7EB',
-                  background: builderMode === mode ? 'rgba(22,163,74,0.08)' : '#fff', color: builderMode === mode ? '#15803D' : '#6B7280',
+                  border: builderMode === mode ? '1.5px solid var(--accent-brand)' : '1.5px solid #E5E7EB',
+                  background: builderMode === mode ? 'rgba(var(--accent-brand-rgb),0.08)' : '#fff', color: builderMode === mode ? 'var(--accent-brand-hover)' : '#6B7280',
                 }}>
                 {label}
               </button>
@@ -780,8 +780,8 @@ export default function AgentsPage() {
             {builderMode === 'event' && (
             <div className={`builder-col${builderTrigger ? ' selected' : ''}`}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(22,163,74,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Zap size={14} color="#16A34A" />
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(var(--accent-brand-rgb),0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Zap size={14} color="var(--accent-brand)" />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TRIGGER</div>
@@ -791,11 +791,11 @@ export default function AgentsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {TRIGGER_OPTIONS.map(t => (
                   <button key={t.value} onClick={() => setBuilderTrigger(t.value)}
-                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10, border: builderTrigger === t.value ? '1.5px solid #16A34A' : '1.5px solid #F3F4F6', background: builderTrigger === t.value ? 'rgba(22,163,74,0.06)' : '#F8FAFC', cursor: 'pointer', textAlign: 'left', transition: 'all 0.12s' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 10px', borderRadius: 10, border: builderTrigger === t.value ? '1.5px solid var(--accent-brand)' : '1.5px solid #F3F4F6', background: builderTrigger === t.value ? 'rgba(var(--accent-brand-rgb),0.06)' : '#F8FAFC', cursor: 'pointer', textAlign: 'left', transition: 'all 0.12s' }}
                   >
-                    <span style={{ width: 20, flexShrink: 0, display: 'flex' }}><AgentIcon icon={t.icon} size={15} color={builderTrigger === t.value ? '#16A34A' : '#6B7280'} /></span>
+                    <span style={{ width: 20, flexShrink: 0, display: 'flex' }}><AgentIcon icon={t.icon} size={15} color={builderTrigger === t.value ? 'var(--accent-brand)' : '#6B7280'} /></span>
                     <span style={{ fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.3 }}>{t.label}</span>
-                    {builderTrigger === t.value && <Check size={13} color="#16A34A" style={{ marginLeft: 'auto', flexShrink: 0 }} />}
+                    {builderTrigger === t.value && <Check size={13} color="var(--accent-brand)" style={{ marginLeft: 'auto', flexShrink: 0 }} />}
                   </button>
                 ))}
               </div>
@@ -806,8 +806,8 @@ export default function AgentsPage() {
             /* Arrow 1→2 */
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 8px', paddingTop: 50 }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg, rgba(22,163,74,0.3), rgba(22,163,74,0.6))', borderRadius: 1 }} />
-                <div style={{ width: 0, height: 0, borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '8px solid rgba(22,163,74,0.6)' }} />
+                <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg, rgba(var(--accent-brand-rgb),0.3), rgba(var(--accent-brand-rgb),0.6))', borderRadius: 1 }} />
+                <div style={{ width: 0, height: 0, borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '8px solid rgba(var(--accent-brand-rgb),0.6)' }} />
               </div>
               <span style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 4 }}>then</span>
             </div>
@@ -867,8 +867,8 @@ export default function AgentsPage() {
             {/* Arrow 2→3 */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 8px', paddingTop: 50 }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg, rgba(22,163,74,0.3), rgba(22,163,74,0.6))', borderRadius: 1 }} />
-                <div style={{ width: 0, height: 0, borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '8px solid rgba(22,163,74,0.6)' }} />
+                <div style={{ width: 32, height: 2, background: 'linear-gradient(90deg, rgba(var(--accent-brand-rgb),0.3), rgba(var(--accent-brand-rgb),0.6))', borderRadius: 1 }} />
+                <div style={{ width: 0, height: 0, borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderLeft: '8px solid rgba(var(--accent-brand-rgb),0.6)' }} />
               </div>
               <span style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 4 }}>then</span>
             </div>
@@ -942,8 +942,8 @@ export default function AgentsPage() {
                     }
                   }}
                     className="action-chip"
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: selectedAction?.type === at.value ? '1.5px solid #16A34A' : '1.5px solid #E9EBF0', background: selectedAction?.type === at.value ? 'rgba(22,163,74,0.07)' : '#F8FAFC', cursor: 'pointer', fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', transition: 'all 0.12s' }}>
-                    <AgentIcon icon={at.icon} size={13} color={selectedAction?.type === at.value ? '#16A34A' : '#6B7280'} /> {at.label}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, border: selectedAction?.type === at.value ? '1.5px solid var(--accent-brand)' : '1.5px solid #E9EBF0', background: selectedAction?.type === at.value ? 'rgba(var(--accent-brand-rgb),0.07)' : '#F8FAFC', cursor: 'pointer', fontSize: 12, color: '#374151', fontFamily: 'var(--font-body)', transition: 'all 0.12s' }}>
+                    <AgentIcon icon={at.icon} size={13} color={selectedAction?.type === at.value ? 'var(--accent-brand)' : '#6B7280'} /> {at.label}
                   </button>
                 ))}
               </div>
@@ -1213,7 +1213,7 @@ export default function AgentsPage() {
               const canSave = hasTriggerOrSchedule && builderActions.length > 0
               return (
                 <button onClick={saveBuilderAgent} disabled={savingBuilder || !canSave}
-                  style={{ padding: '10px 24px', borderRadius: 10, background: !canSave ? '#E5E7EB' : '#16A34A', color: !canSave ? '#9CA3AF' : '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: !canSave ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  style={{ padding: '10px 24px', borderRadius: 10, background: !canSave ? '#E5E7EB' : 'var(--accent-brand)', color: !canSave ? '#9CA3AF' : '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: !canSave ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   {savingBuilder ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={14} />}
                   {savingBuilder ? 'Saving…' : 'Activate Agent'}
                 </button>
@@ -1231,7 +1231,7 @@ export default function AgentsPage() {
     const fields = TEMPLATE_FIELDS[setupTemplate.id] || []
     const previewEmail = getPreviewEmail(setupTemplate.id, setupConfig)
     const testResult = getTestRunResult(setupTemplate.id, setupConfig)
-    const cc = CATEGORY_COLORS[setupTemplate.category] ?? { accent: '#16A34A', bg: 'rgba(22,163,74,0.1)' }
+    const cc = CATEGORY_COLORS[setupTemplate.category] ?? { accent: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)' }
 
     return (
       <div style={{ minHeight: 'calc(100vh - 60px)', background: '#F8FAFC' }}>
@@ -1378,7 +1378,7 @@ export default function AgentsPage() {
                 </button>
                 {showTestRun && (
                   <div className="ag-fade" style={{ marginTop: 10, background: '#F0FDF4', borderRadius: 10, border: '1px solid #BBF7D0', padding: '12px 14px' }}>
-                    <pre style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#15803D', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>{testResult}</pre>
+                    <pre style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--accent-brand-hover)', lineHeight: 1.7, whiteSpace: 'pre-wrap', margin: 0 }}>{testResult}</pre>
                   </div>
                 )}
               </div>
@@ -1457,7 +1457,7 @@ export default function AgentsPage() {
   const totalRuns = agents.reduce((s, a) => s + a.run_count, 0)
   const latestRun = agents.reduce((best, a) => !best || (a.last_run && a.last_run > best) ? a.last_run : best, null as string | null)
   const kpis = [
-    { label: 'Active Agents', value: loading ? '—' : String(activeCount), spark: [Math.max(0, activeCount - 2), Math.max(0, activeCount - 1), activeCount - 1, activeCount, activeCount, activeCount], color: '#16A34A' },
+    { label: 'Active Agents', value: loading ? '—' : String(activeCount), spark: [Math.max(0, activeCount - 2), Math.max(0, activeCount - 1), activeCount - 1, activeCount, activeCount, activeCount], color: 'var(--accent-brand)' },
     { label: 'Total Runs',    value: loading ? '—' : String(totalRuns),    spark: [totalRuns * .4, totalRuns * .55, totalRuns * .7, totalRuns * .8, totalRuns * .9, totalRuns].map(Math.round), color: '#6366F1' },
     { label: 'Last Run',      value: loading ? '—' : relativeTime(latestRun), spark: [2, 4, 3, 6, 5, 7], color: '#D97706' },
   ]
@@ -1478,7 +1478,7 @@ export default function AgentsPage() {
             <Sparkles size={14} /> Templates
           </button>
           <button onClick={() => { setBuilderTrigger(''); setBuilderConditions([]); setBuilderActions([]); setBuilderName(''); setBuilderIcon('Bot'); setClonedFrom(null); setView('custom-builder') }}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 4px rgba(22,163,74,0.35)' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 4px rgba(var(--accent-brand-rgb),0.35)' }}>
             <Plus size={14} /> New Agent
           </button>
         </div>
@@ -1519,7 +1519,7 @@ export default function AgentsPage() {
       <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: '1px solid #E9EBF0', paddingBottom: 0 }}>
         {(['agents', 'templates', 'marketplace'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            style={{ padding: '9px 16px', borderRadius: '8px 8px 0 0', border: 'none', background: 'none', fontSize: 14, fontWeight: activeTab === tab ? 700 : 500, color: activeTab === tab ? '#111827' : '#6B7280', cursor: 'pointer', fontFamily: 'var(--font-body)', borderBottom: activeTab === tab ? '2px solid #16A34A' : '2px solid transparent', marginBottom: -1, transition: 'all 0.15s' }}>
+            style={{ padding: '9px 16px', borderRadius: '8px 8px 0 0', border: 'none', background: 'none', fontSize: 14, fontWeight: activeTab === tab ? 700 : 500, color: activeTab === tab ? '#111827' : '#6B7280', cursor: 'pointer', fontFamily: 'var(--font-body)', borderBottom: activeTab === tab ? '2px solid var(--accent-brand)' : '2px solid transparent', marginBottom: -1, transition: 'all 0.15s' }}>
             {tab === 'agents' ? 'My Agents' : tab === 'templates' ? 'Templates' : 'Marketplace'}
             {tab === 'agents' && agents.length > 0 && (
               <span style={{ marginLeft: 6, fontSize: 11, padding: '2px 6px', borderRadius: 10, background: '#F3F4F6', color: '#6B7280' }}>{agents.length}</span>
@@ -1538,8 +1538,8 @@ export default function AgentsPage() {
           ) : agents.length === 0 ? (
             /* Empty state */
             <div style={{ textAlign: 'center', padding: '72px 0' }}>
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
-                <Bot size={40} color="rgba(22,163,74,0.5)" strokeWidth={1.4} />
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(var(--accent-brand-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <Bot size={40} color="rgba(var(--accent-brand-rgb),0.5)" strokeWidth={1.4} />
               </div>
               <h2 style={{ fontFamily: 'var(--font-body)', fontSize: 18, fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>No agents yet</h2>
               <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 24px', fontFamily: 'var(--font-body)' }}>Start with a template or build your own from scratch</p>
@@ -1563,24 +1563,24 @@ export default function AgentsPage() {
                     agent.run_count, agent.run_count,
                   ]
                   return (
-                  <div key={agent.id} className="agent-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, position: 'relative', cursor: 'default', transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', borderTop: `3px solid ${isActive ? '#16A34A' : '#E5E7EB'}` }}>
+                  <div key={agent.id} className="agent-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, position: 'relative', cursor: 'default', transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', borderTop: `3px solid ${isActive ? 'var(--accent-brand)' : '#E5E7EB'}` }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(22,163,74,0.08)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <AgentIcon icon={agent.icon} size={22} color={isActive ? '#16A34A' : '#6B7280'} />
+                        <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(var(--accent-brand-rgb),0.08)' : '#F8FAFC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <AgentIcon icon={agent.icon} size={22} color={isActive ? 'var(--accent-brand)' : '#6B7280'} />
                         </div>
                         <div>
                           <div style={{ fontSize: 15, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em' }}>{agent.name}</div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: isActive ? '#16A34A' : '#D1D5DB', display: 'inline-block', flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, color: isActive ? '#16A34A' : '#9CA3AF', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: isActive ? 'var(--accent-brand)' : '#D1D5DB', display: 'inline-block', flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, color: isActive ? 'var(--accent-brand)' : '#9CA3AF', fontFamily: 'var(--font-body)', fontWeight: 600 }}>
                               {isActive ? 'Active' : 'Paused'}
                             </span>
                           </div>
                         </div>
                       </div>
                       <button onClick={() => toggleStatus(agent)} title={isActive ? 'Pause agent' : 'Activate agent'} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, flexShrink: 0 }}>
-                        {isActive ? <ToggleRight size={26} color="#16A34A" /> : <ToggleLeft size={26} color="#D1D5DB" />}
+                        {isActive ? <ToggleRight size={26} color="var(--accent-brand)" /> : <ToggleLeft size={26} color="#D1D5DB" />}
                       </button>
                     </div>
 
@@ -1599,7 +1599,7 @@ export default function AgentsPage() {
                         <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.1, marginTop: 2 }}>{relativeTime(agent.last_run)}</div>
                       </div>
                       <div style={{ padding: '6px 10px', display: 'flex', alignItems: 'center' }}>
-                        <Sparkline values={runSpark} color={isActive ? '#16A34A' : '#D1D5DB'} id={`a${agent.id}`} />
+                        <Sparkline values={runSpark} color={isActive ? 'var(--accent-brand)' : '#D1D5DB'} id={`a${agent.id}`} />
                       </div>
                     </div>
 
@@ -1609,7 +1609,7 @@ export default function AgentsPage() {
                         View
                       </button>
                       <button onClick={() => runNow(agent)} disabled={runningId === agent.id || !isActive}
-                        style={{ flex: 1, padding: '8px 0', borderRadius: 9, border: 'none', background: !isActive ? '#F3F4F6' : '#16A34A', color: !isActive ? '#9CA3AF' : '#fff', fontSize: 12, fontWeight: 600, cursor: !isActive ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'opacity 0.12s' }}>
+                        style={{ flex: 1, padding: '8px 0', borderRadius: 9, border: 'none', background: !isActive ? '#F3F4F6' : 'var(--accent-brand)', color: !isActive ? '#9CA3AF' : '#fff', fontSize: 12, fontWeight: 600, cursor: !isActive ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'opacity 0.12s' }}>
                         {runningId === agent.id ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Play size={12} fill="currentColor" />}
                         Run Now
                       </button>
@@ -1646,7 +1646,7 @@ export default function AgentsPage() {
       {activeTab === 'templates' && (
         <div>
           {Object.entries(templatesByCategory).map(([category, templates]) => {
-            const cc = CATEGORY_COLORS[category] ?? { accent: '#16A34A', bg: 'rgba(22,163,74,0.1)' }
+            const cc = CATEGORY_COLORS[category] ?? { accent: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.1)' }
             return (
               <div key={category} style={{ marginBottom: 36 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -1657,7 +1657,7 @@ export default function AgentsPage() {
                   {templates.map(t => (
                     <div key={t.id} className="tmpl-card" style={{ background: '#fff', borderRadius: 16, border: '1px solid #F3F4F6', padding: 20, transition: 'all 0.2s', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 14, borderLeft: `3px solid ${cc.accent}`, position: 'relative', overflow: 'hidden' }}>
                       {t.popular && (
-                        <div style={{ position: 'absolute', top: 14, right: 14, fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(22,163,74,0.1)', color: '#15803D', fontWeight: 700, fontFamily: 'var(--font-body)', letterSpacing: '0.04em' }}>POPULAR</div>
+                        <div style={{ position: 'absolute', top: 14, right: 14, fontSize: 10, padding: '3px 8px', borderRadius: 6, background: 'rgba(var(--accent-brand-rgb),0.1)', color: 'var(--accent-brand-hover)', fontWeight: 700, fontFamily: 'var(--font-body)', letterSpacing: '0.04em' }}>POPULAR</div>
                       )}
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                         <div style={{ width: 46, height: 46, borderRadius: 12, background: cc.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1px solid ${cc.accent}20` }}><AgentIcon icon={t.icon} size={22} color={cc.accent} /></div>

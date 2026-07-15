@@ -107,9 +107,9 @@ export default function OnboardingModal() {
               <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(15,17,23,0.3)', marginBottom: 8 }}>WELCOME · STEP 1 OF 3</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.6px', marginBottom: 6, lineHeight: 1.2 }}>
                 Welcome to{' '}
-                <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: '#16A34A' }}>Wire</span>
+                <span style={{ color: '#0A1A0F' }}>Guild</span><span style={{ color: 'var(--accent-brand)' }}>Wire</span>
               </h2>
-              <p style={{ fontSize: 11.5, fontWeight: 600, color: '#16A34A', letterSpacing: '0.01em', marginBottom: 14 }}>
+              <p style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--accent-brand)', letterSpacing: '0.01em', marginBottom: 14 }}>
                 Work for yourself. Never by yourself.
               </p>
               <p style={{ fontSize: 13, color: 'rgba(15,17,23,0.55)', lineHeight: 1.6, marginBottom: 24 }}>

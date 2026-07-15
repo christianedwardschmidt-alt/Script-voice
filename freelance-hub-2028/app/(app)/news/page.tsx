@@ -22,7 +22,7 @@ interface Article {
 const CATEGORIES = ['All', 'Freelancing', 'AI & Tools', 'Business', 'Finance', 'Remote Work', 'Design', 'Tech', 'Consulting']
 
 const CAT_COLORS: Record<string, string> = {
-  Freelancing:  '#16A34A',
+  Freelancing:  'var(--accent-brand)',
   'AI & Tools': '#7C3AED',
   Business:     '#3B82F6',
   Finance:      '#CA8A04',
@@ -33,7 +33,7 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 const CAT_BG: Record<string, string> = {
-  Freelancing:  'rgba(22,163,74,0.08)',
+  Freelancing:  'rgba(var(--accent-brand-rgb),0.08)',
   'AI & Tools': 'rgba(124,58,237,0.08)',
   Business:     'rgba(59,130,246,0.08)',
   Finance:      'rgba(202,138,4,0.08)',
@@ -58,7 +58,7 @@ function relativeTime(iso: string) {
 
 function BookmarkIcon({ filled }: { filled: boolean }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill={filled ? '#16A34A' : 'none'} stroke={filled ? '#16A34A' : '#9CA3AF'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill={filled ? 'var(--accent-brand)' : 'none'} stroke={filled ? 'var(--accent-brand)' : '#9CA3AF'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
     </svg>
   )
@@ -97,10 +97,10 @@ function PersonalizationModal({ onClose }: { onClose: () => void }) {
   }
 
   const chipStyle = (active: boolean) => ({
-    padding: '7px 14px', border: `1.5px solid ${active ? '#16A34A' : '#E5E7EB'}`,
+    padding: '7px 14px', border: `1.5px solid ${active ? 'var(--accent-brand)' : '#E5E7EB'}`,
     borderRadius: 20, fontSize: 13, fontWeight: active ? 600 : 400,
-    cursor: 'pointer', background: active ? 'rgba(22,163,74,0.08)' : 'white',
-    color: active ? '#16A34A' : '#374151', transition: 'all 0.1s',
+    cursor: 'pointer', background: active ? 'rgba(var(--accent-brand-rgb),0.08)' : 'white',
+    color: active ? 'var(--accent-brand)' : '#374151', transition: 'all 0.1s',
   })
 
   return (
@@ -129,7 +129,7 @@ function PersonalizationModal({ onClose }: { onClose: () => void }) {
 
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={onClose} style={{ flex: 1, padding: '11px 0', border: '1.5px solid #E5E7EB', borderRadius: 10, background: 'white', color: '#374151', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-          <button onClick={save} disabled={saving} style={{ flex: 2, padding: '11px 0', border: 'none', borderRadius: 10, background: '#16A34A', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+          <button onClick={save} disabled={saving} style={{ flex: 2, padding: '11px 0', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
             {saving ? 'Saving…' : 'Save Preferences'}
           </button>
         </div>
@@ -179,7 +179,7 @@ function ArticleCard({ article, onBookmark }: { article: Article; onBookmark: (i
             href={article.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none' }}
+            style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none' }}
             onClick={e => e.stopPropagation()}
           >
             Read →
@@ -290,12 +290,12 @@ export default function NewsPage() {
 
       {/* Daily briefing hero */}
       <div style={{
-        background: 'linear-gradient(135deg, #0A1A0F 0%, #14532D 100%)',
+        background: 'linear-gradient(135deg, #0A1A0F 0%, var(--accent-brand-dark) 100%)',
         borderRadius: 20, padding: '32px 36px', marginBottom: 32,
         position: 'relative', overflow: 'hidden',
       }}>
         {/* Subtle texture */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(22,163,74,0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(var(--accent-brand-rgb),0.15) 0%, transparent 60%)', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
@@ -323,7 +323,7 @@ export default function NewsPage() {
               </button>
               <button
                 onClick={() => router.push(`/news/briefing/${today}`)}
-                style={{ padding: '8px 18px', border: 'none', borderRadius: 8, background: '#16A34A', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+                style={{ padding: '8px 18px', border: 'none', borderRadius: 8, background: 'var(--accent-brand)', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
               >
                 Read Full Briefing →
               </button>
@@ -359,11 +359,11 @@ export default function NewsPage() {
               key={cat}
               onClick={() => handleCategoryChange(cat)}
               style={{
-                padding: '7px 16px', border: `1.5px solid ${active ? (CAT_COLORS[cat] ?? '#16A34A') : '#E5E7EB'}`,
+                padding: '7px 16px', border: `1.5px solid ${active ? (CAT_COLORS[cat] ?? 'var(--accent-brand)') : '#E5E7EB'}`,
                 borderRadius: 20, fontSize: 13, fontWeight: active ? 700 : 500,
                 cursor: 'pointer',
-                background: active ? (CAT_BG[cat] ?? 'rgba(22,163,74,0.08)') : 'white',
-                color: active ? (CAT_COLORS[cat] ?? '#16A34A') : '#6B7280',
+                background: active ? (CAT_BG[cat] ?? 'rgba(var(--accent-brand-rgb),0.08)') : 'white',
+                color: active ? (CAT_COLORS[cat] ?? 'var(--accent-brand)') : '#6B7280',
                 transition: 'all 0.15s',
               }}
             >

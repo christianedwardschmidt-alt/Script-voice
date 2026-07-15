@@ -82,7 +82,7 @@ const INITIAL: Transcription[] = [
 ]
 
 const S_CFG = {
-  complete:   { label: 'Complete',   bg: 'rgba(22,163,74,0.1)',   color: '#15803D' },
+  complete:   { label: 'Complete',   bg: 'rgba(var(--accent-brand-rgb),0.1)',   color: 'var(--accent-brand-hover)' },
   processing: { label: 'Processing', bg: 'rgba(245,158,11,0.1)',  color: '#B45309' },
   failed:     { label: 'Failed',     bg: 'rgba(239,68,68,0.1)',   color: '#DC2626' },
 } as const
@@ -245,7 +245,7 @@ export default function TranscriptionsPage() {
             </button>
             <button
               onClick={() => setShowRecord(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 7, height: 40, padding: '0 18px', background: '#16A34A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(22,163,74,0.3)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 7, height: 40, padding: '0 18px', background: 'var(--accent-brand)', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 2px 8px rgba(var(--accent-brand-rgb),0.3)' }}
             >
               <Mic size={15} color="#fff" /> Record Call
             </button>
@@ -262,16 +262,16 @@ export default function TranscriptionsPage() {
                 display: 'flex', alignItems: 'center', gap: 6,
                 padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
                 cursor: 'pointer', fontFamily: 'var(--font-body)',
-                border: filter === f ? '1.5px solid #16A34A' : '1.5px solid #E5E7EB',
-                background: filter === f ? 'rgba(22,163,74,0.08)' : 'white',
-                color: filter === f ? '#15803D' : '#6B7280',
+                border: filter === f ? '1.5px solid var(--accent-brand)' : '1.5px solid #E5E7EB',
+                background: filter === f ? 'rgba(var(--accent-brand-rgb),0.08)' : 'white',
+                color: filter === f ? 'var(--accent-brand-hover)' : '#6B7280',
               }}
             >
               {f === 'all' ? 'All' : S_CFG[f as Status].label}
               <span style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 minWidth: 18, height: 18, borderRadius: 9, fontSize: 11, fontWeight: 700,
-                background: filter === f ? '#16A34A' : '#F3F4F6',
+                background: filter === f ? 'var(--accent-brand)' : '#F3F4F6',
                 color: filter === f ? '#fff' : '#6B7280',
               }}>{counts[f]}</span>
             </button>
@@ -287,7 +287,7 @@ export default function TranscriptionsPage() {
             <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)', marginBottom: 6 }}>No transcriptions yet</p>
             <p style={{ fontSize: 14, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 24, maxWidth: 320 }}>Record your first call or upload an audio file to get started.</p>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setShowRecord(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, height: 40, padding: '0 20px', background: '#16A34A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+              <button onClick={() => setShowRecord(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, height: 40, padding: '0 20px', background: 'var(--accent-brand)', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                 <Mic size={15} /> Record Call
               </button>
               <button onClick={() => setShowUpload(true)} style={{ display: 'flex', alignItems: 'center', gap: 7, height: 40, padding: '0 20px', background: 'white', color: '#374151', border: '1.5px solid #E5E7EB', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
@@ -371,7 +371,7 @@ export default function TranscriptionsPage() {
                       <span style={{ padding: '2px 8px', borderRadius: 4, background: '#F3F4F6', fontSize: 11, fontWeight: 600, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{t.type}</span>
                     </div>
                     {t.status === 'complete' && (
-                      <Link href={`/transcriptions/${t.id}`} style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', textDecoration: 'none', fontFamily: 'var(--font-body)' }}>
+                      <Link href={`/transcriptions/${t.id}`} style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-brand)', textDecoration: 'none', fontFamily: 'var(--font-body)' }}>
                         View transcript →
                       </Link>
                     )}
@@ -437,7 +437,7 @@ export default function TranscriptionsPage() {
                 <div style={{ fontSize: 52, fontWeight: 700, color: '#111827', fontFamily: 'var(--font-syne)', letterSpacing: '-0.03em', lineHeight: 1 }}>{fmt(timer)}</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 40 }}>
                   {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} style={{ width: 5, borderRadius: 3, background: '#16A34A', animation: `wave${i} ${0.7 + i * 0.12}s ease-in-out infinite`, animationDelay: `${(i - 1) * 0.1}s` }} />
+                    <div key={i} style={{ width: 5, borderRadius: 3, background: 'var(--accent-brand)', animation: `wave${i} ${0.7 + i * 0.12}s ease-in-out infinite`, animationDelay: `${(i - 1) * 0.1}s` }} />
                   ))}
                 </div>
                 <button
@@ -451,7 +451,7 @@ export default function TranscriptionsPage() {
 
             {recordState === 'processing' && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, padding: '24px 0' }}>
-                <Loader size={40} color="#16A34A" style={{ animation: 'spin 1s linear infinite' }} />
+                <Loader size={40} color="var(--accent-brand)" style={{ animation: 'spin 1s linear infinite' }} />
                 <p style={{ fontSize: 16, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)' }}>Processing your transcription...</p>
                 <p style={{ fontSize: 13, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>This usually takes 1–2 minutes. You&apos;ll be notified when it&apos;s ready.</p>
               </div>
@@ -482,8 +482,8 @@ export default function TranscriptionsPage() {
                   onDrop={e => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) setUploadFile(f) }}
                   onClick={() => !uploadFile && fileInputRef.current?.click()}
                   style={{
-                    border: `2px dashed ${dragOver ? '#16A34A' : uploadFile ? '#16A34A' : 'rgba(22,163,74,0.3)'}`,
-                    background: dragOver ? 'rgba(22,163,74,0.06)' : uploadFile ? 'rgba(22,163,74,0.03)' : 'rgba(22,163,74,0.02)',
+                    border: `2px dashed ${dragOver ? 'var(--accent-brand)' : uploadFile ? 'var(--accent-brand)' : 'rgba(var(--accent-brand-rgb),0.3)'}`,
+                    background: dragOver ? 'rgba(var(--accent-brand-rgb),0.06)' : uploadFile ? 'rgba(var(--accent-brand-rgb),0.03)' : 'rgba(var(--accent-brand-rgb),0.02)',
                     borderRadius: 12, padding: '40px 24px', textAlign: 'center',
                     cursor: uploadFile ? 'default' : 'pointer', marginBottom: 20,
                     transition: 'all 0.15s',
@@ -491,7 +491,7 @@ export default function TranscriptionsPage() {
                 >
                   {uploadFile ? (
                     <>
-                      <FileText size={28} color="#16A34A" style={{ marginBottom: 10 }} />
+                      <FileText size={28} color="var(--accent-brand)" style={{ marginBottom: 10 }} />
                       <p style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)', marginBottom: 4 }}>{uploadFile.name}</p>
                       <p style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 12 }}>
                         {(uploadFile.size / (1024 * 1024)).toFixed(1)} MB
@@ -504,7 +504,7 @@ export default function TranscriptionsPage() {
                     <>
                       <Upload size={28} color="#9CA3AF" style={{ marginBottom: 10 }} />
                       <p style={{ fontSize: 14, color: '#374151', fontFamily: 'var(--font-body)', marginBottom: 4 }}>
-                        Drop your file here or <span style={{ color: '#16A34A', fontWeight: 600 }}>click to browse</span>
+                        Drop your file here or <span style={{ color: 'var(--accent-brand)', fontWeight: 600 }}>click to browse</span>
                       </p>
                       <p style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Supports MP3, MP4, M4A, WAV, WebM — up to 500MB</p>
                     </>
@@ -542,12 +542,12 @@ export default function TranscriptionsPage() {
                   disabled={!uploadFile}
                   style={{
                     width: '100%', height: 44,
-                    background: uploadFile ? '#16A34A' : '#E5E7EB',
+                    background: uploadFile ? 'var(--accent-brand)' : '#E5E7EB',
                     color: uploadFile ? '#fff' : '#9CA3AF',
                     border: 'none', borderRadius: 10, fontSize: 15, fontWeight: 600,
                     cursor: uploadFile ? 'pointer' : 'not-allowed',
                     fontFamily: 'var(--font-body)',
-                    boxShadow: uploadFile ? '0 2px 8px rgba(22,163,74,0.3)' : 'none',
+                    boxShadow: uploadFile ? '0 2px 8px rgba(var(--accent-brand-rgb),0.3)' : 'none',
                     transition: 'all 0.15s',
                   }}
                 >
@@ -558,10 +558,10 @@ export default function TranscriptionsPage() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
                   <p style={{ fontSize: 14, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{uploadFile?.name}</p>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#16A34A', fontFamily: 'var(--font-body)', marginLeft: 12 }}>{Math.round(uploadProgress)}%</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)', marginLeft: 12 }}>{Math.round(uploadProgress)}%</span>
                 </div>
                 <div style={{ height: 8, background: '#F3F4F6', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{ height: '100%', background: 'linear-gradient(90deg, #16A34A, #22C55E)', borderRadius: 4, width: `${uploadProgress}%`, transition: 'width 0.2s ease' }} />
+                  <div style={{ height: '100%', background: 'linear-gradient(90deg, var(--accent-brand), #22C55E)', borderRadius: 4, width: `${uploadProgress}%`, transition: 'width 0.2s ease' }} />
                 </div>
                 <p style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 10 }}>Transcription begins automatically after upload.</p>
               </div>

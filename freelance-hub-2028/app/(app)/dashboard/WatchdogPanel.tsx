@@ -66,13 +66,13 @@ function followUpContext(data: Record<string, unknown>): string {
 function WatchdogDogIcon({ size = 24 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-      <path d="M4 5.5L2 2.2L6.4 4.5Z" fill="#16A34A" />
-      <circle cx="6.5" cy="8.5" r="4" fill="#16A34A" />
-      <ellipse cx="11.5" cy="15" rx="6.8" ry="5.2" fill="#16A34A" />
+      <path d="M4 5.5L2 2.2L6.4 4.5Z" fill="var(--accent-brand)" />
+      <circle cx="6.5" cy="8.5" r="4" fill="var(--accent-brand)" />
+      <ellipse cx="11.5" cy="15" rx="6.8" ry="5.2" fill="var(--accent-brand)" />
       <circle cx="5.3" cy="8" r="0.7" fill="#0A1A0F" />
       <path
         d="M17 15.5 Q22.5 13 21.5 19"
-        stroke="#16A34A" strokeWidth="2.4" strokeLinecap="round" fill="none"
+        stroke="var(--accent-brand)" strokeWidth="2.4" strokeLinecap="round" fill="none"
         className="watchdog-tail"
         style={{ transformOrigin: '17px 15.5px' }}
       />
@@ -217,8 +217,8 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
           </div>
           <div style={{ flexShrink: 0, paddingTop: 1 }}>
             {isResolved ? (
-              <span className="watchdog-check-badge" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'rgba(22,163,74,0.15)' }}>
-                <Check size={13} color="#16A34A" strokeWidth={3} />
+              <span className="watchdog-check-badge" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, borderRadius: '50%', background: 'rgba(var(--accent-brand-rgb),0.15)' }}>
+                <Check size={13} color="var(--accent-brand)" strokeWidth={3} />
               </span>
             ) : (
               <button
@@ -266,7 +266,7 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
 
       {allCaughtUp ? (
         <div style={{ textAlign: 'center', padding: '28px 0 8px' }}>
-          <CheckCircle size={40} color="#16A34A" strokeWidth={1.5} style={{ opacity: 0.85, marginBottom: 14 }} />
+          <CheckCircle size={40} color="var(--accent-brand)" strokeWidth={1.5} style={{ opacity: 0.85, marginBottom: 14 }} />
           <div style={{ fontFamily: 'var(--font-syne)', fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 6 }}>
             You&apos;re all caught up
           </div>
@@ -389,7 +389,7 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
                 onClick={handleComposeSend}
                 disabled={composeSending}
                 style={{
-                  flex: 2, padding: '10px 0', borderRadius: 10, border: 'none', background: '#16A34A',
+                  flex: 2, padding: '10px 0', borderRadius: 10, border: 'none', background: 'var(--accent-brand)',
                   color: 'white', fontSize: 13, fontWeight: 600, cursor: composeSending ? 'default' : 'pointer',
                   opacity: composeSending ? 0.6 : 1, fontFamily: 'var(--font-body)',
                 }}

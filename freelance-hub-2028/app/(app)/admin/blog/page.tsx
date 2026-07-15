@@ -67,7 +67,7 @@ export default function AdminBlogPage() {
         </div>
         <button
           onClick={() => router.push('/admin/blog/new')}
-          style={{ padding: '10px 20px', border: 'none', borderRadius: 10, background: '#16A34A', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+          style={{ padding: '10px 20px', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Post
@@ -84,7 +84,7 @@ export default function AdminBlogPage() {
       ) : posts.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0', color: '#9CA3AF' }}>
           <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>No posts yet</div>
-          <button onClick={() => router.push('/admin/blog/new')} style={{ color: '#16A34A', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Write your first post →</button>
+          <button onClick={() => router.push('/admin/blog/new')} style={{ color: 'var(--accent-brand)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Write your first post →</button>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -94,8 +94,8 @@ export default function AdminBlogPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <span style={{
                     fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20,
-                    background: post.status === 'published' ? 'rgba(22,163,74,0.1)' : '#F3F4F6',
-                    color: post.status === 'published' ? '#16A34A' : '#9CA3AF',
+                    background: post.status === 'published' ? 'rgba(var(--accent-brand-rgb),0.1)' : '#F3F4F6',
+                    color: post.status === 'published' ? 'var(--accent-brand)' : '#9CA3AF',
                   }}>
                     {post.status === 'published' ? 'Published' : 'Draft'}
                   </span>
@@ -124,7 +124,7 @@ export default function AdminBlogPage() {
                 </a>
                 <button
                   onClick={() => toggleStatus(post)}
-                  style={{ padding: '6px 12px', border: `1.5px solid ${post.status === 'published' ? '#FEF3C7' : '#D1FAE5'}`, borderRadius: 8, background: 'white', color: post.status === 'published' ? '#CA8A04' : '#16A34A', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ padding: '6px 12px', border: `1.5px solid ${post.status === 'published' ? '#FEF3C7' : '#D1FAE5'}`, borderRadius: 8, background: 'white', color: post.status === 'published' ? '#CA8A04' : 'var(--accent-brand)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
                 >
                   {post.status === 'published' ? 'Unpublish' : 'Publish'}
                 </button>

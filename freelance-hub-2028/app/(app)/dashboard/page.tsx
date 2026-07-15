@@ -90,18 +90,18 @@ const PIPELINE = [
 ]
 
 const ACTIVITY_COLORS: Record<string, string> = {
-  payment: '#16A34A',
+  payment: 'var(--accent-brand)',
   client: '#3B82F6',
   invoice: '#D97706',
   overdue: '#EF4444',
 }
 
 function getDotColor(msg: string) {
-  if (msg.toLowerCase().includes('paid') || msg.toLowerCase().includes('payment')) return '#16A34A'
+  if (msg.toLowerCase().includes('paid') || msg.toLowerCase().includes('payment')) return 'var(--accent-brand)'
   if (msg.toLowerCase().includes('client') || msg.toLowerCase().includes('new')) return '#3B82F6'
   if (msg.toLowerCase().includes('invoice') || msg.toLowerCase().includes('sent')) return '#D97706'
   if (msg.toLowerCase().includes('overdue')) return '#EF4444'
-  return '#16A34A'
+  return 'var(--accent-brand)'
 }
 
 export default function DashboardPage() {
@@ -251,7 +251,7 @@ export default function DashboardPage() {
           onClick={() => setShowNewMenu(v => !v)}
           style={{
             display: 'flex', alignItems: 'center', gap: 7,
-            padding: '10px 16px', background: isVerunoPreview ? '#A6790F' : '#16A34A', color: 'white',
+            padding: '10px 16px', background: isVerunoPreview ? '#A6790F' : 'var(--accent-brand)', color: 'white',
             border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--font-body)',
             boxShadow: isVerunoPreview ? '0 1px 4px rgba(166,121,15,0.35)' : '0 1px 4px rgba(22,163,74,0.35)',
@@ -305,7 +305,7 @@ export default function DashboardPage() {
             >
               <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>⚡</span>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--font-body)' }}>Ask AI to create</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>Ask AI to create</div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Just describe it</div>
               </div>
             </a>
@@ -352,16 +352,16 @@ export default function DashboardPage() {
 
       {/* Tasks strip */}
       {tasks.filter(t => !t.checked).length > 0 && (
-        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginBottom: 16, borderTop: '2px solid #16A34A' }}>
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginBottom: 16, borderTop: '2px solid var(--accent-brand)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
               <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
             </div>
-            <a href="/tasks" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
+            <a href="/tasks" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
           </div>
           <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
-            <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: '#16A34A', borderRadius: 99, transition: 'width 0.8s ease' }} />
+            <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: 'var(--accent-brand)', borderRadius: 99, transition: 'width 0.8s ease' }} />
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {tasks.filter(t => !t.checked).slice(0, 10).map(t => {
@@ -392,7 +392,7 @@ export default function DashboardPage() {
             </div>
             <div style={{ display: 'flex', gap: 18, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: '#16A34A', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: 'var(--accent-brand)', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ width: 18, height: 2, background: '#6366F1', display: 'inline-block', borderRadius: 2 }} />Expenses
@@ -403,8 +403,8 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#16A34A" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#16A34A" stopOpacity={0} />
+                  <stop offset="0%" stopColor="var(--accent-brand)" stopOpacity={0.18} />
+                  <stop offset="100%" stopColor="var(--accent-brand)" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#6366F1" stopOpacity={0.1} />
@@ -415,7 +415,7 @@ export default function DashboardPage() {
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
               <Tooltip content={<ChartTip />} />
-              <Area type="monotone" dataKey="income"   stroke="#16A34A" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <Area type="monotone" dataKey="income"   stroke="var(--accent-brand)" strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
               <Area type="monotone" dataKey="expenses" stroke="#6366F1" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -448,7 +448,7 @@ export default function DashboardPage() {
         <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TOP CLIENTS</div>
-            <a href="/clients" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
+            <a href="/clients" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {clients.slice(0, 4).map((c, i) => {
@@ -481,7 +481,7 @@ export default function DashboardPage() {
         <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE</div>
-            <a href="/crm" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>Open CRM →</a>
+            <a href="/crm" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>Open CRM →</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 16 }}>
             {PIPELINE.map((p, i) => (
@@ -537,7 +537,7 @@ export default function DashboardPage() {
           style={{
             position: 'fixed', bottom: 28, right: 28, zIndex: 110,
             width: 52, height: 52, borderRadius: '50%', border: 'none', cursor: 'pointer',
-            background: voiceListening ? '#EF4444' : '#16A34A',
+            background: voiceListening ? '#EF4444' : 'var(--accent-brand)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: voiceListening
               ? '0 0 0 8px rgba(239,68,68,0.15), 0 4px 20px rgba(239,68,68,0.35)'

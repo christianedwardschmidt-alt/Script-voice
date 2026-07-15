@@ -22,7 +22,7 @@ interface Client {
 
 const DEFAULT_STAGES: StageObj[] = [
   { id: 'lead',        name: 'Lead',        color: '#6B7280', order: 0 },
-  { id: 'proposal',    name: 'Proposal',    color: '#16A34A', order: 1 },
+  { id: 'proposal',    name: 'Proposal',    color: 'var(--accent-brand)', order: 1 },
   { id: 'negotiation', name: 'Negotiation', color: '#D97706', order: 2 },
   { id: 'active',      name: 'Active',      color: '#22C55E', order: 3 },
   { id: 'completed',   name: 'Completed',   color: '#14B8A6', order: 4 },
@@ -30,19 +30,19 @@ const DEFAULT_STAGES: StageObj[] = [
 ]
 
 const SWATCH_COLORS = [
-  '#16A34A','#22C55E','#14B8A6','#3B82F6','#7C3AED',
+  'var(--accent-brand)','#22C55E','#14B8A6','#3B82F6','#7C3AED',
   '#6366F1','#D97706','#EF4444','#F97316','#EC4899',
   '#6B7280','#374151',
 ]
 
 const tagColors: Record<string, string> = {
-  Design: '#16A34A', Development: '#22C55E', Marketing: '#D97706',
+  Design: 'var(--accent-brand)', Development: '#22C55E', Marketing: '#D97706',
   Content: '#D97706', API: '#14B8A6', Data: '#14B8A6',
-  Retainer: '#16A34A', Premium: '#D97706', Enterprise: '#22C55E',
-  New: '#16A34A', Completed: '#6B7280',
+  Retainer: 'var(--accent-brand)', Premium: '#D97706', Enterprise: '#22C55E',
+  New: 'var(--accent-brand)', Completed: '#6B7280',
 }
 
-const avatarBgs = ['#16A34A','#22C55E','#D97706','#14B8A6','#6B7280','#3B82F6']
+const avatarBgs = ['var(--accent-brand)','#22C55E','#D97706','#14B8A6','#6B7280','#3B82F6']
 const emptyForm = { name: '', company: '', email: '', phone: '', website: '', value: '', notes: '' }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -179,7 +179,7 @@ function PipelineSettingsPanel({
             <div key={stage.id}>
               {/* Drop indicator */}
               {dragOver === idx && (
-                <div style={{ height: 2, background: '#16A34A', borderRadius: 2, margin: '2px 0', transition: 'all 0.1s' }} />
+                <div style={{ height: 2, background: 'var(--accent-brand)', borderRadius: 2, margin: '2px 0', transition: 'all 0.1s' }} />
               )}
               <div
                 draggable
@@ -273,7 +273,7 @@ function PipelineSettingsPanel({
 
           {/* Final drop zone */}
           {dragOver === local.length && (
-            <div style={{ height: 2, background: '#16A34A', borderRadius: 2, margin: '2px 0' }} />
+            <div style={{ height: 2, background: 'var(--accent-brand)', borderRadius: 2, margin: '2px 0' }} />
           )}
         </div>
 
@@ -295,7 +295,7 @@ function PipelineSettingsPanel({
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ padding: '9px 22px', border: 'none', borderRadius: 9, background: saved ? '#14B8A6' : '#16A34A', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', minWidth: 80 }}
+            style={{ padding: '9px 22px', border: 'none', borderRadius: 9, background: saved ? '#14B8A6' : 'var(--accent-brand)', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: saving ? 0.7 : 1, transition: 'background 0.2s', minWidth: 80 }}
           >
             {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save'}
           </button>
@@ -446,7 +446,7 @@ export default function CRMPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', background: '#16A34A', color: 'white', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 3px rgba(22,163,74,0.3)' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', background: 'var(--accent-brand)', color: 'white', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', boxShadow: '0 1px 3px rgba(var(--accent-brand-rgb),0.3)' }}
         >
           <Plus size={14} /> Add Client
         </button>
@@ -566,7 +566,7 @@ export default function CRMPage() {
                       <tr
                         key={client.id}
                         onClick={() => setSelectedClient(selectedClient?.id === client.id ? null : client)}
-                        style={{ borderBottom: '1px solid #F3F4F6', cursor: 'pointer', background: selectedClient?.id === client.id ? 'rgba(22,163,74,0.04)' : 'transparent', transition: 'background 0.1s' }}
+                        style={{ borderBottom: '1px solid #F3F4F6', cursor: 'pointer', background: selectedClient?.id === client.id ? 'rgba(var(--accent-brand-rgb),0.04)' : 'transparent', transition: 'background 0.1s' }}
                         onMouseEnter={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = '#F9FAFB' }}
                         onMouseLeave={e => { if (selectedClient?.id !== client.id) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                       >
@@ -587,14 +587,14 @@ export default function CRMPage() {
                           </span>
                         </td>
                         <td style={{ padding: '13px 20px' }}>
-                          <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#16A34A', fontVariantNumeric: 'tabular-nums' }}>
+                          <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: 'var(--accent-brand)', fontVariantNumeric: 'tabular-nums' }}>
                             ${client.value.toLocaleString()}
                           </span>
                         </td>
                         <td style={{ padding: '13px 20px' }}>
                           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                             {client.tags.slice(0, 2).map(tag => (
-                              <span key={tag} style={{ fontSize: 10, fontWeight: 600, color: tagColors[tag] || '#16A34A', background: `${tagColors[tag] || '#16A34A'}12`, padding: '2px 7px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
+                              <span key={tag} style={{ fontSize: 10, fontWeight: 600, color: tagColors[tag] || 'var(--accent-brand)', background: `${tagColors[tag] || 'var(--accent-brand)'}12`, padding: '2px 7px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
                                 {tag}
                               </span>
                             ))}
@@ -665,7 +665,7 @@ export default function CRMPage() {
 
               <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 18 }}>
                 {selectedClient.tags.map(tag => (
-                  <span key={tag} style={{ fontSize: 10, fontWeight: 700, color: tagColors[tag] || '#16A34A', background: `${tagColors[tag] || '#16A34A'}12`, padding: '3px 9px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
+                  <span key={tag} style={{ fontSize: 10, fontWeight: 700, color: tagColors[tag] || 'var(--accent-brand)', background: `${tagColors[tag] || 'var(--accent-brand)'}12`, padding: '3px 9px', borderRadius: 10, fontFamily: 'var(--font-body)' }}>
                     {tag}
                   </span>
                 ))}
@@ -713,7 +713,7 @@ export default function CRMPage() {
                 </div>
               )}
 
-              <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: 11, background: '#16A34A', color: 'white', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+              <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, padding: 11, background: 'var(--accent-brand)', color: 'white', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                 View Full Profile <ArrowRight size={14} />
               </button>
             </div>
@@ -738,7 +738,7 @@ export default function CRMPage() {
               ))}
               <input type="number" placeholder="Deal value ($)" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} style={inputStyle} />
               <textarea placeholder="Notes (optional)" rows={3} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} style={{ ...inputStyle, resize: 'vertical' }} />
-              <button onClick={createClient} style={{ width: '100%', padding: 11, background: '#16A34A', color: 'white', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', marginTop: 4 }}>
+              <button onClick={createClient} style={{ width: '100%', padding: 11, background: 'var(--accent-brand)', color: 'white', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', marginTop: 4 }}>
                 Add Client
               </button>
             </div>

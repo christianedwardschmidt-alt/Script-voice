@@ -184,7 +184,7 @@ export default function InsightsPage() {
                   fontSize: 14,
                   fontWeight: activeTab === tab ? 600 : 400,
                   color: activeTab === tab ? '#111827' : '#9ca3af',
-                  borderBottom: activeTab === tab ? '2px solid #16a34a' : '2px solid transparent',
+                  borderBottom: activeTab === tab ? '2px solid var(--accent-brand)' : '2px solid transparent',
                   cursor: 'pointer',
                   marginBottom: -1,
                   transition: 'all 0.15s',
@@ -213,15 +213,15 @@ export default function InsightsPage() {
                 <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#16a34a" stopOpacity={0.25} />
-                      <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="var(--accent-brand)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: 8, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="v" stroke="#16a34a" strokeWidth={2.5} fill="url(#greenGrad)" dot={false} />
+                  <Area type="monotone" dataKey="v" stroke="var(--accent-brand)" strokeWidth={2.5} fill="url(#greenGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </>

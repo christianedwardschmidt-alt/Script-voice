@@ -48,7 +48,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <NotificationBell />
             <div style={{
               width: 36, height: 36, borderRadius: "50%",
-              background: "linear-gradient(135deg, #14532D, #16A34A)",
+              background: "linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 13, fontWeight: 700, color: "white",
               cursor: "pointer",

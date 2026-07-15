@@ -14,7 +14,7 @@ interface NotifSetting {
 }
 
 const DEFAULTS: NotifSetting[] = [
-  { id: 'invoice_paid',    icon: CreditCard,    iconColor: '#16A34A', title: 'Invoice paid',          desc: 'When a client pays an invoice',                email: true,  push: true  },
+  { id: 'invoice_paid',    icon: CreditCard,    iconColor: 'var(--accent-brand)', title: 'Invoice paid',          desc: 'When a client pays an invoice',                email: true,  push: true  },
   { id: 'invoice_overdue', icon: CreditCard,    iconColor: '#EF4444', title: 'Invoice overdue',        desc: 'When an invoice passes its due date',           email: true,  push: true  },
   { id: 'new_client',      icon: Users,         iconColor: '#3B82F6', title: 'New client added',       desc: 'When a new client is created in your CRM',      email: false, push: true  },
   { id: 'task_due',        icon: CheckSquare,   iconColor: '#F59E0B', title: 'Task due reminder',      desc: '24 hours before a task deadline',               email: true,  push: true  },
@@ -32,7 +32,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: () => void }) {
       onClick={onChange}
       style={{
         width: 40, height: 22, borderRadius: 11,
-        background: on ? '#16A34A' : '#E5E7EB',
+        background: on ? 'var(--accent-brand)' : '#E5E7EB',
         border: 'none', cursor: 'pointer', position: 'relative',
         transition: 'background 0.2s', flexShrink: 0,
         padding: 0,
@@ -73,7 +73,7 @@ export default function NotificationsPage() {
         </div>
         <button
           onClick={save}
-          style={{ display: 'flex', alignItems: 'center', height: 40, padding: '0 20px', background: saved ? '#F0FDF4' : '#16A34A', color: saved ? '#16A34A' : '#fff', border: saved ? '1px solid #BBF7D0' : 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s' }}
+          style={{ display: 'flex', alignItems: 'center', height: 40, padding: '0 20px', background: saved ? '#F0FDF4' : 'var(--accent-brand)', color: saved ? 'var(--accent-brand)' : '#fff', border: saved ? '1px solid #BBF7D0' : 'none', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s' }}
         >
           {saved ? '✓ Saved' : 'Save preferences'}
         </button>

@@ -22,7 +22,7 @@ interface Article {
 }
 
 const CAT_COLORS: Record<string, string> = {
-  Freelancing:  '#16A34A',
+  Freelancing:  'var(--accent-brand)',
   'AI & Tools': '#7C3AED',
   Business:     '#3B82F6',
   Finance:      '#CA8A04',
@@ -33,7 +33,7 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 const CAT_BG: Record<string, string> = {
-  Freelancing:  'rgba(22,163,74,0.08)',
+  Freelancing:  'rgba(var(--accent-brand-rgb),0.08)',
   'AI & Tools': 'rgba(124,58,237,0.08)',
   Business:     'rgba(59,130,246,0.08)',
   Finance:      'rgba(202,138,4,0.08)',
@@ -108,8 +108,8 @@ export default function BriefingPage({ params }: { params: Promise<{ date: strin
       </button>
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0A1A0F 0%, #14532D 100%)', borderRadius: 20, padding: '36px 40px', marginBottom: 48, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(22,163,74,0.2) 0%, transparent 50%)', pointerEvents: 'none' }} />
+      <div style={{ background: 'linear-gradient(135deg, #0A1A0F 0%, var(--accent-brand-dark) 100%)', borderRadius: 20, padding: '36px 40px', marginBottom: 48, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(var(--accent-brand-rgb),0.2) 0%, transparent 50%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Daily Briefing</div>
           <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 26, fontWeight: 700, color: 'white', margin: '0 0 20px', lineHeight: 1.2 }}>
@@ -132,11 +132,11 @@ export default function BriefingPage({ params }: { params: Promise<{ date: strin
         </div>
         <button
           onClick={copyLink}
-          style={{ padding: '9px 20px', border: '1.5px solid #E5E7EB', borderRadius: 9, background: 'white', color: copied ? '#16A34A' : '#374151', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.2s' }}
+          style={{ padding: '9px 20px', border: '1.5px solid #E5E7EB', borderRadius: 9, background: 'white', color: copied ? 'var(--accent-brand)' : '#374151', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.2s' }}
         >
           {copied ? (
             <>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-brand)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               Copied!
             </>
           ) : (
@@ -174,7 +174,7 @@ export default function BriefingPage({ params }: { params: Promise<{ date: strin
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {a.summary}
                 </p>
-                <a href={a.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: '#16A34A', fontWeight: 600, textDecoration: 'none' }}>
+                <a href={a.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none' }}>
                   Read full article →
                 </a>
               </div>

@@ -122,8 +122,8 @@ export default function UpcomingRunsCard({
     <div style={{ background: '#fff', borderRadius: 16, boxShadow: 'var(--shadow-sm)', padding: 24, marginBottom: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CalendarClock size={15} color="#16A34A" />
+          <div style={{ width: 30, height: 30, borderRadius: 9, background: 'rgba(var(--accent-brand-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CalendarClock size={15} color="var(--accent-brand)" />
           </div>
           <h3 style={{ fontFamily: 'var(--font-syne)', fontSize: 15, fontWeight: 700, color: 'var(--text-1)', margin: 0 }}>Upcoming Runs</h3>
         </div>
@@ -173,7 +173,7 @@ export default function UpcomingRunsCard({
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4 }}>
               <button onClick={() => setEditing(false)} style={{ padding: '9px 18px', borderRadius: 10, border: '1px solid #E5E7EB', background: '#fff', color: '#374151', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Cancel</button>
               <button onClick={saveSchedule} disabled={saving || !editState.scheduleType}
-                style={{ padding: '9px 20px', borderRadius: 10, border: 'none', background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: saving ? 0.7 : 1 }}>
+                style={{ padding: '9px 20px', borderRadius: 10, border: 'none', background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-body)', opacity: saving ? 0.7 : 1 }}>
                 {saving ? 'Saving…' : 'Save Schedule'}
               </button>
             </div>

@@ -170,7 +170,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: Task[] }) 
                   type="checkbox"
                   checked={task.checked}
                   onChange={() => toggle(task.id)}
-                  style={{ width: 16, height: 16, accentColor: '#16a34a', marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
+                  style={{ width: 16, height: 16, accentColor: 'var(--accent-brand)', marginTop: 3, cursor: 'pointer', flexShrink: 0 }}
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{

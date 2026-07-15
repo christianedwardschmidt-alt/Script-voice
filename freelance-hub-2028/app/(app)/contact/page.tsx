@@ -82,7 +82,7 @@ export default function ContactPage() {
           />
         </div>
         <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12 }}>
-          {saved && <span style={{ fontSize: 13, color: '#16a34a' }}>Saved!</span>}
+          {saved && <span style={{ fontSize: 13, color: 'var(--accent-brand)' }}>Saved!</span>}
           <button className="btn-primary" onClick={save}>Save Changes</button>
         </div>
       </div>

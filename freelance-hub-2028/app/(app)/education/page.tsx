@@ -61,7 +61,7 @@ export default function EducationPage() {
   const inProgress = enrolled.filter(c => c.progress > 0 && c.progress < 100)
 
   const stats = [
-    { label: 'Enrolled',    value: enrolled.length,   icon: BookOpen,    color: '#16A34A' },
+    { label: 'Enrolled',    value: enrolled.length,   icon: BookOpen,    color: 'var(--accent-brand)' },
     { label: 'Completed',   value: completed.length,  icon: CheckCircle, color: '#10B981' },
     { label: 'In Progress', value: inProgress.length, icon: Clock,       color: '#D97706' },
     { label: 'Certificates', value: completed.length, icon: Award,       color: '#6366F1' },
@@ -103,7 +103,7 @@ export default function EducationPage() {
 
       {/* In-progress courses — only if any */}
       {inProgress.length > 0 && (
-        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 24px', marginBottom: 20, borderTop: '2px solid #16A34A' }}>
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 24px', marginBottom: 20, borderTop: '2px solid var(--accent-brand)' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 14 }}>CONTINUE LEARNING</div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {inProgress.map(c => (
@@ -150,7 +150,7 @@ export default function EducationPage() {
               style={{
                 padding: '8px 16px', borderRadius: 20, fontSize: 13, fontFamily: 'var(--font-body)',
                 fontWeight: activeCategory === cat ? 600 : 400,
-                background: activeCategory === cat ? '#16A34A' : 'white',
+                background: activeCategory === cat ? 'var(--accent-brand)' : 'white',
                 color: activeCategory === cat ? '#fff' : '#6B7280',
                 border: activeCategory === cat ? 'none' : '1px solid #E5E7EB',
                 cursor: 'pointer', transition: 'all 0.15s',
@@ -228,7 +228,7 @@ export default function EducationPage() {
                         onClick={() => enroll(course.id)}
                         style={{
                           padding: '7px 16px', borderRadius: 9, border: 'none',
-                          background: '#16A34A', color: '#fff',
+                          background: 'var(--accent-brand)', color: '#fff',
                           fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-body)',
                           cursor: 'pointer', transition: 'opacity 0.15s',
                         }}

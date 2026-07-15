@@ -20,7 +20,7 @@ const RELATIONSHIP_COLORS: Record<string, string> = {
   Associate: '#8B5CF6',
   Contractor: '#D97706',
   Editor: '#EC4899',
-  Accountant: '#16A34A',
+  Accountant: 'var(--accent-brand)',
   Other: '#6B7280',
 }
 
@@ -125,7 +125,7 @@ export default function CollaboratorsPanel() {
         onClick={openAdd}
         style={{
           display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: 'none',
-          background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
           fontFamily: 'var(--font-body)', marginBottom: 20,
         }}
       >
@@ -163,7 +163,7 @@ export default function CollaboratorsPanel() {
                   {c.is_guildwire_member && (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600,
-                      color: '#16A34A', background: 'rgba(22,163,74,0.1)', padding: '2px 8px', borderRadius: 20,
+                      color: 'var(--accent-brand)', background: 'rgba(var(--accent-brand-rgb),0.1)', padding: '2px 8px', borderRadius: 20,
                       fontFamily: 'var(--font-body)',
                     }}>
                       {justAddedId === c.id && <Check size={10} style={{ animation: 'collab-check-pop 400ms ease' }} />}
@@ -253,7 +253,7 @@ export default function CollaboratorsPanel() {
                 disabled={!formName.trim() || !formEmail.trim() || saving}
                 style={{
                   width: '100%', padding: '11px 0', borderRadius: 10, border: 'none',
-                  background: (formName.trim() && formEmail.trim()) ? '#16A34A' : '#D1D5DB', color: '#fff',
+                  background: (formName.trim() && formEmail.trim()) ? 'var(--accent-brand)' : '#D1D5DB', color: '#fff',
                   fontSize: 13.5, fontWeight: 700, cursor: (formName.trim() && formEmail.trim()) ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--font-body)',
                 }}
@@ -274,14 +274,14 @@ function EmptyState() {
       <div style={{ position: 'relative', width: 84, height: 52, margin: '0 auto 20px' }}>
         <div style={{
           position: 'absolute', left: 0, top: 0, width: 52, height: 52, borderRadius: '50%',
-          background: 'rgba(22,163,74,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--font-syne)', fontSize: 15, fontWeight: 700, color: '#16A34A',
+          background: 'rgba(var(--accent-brand-rgb),0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'var(--font-syne)', fontSize: 15, fontWeight: 700, color: 'var(--accent-brand)',
         }}>
           You
         </div>
         <div style={{
           position: 'absolute', right: 0, top: 0, width: 52, height: 52, borderRadius: '50%',
-          background: 'rgba(22,163,74,0.06)', border: '1.5px dashed #86EFAC', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'rgba(var(--accent-brand-rgb),0.06)', border: '1.5px dashed #86EFAC', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-syne)', fontSize: 15, fontWeight: 700, color: '#86EFAC',
         }}>
           +

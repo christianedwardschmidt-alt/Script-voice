@@ -17,7 +17,7 @@ interface Notif {
 
 const TYPE_STYLE: Record<string, { Icon: React.ElementType; color: string }> = {
   recurring_invoice_presend:     { Icon: Bell,        color: '#D97706' },
-  recurring_invoice_sent:        { Icon: RefreshCw,   color: '#16A34A' },
+  recurring_invoice_sent:        { Icon: RefreshCw,   color: 'var(--accent-brand)' },
   recurring_invoice_needs_amount:{ Icon: DollarSign,  color: '#2563EB' },
   recurring_invoice_failed:      { Icon: AlertCircle, color: '#DC2626' },
   recurring_invoice_autopaused:  { Icon: AlertCircle, color: '#DC2626' },
@@ -183,7 +183,7 @@ export default function NotificationBell() {
                           <PauseCircle size={10} /> Pause
                         </button>
                       ) : pausedIds.has(n.id) ? (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10.5, color: '#15803D', fontWeight: 600 }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10.5, color: 'var(--accent-brand-hover)', fontWeight: 600 }}>
                           <CheckCircle size={10} /> Paused
                         </span>
                       ) : null}

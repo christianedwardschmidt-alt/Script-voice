@@ -112,7 +112,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
         </button>
         <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, color: '#111827', margin: 0 }}>Edit Post</h1>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, alignItems: 'center' }}>
-          {saved && <span style={{ fontSize: 13, color: '#16A34A', fontWeight: 600 }}>Saved!</span>}
+          {saved && <span style={{ fontSize: 13, color: 'var(--accent-brand)', fontWeight: 600 }}>Saved!</span>}
           <a href={`/blog/${form.slug}`} target="_blank" rel="noopener noreferrer" style={{ padding: '9px 16px', border: '1.5px solid #E5E7EB', borderRadius: 9, background: 'white', color: '#374151', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
             View
           </a>
@@ -121,7 +121,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
               Unpublish
             </button>
           ) : (
-            <button onClick={() => savePost('published')} disabled={saving} style={{ padding: '9px 18px', border: 'none', borderRadius: 9, background: '#16A34A', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
+            <button onClick={() => savePost('published')} disabled={saving} style={{ padding: '9px 18px', border: 'none', borderRadius: 9, background: 'var(--accent-brand)', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
               Publish
             </button>
           )}
@@ -168,7 +168,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
           <div>
             <label style={labelStyle}>Featured?</label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, cursor: 'pointer' }}>
-              <input type="checkbox" checked={form.featured} onChange={e => setField('featured', e.target.checked)} style={{ width: 16, height: 16, accentColor: '#16A34A' }} />
+              <input type="checkbox" checked={form.featured} onChange={e => setField('featured', e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--accent-brand)' }} />
               <span style={{ fontSize: 14, color: '#374151', fontWeight: 500 }}>Show as featured</span>
             </label>
           </div>

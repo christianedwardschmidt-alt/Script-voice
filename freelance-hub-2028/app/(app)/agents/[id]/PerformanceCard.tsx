@@ -29,7 +29,7 @@ function formatTimeSaved(minutes: number): string {
 }
 
 function successRateStyle(rate: number): { color: string; label: string } {
-  if (rate > 90) return { color: '#16A34A', label: 'Excellent' }
+  if (rate > 90) return { color: 'var(--accent-brand)', label: 'Excellent' }
   if (rate >= 70) return { color: '#CA8A04', label: 'Good' }
   return { color: '#EF4444', label: 'Needs attention' }
 }
@@ -159,7 +159,7 @@ export default function PerformanceCard({ agentId }: { agentId: string }) {
           width: 56, height: 56, borderRadius: '50%', background: '#DCFCE7', margin: '0 auto 16px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <BarChart3 size={24} color="#16A34A" />
+          <BarChart3 size={24} color="var(--accent-brand)" />
         </div>
         <div style={{ fontFamily: 'var(--font-syne)', fontSize: 15, fontWeight: 700, color: '#374151', marginBottom: 6 }}>
           Performance data coming soon
@@ -206,7 +206,7 @@ export default function PerformanceCard({ agentId }: { agentId: string }) {
           <div style={{ fontFamily: 'var(--font-syne)', fontSize: 32, fontWeight: 700, color: '#111827', margin: '6px 0 4px', fontVariantNumeric: 'tabular-nums' }}>
             {Math.round(timesRunAnim)}
           </div>
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#16A34A' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--accent-brand)' }}>
             {delta === null ? '—' : `${delta >= 0 ? '+' : ''}${delta} vs last ${periodMeta.comparisonLabel}`}
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function PerformanceCard({ agentId }: { agentId: string }) {
                 style={{ width: 48, padding: '3px 5px', borderRadius: 5, border: '1px solid #E5E7EB', fontSize: 11, fontFamily: 'var(--font-body)', outline: 'none' }}
               />
               <span style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>min/run</span>
-              <button onClick={saveEstimate} disabled={savingEstimate} className="perf-edit-btn" style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
+              <button onClick={saveEstimate} disabled={savingEstimate} className="perf-edit-btn" style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--accent-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
                 <Check size={12} />
               </button>
               <button onClick={() => setEditingEstimate(false)} className="perf-edit-btn" style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', color: '#9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
@@ -283,7 +283,7 @@ export default function PerformanceCard({ agentId }: { agentId: string }) {
 
       {revealPhase !== 'pending' && insightLoading && (
         <div style={{
-          marginTop: 16, background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A',
+          marginTop: 16, background: 'rgba(var(--accent-brand-rgb),0.03)', borderLeft: '3px solid var(--accent-brand)',
           borderRadius: '0 8px 8px 0', padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: 13, color: '#9CA3AF', fontStyle: 'italic',
         }}>
           Thinking about what this means for your business…
@@ -291,7 +291,7 @@ export default function PerformanceCard({ agentId }: { agentId: string }) {
       )}
       {showInsight && insight && (
         <div className="perf-insight" style={{
-          marginTop: 16, background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A',
+          marginTop: 16, background: 'rgba(var(--accent-brand-rgb),0.03)', borderLeft: '3px solid var(--accent-brand)',
           borderRadius: '0 8px 8px 0', padding: '10px 14px', fontFamily: 'var(--font-body)', fontSize: 13, color: '#111827', lineHeight: 1.5,
         }}>
           {insight}

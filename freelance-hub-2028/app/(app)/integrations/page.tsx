@@ -130,7 +130,7 @@ function IntegIcon({ icon, bg, border, color }: { icon: (p: { c: string }) => Re
 
 function CheckGreen() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-brand)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
       <polyline points="20 6 9 17 4 12"/>
     </svg>
   )
@@ -190,7 +190,7 @@ const INTEGRATIONS: IntegrationDef[] = [
     description: 'Push invoices and expenses to QuickBooks for seamless year-end accounting.',
     features: ['Sync invoices & expenses automatically', 'Tax category mapping', 'Profit & loss reporting'],
     icon: IconReceiptCheck,
-    iconColor: '#16A34A', iconBg: 'rgba(22,163,74,0.08)', iconBorder: 'rgba(22,163,74,0.2)',
+    iconColor: 'var(--accent-brand)', iconBg: 'rgba(var(--accent-brand-rgb),0.08)', iconBorder: 'rgba(var(--accent-brand-rgb),0.2)',
     status: 'available',
     permissions: ['Read your QuickBooks chart of accounts', 'Create and update transactions', 'Access financial reports'],
   },
@@ -331,7 +331,7 @@ export default function IntegrationsPage() {
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
       <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF' }}>{text}</span>
       {badge != null && badge > 0 && (
-        <span style={{ fontSize: 11, fontWeight: 700, background: '#16A34A', color: '#fff', borderRadius: 10, padding: '1px 7px', lineHeight: 1.5 }}>{badge}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, background: 'var(--accent-brand)', color: '#fff', borderRadius: 10, padding: '1px 7px', lineHeight: 1.5 }}>{badge}</span>
       )}
     </div>
   )
@@ -367,8 +367,8 @@ export default function IntegrationsPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#111827' }}>{integ.name}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#16A34A', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '2px 8px', flexShrink: 0 }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }}/>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: 'var(--accent-brand)', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 6, padding: '2px 8px', flexShrink: 0 }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent-brand)', display: 'inline-block' }}/>
                       Connected
                     </span>
                   </div>
@@ -498,9 +498,9 @@ export default function IntegrationsPage() {
               </button>
               <button
                 onClick={() => connect(modal.id)}
-                style={{ flex: 2, padding: '10px 0', borderRadius: 9, background: '#16A34A', color: '#fff', border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#15803D')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#16A34A')}
+                style={{ flex: 2, padding: '10px 0', borderRadius: 9, background: 'var(--accent-brand)', color: '#fff', border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--accent-brand-hover)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'var(--accent-brand)')}
               >
                 Connect {modal.name}
               </button>

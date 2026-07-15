@@ -37,7 +37,7 @@ function relativeTime(iso: string): string {
 }
 
 function statusColor(status: string): string {
-  if (status === 'success') return '#16A34A'
+  if (status === 'success') return 'var(--accent-brand)'
   if (status === 'failed') return '#EF4444'
   return '#CA8A04'
 }
@@ -154,8 +154,8 @@ export default function ActivityFeed({ agentId, agentActive, refreshSignal }: { 
         <span style={{ fontFamily: 'var(--font-syne)', fontSize: 16, fontWeight: 700, color: '#111827' }}>Activity</span>
         {agentActive && (
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span data-anim style={{ width: 8, height: 8, borderRadius: '50%', background: '#16A34A', animation: 'agentPulse 1.8s ease-in-out infinite', display: 'inline-block' }} />
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#16A34A', fontWeight: 600 }}>Live</span>
+            <span data-anim style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent-brand)', animation: 'agentPulse 1.8s ease-in-out infinite', display: 'inline-block' }} />
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600 }}>Live</span>
           </div>
         )}
       </div>
@@ -187,7 +187,7 @@ export default function ActivityFeed({ agentId, agentActive, refreshSignal }: { 
               style={{
                 display: 'block', margin: '16px auto 0', padding: '8px 16px',
                 background: 'transparent', border: 'none', cursor: 'pointer',
-                fontFamily: 'var(--font-body)', fontSize: 13, color: '#16A34A', fontWeight: 500,
+                fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--accent-brand)', fontWeight: 500,
               }}
             >
               {loadingMore ? 'Loading…' : 'Load more activity'}
@@ -305,11 +305,11 @@ function EmptyState() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           animation: 'clockAnticipate 2.4s ease-in-out infinite',
         }}>
-          <Clock size={26} color="#16A34A" strokeWidth={1.75} />
+          <Clock size={26} color="var(--accent-brand)" strokeWidth={1.75} />
         </div>
         <div style={{
           position: 'absolute', bottom: -2, right: -2, width: 22, height: 22, borderRadius: '50%',
-          background: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'var(--accent-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: '2px solid #fff',
         }}>
           <Play size={10} color="#fff" fill="#fff" />

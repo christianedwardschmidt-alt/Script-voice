@@ -79,7 +79,7 @@ export default function NewBlogPostPage() {
           <button onClick={() => save('draft')} disabled={saving || !form.title} style={{ padding: '9px 20px', border: '1.5px solid #E5E7EB', borderRadius: 9, background: 'white', color: '#374151', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving || !form.title ? 0.6 : 1 }}>
             Save Draft
           </button>
-          <button onClick={() => save('published')} disabled={saving || !form.title} style={{ padding: '9px 20px', border: 'none', borderRadius: 9, background: '#16A34A', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving || !form.title ? 0.6 : 1 }}>
+          <button onClick={() => save('published')} disabled={saving || !form.title} style={{ padding: '9px 20px', border: 'none', borderRadius: 9, background: 'var(--accent-brand)', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving || !form.title ? 0.6 : 1 }}>
             {saving ? 'Publishing…' : 'Publish'}
           </button>
         </div>
@@ -158,7 +158,7 @@ function BlogEditor({ form, set, autoSlug }: {
         <div>
           <label style={labelStyle}>Featured?</label>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, cursor: 'pointer' }}>
-            <input type="checkbox" checked={form.featured as boolean} onChange={e => set('featured', e.target.checked)} style={{ width: 16, height: 16, accentColor: '#16A34A' }} />
+            <input type="checkbox" checked={form.featured as boolean} onChange={e => set('featured', e.target.checked)} style={{ width: 16, height: 16, accentColor: 'var(--accent-brand)' }} />
             <span style={{ fontSize: 14, color: '#374151', fontWeight: 500 }}>Show as featured post</span>
           </label>
         </div>

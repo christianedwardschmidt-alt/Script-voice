@@ -16,7 +16,7 @@ interface Article {
 }
 
 const CAT_COLORS: Record<string, string> = {
-  Freelancing:  '#16A34A',
+  Freelancing:  'var(--accent-brand)',
   'AI & Tools': '#7C3AED',
   Business:     '#3B82F6',
   Finance:      '#CA8A04',
@@ -27,7 +27,7 @@ const CAT_COLORS: Record<string, string> = {
 }
 
 const CAT_BG: Record<string, string> = {
-  Freelancing:  'rgba(22,163,74,0.08)',
+  Freelancing:  'rgba(var(--accent-brand-rgb),0.08)',
   'AI & Tools': 'rgba(124,58,237,0.08)',
   Business:     'rgba(59,130,246,0.08)',
   Finance:      'rgba(202,138,4,0.08)',
@@ -107,7 +107,7 @@ export default function BookmarksPage() {
           <div style={{ fontSize: 14, color: '#9CA3AF', marginBottom: 20 }}>Save articles from the news feed to read them later.</div>
           <button
             onClick={() => router.push('/news')}
-            style={{ padding: '10px 24px', border: 'none', borderRadius: 10, background: '#16A34A', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+            style={{ padding: '10px 24px', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
           >
             Browse News
           </button>
@@ -137,7 +137,7 @@ export default function BookmarksPage() {
                   </p>
                   <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{a.source}</span>
-                    <a href={a.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: '#16A34A', fontWeight: 600, textDecoration: 'none' }}>
+                    <a href={a.source_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none' }}>
                       Read full article →
                     </a>
                   </div>

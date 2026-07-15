@@ -171,8 +171,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AgentIcon icon={agent.icon} size={28} color="#16A34A" />
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(var(--accent-brand-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <AgentIcon icon={agent.icon} size={28} color="var(--accent-brand)" />
             </div>
             <div>
               <h1 style={{ fontFamily: 'var(--font-syne)', fontSize: 22, fontWeight: 700, margin: 0, color: 'var(--text-1)' }}>
@@ -195,8 +195,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
           style={{
             display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px',
             borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-            background: isActive ? 'rgba(22,163,74,0.12)' : 'var(--bg-2)',
-            color: isActive ? '#16a34a' : 'var(--text-3)',
+            background: isActive ? 'rgba(var(--accent-brand-rgb),0.12)' : 'var(--bg-2)',
+            color: isActive ? 'var(--accent-brand)' : 'var(--text-3)',
             transition: 'all 0.15s',
           }}
         >
@@ -214,7 +214,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
           style={{
             display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px',
             borderRadius: 9, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-            background: 'linear-gradient(135deg, #16a34a 0%, #10b981 100%)',
+            background: 'linear-gradient(135deg, var(--accent-brand) 0%, #10b981 100%)',
             color: '#fff', transition: 'opacity 0.15s',
           }}
         >
@@ -285,7 +285,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
             onClick={() => setShowSubmitModal(true)}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 7, padding: '8px 16px',
-              borderRadius: 8, border: '1px solid #16A34A', background: 'transparent', color: '#16A34A',
+              borderRadius: 8, border: '1px solid var(--accent-brand)', background: 'transparent', color: 'var(--accent-brand)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
             }}
           >

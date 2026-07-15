@@ -215,8 +215,8 @@ export default function ProposalBuilderPage({ params }: { params: Promise<{ id: 
         @keyframes fadeIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
         textarea { resize: vertical; }
         .sec-btn:hover { background: #F3F4F6 !important; }
-        .sec-btn.active { background: #fff !important; border-left: 3px solid #16A34A !important; }
-        input[type=text]:focus, input[type=email]:focus, input[type=date]:focus, textarea:focus, select:focus { outline: 2px solid #16A34A; outline-offset: -1px; }
+        .sec-btn.active { background: #fff !important; border-left: 3px solid var(--accent-brand) !important; }
+        input[type=text]:focus, input[type=email]:focus, input[type=date]:focus, textarea:focus, select:focus { outline: 2px solid var(--accent-brand); outline-offset: -1px; }
       `}</style>
 
       {/* Toast */}
@@ -242,7 +242,7 @@ export default function ProposalBuilderPage({ params }: { params: Promise<{ id: 
               <RefreshCw size={11} style={{ animation: 'spin 1s linear infinite' }} /> Saving…
             </span>
           ) : saved ? (
-            <span style={{ fontSize: 12, color: '#16A34A', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 12, color: 'var(--accent-brand)', display: 'flex', alignItems: 'center', gap: 4 }}>
               <Check size={11} /> Saved
             </span>
           ) : null}
@@ -250,11 +250,11 @@ export default function ProposalBuilderPage({ params }: { params: Promise<{ id: 
             <Eye size={14} /> Preview
           </button>
           {proposal.status === 'draft' || proposal.status === 'expired' ? (
-            <button onClick={() => setSendModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: 'none', borderRadius: 8, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 4px rgba(22,163,74,0.35)' }}>
+            <button onClick={() => setSendModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: 'none', borderRadius: 8, background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 4px rgba(var(--accent-brand-rgb),0.35)' }}>
               <Send size={14} /> Send Proposal
             </button>
           ) : (
-            <span style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: proposal.status === 'accepted' ? '#F0FDF4' : '#EFF6FF', color: proposal.status === 'accepted' ? '#16A34A' : '#2563EB' }}>
+            <span style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, background: proposal.status === 'accepted' ? '#F0FDF4' : '#EFF6FF', color: proposal.status === 'accepted' ? 'var(--accent-brand)' : '#2563EB' }}>
               {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
             </span>
           )}
@@ -309,17 +309,17 @@ export default function ProposalBuilderPage({ params }: { params: Promise<{ id: 
                   onClick={() => setActiveSection(s.key)}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '9px 10px', marginBottom: 2,
-                    border: 'none', borderLeft: isActive ? '3px solid #16A34A' : '3px solid transparent',
+                    border: 'none', borderLeft: isActive ? '3px solid var(--accent-brand)' : '3px solid transparent',
                     borderRadius: isActive ? '0 8px 8px 0' : 8, background: isActive ? '#fff' : 'transparent',
                     cursor: 'pointer', textAlign: 'left', transition: 'all 0.12s',
                   }}
                 >
-                  <s.icon size={14} color={isActive ? '#16A34A' : filled ? '#6B7280' : '#D1D5DB'} />
+                  <s.icon size={14} color={isActive ? 'var(--accent-brand)' : filled ? '#6B7280' : '#D1D5DB'} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: isActive ? 700 : 500, color: isActive ? '#111827' : '#374151', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
                     {!filled && !isActive && <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>{s.hint}</div>}
                   </div>
-                  {filled && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />}
+                  {filled && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', flexShrink: 0 }} />}
                 </button>
               )
             })}
@@ -395,7 +395,7 @@ export default function ProposalBuilderPage({ params }: { params: Promise<{ id: 
               <button onClick={() => setSendModal(false)} style={{ flex: 1, padding: '11px', border: '1px solid #E5E7EB', borderRadius: 10, background: '#fff', color: '#374151', fontSize: 14, cursor: 'pointer', fontWeight: 600 }}>
                 Cancel
               </button>
-              <button onClick={sendProposal} disabled={sending} style={{ flex: 2, padding: '11px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 14, fontWeight: 700, cursor: sending ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <button onClick={sendProposal} disabled={sending} style={{ flex: 2, padding: '11px', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: '#fff', fontSize: 14, fontWeight: 700, cursor: sending ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                 {sending ? <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={15} />}
                 {sending ? 'Sending…' : 'Send Proposal'}
               </button>
@@ -436,8 +436,8 @@ function SectionEditor({
     <div style={{ maxWidth: 680 }}>
       {/* Section header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(22,163,74,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <sec.icon size={18} color="#16A34A" />
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(var(--accent-brand-rgb),0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <sec.icon size={18} color="var(--accent-brand)" />
         </div>
         <div>
           <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: 20, fontWeight: 700, color: '#111827', margin: 0 }}>{sec.label}</h2>
@@ -525,7 +525,7 @@ function DeliverableEditor({ items, onChange }: { items: Deliverable[]; onChange
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Deliverables</div>
-        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: '#16A34A', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: 'var(--accent-brand)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
           <Plus size={12} /> Add Deliverable
         </button>
       </div>
@@ -538,7 +538,7 @@ function DeliverableEditor({ items, onChange }: { items: Deliverable[]; onChange
           {items.map(item => (
             <div key={item.id} style={{ background: '#fff', border: '1px solid #E9EBF0', borderRadius: 10, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               <input type="checkbox" checked={item.included} onChange={e => update(item.id, 'included', e.target.checked)}
-                style={{ marginTop: 3, width: 15, height: 15, cursor: 'pointer', accentColor: '#16A34A' }} />
+                style={{ marginTop: 3, width: 15, height: 15, cursor: 'pointer', accentColor: 'var(--accent-brand)' }} />
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <input value={item.name} onChange={e => update(item.id, 'name', e.target.value)}
                   placeholder="Deliverable name…" style={{ border: 'none', outline: 'none', fontSize: 14, fontWeight: 600, color: '#111827', background: 'transparent', width: '100%' }} />
@@ -568,7 +568,7 @@ function MilestoneEditor({ items, onChange }: { items: Milestone[]; onChange: (i
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Project Milestones</div>
-        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: '#16A34A', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: 'var(--accent-brand)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
           <Plus size={12} /> Add Milestone
         </button>
       </div>
@@ -576,10 +576,10 @@ function MilestoneEditor({ items, onChange }: { items: Milestone[]; onChange: (i
       {/* Visual timeline */}
       {items.length > 0 && (
         <div style={{ position: 'relative', paddingLeft: 28, marginBottom: 20 }}>
-          <div style={{ position: 'absolute', left: 10, top: 12, bottom: 12, width: 2, background: 'linear-gradient(to bottom, #16A34A, #E5E7EB)' }} />
+          <div style={{ position: 'absolute', left: 10, top: 12, bottom: 12, width: 2, background: 'linear-gradient(to bottom, var(--accent-brand), #E5E7EB)' }} />
           {items.map((item, i) => (
             <div key={item.id} style={{ position: 'relative', marginBottom: i < items.length - 1 ? 16 : 0 }}>
-              <div style={{ position: 'absolute', left: -22, top: 10, width: 12, height: 12, borderRadius: '50%', background: item.name ? '#16A34A' : '#E5E7EB', border: '2px solid #fff', boxShadow: '0 0 0 2px ' + (item.name ? '#16A34A' : '#D1D5DB') }} />
+              <div style={{ position: 'absolute', left: -22, top: 10, width: 12, height: 12, borderRadius: '50%', background: item.name ? 'var(--accent-brand)' : '#E5E7EB', border: '2px solid #fff', boxShadow: '0 0 0 2px ' + (item.name ? 'var(--accent-brand)' : '#D1D5DB') }} />
               <div style={{ background: '#fff', border: '1px solid #E9EBF0', borderRadius: 10, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr auto', gap: '6px 12px' }}>
                   <input value={item.name} onChange={e => update(item.id, 'name', e.target.value)}
@@ -638,7 +638,7 @@ function InvestmentEditor({ items, onChange, paymentTerms, onPaymentTermsChange,
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Line Items</div>
-        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: '#16A34A', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={add} style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', border: 'none', borderRadius: 7, background: 'var(--accent-brand)', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
           <Plus size={12} /> Add Item
         </button>
       </div>
@@ -761,7 +761,7 @@ function ProposalPreview({ proposal, lineItems, milestones, deliverables, onClos
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {deliverables.map(d => (
                     <div key={d.id} style={{ display: 'flex', gap: 10, padding: '10px 14px', borderRadius: 10, background: d.included ? '#F0FDF4' : '#F8FAFC', border: `1px solid ${d.included ? '#DCFCE7' : '#F3F4F6'}`, opacity: d.included ? 1 : 0.6 }}>
-                      <div style={{ width: 20, height: 20, borderRadius: '50%', background: d.included ? '#16A34A' : '#D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      <div style={{ width: 20, height: 20, borderRadius: '50%', background: d.included ? 'var(--accent-brand)' : '#D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
                         {d.included && <Check size={11} color="#fff" strokeWidth={2.5} />}
                       </div>
                       <div>
@@ -778,10 +778,10 @@ function ProposalPreview({ proposal, lineItems, milestones, deliverables, onClos
               <div style={{ marginBottom: 36 }}>
                 <h2 style={{ fontFamily: 'var(--font-syne)', fontSize: 20, fontWeight: 700, color: '#111827', marginBottom: 16, paddingBottom: 10, borderBottom: '2px solid #F3F4F6' }}>Timeline</h2>
                 <div style={{ position: 'relative', paddingLeft: 28 }}>
-                  <div style={{ position: 'absolute', left: 10, top: 8, bottom: 8, width: 2, background: 'linear-gradient(to bottom, #16A34A 0%, #E5E7EB 100%)' }} />
+                  <div style={{ position: 'absolute', left: 10, top: 8, bottom: 8, width: 2, background: 'linear-gradient(to bottom, var(--accent-brand) 0%, #E5E7EB 100%)' }} />
                   {milestones.map((m, i) => (
                     <div key={m.id} style={{ position: 'relative', marginBottom: i < milestones.length - 1 ? 16 : 0 }}>
-                      <div style={{ position: 'absolute', left: -22, top: 6, width: 12, height: 12, borderRadius: '50%', background: '#16A34A', border: '2px solid #fff', boxShadow: '0 0 0 2px #16A34A' }} />
+                      <div style={{ position: 'absolute', left: -22, top: 6, width: 12, height: 12, borderRadius: '50%', background: 'var(--accent-brand)', border: '2px solid #fff', boxShadow: '0 0 0 2px var(--accent-brand)' }} />
                       <div style={{ padding: '4px 0' }}>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                           <span style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{m.name}</span>
@@ -823,7 +823,7 @@ function ProposalPreview({ proposal, lineItems, milestones, deliverables, onClos
                       <span>Subtotal</span><span>${subtotal.toLocaleString()}</span>
                     </div>
                     {(proposal.discount || 0) > 0 && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 13, color: '#16A34A' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 13, color: 'var(--accent-brand)' }}>
                         <span>Discount</span><span>−${(proposal.discount || 0).toLocaleString()}</span>
                       </div>
                     )}

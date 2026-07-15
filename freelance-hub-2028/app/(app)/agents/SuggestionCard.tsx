@@ -58,14 +58,14 @@ export default function SuggestionCard({
       </p>
 
       {suggestion.impact_estimate && (
-        <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#16A34A', fontWeight: 600 }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600 }}>
           {suggestion.impact_estimate}
         </div>
       )}
 
       <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
         <button onClick={() => onCreate(suggestion)} disabled={dismissing}
-          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
           Create This Agent
         </button>
         <button onClick={() => onDismiss(suggestion.id)} disabled={dismissing}

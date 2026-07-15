@@ -42,7 +42,7 @@ export default function RatingPrompt({ marketplaceAgentId }: { marketplaceAgentI
     }}>
       {existingRating !== null ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-2)', fontFamily: 'var(--font-body)' }}>
-          <Check size={15} color="#16A34A" />
+          <Check size={15} color="var(--accent-brand)" />
           Thanks for rating this agent {existingRating} star{existingRating === 1 ? '' : 's'}.
         </div>
       ) : (

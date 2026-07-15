@@ -80,10 +80,10 @@ export default function SubmitModal({
         {submitted ? (
           <div style={{ padding: '48px 32px 40px', textAlign: 'center' }}>
             <div style={{
-              width: 64, height: 64, borderRadius: 16, background: 'rgba(22,163,74,0.08)', margin: '0 auto 20px',
+              width: 64, height: 64, borderRadius: 16, background: 'rgba(var(--accent-brand-rgb),0.08)', margin: '0 auto 20px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'submit-card-float 0.6s ease',
             }}>
-              <Sparkles size={28} color="#16A34A" />
+              <Sparkles size={28} color="var(--accent-brand)" />
             </div>
             <div style={{ fontFamily: 'var(--font-syne)', fontSize: 19, fontWeight: 700, color: '#111827', marginBottom: 10 }}>
               Your agent is on its way to the guild.
@@ -94,7 +94,7 @@ export default function SubmitModal({
             <button
               onClick={onClose}
               style={{
-                padding: '10px 24px', borderRadius: 10, border: 'none', background: '#16A34A', color: '#fff',
+                padding: '10px 24px', borderRadius: 10, border: 'none', background: 'var(--accent-brand)', color: '#fff',
                 fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)',
               }}
             >
@@ -174,7 +174,7 @@ export default function SubmitModal({
               disabled={!canSubmit}
               style={{
                 width: '100%', padding: '11px 0', borderRadius: 10, border: 'none',
-                background: canSubmit ? '#16A34A' : '#D1D5DB', color: '#fff', fontSize: 13.5, fontWeight: 700,
+                background: canSubmit ? 'var(--accent-brand)' : '#D1D5DB', color: '#fff', fontSize: 13.5, fontWeight: 700,
                 cursor: canSubmit ? 'pointer' : 'not-allowed', fontFamily: 'var(--font-body)',
               }}
             >

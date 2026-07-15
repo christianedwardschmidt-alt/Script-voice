@@ -25,7 +25,7 @@ const DOC_CATEGORIES = ['All', '1099s Received', 'W-9s Collected', 'Quarterly Pa
 const CAT_COLOR: Record<string, string> = {
   'Home Office': '#6366F1', 'Software & Subscriptions': '#3B82F6', 'Hardware & Equipment': '#0EA5E9',
   'Travel & Transportation': '#14B8A6', 'Meals & Entertainment': '#F59E0B', 'Marketing & Advertising': '#F97316',
-  'Professional Development': '#8B5CF6', 'Health Insurance': '#EC4899', 'Retirement (SEP-IRA)': '#16A34A',
+  'Professional Development': '#8B5CF6', 'Health Insurance': '#EC4899', 'Retirement (SEP-IRA)': 'var(--accent-brand)',
   'Professional Services': '#64748B', 'Office Supplies': '#D97706', 'Other': '#9CA3AF',
 }
 
@@ -50,12 +50,12 @@ const W9_STATUSES = ['needed', 'requested', 'received']
 const W9_COLORS: Record<string, { bg: string; color: string }> = {
   needed:    { bg: '#FEF2F2', color: '#EF4444' },
   requested: { bg: '#FFFBEB', color: '#D97706' },
-  received:  { bg: '#F0FDF4', color: '#16A34A' },
+  received:  { bg: '#F0FDF4', color: 'var(--accent-brand)' },
 }
 
 const iStyle: React.CSSProperties = { width: '100%', padding: '9px 12px', borderRadius: 10, border: '1px solid #E5E7EB', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', boxSizing: 'border-box' }
 const lStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6, fontFamily: 'var(--font-body)' }
-const btnP: React.CSSProperties = { padding: '9px 18px', borderRadius: 10, border: 'none', background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }
+const btnP: React.CSSProperties = { padding: '9px 18px', borderRadius: 10, border: 'none', background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }
 const btnS: React.CSSProperties = { padding: '9px 18px', borderRadius: 10, border: '1px solid #E5E7EB', background: 'transparent', fontSize: 13, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)' }
 
 function UL({ children }: { children: React.ReactNode }) {
@@ -317,7 +317,7 @@ export default function TaxPage() {
     const currentQIdx = Math.min(Math.floor((new Date().getMonth()) / 3), 3)
 
     const kpiRow1: Array<{ label: string; value: string; sub: string; color: string; spark: number[]; trend: { pct: string; up: boolean | null }; trendPositive: boolean }> = [
-      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: '#16A34A', spark: SPARK_REV,  trend: revTrend,  trendPositive: true },
+      { label: 'YTD Revenue',       value: `$${ytdRevenue.toLocaleString()}`,  sub: `${paidInvs.length} paid invoice${paidInvs.length !== 1 ? 's' : ''}`, color: 'var(--accent-brand)', spark: SPARK_REV,  trend: revTrend,  trendPositive: true },
       { label: 'Business Expenses', value: `$${totalExp.toLocaleString()}`,    sub: `${expenses.length} expense record${expenses.length !== 1 ? 's' : ''}`, color: '#3B82F6', spark: SPARK_EXP,  trend: expTrend,  trendPositive: false },
       { label: 'Mileage Deduction', value: `$${mileageDed.toLocaleString()}`,  sub: `${totalMiles} mi @ $${IRS_RATE}/mi`, color: '#8B5CF6', spark: SPARK_MILE, trend: mileTrend, trendPositive: true },
       { label: 'Net Income',        value: `$${netIncome.toLocaleString()}`,   sub: 'After all deductions',  color: '#D97706', spark: SPARK_NET,  trend: netTrend,  trendPositive: true },
@@ -327,7 +327,7 @@ export default function TaxPage() {
     const kpiRow2 = [
       { label: 'Self-Employment Tax', value: `$${seTax.toLocaleString()}`,       sub: '15.3% on 92.35% of net',      color: '#EF4444' },
       { label: 'Total Deductions',    value: `$${totalDed.toLocaleString()}`,     sub: 'Expenses + mileage',          color: '#3B82F6' },
-      { label: 'Quarterly Paid',      value: `$${totalPaid.toLocaleString()}`,    sub: `${quarterly.filter(p=>p.year===2026).length} of 4 quarters`, color: '#16A34A' },
+      { label: 'Quarterly Paid',      value: `$${totalPaid.toLocaleString()}`,    sub: `${quarterly.filter(p=>p.year===2026).length} of 4 quarters`, color: 'var(--accent-brand)' },
       { label: 'Outstanding',         value: `$${outstanding.toLocaleString()}`,  sub: 'Remaining this year',         color: '#D97706' },
       { label: '1099 Clients',        value: `${clients1099.length}`,             sub: 'Paid $600+ this year',        color: '#6366F1' },
     ]
@@ -397,15 +397,15 @@ export default function TaxPage() {
                   <AreaChart data={areaData} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
                     <defs>
                       <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#16A34A" stopOpacity={0.18} />
-                        <stop offset="95%" stopColor="#16A34A" stopOpacity={0} />
+                        <stop offset="5%" stopColor="var(--accent-brand)" stopOpacity={0.18} />
+                        <stop offset="95%" stopColor="var(--accent-brand)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                     <XAxis dataKey="month" tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} dy={6} />
                     <YAxis tick={{ fontSize: 11, fill: TICK, fontFamily: 'var(--font-body)' }} axisLine={false} tickLine={false} tickFormatter={v => v ? `$${(v/1000).toFixed(v % 1000 === 0 ? 0 : 1)}k` : '$0'} width={48} />
                     <Tooltip contentStyle={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 10, fontSize: 12, fontFamily: 'var(--font-body)' }} formatter={(v: number) => [`$${v.toLocaleString()}`, 'Revenue']} />
-                    <Area type="monotone" dataKey="revenue" stroke="#16A34A" strokeWidth={2} fill="url(#revGrad)" dot={false} activeDot={{ r: 4, fill: '#16A34A' }} />
+                    <Area type="monotone" dataKey="revenue" stroke="var(--accent-brand)" strokeWidth={2} fill="url(#revGrad)" dot={false} activeDot={{ r: 4, fill: 'var(--accent-brand)' }} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -448,11 +448,11 @@ export default function TaxPage() {
               <div key={q.q} style={{ ...card, padding: '20px 24px', border: `1px solid ${isPaid ? '#BBF7D0' : isCurrent ? '#FDE68A' : 'transparent'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{q.label}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 99, fontFamily: 'var(--font-body)', background: isPaid ? '#F0FDF4' : isCurrent ? '#FFFBEB' : '#F3F4F6', color: isPaid ? '#16A34A' : isCurrent ? '#D97706' : '#9CA3AF' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 99, fontFamily: 'var(--font-body)', background: isPaid ? '#F0FDF4' : isCurrent ? '#FFFBEB' : '#F3F4F6', color: isPaid ? 'var(--accent-brand)' : isCurrent ? '#D97706' : '#9CA3AF' }}>
                     {isPaid ? 'Paid' : isCurrent ? 'Due Soon' : 'Upcoming'}
                   </span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: isPaid ? '#16A34A' : '#111827', letterSpacing: '-0.02em' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: isPaid ? 'var(--accent-brand)' : '#111827', letterSpacing: '-0.02em' }}>
                   {isPaid ? `$${payment.paid_amount.toLocaleString()}` : `~$${quarterlyAmt.toLocaleString()}`}
                 </div>
                 <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 6 }}>Due {q.due}</div>
@@ -493,7 +493,7 @@ export default function TaxPage() {
         <div className="g-3col kpi-bar" style={{ ...card, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)' }}>
           {[
             { label: 'Est. Annual Tax', value: `$${estTax.toLocaleString()}`, color: '#EF4444' },
-            { label: 'Total Paid',      value: `$${totalPaid.toLocaleString()}`, color: '#16A34A' },
+            { label: 'Total Paid',      value: `$${totalPaid.toLocaleString()}`, color: 'var(--accent-brand)' },
             { label: 'Outstanding',     value: `$${outstanding.toLocaleString()}`, color: '#D97706' },
           ].map((k, i) => (
             <div key={k.label} style={{ padding: '24px 28px', borderRight: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
@@ -518,7 +518,7 @@ export default function TaxPage() {
                       {isPaid ? `$${payment.paid_amount.toLocaleString()}` : `~$${quarterlyAmt.toLocaleString()}`}
                     </div>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 99, fontFamily: 'var(--font-body)', background: isPaid ? '#F0FDF4' : isCurrent ? '#FFFBEB' : '#F3F4F6', color: isPaid ? '#16A34A' : isCurrent ? '#D97706' : '#9CA3AF' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 99, fontFamily: 'var(--font-body)', background: isPaid ? '#F0FDF4' : isCurrent ? '#FFFBEB' : '#F3F4F6', color: isPaid ? 'var(--accent-brand)' : isCurrent ? '#D97706' : '#9CA3AF' }}>
                     {isPaid ? 'Paid' : isCurrent ? 'Due Soon' : 'Upcoming'}
                   </span>
                 </div>
@@ -526,7 +526,7 @@ export default function TaxPage() {
                 {isPaid ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F0FDF4', borderRadius: 10 }}>
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--font-body)' }}>Paid {payment.paid_date ?? ''}</div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>Paid {payment.paid_date ?? ''}</div>
                       <div style={{ fontSize: 11, color: '#4ADE80', fontFamily: 'var(--font-body)' }}>${payment.paid_amount.toLocaleString()}</div>
                     </div>
                     <button onClick={() => undoPaid(payment.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9CA3AF' }}><Trash2 size={13} /></button>
@@ -563,7 +563,7 @@ export default function TaxPage() {
           {[
             { label: 'Total Expenses', value: `$${totalExp.toLocaleString()}`, color: '#3B82F6' },
             { label: 'Records', value: `${expenses.length}`, color: '#8B5CF6' },
-            { label: 'Top Category', value: Object.entries(expByCat).sort((a,b)=>b[1]-a[1])[0]?.[0] ?? '—', color: '#16A34A' },
+            { label: 'Top Category', value: Object.entries(expByCat).sort((a,b)=>b[1]-a[1])[0]?.[0] ?? '—', color: 'var(--accent-brand)' },
             { label: 'Avg per Entry', value: expenses.length ? `$${Math.round(totalExp / expenses.length).toLocaleString()}` : '—', color: '#D97706' },
           ].map((k, i) => (
             <div key={k.label} style={{ padding: '20px 24px', borderRight: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
@@ -578,7 +578,7 @@ export default function TaxPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 12, flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {['All', ...EXPENSE_CATEGORIES].map(c => (
-                <button key={c} onClick={() => setExpCat(c)} style={{ padding: '5px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', border: expCat === c ? 'none' : '1px solid #E5E7EB', background: expCat === c ? '#16A34A' : 'transparent', color: expCat === c ? '#fff' : '#6B7280' }}>
+                <button key={c} onClick={() => setExpCat(c)} style={{ padding: '5px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', border: expCat === c ? 'none' : '1px solid #E5E7EB', background: expCat === c ? 'var(--accent-brand)' : 'transparent', color: expCat === c ? '#fff' : '#6B7280' }}>
                   {c}
                 </button>
               ))}
@@ -631,7 +631,7 @@ export default function TaxPage() {
         {[
           { label: 'Total Miles', value: `${totalMiles.toLocaleString(undefined, { maximumFractionDigits: 1 })} mi`, color: '#8B5CF6' },
           { label: 'Trips Logged', value: `${mileage.length}`, color: '#3B82F6' },
-          { label: 'IRS Rate', value: `$${IRS_RATE}/mi`, color: '#16A34A' },
+          { label: 'IRS Rate', value: `$${IRS_RATE}/mi`, color: 'var(--accent-brand)' },
           { label: 'Deduction', value: `$${mileageDed.toLocaleString()}`, color: '#D97706' },
         ].map((k, i) => (
           <div key={k.label} style={{ padding: '20px 24px', borderRight: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
@@ -671,7 +671,7 @@ export default function TaxPage() {
                     <td style={{ padding: '10px 12px', color: '#374151' }}>{m.to_loc}</td>
                     <td style={{ padding: '10px 12px', color: '#374151' }}>{m.purpose}</td>
                     <td style={{ padding: '10px 12px', fontFamily: 'var(--font-display)', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>{m.miles}</td>
-                    <td style={{ padding: '10px 12px', fontFamily: 'var(--font-display)', fontWeight: 700, color: '#16A34A', fontVariantNumeric: 'tabular-nums' }}>${(m.miles * IRS_RATE).toFixed(2)}</td>
+                    <td style={{ padding: '10px 12px', fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--accent-brand)', fontVariantNumeric: 'tabular-nums' }}>${(m.miles * IRS_RATE).toFixed(2)}</td>
                     <td style={{ padding: '10px 12px' }}>
                       <button onClick={() => deleteMileage(m.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#D1D5DB', padding: 2 }}><Trash2 size={13} /></button>
                     </td>
@@ -718,7 +718,7 @@ export default function TaxPage() {
                     <div style={{ fontSize: 12, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Paid invoices this year</div>
                   </div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: '#111827' }}>${c.revenue.toLocaleString()}</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 99, background: '#F0FDF4', color: '#16A34A', fontFamily: 'var(--font-body)' }}>Qualifies</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 99, background: '#F0FDF4', color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>Qualifies</span>
                   <button style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: 'white', fontSize: 12, fontWeight: 600, color: '#374151', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                     <Download size={11} /> Download
                   </button>
@@ -773,7 +773,7 @@ export default function TaxPage() {
     const DOC_STATUS_STYLE: Record<string, { bg: string; color: string }> = {
       Received:     { bg: '#EFF6FF', color: '#3B82F6' },
       'In Progress': { bg: '#FFFBEB', color: '#D97706' },
-      Filed:        { bg: '#F0FDF4', color: '#16A34A' },
+      Filed:        { bg: '#F0FDF4', color: 'var(--accent-brand)' },
     }
 
     return (
@@ -797,7 +797,7 @@ export default function TaxPage() {
 
           <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
             {DOC_CATEGORIES.map(c => (
-              <button key={c} onClick={() => setDocCat(c)} style={{ padding: '5px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', border: docCat === c ? 'none' : '1px solid #E5E7EB', background: docCat === c ? '#16A34A' : 'transparent', color: docCat === c ? '#fff' : '#6B7280' }}>
+              <button key={c} onClick={() => setDocCat(c)} style={{ padding: '5px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', border: docCat === c ? 'none' : '1px solid #E5E7EB', background: docCat === c ? 'var(--accent-brand)' : 'transparent', color: docCat === c ? '#fff' : '#6B7280' }}>
                 {c}
               </button>
             ))}
@@ -869,7 +869,7 @@ export default function TaxPage() {
                   </div>
                 ))}
                 {taxIncome.length > 6 && (
-                  <div style={{ fontSize: 11, color: '#16A34A', fontFamily: 'var(--font-body)' }}>+{taxIncome.length - 6} more</div>
+                  <div style={{ fontSize: 11, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>+{taxIncome.length - 6} more</div>
                 )}
               </div>
             </div>
@@ -921,7 +921,7 @@ export default function TaxPage() {
               return (
                 <div key={q.q} style={{ padding: '12px 14px', background: payment ? '#F0FDF4' : '#F8FAFC', borderRadius: 10, border: `1px solid ${payment ? '#BBF7D0' : '#F3F4F6'}` }}>
                   <div style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 4 }}>{q.q}</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: payment ? '#16A34A' : '#9CA3AF' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: payment ? 'var(--accent-brand)' : '#9CA3AF' }}>
                     {payment ? `$${payment.paid_amount.toLocaleString()}` : 'Unpaid'}
                   </div>
                 </div>
@@ -930,7 +930,7 @@ export default function TaxPage() {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, padding: '10px 14px', background: outstanding > 0 ? '#FFFBEB' : '#F0FDF4', borderRadius: 10 }}>
             <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', fontFamily: 'var(--font-body)' }}>Remaining estimated tax</span>
-            <span style={{ fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)', color: outstanding > 0 ? '#D97706' : '#16A34A' }}>${outstanding.toLocaleString()}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-display)', color: outstanding > 0 ? '#D97706' : 'var(--accent-brand)' }}>${outstanding.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -973,7 +973,7 @@ export default function TaxPage() {
         </div>
         <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={saveSettings} style={btnP}>{settSaved ? '✓ Saved' : 'Save Settings'}</button>
-          {settSaved && <span style={{ fontSize: 13, color: '#16A34A', fontFamily: 'var(--font-body)' }}>Settings saved successfully</span>}
+          {settSaved && <span style={{ fontSize: 13, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>Settings saved successfully</span>}
         </div>
       </div>
 
@@ -991,7 +991,7 @@ export default function TaxPage() {
             { date: 'Jan 15, \'27', label: 'Q4 estimated tax payment due' },
           ].map(d => (
             <div key={d.date} style={{ display: 'flex', gap: 14, padding: '10px 14px', background: '#F8FAFC', borderRadius: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#16A34A', fontFamily: 'var(--font-display)', minWidth: 72 }}>{d.date}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent-brand)', fontFamily: 'var(--font-display)', minWidth: 72 }}>{d.date}</span>
               <span style={{ fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)' }}>{d.label}</span>
             </div>
           ))}
@@ -1027,7 +1027,7 @@ export default function TaxPage() {
           <button key={t} onClick={() => setTab(t)} style={{
             padding: '8px 16px', borderRadius: 9, border: 'none', cursor: 'pointer',
             fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: tab === t ? 700 : 500,
-            background: tab === t ? '#16A34A' : 'transparent',
+            background: tab === t ? 'var(--accent-brand)' : 'transparent',
             color: tab === t ? '#fff' : '#6B7280',
             whiteSpace: 'nowrap', transition: 'all 0.15s',
           }}>{t}</button>
@@ -1068,7 +1068,7 @@ export default function TaxPage() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 8, padding: '10px 12px', background: '#F0FDF4', borderRadius: 10, fontSize: 12, color: '#16A34A', fontFamily: 'var(--font-body)' }}>
+        <div style={{ marginTop: 8, padding: '10px 12px', background: '#F0FDF4', borderRadius: 10, fontSize: 12, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>
           Deduction: ${mileForm.miles ? (Number(mileForm.miles) * IRS_RATE).toFixed(2) : '0.00'} at ${IRS_RATE}/mi
         </div>
         <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>

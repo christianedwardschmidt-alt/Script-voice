@@ -243,7 +243,7 @@ function Lane({
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const colors = tone === 'if'
-    ? { text: '#15803D', bg: 'rgba(22,163,74,0.08)', leftBorder: '#16A34A', badgeBg: '#16A34A', badgeText: '#fff', pillBg: 'rgba(22,163,74,0.09)', pillBorder: 'rgba(22,163,74,0.3)' }
+    ? { text: 'var(--accent-brand-hover)', bg: 'rgba(var(--accent-brand-rgb),0.08)', leftBorder: 'var(--accent-brand)', badgeBg: 'var(--accent-brand)', badgeText: '#fff', pillBg: 'rgba(var(--accent-brand-rgb),0.09)', pillBorder: 'rgba(var(--accent-brand-rgb),0.3)' }
     : { text: '#6B7280', bg: 'rgba(107,114,128,0.04)', leftBorder: '#6B7280', badgeBg: '#E5E7EB', badgeText: '#4B5563', pillBg: '#F3F4F6', pillBorder: '#E5E7EB' }
 
   function addNested(type: string) {
@@ -414,7 +414,7 @@ export default function RuleEditor({
 
       {/* Live plain-English preview */}
       <div style={{
-        background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A', borderRadius: '0 8px 8px 0',
+        background: 'rgba(var(--accent-brand-rgb),0.03)', borderLeft: '3px solid var(--accent-brand)', borderRadius: '0 8px 8px 0',
         padding: '9px 12px', marginBottom: 14, fontSize: 12.5, color: '#374151', fontFamily: 'var(--font-body)', lineHeight: 1.5,
       }}>
         {buildPlainEnglishSummary(rule)}

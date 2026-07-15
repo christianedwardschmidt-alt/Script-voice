@@ -16,14 +16,14 @@ const trendingTopics = [
 ]
 
 const suggested = [
-  { name: 'Alex Thompson', handle: '@alex_design',   role: 'Brand Designer',   mutual: 12, avatar: 'AT', color: '#16A34A', followers: '4.2k' },
+  { name: 'Alex Thompson', handle: '@alex_design',   role: 'Brand Designer',   mutual: 12, avatar: 'AT', color: 'var(--accent-brand)', followers: '4.2k' },
   { name: 'Jessica Wu',    handle: '@jess_markets',  role: 'Marketing Expert', mutual: 8,  avatar: 'JW', color: '#EC4899', followers: '8.1k' },
   { name: 'David Park',    handle: '@dpark_video',   role: 'Video Creator',    mutual: 5,  avatar: 'DP', color: '#F59E0B', followers: '11.5k' },
 ]
 
 const stories = [
-  { name: 'You',    avatar: 'Y',  color: '#16A34A', isOwn: true },
-  { name: 'Sarah',  avatar: 'SJ', color: '#16A34A', isOwn: false },
+  { name: 'You',    avatar: 'Y',  color: 'var(--accent-brand)', isOwn: true },
+  { name: 'Sarah',  avatar: 'SJ', color: 'var(--accent-brand)', isOwn: false },
   { name: 'Marcus', avatar: 'M',  color: '#10B981', isOwn: false },
   { name: 'Priya',  avatar: 'P',  color: '#F59E0B', isOwn: false },
   { name: 'David',  avatar: 'D',  color: '#EC4899', isOwn: false },
@@ -112,7 +112,7 @@ export default function CommunityPage() {
           {/* Trending */}
           <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 16 }}>
-              <TrendingUp size={14} color="#16A34A" />
+              <TrendingUp size={14} color="var(--accent-brand)" />
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Trending</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -122,7 +122,7 @@ export default function CommunityPage() {
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
                 >
                   <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 2 }}>#{t.rank} · Freelance</div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#16A34A', fontFamily: 'var(--font-body)' }}>{t.tag}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>{t.tag}</div>
                   <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 1 }}>{t.posts} posts</div>
                 </div>
               ))}
@@ -132,7 +132,7 @@ export default function CommunityPage() {
           {/* Who to follow */}
           <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 16 }}>
-              <Users size={14} color="#16A34A" />
+              <Users size={14} color="var(--accent-brand)" />
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Who to Follow</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -144,7 +144,7 @@ export default function CommunityPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: 'var(--font-body)' }}>{s.name}</div>
                     <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)', marginTop: 1 }}>{s.followers} followers</div>
-                    <button style={{ marginTop: 6, padding: '3px 10px', border: `1px solid #16A34A`, borderRadius: 20, background: 'transparent', fontSize: 10, fontWeight: 700, color: '#16A34A', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                    <button style={{ marginTop: 6, padding: '3px 10px', border: `1px solid var(--accent-brand)`, borderRadius: 20, background: 'transparent', fontSize: 10, fontWeight: 700, color: 'var(--accent-brand)', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                       Follow
                     </button>
                   </div>
@@ -167,7 +167,7 @@ export default function CommunityPage() {
                     background: s.isOwn ? 'none' : `linear-gradient(135deg, ${s.color}, ${s.color}99)`,
                     border: s.isOwn ? '2px dashed #E5E7EB' : 'none',
                   }}>
-                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: s.isOwn ? '#F9FAFB' : `${s.color}15`, border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: s.isOwn ? '#16A34A' : s.color, fontFamily: 'var(--font-display)' }}>
+                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: s.isOwn ? '#F9FAFB' : `${s.color}15`, border: '2px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: s.isOwn ? 'var(--accent-brand)' : s.color, fontFamily: 'var(--font-display)' }}>
                       {s.isOwn ? <Plus size={16} strokeWidth={2.5} /> : s.avatar}
                     </div>
                   </div>
@@ -184,7 +184,7 @@ export default function CommunityPage() {
                 padding: '13px 18px', border: 'none', background: 'none',
                 fontSize: 13, fontWeight: activeTab === tab ? 700 : 400,
                 color: activeTab === tab ? '#111827' : '#9CA3AF',
-                borderBottom: activeTab === tab ? '2px solid #16A34A' : '2px solid transparent',
+                borderBottom: activeTab === tab ? '2px solid var(--accent-brand)' : '2px solid transparent',
                 cursor: 'pointer', marginBottom: -1, transition: 'all 0.15s',
                 fontFamily: 'var(--font-body)',
               }}>
@@ -196,7 +196,7 @@ export default function CommunityPage() {
           {/* Compose */}
           <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: 18, marginBottom: 14 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div style={{ width: 40, height: 40, borderRadius: 11, background: 'linear-gradient(135deg, #14532D, #16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-display)' }}>
+              <div style={{ width: 40, height: 40, borderRadius: 11, background: 'linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0, fontFamily: 'var(--font-display)' }}>
                 Y
               </div>
               <div style={{ flex: 1 }}>
@@ -208,14 +208,14 @@ export default function CommunityPage() {
                   style={{ width: '100%', background: 'none', border: 'none', fontSize: 14, color: '#111827', resize: 'none', outline: 'none', minHeight: 52, fontFamily: 'var(--font-body)', lineHeight: 1.6 }}
                 />
                 <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {[{ Icon: Image, color: '#16A34A' }, { Icon: Smile, color: '#F59E0B' }, { Icon: Link2, color: '#10B981' }].map(({ Icon, color }, i) => (
+                  {[{ Icon: Image, color: 'var(--accent-brand)' }, { Icon: Smile, color: '#F59E0B' }, { Icon: Link2, color: '#10B981' }].map(({ Icon, color }, i) => (
                     <button key={i} style={{ background: 'none', border: 'none', cursor: 'pointer', color, padding: '4px 6px', borderRadius: 7, display: 'flex', alignItems: 'center' }}>
                       <Icon size={16} />
                     </button>
                   ))}
                   <button
                     onClick={createPost}
-                    style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '7px 18px', background: '#16A34A', color: 'white', border: 'none', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                    style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, padding: '7px 18px', background: 'var(--accent-brand)', color: 'white', border: 'none', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
                   >
                     <Send size={13} /> Post
                   </button>
@@ -337,7 +337,7 @@ export default function CommunityPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }} className="community-side">
 
           {/* Top Contributor */}
-          <div style={{ background: 'linear-gradient(145deg, #14532D 0%, #166534 50%, #15803D 100%)', borderRadius: 'var(--radius-lg)', padding: 20, boxShadow: '0 4px 12px rgba(20,83,45,0.25), 0 12px 32px rgba(22,163,74,0.2)' }}>
+          <div style={{ background: 'linear-gradient(145deg, #14532D 0%, #166534 50%, #15803D 100%)', borderRadius: 'var(--radius-lg)', padding: 20, boxShadow: '0 4px 12px rgba(20,83,45,0.25), 0 12px 32px rgba(var(--accent-brand-rgb),0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Award size={18} color="#fff" />
@@ -365,12 +365,12 @@ export default function CommunityPage() {
           {/* Upcoming Events */}
           <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 16 }}>
-              <Calendar size={14} color="#16A34A" />
+              <Calendar size={14} color="var(--accent-brand)" />
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Upcoming Events</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
-                { name: 'Freelance Meetup NYC',  date: 'Tomorrow, 6:00 PM', type: 'In-person', color: '#16A34A' },
+                { name: 'Freelance Meetup NYC',  date: 'Tomorrow, 6:00 PM', type: 'In-person', color: 'var(--accent-brand)' },
                 { name: 'AI Tools Workshop',     date: 'Jul 15, 2:00 PM',   type: 'Virtual',   color: '#10B981' },
                 { name: 'Design Sprint',         date: 'Jul 18, 10:00 AM',  type: 'Virtual',   color: '#F59E0B' },
               ].map((event, i) => (
@@ -390,7 +390,7 @@ export default function CommunityPage() {
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', marginBottom: 14, fontFamily: 'var(--font-body)' }}>Your Top Tags</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {['#Figma', '#NextJS', '#UIDesign', '#Freelance', '#Remote', '#SaaS', '#Branding'].map(tag => (
-                <span key={tag} style={{ fontSize: 11, fontWeight: 600, color: '#16A34A', background: '#16A34A12', padding: '4px 10px', borderRadius: 20, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                <span key={tag} style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent-brand)', background: 'var(--accent-brand)12', padding: '4px 10px', borderRadius: 20, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
                   {tag}
                 </span>
               ))}

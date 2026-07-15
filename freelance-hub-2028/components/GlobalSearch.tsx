@@ -92,12 +92,12 @@ export default function GlobalSearch() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         background: focused ? '#fff' : '#F8FAFC',
-        border: `1px solid ${focused ? '#16A34A' : '#E5E7EB'}`,
+        border: `1px solid ${focused ? 'var(--accent-brand)' : '#E5E7EB'}`,
         borderRadius: 10, padding: '0 12px', height: 38,
-        boxShadow: focused ? '0 0 0 3px rgba(22,163,74,0.08)' : 'none',
+        boxShadow: focused ? '0 0 0 3px rgba(var(--accent-brand-rgb),0.08)' : 'none',
         transition: 'border 0.15s, box-shadow 0.15s, background 0.15s',
       }}>
-        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={focused ? '#16A34A' : '#9CA3AF'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke 0.15s' }}>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={focused ? 'var(--accent-brand)' : '#9CA3AF'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke 0.15s' }}>
           <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
         </svg>
 
@@ -144,7 +144,7 @@ export default function GlobalSearch() {
                 background: i === activeIdx ? '#F0FDF4' : 'transparent',
                 border: 'none', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontSize: 13.5,
-                color: i === activeIdx ? '#16A34A' : '#374151',
+                color: i === activeIdx ? 'var(--accent-brand)' : '#374151',
                 textAlign: 'left',
               }}
             >
@@ -170,21 +170,21 @@ export default function GlobalSearch() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 width: '100%', padding: '10px 14px',
-                background: activeIdx === aiIdx ? 'rgba(22,163,74,0.06)' : 'transparent',
+                background: activeIdx === aiIdx ? 'rgba(var(--accent-brand-rgb),0.06)' : 'transparent',
                 border: 'none', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontSize: 13.5,
-                color: '#16A34A', textAlign: 'left',
+                color: 'var(--accent-brand)', textAlign: 'left',
               }}
             >
               {/* Spark / AI icon */}
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--accent-brand)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
               <span>Ask AI: <span style={{ fontWeight: 600 }}>&ldquo;{trimmed}&rdquo;</span></span>
             </button>
           ) : aiState === 'loading' ? (
             <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10, color: '#6B7280', fontSize: 13 }}>
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, animation: 'spin 1s linear infinite' }}>
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--accent-brand)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, animation: 'spin 1s linear infinite' }}>
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
               <span style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Thinking…</span>
@@ -194,10 +194,10 @@ export default function GlobalSearch() {
             /* AI response */
             <div style={{ padding: '12px 14px', borderTop: '1px solid #F0FDF4' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="var(--accent-brand)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                 </svg>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#16A34A', fontFamily: 'var(--font-body)' }}>AI Answer</span>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>AI Answer</span>
               </div>
               <p style={{ fontSize: 13, lineHeight: 1.6, color: '#374151', fontFamily: 'var(--font-body)', margin: 0 }}>{aiText}</p>
 
@@ -208,7 +208,7 @@ export default function GlobalSearch() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6,
                     padding: '6px 12px', borderRadius: 7,
-                    background: '#16A34A', color: '#fff',
+                    background: 'var(--accent-brand)', color: '#fff',
                     border: 'none', cursor: 'pointer',
                     fontSize: 12.5, fontWeight: 600, fontFamily: 'var(--font-body)',
                   }}

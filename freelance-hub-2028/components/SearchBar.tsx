@@ -32,7 +32,7 @@ const TYPE_ICON: Record<string, string> = {
   Client: '👤', Task: '✓', Invoice: '🧾', CRM: '🤝', Event: '📅', Job: '⚡',
 }
 const TYPE_COLOR: Record<string, string> = {
-  Client: '#16a34a', Task: '#5b5fcf', Invoice: '#f59e0b', CRM: '#ec4899', Event: '#06b6d4', Job: '#00b857',
+  Client: 'var(--accent-brand)', Task: '#5b5fcf', Invoice: '#f59e0b', CRM: '#ec4899', Event: '#06b6d4', Job: '#00b857',
 }
 
 function formatAnswer(text: string) {

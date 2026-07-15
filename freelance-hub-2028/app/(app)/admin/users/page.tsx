@@ -173,7 +173,7 @@ export default function AdminUsersPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                 <div style={{
-                  width: 30, height: 30, borderRadius: '50%', background: '#F0FDF4', color: '#16A34A',
+                  width: 30, height: 30, borderRadius: '50%', background: '#F0FDF4', color: 'var(--accent-brand)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
                   fontFamily: 'var(--font-body)', flexShrink: 0,
                 }}>

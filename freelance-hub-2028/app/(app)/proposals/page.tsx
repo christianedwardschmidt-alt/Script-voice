@@ -47,7 +47,7 @@ const STATUS_CONFIG = {
   draft:    { label: 'Draft',    bg: '#F3F4F6', color: '#6B7280',  dot: '#9CA3AF' },
   sent:     { label: 'Sent',     bg: '#EFF6FF', color: '#2563EB',  dot: '#3B82F6' },
   viewed:   { label: 'Viewed',   bg: '#FFFBEB', color: '#D97706',  dot: '#F59E0B' },
-  accepted: { label: 'Accepted', bg: '#F0FDF4', color: '#16A34A',  dot: '#22C55E' },
+  accepted: { label: 'Accepted', bg: '#F0FDF4', color: 'var(--accent-brand)',  dot: '#22C55E' },
   declined: { label: 'Declined', bg: '#FFF1F2', color: '#DC2626',  dot: '#EF4444' },
   expired:  { label: 'Expired',  bg: '#F3F4F6', color: '#9CA3AF',  dot: '#D1D5DB' },
 }
@@ -180,7 +180,7 @@ export default function ProposalsPage() {
 
   const kpis = [
     { label: 'Sent This Month',  value: String(sentThisMonth),     spark: [0,1,1,2,2,sentThisMonth], color: '#6366F1' },
-    { label: 'Acceptance Rate',  value: `${acceptanceRate}%`,      spark: [0,30,45,55,acceptanceRate*.9,acceptanceRate].map(Math.round), color: '#16A34A' },
+    { label: 'Acceptance Rate',  value: `${acceptanceRate}%`,      spark: [0,30,45,55,acceptanceRate*.9,acceptanceRate].map(Math.round), color: 'var(--accent-brand)' },
     { label: 'Avg Proposal Value', value: avgValue > 0 ? fmt(avgValue) : '—', spark: [1200,2800,3500,4200,avgValue*.8,avgValue].map(Math.round), color: '#D97706' },
     { label: 'Open Value',       value: openValue > 0 ? fmt(openValue) : '—', spark: [0,2000,5000,openValue*.5,openValue*.8,openValue].map(Math.round), color: '#0EA5E9' },
   ]
@@ -235,7 +235,7 @@ export default function ProposalsPage() {
         <button
           onClick={createNew}
           disabled={creating}
-          style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', border: 'none', borderRadius: 10, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 4px rgba(22,163,74,0.35)', flexShrink: 0 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '10px 18px', border: 'none', borderRadius: 10, background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 1px 4px rgba(var(--accent-brand-rgb),0.35)', flexShrink: 0 }}
         >
           {creating ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={14} />}
           New Proposal
@@ -270,13 +270,13 @@ export default function ProposalsPage() {
                 padding: '9px 14px', border: 'none', background: 'none', fontSize: 13, cursor: 'pointer',
                 fontWeight: activeTab === tab ? 700 : 500,
                 color: activeTab === tab ? '#111827' : '#6B7280',
-                borderBottom: activeTab === tab ? '2px solid #16A34A' : '2px solid transparent',
+                borderBottom: activeTab === tab ? '2px solid var(--accent-brand)' : '2px solid transparent',
                 marginBottom: -1, transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: 6,
               }}
             >
               {tab}
               {count > 0 && (
-                <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 10, background: activeTab === tab ? '#F0FDF4' : '#F3F4F6', color: activeTab === tab ? '#16A34A' : '#9CA3AF', fontWeight: 600 }}>
+                <span style={{ fontSize: 11, padding: '1px 6px', borderRadius: 10, background: activeTab === tab ? '#F0FDF4' : '#F3F4F6', color: activeTab === tab ? 'var(--accent-brand)' : '#9CA3AF', fontWeight: 600 }}>
                   {count}
                 </span>
               )}
@@ -292,14 +292,14 @@ export default function ProposalsPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '72px 0' }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(22,163,74,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <FileText size={28} color="#16A34A" />
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(var(--accent-brand-rgb),0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <FileText size={28} color="var(--accent-brand)" />
           </div>
           <p style={{ fontSize: 15, fontWeight: 600, color: '#111827', margin: '0 0 6px' }}>
             {activeTab === 'All' ? 'No proposals yet' : `No ${activeTab.toLowerCase()} proposals`}
           </p>
           <p style={{ fontSize: 13, color: '#6B7280', margin: '0 0 20px' }}>Create your first proposal to start winning clients.</p>
-          <button onClick={createNew} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', border: 'none', borderRadius: 9, background: '#16A34A', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={createNew} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 18px', border: 'none', borderRadius: 9, background: 'var(--accent-brand)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
             <Plus size={14} /> New Proposal
           </button>
         </div>

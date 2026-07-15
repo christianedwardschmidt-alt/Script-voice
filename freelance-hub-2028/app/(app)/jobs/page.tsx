@@ -25,7 +25,7 @@ const typeColor: Record<string, string> = {
   Retainer: '#fce7f3',
 }
 const typeText: Record<string, string> = {
-  Contract: '#16a34a',
+  Contract: 'var(--accent-brand)',
   Project: '#059669',
   Retainer: '#db2777',
 }
@@ -89,7 +89,7 @@ export default function JobsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f7f6f3', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Briefcase size={20} color="#16a34a" />
+                  <Briefcase size={20} color="var(--accent-brand)" />
                 </div>
                 <div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 600, color: '#111827' }}>{job.title}</div>

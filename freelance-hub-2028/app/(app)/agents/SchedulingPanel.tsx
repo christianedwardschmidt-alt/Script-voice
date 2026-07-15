@@ -40,8 +40,8 @@ export function defaultScheduleState(timezone: string): ScheduleState {
 }
 
 const CARD_META: { type: ScheduleType; icon: React.FC<{ size?: number; color?: string }>; label: string; desc: string; color: string; bg: string }[] = [
-  { type: 'once', icon: CalendarCheck2, label: 'Run Once', desc: 'At a specific date and time', color: '#16A34A', bg: 'rgba(22,163,74,0.08)' },
-  { type: 'recurring', icon: Repeat, label: 'Recurring', desc: 'Daily, weekly, or monthly', color: '#16A34A', bg: 'rgba(22,163,74,0.08)' },
+  { type: 'once', icon: CalendarCheck2, label: 'Run Once', desc: 'At a specific date and time', color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.08)' },
+  { type: 'recurring', icon: Repeat, label: 'Recurring', desc: 'Daily, weekly, or monthly', color: 'var(--accent-brand)', bg: 'rgba(var(--accent-brand-rgb),0.08)' },
   { type: 'calendar', icon: CalendarClock, label: 'Calendar Trigger', desc: 'Before or after a calendar event', color: '#CA8A04', bg: 'rgba(202,138,4,0.08)' },
   { type: 'smart', icon: Sparkles, label: 'Smart Schedule', desc: 'AI picks the best time based on your patterns', color: '#7C3AED', bg: 'rgba(124,58,237,0.08)' },
 ]
@@ -161,7 +161,7 @@ export default function SchedulingPanel({ value, onChange, googleCalendarConnect
   }
 
   return (
-    <div style={{ background: '#fff', borderRadius: 16, boxShadow: 'var(--shadow-sm)', padding: 24, borderLeft: '4px solid #16A34A', marginBottom: 20 }}>
+    <div style={{ background: '#fff', borderRadius: 16, boxShadow: 'var(--shadow-sm)', padding: 24, borderLeft: '4px solid var(--accent-brand)', marginBottom: 20 }}>
       <h3 style={{ fontFamily: 'var(--font-syne)', fontSize: 16, fontWeight: 700, color: '#111827', margin: '0 0 3px' }}>When should this run?</h3>
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B7280', margin: '0 0 18px' }}>Choose exactly when your agent springs into action</p>
 
@@ -241,7 +241,7 @@ export default function SchedulingPanel({ value, onChange, googleCalendarConnect
                   const on = value.days.includes(day)
                   return (
                     <button key={day} type="button" onClick={() => patch({ days: on ? value.days.filter(d => d !== day) : [...value.days, day] })}
-                      style={{ padding: '5px 10px', borderRadius: 7, fontSize: 12, fontFamily: 'var(--font-body)', cursor: 'pointer', border: on ? '1.5px solid #16A34A' : '1.5px solid #E5E7EB', background: on ? 'rgba(22,163,74,0.1)' : '#fff', color: on ? '#15803D' : '#6B7280', fontWeight: on ? 600 : 400 }}>
+                      style={{ padding: '5px 10px', borderRadius: 7, fontSize: 12, fontFamily: 'var(--font-body)', cursor: 'pointer', border: on ? '1.5px solid var(--accent-brand)' : '1.5px solid #E5E7EB', background: on ? 'rgba(var(--accent-brand-rgb),0.1)' : '#fff', color: on ? 'var(--accent-brand-hover)' : '#6B7280', fontWeight: on ? 600 : 400 }}>
                       {day.slice(0, 3)}
                     </button>
                   )
@@ -370,7 +370,7 @@ export default function SchedulingPanel({ value, onChange, googleCalendarConnect
 
       {/* Live plain-English preview */}
       {preview && (
-        <div style={{ background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A', borderRadius: '0 8px 8px 0', padding: '9px 14px', marginBottom: outsideWorkingHours ? 12 : 0, fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
+        <div style={{ background: 'rgba(var(--accent-brand-rgb),0.03)', borderLeft: '3px solid var(--accent-brand)', borderRadius: '0 8px 8px 0', padding: '9px 14px', marginBottom: outsideWorkingHours ? 12 : 0, fontSize: 13, color: '#374151', fontFamily: 'var(--font-body)', fontStyle: 'italic' }}>
           {preview}
         </div>
       )}

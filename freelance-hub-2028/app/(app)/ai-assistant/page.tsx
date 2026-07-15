@@ -55,7 +55,7 @@ const suggestions = [
 ]
 
 const CAPABILITIES = [
-  { icon: FileText,     label: 'Create tasks',       color: '#16A34A' },
+  { icon: FileText,     label: 'Create tasks',       color: 'var(--accent-brand)' },
   { icon: DollarSign,  label: 'Draft invoices',      color: '#10B981' },
   { icon: Users,       label: 'Add clients',         color: '#D97706' },
   { icon: Calculator,  label: 'Schedule events',     color: '#6366F1' },
@@ -94,8 +94,8 @@ function ConfidenceBadge({ confidence, needsClarification }: { confidence?: stri
   if (confidence === 'high') {
     return (
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, height: 24, borderRadius: 12, padding: '0 10px', background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#15803D', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>High confidence</span>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', flexShrink: 0 }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent-brand-hover)', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>High confidence</span>
       </div>
     )
   }
@@ -160,10 +160,10 @@ function ActionExplain({ action, originalMessage, onAskFocus }: { action: Action
           display: 'flex', alignItems: 'center', gap: 5,
           background: 'none', border: 'none', cursor: 'pointer', padding: 0,
           marginTop: 6, fontSize: 12, fontFamily: 'var(--font-body)',
-          color: hover ? '#16A34A' : '#9CA3AF', transition: 'color 0.15s',
+          color: hover ? 'var(--accent-brand)' : '#9CA3AF', transition: 'color 0.15s',
         }}
       >
-        <HelpCircle size={12} color={hover ? '#16A34A' : '#9CA3AF'} />
+        <HelpCircle size={12} color={hover ? 'var(--accent-brand)' : '#9CA3AF'} />
         Why did you do that?
       </button>
 
@@ -171,7 +171,7 @@ function ActionExplain({ action, originalMessage, onAskFocus }: { action: Action
         <div
           ref={contentRef}
           style={{
-            background: 'rgba(22,163,74,0.03)', borderLeft: '3px solid #16A34A',
+            background: 'rgba(var(--accent-brand-rgb),0.03)', borderLeft: '3px solid var(--accent-brand)',
             borderRadius: '0 8px 8px 0', padding: '14px 16px', marginTop: 8, marginLeft: 8,
             position: 'relative',
           }}
@@ -405,9 +405,9 @@ function VoiceModeOverlay({ existingMessages, onClose }: VoiceOverlayProps) {
 
   // ── Circle config ─────────────────────────────────────────────────────────
   const circle = {
-    listening:  { bg: '#16A34A', anim: 'gwVoiceSlow 1.5s ease-in-out infinite', glow: 'rgba(22,163,74,0.35)' },
+    listening:  { bg: 'var(--accent-brand)', anim: 'gwVoiceSlow 1.5s ease-in-out infinite', glow: 'rgba(var(--accent-brand-rgb),0.35)' },
     processing: { bg: '#CA8A04', anim: 'gwVoiceFast 0.8s ease-in-out infinite', glow: 'rgba(202,138,4,0.35)' },
-    speaking:   { bg: '#16A34A', anim: 'none',                                  glow: 'rgba(22,163,74,0.5)'  },
+    speaking:   { bg: 'var(--accent-brand)', anim: 'none',                                  glow: 'rgba(var(--accent-brand-rgb),0.5)'  },
   }[phase]
 
   const statusLabel = { listening: 'Listening…', processing: 'Thinking…', speaking: 'Speaking…' }[phase]
@@ -436,10 +436,10 @@ function VoiceModeOverlay({ existingMessages, onClose }: VoiceOverlayProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             width: 28, height: 28, borderRadius: 8,
-            background: 'rgba(22,163,74,0.15)', border: '1px solid rgba(22,163,74,0.3)',
+            background: 'rgba(var(--accent-brand-rgb),0.15)', border: '1px solid rgba(var(--accent-brand-rgb),0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <Bot size={14} color="#16A34A" />
+            <Bot size={14} color="var(--accent-brand)" />
           </div>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 700, color: 'white', letterSpacing: '-0.01em' }}>GuildWire</span>
         </div>
@@ -500,7 +500,7 @@ function VoiceModeOverlay({ existingMessages, onClose }: VoiceOverlayProps) {
             )}
             {transcript.map((m, i) => (
               <div key={i}>
-                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: m.role === 'user' ? '#16A34A' : 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)', marginBottom: 3 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: m.role === 'user' ? 'var(--accent-brand)' : 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)', marginBottom: 3 }}>
                   {m.role === 'user' ? 'You' : 'AI'}
                 </div>
                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', margin: 0, fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>
@@ -751,7 +751,7 @@ function AIAssistantInner() {
       if (line.startsWith('**') && line.endsWith('**'))
         return <strong key={i} style={{ fontFamily: 'var(--font-body)', color: '#111827', display: 'block', marginTop: i > 0 ? 8 : 0, marginBottom: 3 }}>{line.replace(/\*\*/g, '')}</strong>
       if (line.startsWith('• '))
-        return <div key={i} style={{ fontFamily: 'var(--font-body)', paddingLeft: 16, color: '#374151', marginBottom: 3, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: '#16A34A' }}>•</span>{line.replace('• ', '')}</div>
+        return <div key={i} style={{ fontFamily: 'var(--font-body)', paddingLeft: 16, color: '#374151', marginBottom: 3, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: 'var(--accent-brand)' }}>•</span>{line.replace('• ', '')}</div>
       if (line === '') return <div key={i} style={{ height: 6 }} />
       return <span key={i} style={{ fontFamily: 'var(--font-body)', color: '#374151', lineHeight: 1.7, display: 'block' }}>{line}</span>
     })
@@ -773,13 +773,13 @@ function AIAssistantInner() {
           display: 'flex', flexDirection: 'column', padding: '24px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, padding: '0 4px' }}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, #14532D, #16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Bot size={17} color="#fff" />
             </div>
             <div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#111827', letterSpacing: '-0.01em' }}>GuildWire AI</div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: '#16A34A', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', display: 'inline-block' }} />
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--accent-brand)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-brand)', display: 'inline-block' }} />
                 Powered by Claude
               </div>
             </div>
@@ -815,7 +815,7 @@ function AIAssistantInner() {
               <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>General Assistant</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#16A34A', fontWeight: 600, fontFamily: 'var(--font-body)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, fontFamily: 'var(--font-body)' }}>
                 <Sparkles size={13} /> AI-powered
               </div>
               <button
@@ -829,10 +829,10 @@ function AIAssistantInner() {
                   fontWeight: 500, transition: 'all 0.15s',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#16A34A'; e.currentTarget.style.color = '#16A34A' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent-brand)'; e.currentTarget.style.color = 'var(--accent-brand)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E7EB'; e.currentTarget.style.color = '#374151' }}
               >
-                <Mic size={13} color="#16A34A" />
+                <Mic size={13} color="var(--accent-brand)" />
                 Voice Mode
               </button>
             </div>
@@ -859,7 +859,7 @@ function AIAssistantInner() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Mic size={13} color="#16A34A" />
+                      <Mic size={13} color="var(--accent-brand)" />
                     </div>
                     <div>
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>
@@ -879,7 +879,7 @@ function AIAssistantInner() {
                       <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                         <span style={{
                           fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
-                          color: m.role === 'user' ? '#16A34A' : '#6B7280',
+                          color: m.role === 'user' ? 'var(--accent-brand)' : '#6B7280',
                           fontFamily: 'var(--font-body)', paddingTop: 2, flexShrink: 0, width: 18,
                         }}>
                           {m.role === 'user' ? 'You' : 'AI'}
@@ -910,7 +910,7 @@ function AIAssistantInner() {
                     }}
                   >
                     <div style={{ width: 30, height: 30, borderRadius: 8, background: '#F0FDF4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Icon size={14} color="#16A34A" />
+                      <Icon size={14} color="var(--accent-brand)" />
                     </div>
                     <span style={{ fontSize: 13, color: '#374151', fontWeight: 500, fontFamily: 'var(--font-body)', flex: 1 }}>{label}</span>
                     <ChevronRight size={13} color="#D1D5DB" />
@@ -932,7 +932,7 @@ function AIAssistantInner() {
               }}>
                 <div style={{
                   width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
-                  background: msg.role === 'assistant' ? 'linear-gradient(135deg, #14532D, #16A34A)' : '#F3F4F6',
+                  background: msg.role === 'assistant' ? 'linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))' : '#F3F4F6',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {msg.role === 'assistant' ? <Bot size={15} color="#fff" /> : <User size={14} color="#6B7280" />}
@@ -943,8 +943,8 @@ function AIAssistantInner() {
                       {msg.actions.map((a, i) => (
                         <div key={i}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 9, background: '#F0FDF4', border: '1px solid #BBF7D0', fontSize: 12 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: '#15803D', background: '#DCFCE7', padding: '2px 6px', borderRadius: 5, fontFamily: 'var(--font-body)', flexShrink: 0 }}>{ACTION_LABELS[a.name] ?? 'AI'}</span>
-                            <span style={{ color: '#15803D', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent-brand-hover)', background: '#DCFCE7', padding: '2px 6px', borderRadius: 5, fontFamily: 'var(--font-body)', flexShrink: 0 }}>{ACTION_LABELS[a.name] ?? 'AI'}</span>
+                            <span style={{ color: 'var(--accent-brand-hover)', fontWeight: 500, fontFamily: 'var(--font-body)' }}>{a.summary}</span>
                           </div>
                           <ActionExplain action={a} originalMessage={precedingUserMsg} onAskFocus={() => inputRef.current?.focus()} />
                         </div>
@@ -955,7 +955,7 @@ function AIAssistantInner() {
                   <div style={{
                     padding: '13px 17px',
                     borderRadius: msg.role === 'user' ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
-                    background: msg.role === 'user' ? '#16A34A' : 'white',
+                    background: msg.role === 'user' ? 'var(--accent-brand)' : 'white',
                     border: msg.role === 'user' ? 'none' : '1px solid #F3F4F6',
                     boxShadow: msg.role === 'assistant' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none',
                     fontSize: 14, lineHeight: 1.6,
@@ -982,7 +982,7 @@ function AIAssistantInner() {
                         <button
                           onClick={() => confirmAction(msg.pendingAction!, msg.id)}
                           disabled={thinking}
-                          style={{ background: thinking ? '#86EFAC' : '#16A34A', color: 'white', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600, cursor: thinking ? 'default' : 'pointer', transition: 'background 0.15s' }}
+                          style={{ background: thinking ? '#86EFAC' : 'var(--accent-brand)', color: 'white', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600, cursor: thinking ? 'default' : 'pointer', transition: 'background 0.15s' }}
                         >
                           Yes, do it
                         </button>
@@ -1001,7 +1001,7 @@ function AIAssistantInner() {
                   )}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingLeft: 2 }}>
                     {msg.fromVoice && (
-                      <Mic size={10} color="#16A34A" />
+                      <Mic size={10} color="var(--accent-brand)" />
                     )}
                     <span style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{msg.timestamp}</span>
                     {msg.role === 'assistant' && (
@@ -1020,12 +1020,12 @@ function AIAssistantInner() {
 
             {(thinking || greetingLoading) && (
               <div style={{ display: 'flex', gap: 12, maxWidth: '78%' }}>
-                <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #14532D, #16A34A)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, var(--accent-brand-dark), var(--accent-brand))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Bot size={15} color="#fff" />
                 </div>
                 <div style={{ padding: '14px 18px', borderRadius: '4px 16px 16px 16px', background: 'white', border: '1px solid #F3F4F6', boxShadow: '0 1px 4px rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', gap: 5 }}>
                   {[0, 1, 2].map(i => (
-                    <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: '#16A34A' }} className={`dot-${i + 1}`} />
+                    <div key={i} style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--accent-brand)' }} className={`dot-${i + 1}`} />
                   ))}
                 </div>
               </div>
@@ -1083,7 +1083,7 @@ function AIAssistantInner() {
                   disabled={(!input.trim() && !interimText) || thinking}
                   style={{
                     width: 34, height: 34, borderRadius: 10,
-                    background: (input.trim() || interimText) && !thinking ? '#16A34A' : '#F3F4F6',
+                    background: (input.trim() || interimText) && !thinking ? 'var(--accent-brand)' : '#F3F4F6',
                     border: 'none', cursor: input.trim() ? 'pointer' : 'default',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.15s',
