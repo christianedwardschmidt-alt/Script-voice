@@ -25,19 +25,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
         {/* Top bar */}
         <header className="app-header" style={{
-          background: "var(--header-bg)",
-          borderBottom: "1px solid var(--header-border)",
+          background: "white",
+          borderBottom: "1px solid #F3F4F6",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           position: "sticky",
           top: 0,
           zIndex: 40,
-          boxShadow: "0 1px 0 var(--header-border)",
+          boxShadow: "0 1px 0 #F3F4F6",
         }}>
           {/* Left: page title */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-            <span id="page-title" style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "var(--header-title)" }} />
+            <span id="page-title" style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "#111827" }} />
           </div>
 
           {/* Center: search */}

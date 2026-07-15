@@ -67,21 +67,16 @@ function Sparkline({ values, color, id }: { values: number[]; color: string; id:
 }
 
 const TICK_COLOR = 'rgba(120,128,145,0.7)'
-const TICK_COLOR_DARK = 'rgba(245,244,241,0.4)'
 
-const ChartTip = ({ active, payload, label, dark }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string; dark?: boolean }) => {
+const ChartTip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{
-      background: dark ? '#161C29' : 'white',
-      border: `1px solid ${dark ? 'rgba(255,255,255,0.1)' : '#F3F4F6'}`,
-      borderRadius: 'var(--radius-md)', padding: '10px 14px', boxShadow: 'var(--shadow-md)',
-    }}>
-      <div style={{ fontSize: 9, color: dark ? 'rgba(245,244,241,0.4)' : '#9CA3AF', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>{label}</div>
+    <div style={{ background: 'white', border: '1px solid #F3F4F6', borderRadius: 'var(--radius-md)', padding: '10px 14px', boxShadow: 'var(--shadow-md)' }}>
+      <div style={{ fontSize: 9, color: '#9CA3AF', marginBottom: 6, fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontFamily: 'var(--font-body)' }}>{label}</div>
       {payload.map((p) => (
         <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, fontWeight: 700, color: p.color, fontVariantNumeric: 'tabular-nums', fontFamily: 'var(--font-body)' }}>
           <span>${Number(p.value).toLocaleString()}</span>
-          <span style={{ color: dark ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontWeight: 400, fontSize: 11 }}>{p.name}</span>
+          <span style={{ color: '#9CA3AF', fontWeight: 400, fontSize: 11 }}>{p.name}</span>
         </div>
       ))}
     </div>
@@ -107,18 +102,6 @@ function getDotColor(msg: string) {
   if (msg.toLowerCase().includes('invoice') || msg.toLowerCase().includes('sent')) return '#D97706'
   if (msg.toLowerCase().includes('overdue')) return '#EF4444'
   return 'var(--accent-brand)'
-}
-
-// Dark-mode-safe task badge colors for the Veruno dashboard — kept as inline
-// styles rather than forked onto the shared .badge-* classes, since those
-// classes are also used by pages that stay light under Veruno (Tasks,
-// CRM, etc.) and forking them would break those.
-function verunoBadgeStyle(priority: string): React.CSSProperties {
-  const p = priority.toLowerCase()
-  if (p === 'high' || p === 'urgent') return { background: 'rgba(239,68,68,0.14)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.28)' }
-  if (p === 'medium') return { background: 'rgba(217,119,6,0.14)', color: '#FCD34D', border: '1px solid rgba(217,119,6,0.28)' }
-  if (p === 'low') return { background: 'rgba(255,255,255,0.07)', color: 'rgba(245,244,241,0.7)', border: '1px solid rgba(255,255,255,0.12)' }
-  return { background: 'rgba(255,255,255,0.05)', color: 'rgba(245,244,241,0.5)', border: '1px solid rgba(255,255,255,0.1)' }
 }
 
 export default function DashboardPage() {
@@ -253,11 +236,11 @@ export default function DashboardPage() {
       <div>
         <h1 style={{
           fontFamily: 'var(--font-syne)', fontSize: 28, fontWeight: 700,
-          color: isVerunoPreview ? '#F5F4F1' : '#111827', letterSpacing: '-0.02em', marginBottom: 6,
+          color: '#111827', letterSpacing: '-0.02em', marginBottom: 6,
         }}>
           {greeting}, {userName}.
         </h1>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: isVerunoPreview ? 'rgba(245,244,241,0.55)' : '#6B7280' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6B7280' }}>
           Here&apos;s what&apos;s happening with your business.
         </p>
       </div>
@@ -280,12 +263,11 @@ export default function DashboardPage() {
         {showNewMenu && (
           <div style={{
             position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-            background: isVerunoPreview ? '#161C29' : 'white',
-            border: `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.1)' : '#F3F4F6'}`,
-            borderRadius: 14, boxShadow: isVerunoPreview ? '0 8px 32px rgba(0,0,0,0.45)' : '0 8px 32px rgba(0,0,0,0.1)',
+            background: 'white', border: '1px solid #F3F4F6',
+            borderRadius: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
             zIndex: 50, minWidth: 200, overflow: 'hidden',
           }}>
-            <div style={{ padding: '10px 14px 6px', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>Create</div>
+            <div style={{ padding: '10px 14px 6px', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Create</div>
             {[
               { icon: '🧾', label: 'Invoice',   href: '/invoicing', desc: 'Bill a client' },
               { icon: '📋', label: 'Proposal',  href: '/invoicing', desc: 'Send a proposal' },
@@ -303,28 +285,28 @@ export default function DashboardPage() {
                   padding: '9px 14px', textDecoration: 'none',
                   transition: 'background 0.1s',
                 }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = isVerunoPreview ? 'rgba(255,255,255,0.06)' : '#F9FAFB'}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F9FAFB'}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
               >
                 <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>{item.icon}</span>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: isVerunoPreview ? '#F5F4F1' : '#111827', fontFamily: 'var(--font-body)' }}>{item.label}</div>
-                  <div style={{ fontSize: 11, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>{item.desc}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', fontFamily: 'var(--font-body)' }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{item.desc}</div>
                 </div>
               </a>
             ))}
-            <div style={{ height: 1, background: isVerunoPreview ? 'rgba(255,255,255,0.08)' : '#F3F4F6', margin: '4px 0' }} />
+            <div style={{ height: 1, background: '#F3F4F6', margin: '4px 0' }} />
             <a
               href="/ai-assistant"
               onClick={() => setShowNewMenu(false)}
               style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 14px', textDecoration: 'none', background: 'transparent', transition: 'background 0.1s' }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = isVerunoPreview ? 'rgba(255,255,255,0.06)' : '#F0FDF4'}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#F0FDF4'}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
             >
               <span style={{ fontSize: 17, width: 28, textAlign: 'center', flexShrink: 0 }}>⚡</span>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-brand)', fontFamily: 'var(--font-body)' }}>Ask AI to create</div>
-                <div style={{ fontSize: 11, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>Just describe it</div>
+                <div style={{ fontSize: 11, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>Just describe it</div>
               </div>
             </a>
           </div>
@@ -334,16 +316,15 @@ export default function DashboardPage() {
   )
 
   return (
-    <div style={{ padding: '40px 32px 52px', minHeight: '100vh', background: isVerunoPreview ? '#0A0E16' : 'transparent' }}>
+    <div style={{ padding: '40px 32px 52px', minHeight: '100vh' }}>
 
       <WatchdogPanel userName={userName} standardHeader={standardHeader} />
 
       {/* Stats row — unified bar */}
       <div style={{
-        background: isVerunoPreview ? '#0E1420' : 'white',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: isVerunoPreview ? 'none' : 'var(--shadow-sm)',
-        border: isVerunoPreview ? '1px solid rgba(255,255,255,0.08)' : 'none',
+        background: 'white', borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-sm)',
+        border: isVerunoPreview ? '1px solid rgba(14,20,32,0.08)' : 'none',
         display: 'grid', gridTemplateColumns: 'repeat(4,1fr)',
         marginBottom: 28,
       }}
@@ -352,12 +333,12 @@ export default function DashboardPage() {
         {stats.map((stat, i) => (
           <div key={stat.label} style={{
             padding: isVerunoPreview ? '20px 24px' : '24px 28px',
-            borderRight: i < 3 ? `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` : 'none',
+            borderRight: i < 3 ? `1px solid ${isVerunoPreview ? 'rgba(14,20,32,0.10)' : '#F3F4F6'}` : 'none',
           }}>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
             <div style={{
               fontFamily: isVerunoPreview ? 'var(--font-body)' : 'var(--font-display)',
-              fontSize: 32, fontWeight: 700, color: isVerunoPreview ? '#F5F4F1' : '#111827', marginTop: 6,
+              fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6,
               letterSpacing: isVerunoPreview ? '-0.01em' : '-0.02em',
               fontVariantNumeric: 'tabular-nums',
             }}>{stat.value}</div>
@@ -371,38 +352,20 @@ export default function DashboardPage() {
 
       {/* Tasks strip */}
       {tasks.filter(t => !t.checked).length > 0 && (
-        <div style={{
-          background: isVerunoPreview ? '#0E1420' : 'white',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: isVerunoPreview ? 'none' : 'var(--shadow-sm)',
-          border: isVerunoPreview ? '1px solid rgba(255,255,255,0.08)' : 'none',
-          padding: '20px', marginBottom: 16, borderTop: '2px solid var(--accent-brand)',
-        }}>
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px', marginBottom: 16, borderTop: '2px solid var(--accent-brand)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
-              <span style={{ fontSize: 12, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TASKS</span>
+              <span style={{ fontSize: 12, color: '#9CA3AF', marginLeft: 10, fontFamily: 'var(--font-body)' }}>{tasksDone} of {tasks.length} complete</span>
             </div>
             <a href="/tasks" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
           </div>
-          <div style={{ height: 3, background: isVerunoPreview ? 'rgba(255,255,255,0.1)' : '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
+          <div style={{ height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', marginBottom: 14 }}>
             <div style={{ width: `${tasks.length ? Math.round((tasksDone / tasks.length) * 100) : 0}%`, height: '100%', background: 'var(--accent-brand)', borderRadius: 99, transition: 'width 0.8s ease' }} />
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {tasks.filter(t => !t.checked).slice(0, 10).map(t => {
               const p = (t.priority ?? '').toLowerCase()
-              if (isVerunoPreview) {
-                return (
-                  <a key={t.id} href="/tasks" style={{
-                    ...verunoBadgeStyle(p),
-                    display: 'inline-flex', alignItems: 'center', padding: '3px 8px', borderRadius: 6,
-                    fontSize: 11, fontWeight: 600, letterSpacing: '0.01em', fontFamily: 'var(--font-body)',
-                    cursor: 'pointer', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: 'none',
-                  }}>
-                    {t.title}
-                  </a>
-                )
-              }
               const cls = p === 'high' || p === 'urgent' ? 'badge badge-high'
                         : p === 'medium' ? 'badge badge-medium'
                         : p === 'low' ? 'badge badge-low'
@@ -421,21 +384,15 @@ export default function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 300px', gap: 16 }} className="dash-bento-grid">
 
         {/* Revenue chart — col 1-2 */}
-        <div style={{
-          background: isVerunoPreview ? '#0E1420' : 'white',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: isVerunoPreview ? 'none' : 'var(--shadow-sm)',
-          border: isVerunoPreview ? '1px solid rgba(255,255,255,0.08)' : 'none',
-          padding: '20px 20px 12px', gridColumn: '1 / 3',
-        }} className="dash-chart-card">
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px 12px', gridColumn: '1 / 3' }} className="dash-chart-card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 4 }}>REVENUE</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: isVerunoPreview ? '#F5F4F1' : '#111827' }}>Annual Overview · {new Date().getFullYear()}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 4 }}>REVENUE</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>Annual Overview · {new Date().getFullYear()}</div>
             </div>
-            <div style={{ display: 'flex', gap: 18, fontSize: 11, color: isVerunoPreview ? 'rgba(245,244,241,0.55)' : '#6B7280', fontFamily: 'var(--font-body)' }}>
+            <div style={{ display: 'flex', gap: 18, fontSize: 11, color: '#6B7280', fontFamily: 'var(--font-body)' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ width: 18, height: 2, background: isVerunoPreview ? 'rgba(245,244,241,0.75)' : 'var(--accent-brand)', display: 'inline-block', borderRadius: 2 }} />Income
+                <span style={{ width: 18, height: 2, background: isVerunoPreview ? '#1F2937' : 'var(--accent-brand)', display: 'inline-block', borderRadius: 2 }} />Income
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span style={{ width: 18, height: 2, background: '#6366F1', display: 'inline-block', borderRadius: 2 }} />Expenses
@@ -446,8 +403,8 @@ export default function DashboardPage() {
             <AreaChart data={revenueData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="incomeGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isVerunoPreview ? 'rgba(245,244,241,0.9)' : 'var(--accent-brand)'} stopOpacity={0.18} />
-                  <stop offset="100%" stopColor={isVerunoPreview ? 'rgba(245,244,241,0.9)' : 'var(--accent-brand)'} stopOpacity={0} />
+                  <stop offset="0%" stopColor={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} stopOpacity={0.18} />
+                  <stop offset="100%" stopColor={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#6366F1" stopOpacity={0.1} />
@@ -455,10 +412,10 @@ export default function DashboardPage() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: isVerunoPreview ? TICK_COLOR_DARK : TICK_COLOR }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: isVerunoPreview ? TICK_COLOR_DARK : TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
-              <Tooltip content={<ChartTip dark={isVerunoPreview} />} />
-              <Area type="monotone" dataKey="income"   stroke={isVerunoPreview ? 'rgba(245,244,241,0.9)' : 'var(--accent-brand)'} strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: TICK_COLOR }} axisLine={false} tickLine={false} tickFormatter={v => `$${v/1000}k`} />
+              <Tooltip content={<ChartTip />} />
+              <Area type="monotone" dataKey="income"   stroke={isVerunoPreview ? '#1F2937' : 'var(--accent-brand)'} strokeWidth={2}   fill="url(#incomeGrad)" dot={false} />
               <Area type="monotone" dataKey="expenses" stroke="#6366F1" strokeWidth={1.5} fill="url(#expGrad)"   dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -496,118 +453,87 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Top clients / Pipeline / Recent Activity — three separate cards by
-            default, unified into one hairline-divided ledger panel for
-            Veruno. The three sections' inner markup is built once and reused
-            by whichever wrapper renders, so the data logic isn't duplicated
-            even though the surrounding chrome branches completely. */}
-        {(() => {
-          const topClientsInner = (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>TOP CLIENTS</div>
-                <a href="/clients" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {clients.slice(0, 4).map((c, i) => {
-                  const colors = ['#16A34A', '#0EA5E9', '#6366F1', '#D97706']
-                  const col = colors[i % 4]
-                  const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
-                  return (
-                    <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` : 'none' }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-sm)', background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: col, flexShrink: 0, fontFamily: 'var(--font-body)' }}>
-                        {c.name[0]}
+        {/* Top clients — col 1 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>TOP CLIENTS</div>
+            <a href="/clients" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>View all →</a>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {clients.slice(0, 4).map((c, i) => {
+              const colors = ['#16A34A', '#0EA5E9', '#6366F1', '#D97706']
+              const col = colors[i % 4]
+              const pct = clients.length ? Math.round((c.revenue / Math.max(...clients.map(x => x.revenue))) * 100) : 0
+              return (
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < 3 ? '1px solid #F3F4F6' : 'none' }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 'var(--radius-sm)', background: `${col}18`, border: `1px solid ${col}28`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: col, flexShrink: 0, fontFamily: 'var(--font-body)' }}>
+                    {c.name[0]}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{c.name}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+                      <div style={{ flex: 1, height: 3, background: '#F3F4F6', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
+                        <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: 99 }} />
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: isVerunoPreview ? '#F5F4F1' : '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{c.name}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-                          <div style={{ flex: 1, height: 3, background: isVerunoPreview ? 'rgba(255,255,255,0.1)' : '#F3F4F6', borderRadius: 99, overflow: 'hidden', maxWidth: 80 }}>
-                            <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: 99 }} />
-                          </div>
-                          <span style={{ fontSize: 10, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>{c.status}</span>
-                        </div>
-                      </div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: col }}>${c.revenue.toLocaleString()}</div>
-                    </div>
-                  )
-                })}
-                {clients.length === 0 && <div style={{ fontSize: 13, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No clients yet</div>}
-              </div>
-            </>
-          )
-
-          const pipelineInner = (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE</div>
-                <a href="/crm" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>Open CRM →</a>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 16 }}>
-                {PIPELINE.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < PIPELINE.length - 1 ? `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` : 'none' }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: isVerunoPreview ? '#F5F4F1' : '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{p.label}</div>
-                      <div style={{ fontSize: 11, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>Due {p.due}</div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: isVerunoPreview ? '#F5F4F1' : '#111827' }}>${p.amount.toLocaleString()}</div>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25`, fontFamily: 'var(--font-body)' }}>{p.status}</span>
+                      <span style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{c.status}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div style={{ padding: '10px 12px', background: isVerunoPreview ? 'rgba(255,255,255,0.04)' : '#F8FAFC', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 12, color: isVerunoPreview ? 'rgba(245,244,241,0.55)' : '#6B7280', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Pipeline total</span>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: isVerunoPreview ? '#F5F4F1' : '#111827' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
-              </div>
-            </>
-          )
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: col }}>${c.revenue.toLocaleString()}</div>
+                </div>
+              )
+            })}
+            {clients.length === 0 && <div style={{ fontSize: 13, color: '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No clients yet</div>}
+          </div>
+        </div>
 
-          const activityInner = (
-            <>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 14 }}>RECENT ACTIVITY</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {activity.slice(0, 6).map((a, i) => {
-                  const dotColor = getDotColor(a.message)
-                  return (
-                    <div key={a.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: i < 5 ? `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.08)' : '#F3F4F6'}` : 'none', alignItems: 'flex-start' }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 5 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, color: isVerunoPreview ? 'rgba(245,244,241,0.85)' : '#111827', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{a.message}</div>
-                        <div style={{ fontSize: 10, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>{timeAgo(a.createdAt)}</div>
-                      </div>
-                    </div>
-                  )
-                })}
-                {activity.length === 0 && (
-                  <div style={{ fontSize: 13, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No recent activity</div>
-                )}
+        {/* Pipeline — col 2 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>PIPELINE</div>
+            <a href="/crm" style={{ fontSize: 12, color: 'var(--accent-brand)', fontWeight: 600, textDecoration: 'none', fontFamily: 'var(--font-body)' }}>Open CRM →</a>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 16 }}>
+            {PIPELINE.map((p, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: i < PIPELINE.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{p.label}</div>
+                  <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>Due {p.due}</div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 700, color: '#111827' }}>${p.amount.toLocaleString()}</div>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: `${p.color}15`, color: p.color, border: `1px solid ${p.color}25`, fontFamily: 'var(--font-body)' }}>{p.status}</span>
+                </div>
               </div>
-            </>
-          )
+            ))}
+          </div>
+          <div style={{ padding: '10px 12px', background: '#F8FAFC', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 12, color: '#6B7280', fontWeight: 500, fontFamily: 'var(--font-body)' }}>Pipeline total</span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: '#111827' }}>${PIPELINE.reduce((s, p) => s + p.amount, 0).toLocaleString()}</span>
+          </div>
+        </div>
 
-          if (isVerunoPreview) {
-            return (
-              <div className="dash-unified-panel" style={{
-                gridColumn: '1 / 4', background: '#0E1420', border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 'var(--radius-lg)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-              }}>
-                <div style={{ padding: '20px 20px', borderRight: '1px solid rgba(255,255,255,0.08)' }}>{topClientsInner}</div>
-                <div style={{ padding: '20px 20px', borderRight: '1px solid rgba(255,255,255,0.08)' }}>{pipelineInner}</div>
-                <div style={{ padding: '20px' }}>{activityInner}</div>
-              </div>
-            )
-          }
-
-          return (
-            <>
-              <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>{topClientsInner}</div>
-              <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px 20px' }}>{pipelineInner}</div>
-              <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px' }}>{activityInner}</div>
-            </>
-          )
-        })()}
+        {/* Recent Activity — col 3 */}
+        <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', padding: '20px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)', marginBottom: 14 }}>RECENT ACTIVITY</div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {activity.slice(0, 6).map((a, i) => {
+              const dotColor = getDotColor(a.message)
+              return (
+                <div key={a.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: i < 5 ? '1px solid #F3F4F6' : 'none', alignItems: 'flex-start' }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 5 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: '#111827', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: 'var(--font-body)' }}>{a.message}</div>
+                    <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1, fontFamily: 'var(--font-body)' }}>{timeAgo(a.createdAt)}</div>
+                  </div>
+                </div>
+              )
+            })}
+            {activity.length === 0 && (
+              <div style={{ fontSize: 13, color: '#9CA3AF', padding: '8px 0', fontFamily: 'var(--font-body)' }}>No recent activity</div>
+            )}
+          </div>
+        </div>
 
       </div>
 
@@ -654,14 +580,12 @@ export default function DashboardPage() {
       {voiceResult && (
         <div style={{
           position: 'fixed', bottom: 92, left: '50%', transform: 'translateX(-50%)',
-          background: isVerunoPreview ? '#161C29' : 'white',
-          border: `1px solid ${isVerunoPreview ? 'rgba(255,255,255,0.1)' : '#E5E7EB'}`,
-          fontSize: 13, maxWidth: 400,
+          background: 'white', border: '1px solid #E5E7EB', fontSize: 13, maxWidth: 400,
           padding: '12px 16px', borderRadius: 'var(--radius-md)', zIndex: 120, boxShadow: 'var(--shadow-lg)',
           fontFamily: 'var(--font-body)',
         }}>
-          <div style={{ color: isVerunoPreview ? '#F5F4F1' : '#111827', lineHeight: 1.5 }}>{voiceResult.text}</div>
-          <button onClick={() => setVoiceResult(null)} style={{ marginTop: 8, fontSize: 11, color: isVerunoPreview ? 'rgba(245,244,241,0.4)' : '#9CA3AF', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'var(--font-body)' }}>Dismiss</button>
+          <div style={{ color: '#111827', lineHeight: 1.5 }}>{voiceResult.text}</div>
+          <button onClick={() => setVoiceResult(null)} style={{ marginTop: 8, fontSize: 11, color: '#9CA3AF', cursor: 'pointer', background: 'none', border: 'none', fontFamily: 'var(--font-body)' }}>Dismiss</button>
         </div>
       )}
     </div>

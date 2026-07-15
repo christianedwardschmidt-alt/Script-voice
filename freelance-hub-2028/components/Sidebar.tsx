@@ -356,11 +356,6 @@ export default function Sidebar() {
   const taglineRef = useRef<HTMLSpanElement>(null)
   const [taglineAdjust, setTaglineAdjust] = useState({ scaleX: 1 })
   const [showVeruno, setShowVeruno] = useState(false)
-  const [isMac, setIsMac] = useState(true)
-
-  useEffect(() => {
-    setIsMac(/Mac|iPhone|iPad|iPod/.test(navigator.platform))
-  }, [])
 
   // Admin-only, this-browser-only brand preview toggle (set from
   // /admin/sandbox) — persists across client-side navigation instead of
@@ -499,12 +494,12 @@ export default function Sidebar() {
     avatarGradient: 'linear-gradient(135deg, #14532D, #16A34A)',
   }
 
-  function navItem(href: string, Icon: React.ComponentType<{ size?: number; color?: string }>, label: string, shortcutKey?: string) {
+  function navItem(href: string, Icon: React.ComponentType<{ size?: number; color?: string }>, label: string) {
     const active = pathname === href
     const iconColor = active ? theme.accent : theme.textTertiary
     const labelColor = active ? theme.textPrimary : theme.textSecondary
     const bg = active ? theme.accentBgActive : 'transparent'
-    const shadow = active ? `inset 3px 0 0 ${theme.accent}` : 'none'
+    const shadow = active ? `inset 2px 0 0 ${theme.accent}` : 'none'
 
     return (
       <Link
@@ -540,15 +535,6 @@ export default function Sidebar() {
       >
         <Icon size={18} color={iconColor} />
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-        {showVeruno && shortcutKey && (
-          <span style={{
-            flexShrink: 0, fontSize: 10, fontWeight: 600, letterSpacing: '0.02em',
-            color: active ? theme.textTertiary : 'rgba(245,244,241,0.26)',
-            fontFamily: 'var(--font-body)',
-          }}>
-            {isMac ? '⌘' : 'Ctrl+'}{shortcutKey}
-          </span>
-        )}
       </Link>
     )
   }
@@ -605,12 +591,10 @@ export default function Sidebar() {
               <div style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
                 textTransform: 'uppercase', color: theme.textTertiary,
-                padding: showVeruno ? '14px 20px 8px' : '8px 20px 4px',
-                marginBottom: showVeruno ? 4 : 0,
-                borderBottom: showVeruno ? `1px solid ${theme.border}` : 'none',
+                padding: '8px 20px 4px',
                 fontFamily: 'var(--font-body)',
               }}>{group.label}</div>
-              {group.items.map(({ label, href, Icon, key: shortcutKey }) => navItem(href, Icon, label, shortcutKey))}
+              {group.items.map(({ label, href, Icon }) => navItem(href, Icon, label))}
             </div>
           ))}
         </nav>

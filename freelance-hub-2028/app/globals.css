@@ -69,9 +69,7 @@
   --app-bg: #F8FAFC;
   --white: #FFFFFF;
   --sidebar-bg: var(--gw-dark);
-  --header-bg: #ffffff;
-  --header-border: #F3F4F6;
-  --header-title: #111827;
+  --header-bg: rgba(255,255,255,0.95);
 
   /* Brand-decorative accent (buttons, links, active states, badges) —
      distinct from literal green used for semantic positive/negative
@@ -128,15 +126,6 @@ html[data-brand-preview="veruno"] {
 
   --accent-gold: #C9A24B;
   --accent-gold-rgb: 201,162,75;
-
-  /* Top header bar — was hardcoded white/light regardless of theme, which
-     left a jarring seam between the dark sidebar and a white bar running
-     across the top of every page. This is shared "navigation" chrome
-     (app/(app)/layout.tsx, a server component), so it reads these via the
-     CSS cascade rather than React state. */
-  --header-bg: #0E1420;
-  --header-border: rgba(255,255,255,0.08);
-  --header-title: #F5F4F1;
 }
 
 html, body {
@@ -345,8 +334,6 @@ h1, h2, h3, h4, h5, h6 {
 /* ─── RECHARTS ────────────────────────────── */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line { stroke: rgba(0,0,0,0.04) !important; }
-html[data-brand-preview="veruno"] .recharts-cartesian-grid-horizontal line,
-html[data-brand-preview="veruno"] .recharts-cartesian-grid-vertical line { stroke: rgba(255,255,255,0.07) !important; }
 .recharts-tooltip-wrapper { outline: none; }
 
 /* ─── ANIMATE-IN ─────────────────────────── */
@@ -385,9 +372,6 @@ html[data-brand-preview="veruno"] .recharts-cartesian-grid-vertical line { strok
   .dash-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
   .dash-bento-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
   .dash-chart-card { grid-column: 1 !important; }
-  .dash-unified-panel { grid-column: 1 !important; grid-template-columns: 1fr !important; }
-  .dash-unified-panel > div { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
-  .dash-unified-panel > div:last-child { border-bottom: none !important; }
   .page-pad { padding: 18px 16px 96px !important; }
   .btn-primary, .btn-outline { min-height: 42px; font-size: 14px !important; }
   .tab-bar-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px; }

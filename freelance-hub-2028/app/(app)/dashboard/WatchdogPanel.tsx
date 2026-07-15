@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, CheckCircle, ChevronDown, ChevronUp, X } from 'lucide-react'
-import { useBrandPreview } from '@/lib/brandPreview'
 
 interface WatchdogRun {
   id: number
@@ -83,8 +82,6 @@ function WatchdogDogIcon({ size = 24 }: { size?: number }) {
 
 export default function WatchdogPanel({ userName, standardHeader }: { userName: string; standardHeader: React.ReactNode }) {
   const router = useRouter()
-  const isVeruno = useBrandPreview()
-  const panelBg = isVeruno ? '#161C29' : '#0A1A0F'
   const [loaded, setLoaded] = useState(false)
   const [run, setRun] = useState<WatchdogRun | null>(null)
   const [items, setItems] = useState<WatchdogItem[]>([])
@@ -243,13 +240,13 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
   }
 
   const panelInner = (
-    <div className="watchdog-panel-in" style={{ background: panelBg, border: isVeruno ? '1px solid rgba(255,255,255,0.08)' : 'none', borderRadius: isVeruno ? 14 : 20, padding: '28px 32px', marginBottom: 24, width: '100%', boxSizing: 'border-box' }}>
+    <div className="watchdog-panel-in" style={{ background: '#0A1A0F', borderRadius: 20, padding: '28px 32px', marginBottom: 24, width: '100%', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allCaughtUp ? 4 : 18 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <WatchdogDogIcon />
           <div>
             <div style={{ fontFamily: 'var(--font-syne)', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase' }}>
-              {isVeruno ? 'Veruno Watchdog' : 'GuildWire Watchdog'}
+              GuildWire Watchdog
             </div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
               {dateLabel} · checked your business overnight
@@ -309,7 +306,6 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
         :global(.watchdog-action-btn:hover) { background: rgba(255,255,255,0.08) !important; }
         :global(.watchdog-dismiss-link:hover) { color: rgba(255,255,255,0.6) !important; }
         :global(.watchdog-pill-btn:hover) { background: #0d2415 !important; }
-        :global(.watchdog-pill-btn-veruno:hover) { background: #1F2937 !important; }
       `}</style>
 
       {showFullPanel ? panelInner : (
@@ -318,11 +314,11 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button
-                  className={`watchdog-pill-btn${isVeruno ? ' watchdog-pill-btn-veruno' : ''}`}
+                  className="watchdog-pill-btn"
                   onClick={() => setPillOpen(v => !v)}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 7, background: panelBg, color: 'white',
-                    border: isVeruno ? '1px solid rgba(255,255,255,0.08)' : 'none', borderRadius: 20, padding: '7px 14px 7px 10px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 7, background: '#0A1A0F', color: 'white',
+                    border: 'none', borderRadius: 20, padding: '7px 14px 7px 10px', cursor: 'pointer',
                     fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
                   }}
                 >
@@ -332,7 +328,7 @@ export default function WatchdogPanel({ userName, standardHeader }: { userName: 
                 </button>
               </div>
               {pillOpen && (
-                <div className="watchdog-panel-in" style={{ background: panelBg, border: isVeruno ? '1px solid rgba(255,255,255,0.08)' : 'none', borderRadius: 16, padding: '6px 22px', marginTop: 10 }}>
+                <div className="watchdog-panel-in" style={{ background: '#0A1A0F', borderRadius: 16, padding: '6px 22px', marginTop: 10 }}>
                   {items.map((item, idx) => renderItem(item, idx))}
                 </div>
               )}
