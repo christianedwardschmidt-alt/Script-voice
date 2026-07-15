@@ -512,7 +512,7 @@ export default function Sidebar() {
         {/* Logo */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #F3F4F6', flexShrink: 0 }}>
           <Link href="/dashboard" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 60 : 36, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
+            <span ref={logoRef} style={{ fontFamily: 'var(--font-body)', fontSize: showVeruno ? 60 : 28, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1 }}>
               {showVeruno ? (
                 <span style={{ color: '#111827' }}>Veruno</span>
               ) : (
@@ -524,7 +524,7 @@ export default function Sidebar() {
             <span
               ref={taglineRef}
               style={{
-                fontSize: 11, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
+                fontSize: 9, fontWeight: 500, color: '#9CA3AF', lineHeight: 1,
                 display: 'block', whiteSpace: 'nowrap',
                 transform: `scaleX(${taglineAdjust.scaleX})`,
                 transformOrigin: 'left',
