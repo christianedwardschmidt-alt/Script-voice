@@ -24,7 +24,7 @@ const css = `
   background: var(--ink-1);
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
-.vp a { text-decoration: none; color: inherit; }
+.vp a { text-decoration: none; }
 .vp-container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
 .vp-eyebrow {
   font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
