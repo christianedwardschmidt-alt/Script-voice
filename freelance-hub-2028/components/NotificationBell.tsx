@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell, AlertCircle, RefreshCw, DollarSign, PauseCircle, CheckCircle } from 'lucide-react'
+import { useBrandPreview } from '@/lib/brandPreview'
 
 interface Notif {
   id: number
@@ -33,6 +34,7 @@ function relativeTime(iso: string): string {
 }
 
 export default function NotificationBell() {
+  const isVeruno = useBrandPreview()
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState<Notif[]>([])
   const [unread, setUnread] = useState(0)
@@ -88,9 +90,9 @@ export default function NotificationBell() {
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          background: open ? 'var(--bg-3)' : 'none',
+          background: open ? (isVeruno ? 'rgba(255,255,255,0.08)' : 'var(--bg-3)') : 'none',
           border: 'none',
-          color: open ? 'var(--text)' : 'var(--text-3)',
+          color: isVeruno ? (open ? '#F5F4F1' : 'rgba(245,244,241,0.4)') : (open ? 'var(--text)' : 'var(--text-3)'),
           cursor: 'pointer',
           display: 'flex', alignItems: 'center',
           padding: 7, borderRadius: 8, position: 'relative',
@@ -106,7 +108,7 @@ export default function NotificationBell() {
             background: '#dc2626', color: '#fff',
             fontSize: 8, fontWeight: 800,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '2px solid #fafbff',
+            border: `2px solid ${isVeruno ? '#0E1420' : '#fafbff'}`,
           }}>{unread}</div>
         )}
       </button>

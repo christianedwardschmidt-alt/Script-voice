@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useBrandPreview } from '@/lib/brandPreview'
 
 const ROUTES = [
   { label: 'Dashboard',    href: '/dashboard' },
@@ -26,6 +27,7 @@ type AIState = 'idle' | 'loading' | 'done' | 'error'
 
 export default function GlobalSearch() {
   const router = useRouter()
+  const isVeruno = useBrandPreview()
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [focused, setFocused] = useState(false)
@@ -91,13 +93,13 @@ export default function GlobalSearch() {
       {/* Input */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        background: focused ? '#fff' : '#F8FAFC',
-        border: `1px solid ${focused ? 'var(--accent-brand)' : '#E5E7EB'}`,
+        background: isVeruno ? (focused ? 'rgba(255,255,255,0.09)' : 'rgba(255,255,255,0.05)') : (focused ? '#fff' : '#F8FAFC'),
+        border: `1px solid ${focused ? 'var(--accent-brand)' : (isVeruno ? 'rgba(255,255,255,0.1)' : '#E5E7EB')}`,
         borderRadius: 10, padding: '0 12px', height: 38,
         boxShadow: focused ? '0 0 0 3px rgba(var(--accent-brand-rgb),0.08)' : 'none',
         transition: 'border 0.15s, box-shadow 0.15s, background 0.15s',
       }}>
-        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={focused ? 'var(--accent-brand)' : '#9CA3AF'} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke 0.15s' }}>
+        <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={focused ? 'var(--accent-brand)' : (isVeruno ? 'rgba(245,244,241,0.4)' : '#9CA3AF')} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transition: 'stroke 0.15s' }}>
           <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
         </svg>
 
@@ -111,14 +113,14 @@ export default function GlobalSearch() {
           placeholder="Search or ask AI anything…"
           style={{
             flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13.5, color: '#111827', fontFamily: 'var(--font-body)',
+            fontSize: 13.5, color: isVeruno ? '#F5F4F1' : '#111827', fontFamily: 'var(--font-body)',
           }}
         />
 
         {!focused && (
           <kbd style={{
-            fontSize: 10.5, color: '#9CA3AF', background: '#F3F4F6',
-            border: '1px solid #E5E7EB', borderRadius: 5,
+            fontSize: 10.5, color: isVeruno ? 'rgba(245,244,241,0.4)' : '#9CA3AF', background: isVeruno ? 'rgba(255,255,255,0.08)' : '#F3F4F6',
+            border: `1px solid ${isVeruno ? 'rgba(255,255,255,0.1)' : '#E5E7EB'}`, borderRadius: 5,
             padding: '1px 5px', fontFamily: 'inherit', flexShrink: 0,
           }}>⌘K</kbd>
         )}
