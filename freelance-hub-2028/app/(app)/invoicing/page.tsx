@@ -414,7 +414,7 @@ export default function BillingPage() {
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 700, color: '#111827', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>${fmt(value)}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
-              <span style={{ fontSize: 12, color: up ? '#16A34A' : accent, fontFamily: 'var(--font-body)' }}>{trend}</span>
+              <span style={{ fontSize: 12, color: up ? 'var(--accent-brand)' : accent, fontFamily: 'var(--font-body)' }}>{trend}</span>
               <Sparkline values={spark} color={accent} id={i + 20} />
             </div>
           </div>

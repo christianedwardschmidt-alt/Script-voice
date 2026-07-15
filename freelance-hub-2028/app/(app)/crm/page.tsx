@@ -459,8 +459,8 @@ export default function CRMPage() {
             <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>{stat.label}</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: '#111827', marginTop: 6, letterSpacing: '-0.02em' }}>{stat.value}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontSize: 13, color: stat.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
-              <Sparkline values={stat.spark} color={stat.up ? '#16A34A' : '#EF4444'} id={i + 10} />
+              <span style={{ fontSize: 13, color: stat.up ? 'var(--accent-brand)' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
+              <Sparkline values={stat.spark} color={stat.up ? 'var(--accent-brand)' : '#EF4444'} id={i + 10} />
             </div>
           </div>
         ))}

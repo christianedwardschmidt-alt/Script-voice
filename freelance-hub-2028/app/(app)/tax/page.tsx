@@ -340,7 +340,7 @@ export default function TaxPage() {
             const isUp = k.trend.up
             const hasData = k.trend.up !== null && k.trend.pct !== '—'
             const goodTrend = k.trendPositive ? isUp : !isUp
-            const trendColor = hasData ? (goodTrend ? '#16A34A' : '#EF4444') : (k.trendPositive ? '#16A34A' : '#EF4444')
+            const trendColor = hasData ? (goodTrend ? 'var(--accent-brand)' : '#EF4444') : (k.trendPositive ? 'var(--accent-brand)' : '#EF4444')
             const trendText = hasData ? `${isUp ? '+' : '−'}${k.trend.pct} vs last mo` : k.sub
             return (
               <div key={k.label} style={{ padding: '24px 28px', borderRight: i < 4 ? '1px solid #F3F4F6' : 'none' }}>

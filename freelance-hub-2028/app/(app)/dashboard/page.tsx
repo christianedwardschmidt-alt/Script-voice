@@ -343,8 +343,8 @@ export default function DashboardPage() {
               fontVariantNumeric: 'tabular-nums',
             }}>{stat.value}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontSize: 13, color: stat.up ? '#16A34A' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
-              <Sparkline values={stat.spark} color={stat.up ? '#16A34A' : '#EF4444'} id={i} />
+              <span style={{ fontSize: 13, color: stat.up ? 'var(--accent-brand)' : '#EF4444', fontFamily: 'var(--font-body)' }}>{stat.trend}</span>
+              <Sparkline values={stat.spark} color={stat.up ? 'var(--accent-brand)' : '#EF4444'} id={i} />
             </div>
           </div>
         ))}
@@ -422,7 +422,16 @@ export default function DashboardPage() {
         </div>
 
         {/* This Week — col 3 */}
-        <div style={{ background: 'linear-gradient(145deg, #14532D 0%, #166534 50%, #15803D 100%)', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 12px rgba(20,83,45,0.25), 0 12px 32px rgba(22,163,74,0.2)', padding: '20px 20px' }}>
+        <div style={{
+          background: isVerunoPreview
+            ? 'linear-gradient(145deg, #0E1420 0%, #1A2436 50%, #0A0E16 100%)'
+            : 'linear-gradient(145deg, #14532D 0%, #166534 50%, #15803D 100%)',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: isVerunoPreview
+            ? '0 4px 12px rgba(14,20,32,0.3), 0 12px 32px rgba(14,20,32,0.25)'
+            : '0 4px 12px rgba(20,83,45,0.25), 0 12px 32px rgba(22,163,74,0.2)',
+          padding: '20px 20px',
+        }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)', marginBottom: 16 }}>THIS WEEK</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="week-stats-grid">
             {[
@@ -436,7 +445,7 @@ export default function DashboardPage() {
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px' }}>{s.val}</div>
                 {s.pct !== null && (
                   <div style={{ marginTop: 6, height: 3, background: 'rgba(255,255,255,0.18)', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{ width: `${s.pct}%`, height: '100%', background: 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
+                    <div style={{ width: `${s.pct}%`, height: '100%', background: isVerunoPreview ? '#D4A72C' : 'rgba(255,255,255,0.72)', borderRadius: 99, transition: 'width 0.8s cubic-bezier(0.16,1,0.3,1)' }} />
                   </div>
                 )}
               </div>
