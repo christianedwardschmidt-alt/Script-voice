@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 
-export const BRAND_PREVIEW_KEY = 'gw_brand_preview'
-export const BRAND_PREVIEW_TOUCHED_KEY = 'gw_brand_preview_touched'
-export const BRAND_PREVIEW_EVENT = 'gw-brand-preview-change'
-
-// Dedicated login for showing off the Veruno rebrand — separate from the
-// admin account and from the pre-existing anonymous "try the demo" flow
-// (demo@guildwire.io / gw_demo cookie), which is read-only and pushes
-// visitors toward signing up, neither of which applies here.
-export const VERUNO_DEMO_EMAIL = 'demo@veruno.io'
+export { BRAND_PREVIEW_KEY, BRAND_PREVIEW_TOUCHED_KEY, BRAND_PREVIEW_EVENT, VERUNO_DEMO_EMAIL } from './brandPreviewConstants'
+import { BRAND_PREVIEW_KEY, BRAND_PREVIEW_TOUCHED_KEY, BRAND_PREVIEW_EVENT } from './brandPreviewConstants'
 
 export function getBrandPreview(): boolean {
   if (typeof window === 'undefined') return false

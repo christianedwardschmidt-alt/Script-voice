@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { queryOne, execute, createUserDefaults, seedUserData } from '@/lib/db'
 import { hashPassword, generateToken, SESSION_COOKIE, SESSION_DAYS } from '@/lib/auth'
-import { VERUNO_DEMO_EMAIL } from '@/lib/brandPreview'
+import { VERUNO_DEMO_EMAIL } from '@/lib/brandPreviewConstants'
 
 export async function POST(request: NextRequest) {
   try {
