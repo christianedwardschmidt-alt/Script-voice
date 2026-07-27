@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { queryOne, execute, createUserDefaults } from '@/lib/db'
+import { queryOne, execute, createUserDefaults, seedUserData } from '@/lib/db'
 import { hashPassword, generateToken, SESSION_COOKIE, SESSION_DAYS } from '@/lib/auth'
+import { VERUNO_DEMO_EMAIL } from '@/lib/brandPreview'
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,7 +26,15 @@ export async function POST(request: NextRequest) {
     )
     const userId = result.lastInsertRowid
 
-    await createUserDefaults(userId, name.trim(), email.toLowerCase())
+    // The Veruno demo login gets the full sample dataset (clients,
+    // invoices, tasks, etc.) instead of an empty new-account state, so it
+    // reproduces the same demo wherever this signs up — not just in
+    // whichever database happened to seed it manually once.
+    if (email.toLowerCase() === VERUNO_DEMO_EMAIL) {
+      await seedUserData(userId, name.trim(), email.toLowerCase())
+    } else {
+      await createUserDefaults(userId, name.trim(), email.toLowerCase())
+    }
 
     const token = generateToken()
     const expiresAt = new Date(Date.now() + SESSION_DAYS * 86400_000).toISOString()

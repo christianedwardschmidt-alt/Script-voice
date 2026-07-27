@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getBrandPreview, setBrandPreview } from '@/lib/brandPreview'
+import { getBrandPreview, setBrandPreview, VERUNO_DEMO_EMAIL } from '@/lib/brandPreview'
 
 export default function AdminSandboxPage() {
   const router = useRouter()
@@ -13,7 +13,13 @@ export default function AdminSandboxPage() {
     fetch('/api/profile')
       .then(r => r.json())
       .then(profile => {
-        if (profile?.email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'christianedwardschmidt@gmail.com')) {
+        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'christianedwardschmidt@gmail.com'
+        // The Veruno demo account can reach this page too — only to flip
+        // the same toggle it already defaults to on, e.g. for an in-demo
+        // before/after comparison — not a grant of admin privileges
+        // (marketplace review, user admin, etc. stay gated to adminEmail
+        // alone via the separate isAdmin() check those routes use).
+        if (profile?.email === adminEmail || profile?.email === VERUNO_DEMO_EMAIL) {
           setIsAdmin(true)
         } else {
           router.replace('/dashboard')

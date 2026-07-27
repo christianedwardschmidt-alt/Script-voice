@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { BRAND_PREVIEW_EVENT, getBrandPreview } from '@/lib/brandPreview'
+import { BRAND_PREVIEW_EVENT, VERUNO_DEMO_EMAIL, getBrandPreview, hasBrandPreviewBeenTouched, setBrandPreview } from '@/lib/brandPreview'
 
 // ── SVG icon components ──────────────────────────────────────────────────────
 
@@ -426,6 +426,13 @@ export default function Sidebar() {
     fetch('/api/profile').then(r => r.json()).then(d => {
       if (d?.displayName) setDisplayName(d.displayName)
       if (d?.email) setDisplayEmail(d.email)
+      // The Veruno demo account shows the rebrand by default the first
+      // time it's opened in a given browser, so there's no extra step
+      // before a demo — but an explicit toggle-off (checked via the
+      // "touched" flag) is still respected afterward.
+      if (d?.email === VERUNO_DEMO_EMAIL && !hasBrandPreviewBeenTouched()) {
+        setBrandPreview(true)
+      }
     }).catch(() => {})
     setIsDemo(document.cookie.includes('gw_demo=1'))
   }, [])
