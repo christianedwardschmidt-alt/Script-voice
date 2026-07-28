@@ -130,6 +130,9 @@ export async function seedUserData(userId: number, name: string, email: string):
   await seedCourses(userId)
   await seedIntegrations(userId)
   await seedPosts(userId)
+  await seedAgents(userId)
+  await seedNotes(userId)
+  await seedProposals(userId)
   await client.execute({
     sql: `INSERT OR IGNORE INTO profile (user_id,displayName,email,headline,skills) VALUES (?,?,?,?,?)`,
     args: [userId, name, email, 'Freelance Designer & Developer', 'Figma, React, Next.js, TypeScript'],
@@ -142,6 +145,29 @@ export async function seedUserData(userId: number, name: string, email: string):
     sql: `INSERT OR IGNORE INTO contact_info (user_id,fullName,email,phone,website,location,timezone,bio) VALUES (?,?,?,?,?,?,?,?)`,
     args: [userId, name, email, '', '', '', 'UTC', ''],
   })
+}
+
+// Backfills agents/notes/proposals onto an account that was already created
+// before seedUserData() included them — e.g. the Veruno demo account,
+// which signed up while those three were still missing. Each of the three
+// is gated on its own row count rather than one combined check, so a
+// partial failure (one seed*() call throwing after another already
+// succeeded) can be safely retried without re-inserting — and therefore
+// duplicating — whichever part already went through.
+export async function seedExtras(userId: number): Promise<{ agents: boolean; notes: boolean; proposals: boolean }> {
+  await ensureReady()
+  const result = { agents: false, notes: false, proposals: false }
+
+  const agentCount = await client.execute({ sql: `SELECT COUNT(*) as c FROM agents WHERE user_id = ?`, args: [userId] })
+  if (Number(agentCount.rows[0].c) === 0) { await seedAgents(userId); result.agents = true }
+
+  const noteCount = await client.execute({ sql: `SELECT COUNT(*) as c FROM notes WHERE user_id = ?`, args: [userId] })
+  if (Number(noteCount.rows[0].c) === 0) { await seedNotes(userId); result.notes = true }
+
+  const proposalCount = await client.execute({ sql: `SELECT COUNT(*) as c FROM proposals WHERE user_id = ?`, args: [userId] })
+  if (Number(proposalCount.rows[0].c) === 0) { await seedProposals(userId); result.proposals = true }
+
+  return result
 }
 
 // ── Init singleton ───────────────────────────────────────────────────────────
@@ -1134,7 +1160,7 @@ async function seedProposals(userId: number) {
   await client.batch([
     { sql, args: [userId,
       'Analytics Dashboard Redesign', 'TechFlow Inc', 'raj@techflow.io', 'Design', 'accepted',
-      dateStr(24*30), 'prop_techflow_001', 3, d(24*4),
+      dateStr(24*30), `prop_techflow_${userId}`, 3, d(24*4),
       "Dear Raj,\n\nThank you for the opportunity to redesign TechFlow's analytics dashboard. After our discovery calls, I'm confident we can create something that not only looks exceptional but meaningfully improves how your team understands and acts on data.\n\nThis proposal outlines my approach, deliverables, timeline, and investment. I'm excited to bring TechFlow's data to life.",
       "TechFlow's current Tableau-based dashboard was built for a team of 5 data analysts. With 200+ employees now needing daily data access — including executives and non-technical stakeholders — the tool creates friction rather than clarity. Key issues: slow load times, no mobile experience, complex filters that confuse non-technical users, and no way to highlight the metrics that actually matter.",
       "I'll redesign TechFlow's core analytics experience from the ground up using a modern component-based approach. The new dashboard will load instantly, work beautifully on mobile, and surface the right metric to the right person automatically. I'll establish a scalable design system so your internal team can maintain and extend it independently.",
@@ -1163,7 +1189,7 @@ async function seedProposals(userId: number) {
     ]},
     { sql, args: [userId,
       'Brand Identity Package', 'Luminary Coffee', 'hello@luminarycoffee.com', 'Design', 'sent',
-      dateStr(24*14), 'prop_luminary_001', 1, d(24*1),
+      dateStr(24*14), `prop_luminary_${userId}`, 1, d(24*1),
       "Hi Maya,\n\nIt was great connecting at the Portland makers market last week. Luminary Coffee has a story worth telling visually — the single-origin sourcing, the roasting process, the community-first ethos. This proposal is my vision for translating all of that into a brand identity that makes people feel something before they've taken a sip.",
       "Luminary Coffee has exceptional product quality and a genuine story, but the current visual identity doesn't do it justice. Generic packaging, an inconsistent color palette, and a logo that could belong to any coffee company mean you're competing on price rather than brand. Independent coffee is having a moment — now is the time to own your identity.",
       "I'll create a full brand identity system that captures the craft, warmth, and intentionality behind Luminary Coffee. Every element — from the primary logo to the packaging patterns to the typography — will feel cohesive, distinctive, and ownable. The deliverable will be a brand book your team can use to stay consistent across every touchpoint.",
@@ -1192,7 +1218,7 @@ async function seedProposals(userId: number) {
     ]},
     { sql, args: [userId,
       'E-commerce Platform Build', 'Hencewood Digital', 'james@hencewood.com', 'Development', 'viewed',
-      dateStr(24*7), 'prop_hencewood_001', 4, d(36),
+      dateStr(24*7), `prop_hencewood_${userId}`, 4, d(36),
       "Hi James,\n\nThank you for the detailed brief on the Hencewood e-commerce expansion. After reviewing your current Shopify setup and the requirements for the custom B2B portal, I can see a clear path to a solution that will serve your wholesale clients significantly better than the current workarounds.",
       "Hencewood's wholesale clients are currently navigating a consumer-facing Shopify store that wasn't designed for B2B purchasing. Custom pricing, volume discounts, NET-30 invoicing, and multi-location ordering aren't supported — leading to manual work for your team and frustration for buyers. You're leaving revenue on the table and burning team time on order management.",
       "I'll build a custom B2B portal integrated with your existing Shopify store. Wholesale clients will have their own login, see their custom pricing, place orders with volume discounts applied automatically, and receive NET-30 invoices via email. Your team will have an admin dashboard to manage accounts, approve credit terms, and view order analytics.",
@@ -1223,7 +1249,7 @@ async function seedProposals(userId: number) {
     ]},
     { sql, args: [userId,
       'Content Strategy & Copywriting Q4', 'NovaBuild', 'sophie@novabuild.io', 'Writing', 'draft',
-      dateStr(-24*14), 'prop_novabuild_001', 0, null,
+      dateStr(-24*14), `prop_novabuild_${userId}`, 0, null,
       '', '', '',
       JSON.stringify([
         { id:'d1', name:'Content Audit', description:'Review all existing web copy and blog content', included:true },
