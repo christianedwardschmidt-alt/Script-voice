@@ -254,16 +254,6 @@ export default async function HomePage() {
               <Link href="/signup" className="lp-btn-primary">Join as a Founding Member</Link>
               <a href="#features" className="lp-link-sec">See how it works</a>
             </div>
-            <div className="lp-social-proof">
-              <div className="lp-avatars">
-                {[{ bg: '#16A34A', l: 'M' }, { bg: '#0EA5E9', l: 'J' }, { bg: '#6366F1', l: 'S' }].map((a, i) => (
-                  <div key={i} className="lp-avatar" style={{ background: a.bg, color: '#fff' }}>{a.l}</div>
-                ))}
-              </div>
-              <span style={{ marginLeft: 10, color: 'rgba(255,255,255,0.42)', fontSize: 13 }}>
-                Join 2,400+ independent professionals already on GuildWire
-              </span>
-            </div>
           </div>
         </section>
 
